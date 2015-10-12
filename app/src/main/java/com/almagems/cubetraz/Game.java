@@ -20,6 +20,82 @@ public final class Game {
         Playing,
     }
 
+    public enum SwipeDirEnums {
+        SwipeNone,
+        SwipeUp,
+        SwipeDown,
+        SwipeUpLeft,
+        SwipeUpRight,
+        SwipeDownLeft,
+        SwipeDownRight,
+        SwipeLeft,
+        SwipeRight,
+    }
+
+    public enum CubeFaceNamesEnum {
+        Face_Empty,
+
+        Face_Tutorial,
+
+        Face_Menu,
+        Face_Options,
+        Face_Store,
+
+        Face_Easy01,
+        Face_Easy02,
+        Face_Easy03,
+        Face_Easy04,
+
+        Face_Normal01,
+        Face_Normal02,
+        Face_Normal03,
+        Face_Normal04,
+
+        Face_Hard01,
+        Face_Hard02,
+        Face_Hard03,
+        Face_Hard04
+    }
+
+    public enum PickRenderTypeEnum {
+        RenderAll,
+        RenderOnlyMovingCubes,
+        RenderOnlyLevelCubes,
+        RenderOnlyMovingCubePlay,
+        RenderOnlyMovingCubeOptions,
+        RenderOnlyMovingCubeStore,
+        RenderOnlyOptions,
+        RenderOnlyCubeCredits,
+        RenderOnlyHUD
+    }
+
+    public enum AxisEnum {
+        X_Axis,
+        Y_Axis,
+        Z_Axis
+    }
+
+    public enum FaceTransformsEnum {
+        NoTransform,
+        MirrorHoriz,
+        MirrorVert,
+        RotateCW90,
+        RotateCCW90
+    }
+
+    public enum DifficultyEnum {
+        Easy,
+        Normal,
+        Hard
+    }
+
+    public enum LevelInitActionEnum {
+        FullInit,
+        JustContinue,
+        ShowSolution
+    }
+
+
     public GameState gameState;
 
     public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];

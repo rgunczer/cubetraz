@@ -1,3 +1,8 @@
+package com.almagems.cubetraz;
+
+import static com.almagems.cubetraz.Constants.*;
+
+
 public final class DeadCube {
       
     private CubePos m_cube_pos_starting;
@@ -5,13 +10,13 @@ public final class DeadCube {
 
     private TexturedQuad[] m_ar_cube_textures = new TexturedQuad[6];
     
-    private final Color m_color;
-    private final Color m_color_current;
+    private final Color m_color = new Color();
+    private final Color m_color_current = new Color();
     
-    private final Color m_color_symbol;
-    private final Color m_color_symbol_current;
+    private final Color m_color_symbol = new Color();
+    private final Color m_color_symbol_current = new Color();
       	    
-    public Vector pos;
+    public Vector pos = new Vector();
     
     public CubePos getCubePos() { 
         return m_cube_pos; 
@@ -27,12 +32,6 @@ public final class DeadCube {
  
     // ctor
     public DeadCube() {
-        m_color = new Color();
-        m_color_current = new Color();
-        
-        m_color_symbol = new Color();
-        m_color_symbol_current = new Color();
-        
         for (int i = 0; i < 6; ++i) {
             m_ar_cube_textures[i] = null;
         }
@@ -43,7 +42,7 @@ public final class DeadCube {
         m_color_symbol_current.init(m_color_symbol);
     }
 
-    public setCubePos(CubePos coordinate) {
+    public void setCubePos(CubePos coordinate) {
         m_cube_pos = coordinate;
         pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
     }

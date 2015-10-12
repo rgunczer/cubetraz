@@ -3,7 +3,7 @@ package com.almagems.cubetraz;
 import java.util.ArrayList;
 
 
-public class cLevelBuilder {
+public final class LevelBuilder {
         
     public static Level level;
     public static final CubePos player = new CubePos();
