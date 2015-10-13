@@ -1,0 +1,967 @@
+package com.almagems.cubetraz;
+
+
+
+public final class HUD {
+        
+    private final boolean[] m_arr_tutor_displayed = new boolean[MAX_TUTOR_COUNT];
+    
+	private HUDStateEnum m_state;
+	
+    private TexturedQuad m_symbol_pause;
+    private TexturedQuad m_symbol_undo;
+    private TexturedQuad m_symbol_hint;
+    private TexturedQuad m_symbol_solver;
+    private TexturedQuad m_symbol_star;
+    private TexturedQuad m_symbol_death;
+
+    private Text m_text_motto;
+    
+    private Text m_text_pause;
+    private Text m_text_undo;
+    private Text m_text_hint;
+    private Text m_text_solver;
+    
+    private Text m_text_level;
+    private Text m_text_moves;
+    private Text m_text_stars;
+    
+    private Text[] m_ar_text_center = new Text[2];
+    
+    private TextDisplay m_text_display;
+	
+	private float m_pos_x_text_left;
+	private float m_pos_x_text_left_start;
+	private float m_pos_x_text_left_end;
+
+	private float m_motto_height;
+
+    private float m_pos_x_text_right;
+    private float m_pos_x_text_right_start;
+    private float m_pos_x_text_right_end;
+	
+	private float m_pos_y_motto;
+	private float m_pos_y_motto_start;
+	private float m_pos_y_motto_end;
+	
+	private int m_icons_alpha;
+
+    private boolean m_hilite_pause;
+    private boolean m_hilite_undo;
+    private boolean m_hilite_hint;
+    private boolean m_hilite_solver;
+
+	private boolean m_show_hint;
+	private int m_hint_type;
+	private float m_hint_timeout;
+    private float m_t;
+	private int m_hint_index;
+    
+    private boolean m_show_prepare_solving;
+    private boolean m_show_appear;
+    private float m_center_alpha;
+    
+    private Vector2 m_pos_center;
+    private float m_radius;
+    private Vector2 m_start;
+    private Vector2 m_end;
+    
+    private stack<int> m_tutors;
+    private TutorStateEnum m_tutor_state;
+    private boolean m_tutor_active;
+    private int m_tutor_alpha;
+    private GLuint m_tutor_texture_id;
+    
+    
+    // ctor
+    public HUD() {
+        // setdisplay
+        m_text_motto.setDisplay(m_text_display);
+    
+        m_text_pause.setDisplay(m_text_display);
+        m_text_undo.setDisplay(m_text_display);
+        m_text_hint.setDisplay(m_text_display);
+        m_text_solver.setDisplay(m_text_display);
+    
+        m_text_level.setDisplay(m_text_display);
+        m_text_moves.setDisplay(m_text_display);
+        m_text_stars.setDisplay(m_text_display);
+
+        m_ar_text_center[0].setDisplay(m_text_display);
+        m_ar_text_center[1].setDisplay(m_text_display);
+    
+        // align
+        m_text_level.setAlign(RightAlign);
+        m_text_stars.setAlign(RightAlign);
+        m_text_moves.setAlign(RightAlign);
+        m_text_motto.setAlign(RightAlign);
+        
+        // setscale
+        m_text_pause.setScale(1.0f, 1.0f);
+        m_text_undo.setScale(1.0f, 1.0f);
+        m_text_hint.setScale(1.0f, 1.0f);
+        m_text_solver.setScale(1.0f, 1.0f);
+    
+        m_text_level.setScale(1.0f, 1.0f);
+        m_text_stars.setScale(1.0f, 1.0f);
+        m_text_moves.setScale(1.0f, 1.0f);
+        m_text_motto.setScale(1.0f, 1.0f);
+    
+        m_ar_text_center[0].setScale(1.0f, 1.0f);
+        m_ar_text_center[1].setScale(1.0f, 1.0f);
+    
+        // vspace
+        m_text_pause.setVSPace(0.75f);
+        m_text_undo.setVSPace(0.75f);
+        m_text_hint.setVSPace(0.75f);
+        m_text_solver.setVSPace(0.75f);
+    
+        m_text_level.setVSPace(0.75f);
+        m_text_stars.setVSPace(0.75f);
+        m_text_moves.setVSPace(0.75f);
+        m_text_motto.setVSPace(0.75f);
+    
+        m_ar_text_center[0].setVSPace(0.8f);
+        m_ar_text_center[1].setVSPace(0.8f);
+    
+        m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
+    
+        for (int i = 0; i < MAX_TUTOR_COUNT; ++i) {        
+            m_arr_tutor_displayed[i] = false;
+        }
+    }
+
+    public void clearTutors() {
+        while ( !m_tutors.isEmpty() ) {
+            m_tutors.pop();
+        }
+    }
+
+    public void showTutorSwipeAndGoal() {
+        if (!m_arr_tutor_displayed[Swipe]) {
+            m_tutors.push(Goal);
+            m_tutors.push(Swipe);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_swipe");
+            m_arr_tutor_displayed[Swipe] = true;
+        }
+    }
+
+    public void showTutorGoal() {
+        if (!m_arr_tutor_displayed[Goal]) {
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_goal");
+            m_arr_tutor_displayed[Goal] = true;
+        }
+    }
+
+    public void showTutorDrag() {
+        if (!m_arr_tutor_displayed[Drag]) {
+            m_tutors.push(Drag);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_drag");
+            m_arr_tutor_displayed[Drag] = true;
+        }
+    }
+
+    public void showTutorDead() {
+        if (!m_arr_tutor_displayed[Dead]) {
+            m_tutors.push(Dead);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_dead");
+            m_arr_tutor_displayed[Dead] = true;
+        }
+    }
+
+    public void showTutorMoving() {
+        if (!m_arr_tutor_displayed[Moving]) {
+            m_tutors.push(Moving);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_moving");
+            m_arr_tutor_displayed[Moving] = true;
+        }
+    }
+
+    public void showTutorMover() {
+        if (!m_arr_tutor_displayed[Mover]) {
+            m_tutors.push(Mover);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_pusher");
+            m_arr_tutor_displayed[Mover] = true;
+        }
+    }
+
+    public void showTutorPlain() {
+        if (!m_arr_tutor_displayed[Plain]) {
+            m_tutors.push(Plain);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_plain");
+            m_arr_tutor_displayed[Plain] = true;
+        }
+    }
+
+    public void showTutorMenuPause() {
+        if (!m_arr_tutor_displayed[MenuPause]) {
+            m_tutors.push(MenuUndo);
+            m_tutors.push(MenuPause);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_pause");
+            m_arr_tutor_displayed[MenuPause] = true;        
+            //printf("\ntutors %lu", m_tutors.size());
+        }
+    }
+
+    public void showTutorMenuUndo() {
+        if (!m_arr_tutor_displayed[MenuUndo]) {
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_undo");
+            m_arr_tutor_displayed[MenuUndo] = true;
+        }
+    }
+
+    public void showTutorMenuHint() {
+        if (!m_arr_tutor_displayed[MenuHint]) {
+            m_tutors.push(MenuSolvers);
+            m_tutors.push(MenuHint);
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_hint");
+            m_arr_tutor_displayed[MenuHint] = true;
+        }
+    }
+
+    public void showTutorMenuSolvers() {
+        if (!m_arr_tutor_displayed[MenuSolvers]) {
+            m_tutor_active = true;
+            m_tutor_alpha = 0;
+            m_tutor_state = TutorAppear;
+            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_solver");
+            m_arr_tutor_displayed[MenuSolvers] = true;
+        }
+    }
+
+    public void hideTutor() {
+        if (m_tutor_active && TutorDone == m_tutor_state) {
+            m_tutor_state = TutorDisappear;
+        }
+    }
+
+    public void setTextMotto(final String str) {
+        m_text_motto.init(str, true);
+	    m_motto_height = m_text_motto.GetHeight();
+    }
+
+    public void setTextLevel(final String str) {
+        char buf[32];
+        sprintf(buf, "LEVEL\n%s", str);    
+        m_text_level.Init(buf, true);
+    }
+
+    public void setTextMoves(const int moves_count) {
+        char buf[32];
+        sprintf(buf, "MOVES\n%d", moves_count);    
+        m_text_moves.Init(buf, true);
+    }
+
+    public void setTextStars(const int stars) {
+        char buf[32];
+        sprintf(buf, "STARS\n%d", stars);    
+        m_text_stars.Init(buf, true);
+    }
+
+    public void set1stHint() {
+	    m_text_hint.init("HINT\nTO\nBEGIN", true);
+	    m_hint_index = 1;
+    }
+
+    public void set2ndHint() {
+	    m_text_hint.init("HINT\nTO\nPATH", true);
+	    m_hint_index = 2;
+    }
+
+    public void setTextUndo(const int count) {            
+//        char str[32];
+//        sprintf(str, "UNDO\n%d", count);    
+//        m_text_undo.Init(str, true);
+    }
+
+    public void setTextSolver(const int count) {
+        char str[32];
+        sprintf(str, "SOLVERS\n%d", count);    
+        m_text_solver.Init(str, true);
+    }
+
+    public void showPrepareSolving(bool value, int moves_count) {
+        if (m_show_prepare_solving == value) {
+            return;
+        }
+    
+        if (true == value) {
+            m_show_prepare_solving = value;
+        }
+    
+        char str[32];
+        sprintf(str, "IN %d MOVES", moves_count);
+        
+        m_ar_text_center[0].init("THE SOLUTION", true);
+        m_ar_text_center[1].init(str, true);
+    
+        m_center_alpha = (value == true ? 0.0f : 1.0f);
+    
+        m_show_appear = value;
+    }
+
+    public void setupAppear() {
+	    m_state = AppearHUD;
+    
+	    m_icons_alpha = 0;
+        m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
+
+        m_pos_x_text_left = m_pos_x_text_left_start;
+        m_pos_x_text_right = m_pos_x_text_right_start;
+	    m_pos_y_motto = m_pos_y_motto_start;
+
+	    m_text_pause.setVisible(true);
+	    m_text_undo.setVisible(true);
+	    m_text_hint.setVisible(true);
+	    m_text_solver.setVisible(true);
+    	
+	    m_text_level.setVisible(true);
+	    m_text_stars.setVisible(true);
+	    m_text_moves.setVisible(true);
+	    m_text_motto.setVisible(true);
+    }
+
+    public void setupDisappear() {
+	    m_state = DisappearHUD;
+	
+	    m_icons_alpha = 255;
+        m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
+
+	    m_pos_x_text_left = m_pos_x_text_left_end;
+        m_pos_x_text_right = m_pos_x_text_right_end;
+        m_pos_y_motto = m_pos_y_motto_end;
+    }
+
+    public void showHint(int hint_type) {
+        float degree = 0.0f;
+    
+	    m_show_hint = true;
+	    m_hint_type = hint_type;
+	    m_hint_timeout = 2.0f;
+        m_t = 0.0f;
+        m_radius = 10.0f * engine->device_scale;
+    
+        m_start = new Vector2(0.0f, -40.0f * engine->device_scale);
+        m_end = new Vector2(0.0f, 40.0f * engine->device_scale);
+
+        switch (m_hint_type) {
+            case X_Plus:
+                degree = -120.0f;
+                m_start = engine->Rotate(m_start, degree);
+                m_end = engine->Rotate(m_end, degree);
+                break;
+            
+            case X_Minus:
+                degree = 60.0f;
+                m_start = engine->Rotate(m_start, degree);
+                m_end = engine->Rotate(m_end, degree);
+                break;
+            
+            case Y_Plus:
+                m_start = engine->Rotate(m_start, degree);
+                m_end = engine->Rotate(m_end, degree);
+                break;
+            
+            case Y_Minus:
+                degree = 180.0f;
+                m_start = engine->Rotate(m_start, degree);
+                m_end = engine->Rotate(m_end, degree);
+                break;
+            
+            case Z_Plus:
+                degree = 120.0f;
+                m_start = engine->Rotate(m_start, degree);
+                m_end = engine->Rotate(m_end, degree);
+                break;
+            
+            case Z_Minus:
+                degree = -60.0f;
+                m_start = engine->Rotate(m_start, degree);
+                m_end = engine->Rotate(m_end, degree);
+                break;
+            
+            default:
+                break;
+        }
+    }
+
+    public void init() {
+        m_tutor_active = false;
+    
+        m_pos_center = new Vector(engine->m_half_width, engine->m_half_height);
+    
+	    m_hint_index = 1;
+        m_show_prepare_solving = false;
+    
+        m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
+	
+        m_text_pause.init("PAUSE");
+        m_text_undo.init("UNDO\nLAST\nMOVE");
+        m_text_hint.init("HINT\nFIRST\nMOVE");
+    
+        char str[32];
+        sprintf(str, "SOLVERS\n%d", engine->GetSolverCount());
+    
+        m_text_solver.Init(str);
+    
+        m_text_level.init("LEVEL\nEASY-01");
+        m_text_stars.init("STARS\n0");
+        m_text_moves.init("MOVES\n0");
+        m_text_motto.init("MOTTO\n0\n0");
+    
+        float scale = 0.3f * engine->device_scale;
+        m_text_level.setScale(scale, scale);
+        m_text_stars.setScale(scale, scale);
+        m_text_moves.setScale(scale, scale);
+        m_text_motto.setScale(scale, scale);
+    
+        m_text_pause.setScale(scale, scale);
+        m_text_undo.setScale(scale, scale);
+        m_text_hint.setScale(scale, scale);
+        m_text_solver.setScale(scale, scale);
+    
+        m_ar_text_center[0].init("THE SOLUTION IS...");
+        m_ar_text_center[1].init("THE SOLUTION IS...");
+    
+        m_symbol_pause = Game.getSymbol(SymbolPause);
+        m_symbol_undo = Game.getSymbol(SymbolUndo);
+        m_symbol_hint = Game.getSymbol(SymbolQuestionmark);
+        m_symbol_solver = Game.getSymbol(SymbolSolver);
+        m_symbol_star = Game.getSymbol(SymbolStar);
+	    m_symbol_death = Game.getSymbol(SymbolDeath);
+    
+	    m_pos_x_text_left_start = -100.0f * Graphics.device_scale;
+	    m_pos_x_text_left_end = 5.0f * Graphics.device_scale;
+
+	    m_pos_y_motto_start = -10.0f * Graphics.device_scale;
+	    m_pos_y_motto_end = 30.0f * Graphics.device_scale;
+	
+        m_pos_x_text_right_start = Graphics.m_width + (75.0f * engine->device_scale);
+	    m_pos_x_text_right_end = Graphics.m_width - (6.0f * engine->device_scale);
+
+	    m_state = DoneHUD;
+	    m_show_hint = false;
+    }
+
+    public void update() {
+        if (m_tutor_active) {
+            switch(m_tutor_state) {
+                case TutorAppear:
+                    m_tutor_alpha += 10;
+            
+                    if (m_tutor_alpha > 255) {
+                        m_tutor_alpha = 255;
+                        m_tutor_state = TutorDone;
+                    }                
+                    break;
+        
+                case TutorDisappear:
+                    m_tutor_alpha -= 30;
+            
+                    if (m_tutor_alpha < 0) {
+                        //printf("\ntutors: %lu", m_tutors.size());
+                                        
+                        if (!m_tutors.empty()) {
+                            m_tutors.pop();
+                        }
+
+                        //printf("\ntutors: %lu", m_tutors.size());
+                    
+                        if (!m_tutors.empty()) {
+                            int tutor_id = m_tutors.top();
+                        
+                            switch(tutor_id) {
+                                case Goal: showTutorGoal(); break;
+                                case MenuUndo: showTutorMenuUndo(); break;                                
+                                case MenuHint: showTutorMenuHint(); break;                                
+                                case MenuSolvers: showTutorMenuSolvers(); break;
+                            }
+                        } else {
+                            m_tutor_active = false;
+                            m_tutor_state = TutorDone;
+                        }
+                    }                
+                    break;
+                
+                case TutorDone:
+                    break;
+            }
+        }
+    
+	    if (DisappearHUD == m_state) {
+		    const int icon_alpha_speed = -40;
+		    const float text_anim_speed = -10.0f * engine->device_scale;
+            const float text_anim_speed_motto = -10.0f * engine->device_scale;
+		
+		    m_icons_alpha += icon_alpha_speed;
+
+		    int done_counter = 0;
+		
+		    if (m_icons_alpha < 0) {
+			    m_icons_alpha = 0;
+			    ++done_counter;
+		    }
+
+		    m_pos_x_text_left += text_anim_speed;
+		
+		    if (m_pos_x_text_left < m_pos_x_text_left_start) {
+			    m_pos_x_text_left = m_pos_x_text_left_start;
+			    ++done_counter;
+		    }
+		
+		    m_pos_y_motto += text_anim_speed_motto;
+		
+		    if (m_pos_y_motto < m_pos_y_motto_start) {
+			    m_pos_y_motto = m_pos_y_motto_start;
+			    ++done_counter;
+		    }
+		
+		    m_pos_x_text_right -= text_anim_speed;
+		
+		    if (m_pos_x_text_right > m_pos_x_text_right_start) {
+			    m_pos_x_text_right = m_pos_x_text_right_start;
+			    ++done_counter;
+		    }        
+		
+		    if (4 == done_counter) {
+			    m_state = DoneHUD;		
+            }
+	    }
+
+	    if (AppearHUD == m_state) {
+		    int done_counter = 0;
+		
+            const int icon_alpha_speed = 20;
+		    const float text_anim_speed = 8.0f * engine->device_scale;
+            const float text_anim_speed_motto = 3.0f * engine->device_scale;
+				
+            m_icons_alpha += icon_alpha_speed;
+		
+		    if (m_icons_alpha > 255) {
+			    m_icons_alpha = 255;
+			    ++done_counter;
+		    }
+        
+		    m_pos_x_text_left += text_anim_speed;
+		
+		    if (m_pos_x_text_left > m_pos_x_text_left_end) {
+			    m_pos_x_text_left = m_pos_x_text_left_end;
+			    ++done_counter;
+		    }
+						
+		    m_pos_y_motto += text_anim_speed_motto; 
+		
+		    if (m_pos_y_motto > m_pos_y_motto_end) {
+			    m_pos_y_motto = m_pos_y_motto_end;
+			    ++done_counter;
+		    }
+		
+		    m_pos_x_text_right -= text_anim_speed;
+		
+		    if (m_pos_x_text_right < m_pos_x_text_right_end) {
+			    m_pos_x_text_right = m_pos_x_text_right_end;
+			    ++done_counter;
+		    }
+		
+		    if (4 == done_counter) {
+			    m_state = DoneHUD;
+            }
+	    }
+	
+	    if (m_show_hint) {
+            m_t += 0.03f;
+        
+            if (m_t > 1.0f) {
+                m_t = 1.0f;
+			    m_show_hint = false;
+                m_hint_timeout = 0.0f;
+		    }
+	    }
+    
+        if (m_show_prepare_solving) {
+            if (m_show_appear) {
+                m_center_alpha += 0.05f;
+            
+                if (m_center_alpha >= 1.0f) {
+                    m_center_alpha = 1.0f;
+                }
+            } else {
+                m_center_alpha -= 0.1f;
+            
+                if (m_center_alpha <= 0.0f) {
+                    m_center_alpha = 0.0f;
+                    m_show_prepare_solving = false;
+                }
+            }
+        }
+    }
+
+    public void renderForPicking() {
+	    float solver_quad_y = Graphics.m_height * 0.09f;
+	    float hint_quad_y   = Graphics.m_height * 0.37f;
+        float undo_quad_y   = Graphics.m_height * 0.65f;
+	    float pause_quad_y  = Graphics.m_height * 0.93f;
+
+	    solver_quad_y -= 0.1f * Graphics.m_height;
+	    hint_quad_y   -= 0.1f * Graphics.m_height;
+        undo_quad_y   -= 0.1f * Graphics.m_height;
+	    pause_quad_y  -= 0.1f * Graphics.m_height;
+    
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+
+  	    Graphics.setStreamSourceFloat2D();
+    
+        TexCoordsQuad tcoords;
+        tcoords.tx0 = new Vector2(0.0f, 0.0f);
+        tcoords.tx1 = new Vector2(0.0f, 0.0f);
+        tcoords.tx2 = new Vector2(0.0f, 0.0f);
+        tcoords.tx3 = new Vector2(0.0f, 0.0f);
+
+	    Color color_pause = new Color(0, 0, 200, 255);
+        Color color_undo = new Color(0, 0, 150, 255);
+        Color color_hint = new Color(0, 0, 100, 255);
+	    Color color_solver = new Color(0, 0, 50, 255);
+    
+        float x = 5.0f * Graphics.device_scale;
+        float size = 60.0f * Graphics.device_scale;
+    
+        Graphics.prepare();
+        Graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
+        Graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
+        Graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
+        Graphics.addQuad(size, x, solver_quad_y, tcoords, color_solver);
+	    Graphics.renderTriangles();
+    }
+
+    public void render() {
+//    RenderForPicking();
+//    return;
+    
+        float scale;
+	    float pause_quad_y  = Graphics.m_height * 0.91f;
+        float undo_quad_y   = Graphics.m_height * 0.67f;
+	    float hint_quad_y   = Graphics.m_height * 0.38f;
+	    float solver_quad_y = Graphics.m_height * 0.1f;
+
+        Color color_icon = new Color(139, 0, 0, m_icons_alpha);
+        Color color_text = new Color(225,10,50,200);//220, 20, 60, 240);
+        Color color_hilite = new Color(255, 228, 225, m_icons_alpha);
+        Color color_shadow = new Color(0, 0, 0, m_icons_alpha / 2);
+    
+        float shadow_offset_x = 2.5f * Graphics.device_scale;
+        float shadow_offset_y = 2.5f * Graphics.device_scale;
+    
+        glEnable(GL_BLEND);
+        glDisable(GL_LIGHTING);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+    
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_clear);
+    
+        m_text_display.init();
+        
+        if (m_text_level.isVisible()) {
+            m_text_level.emitt(m_pos_x_text_right - shadow_offset_x, (pause_quad_y + 9.0f * Graphics.device_scale) - shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_level.getVertexCount();
+        
+            m_text_level.emitt(m_pos_x_text_right, pause_quad_y + 9.0f * Graphics.device_scale, color_text);
+            m_text_display.m_vertex_count += m_text_level.getVertexCount();
+        }
+    
+        if (m_text_stars.isVisible()) {
+            m_text_stars.emitt(m_pos_x_text_right - shadow_offset_x, (undo_quad_y - 12.5f * engine->device_scale) - shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_stars.getVertexCount();
+        
+            m_text_stars.emitt(m_pos_x_text_right, undo_quad_y - 12.5f * engine->device_scale, color_text);
+            m_text_display.m_vertex_count += m_text_stars.getVertexCount();
+        }
+    
+        if (m_text_moves.isVisible()) {
+            m_text_moves.emitt(m_pos_x_text_right - shadow_offset_x, (hint_quad_y - 10.0f * Graphics.device_scale) + shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_moves.getVertexCount();
+
+            m_text_moves.emitt(m_pos_x_text_right, hint_quad_y - 10.0f * Graphics.device_scale, color_text);
+            m_text_display.m_vertex_count += m_text_moves.getVertexCount();
+        }
+    
+        if (m_text_motto.isVisible()) {
+            m_text_motto.emitt((engine->m_width - 5.0f * engine->device_scale) - shadow_offset_x, m_pos_y_motto + shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_motto.GetVertexCount();
+    
+            m_text_motto.Emitt(engine->m_width - 5.0f * engine->device_scale, m_pos_y_motto, color_text);
+            m_text_display.m_vertex_count += m_text_motto.GetVertexCount();
+        }
+    
+        float yOffset = 14.0f * Graphics.device_scale;
+        
+        if (m_text_pause.isVisible()) {
+            m_text_pause.emitt(m_pos_x_text_left + shadow_offset_x, pause_quad_y - yOffset - shadow_offset_y,  color_shadow);
+            m_text_display.m_vertex_count += m_text_pause.getVertexCount();
+
+            m_text_pause.Emitt(m_pos_x_text_left, pause_quad_y - yOffset,  m_hilite_pause ? color_hilite : color_text);
+            m_text_display.m_vertex_count += m_text_pause.getVertexCount();
+        }
+        
+        if (m_text_undo.isVisible()) {
+            m_text_undo.emitt(m_pos_x_text_left + shadow_offset_x, undo_quad_y - yOffset - shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_undo.GetVertexCount();
+
+            m_text_undo.emitt(m_pos_x_text_left, undo_quad_y - yOffset, m_hilite_undo ? color_hilite : color_text);
+            m_text_display.m_vertex_count += m_text_undo.getVertexCount();
+        }
+        
+        if (m_text_hint.isVisible()) {
+            m_text_hint.emitt(m_pos_x_text_left + shadow_offset_x, hint_quad_y - yOffset + shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_hint.getVertexCount();
+
+            m_text_hint.emitt(m_pos_x_text_left, hint_quad_y - yOffset, m_hilite_hint ? color_hilite : color_text);
+            m_text_display.m_vertex_count += m_text_hint.getVertexCount();
+        }
+        
+        if (m_text_solver.isVisible()) {
+            m_text_solver.emitt(m_pos_x_text_left + shadow_offset_x, solver_quad_y - yOffset + shadow_offset_y, color_shadow);
+            m_text_display.m_vertex_count += m_text_solver.getVertexCount();
+
+            m_text_solver.emitt(m_pos_x_text_left, solver_quad_y - yOffset, m_hilite_solver ? color_hilite : color_text);
+            m_text_display.m_vertex_count += m_text_solver.getVertexCount();
+        }
+    
+        if (m_show_prepare_solving) {
+            int a = m_center_alpha * 255;
+        
+            glDisable(GL_TEXTURE_2D);
+            Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
+        
+            Graphics.setStreamSourceFloat2DNoTexture();
+            Graphics.prepare();
+            Graphics.addQuad(0.0f, Graphics.m_half_height - 20.0f * Graphics.device_scale, Graphics.m_width, 75.0f * Graphics.device_scale, color_bg);
+            Graphics.renderTriangles();
+        
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
+        
+            scale = 0.75f * Graphics.device_scale;
+            m_ar_text_center[0].setScale(scale, scale);
+            m_ar_text_center[1].setScale(scale, scale);
+        
+            //printf("\na: %d", a);
+        
+		    Color color = new Color(0, 0, 0, a);
+        
+            m_text_display.init();
+            m_ar_text_center[0].emitt(engine->m_half_width - m_ar_text_center[0].getHalfWidth(), Graphics.m_half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
+        
+            m_ar_text_center[1].emitt(engine->m_half_width - m_ar_text_center[1].getHalfWidth(), Graphics.m_half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
+
+            glPushMatrix();
+                glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
+                m_text_display.render();
+            glPopMatrix();
+    
+		    color = new Color(255, 255, 0, a);
+            
+            m_text_display.init();
+            m_ar_text_center[0].emitt(Graphics.m_half_width - m_ar_text_center[0].getHalfWidth(), Graphics.m_half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
+            
+            m_ar_text_center[1].emitt(Graphics.m_half_width - m_ar_text_center[1].getHalfWidth(), Graphics.m_half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
+        }
+    
+        m_text_display.render();
+    
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
+
+        final float ics = 25.0f * Graphics.device_scale;
+    
+        Graphics.prepare();
+
+        TexCoordsQuad tcoords;
+        tcoords.tx0 = m_symbol_pause.tx_lo_left;
+        tcoords.tx1 = m_symbol_pause.tx_lo_right;
+        tcoords.tx2 = m_symbol_pause.tx_up_right;
+        tcoords.tx3 = m_symbol_pause.tx_up_left;
+        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, color_shadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    pause_quad_y,                   tcoords, m_hilite_pause ? color_hilite : color_icon);
+    
+        tcoords.tx0 = m_symbol_undo->tx_lo_left;
+        tcoords.tx1 = m_symbol_undo->tx_lo_right;
+        tcoords.tx2 = m_symbol_undo->tx_up_right;
+        tcoords.tx3 = m_symbol_undo->tx_up_left;
+        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    undo_quad_y,                    tcoords, m_hilite_undo ? color_hilite : color_icon);
+	
+        tcoords.tx0 = m_symbol_hint->tx_lo_left;
+        tcoords.tx1 = m_symbol_hint->tx_lo_right;
+        tcoords.tx2 = m_symbol_hint->tx_up_right;
+        tcoords.tx3 = m_symbol_hint->tx_up_left;
+        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
+    
+        tcoords.tx0 = m_symbol_solver->tx_lo_left;
+        tcoords.tx1 = m_symbol_solver->tx_lo_right;
+        tcoords.tx2 = m_symbol_solver->tx_up_right;
+        tcoords.tx3 = m_symbol_solver->tx_up_left;
+        cRenderer::AddQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
+        cRenderer::AddQuad(ics, 5.0f * Graphics.device_scale,                    solver_quad_y,                   tcoords, m_hilite_solver ? color_hilite : color_icon);
+
+        tcoords.tx0 = m_symbol_star->tx_lo_left;
+        tcoords.tx1 = m_symbol_star->tx_lo_right;
+        tcoords.tx2 = m_symbol_star->tx_up_right;
+        tcoords.tx3 = m_symbol_star->tx_up_left;
+        cRenderer::AddQuad(ics, Graphics.m_width - 25.0f * Graphics.device_scale - shadow_offset_x,   undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
+        cRenderer::AddQuad(ics, Graphics.m_width - 25.0f * Graphics.device_scale,                     undo_quad_y,                    tcoords, color_icon);
+    
+	    Graphics.setStreamSourceFloat2D();
+	    Graphics.renderTriangles();
+
+        if (m_tutor_active) {
+            //if (1 == m_tutor_index)
+            {
+                glBindTexture(GL_TEXTURE_2D, m_tutor_texture_id);
+            
+                tcoords.tx0 = new Vector2(0,1);
+                tcoords.tx1 = new Vector2(1,1);
+                tcoords.tx2 = new Vector2(1,0);
+                tcoords.tx3 = new Vector2(0,0);
+            
+                Color col = new Color(255, 255, 255, m_tutor_alpha);
+                float sz = 160.0f * Graphics.device_scale;
+                float x = Graphics.m_half_width - sz / 2.0f;
+                float y = Graphics.m_half_height - sz / 2.0f;
+            
+                Graphics.prepare();
+                Graphics.addQuad(sz, x, y, tcoords, col);
+                Graphics.renderTriangles();
+            }
+        }
+    
+        if (DeadAnim == Game.level.state) {
+            Graphics.prepare();
+        
+		    Color color = new Color(200, 0, 0, engine->m_level->dead_alpha);
+		
+            tcoords.tx0 = m_symbol_death->tx_lo_left;
+            tcoords.tx1 = m_symbol_death->tx_lo_right;
+            tcoords.tx2 = m_symbol_death->tx_up_right;
+            tcoords.tx3 = m_symbol_death->tx_up_left;
+        
+            float size = Game.level.dead_size * Graphics.device_scale;
+            Graphics.addQuad(size, Graphics.m_half_width - (size / 2.0f), Graphics.m_half_height - (size / 2.0f), tcoords, color);
+        
+            Graphics.setStreamSourceFloat2D();
+            Graphics.renderTriangles();
+        }
+
+        glDisable(GL_TEXTURE_2D);
+
+	    if (m_show_hint) {
+            Vector2 dir = new Vector2(LERP(m_start.x, m_end.x, m_t), LERP(m_start.y, m_end.y, m_t));
+
+		    const GLfloat verts[] = {    
+			    m_pos_center.x + m_start.x, m_pos_center.y + m_start.y,
+			    m_pos_center.x + m_end.x,  m_pos_center.y + m_end.y,
+		    };
+		
+		    const GLubyte colors[] = {
+			    255,  255,  0, 255,
+			    255,  255,  0, 255,
+		    };
+		
+		    glVertexPointer(2, GL_FLOAT, 0, verts);
+		    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+		    glLineWidth(2.0f * Graphics.device_scale);
+            glEnable(GL_LINE_SMOOTH);
+		    glDrawArrays(GL_LINES, 0, 2);
+            glDisable(GL_LINE_SMOOTH);
+            glLineWidth(1.0f);
+
+            Color color_circle = new Color(255, 255, 0, 255);
+            Graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.5f, color_circle);
+
+            color_circle = new Color(255, 0, 0, 255);
+            Graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.25f, color_circle);
+        }
+        
+        glDisable(GL_BLEND);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+
+        Graphics.setProjection3D();
+    }
+    
+}
+
+
+    
+
+
+
+    public void setHilitePause(bool hilite) { 
+        m_hilite_pause = hilite; 
+    }
+    
+    public void setHiliteUndo(bool hilite) { 
+        m_hilite_undo = hilite; 
+    }
+    
+    public void setHiliteHint(bool hilite) { 
+        m_hilite_hint = hilite; 
+    }
+    
+    public void setHiliteSolver(bool hilite) { 
+        m_hilite_solver = hilite; 
+    }
+    
+    public boolean isAnythingHilited() { 
+        return (m_hilite_pause || m_hilite_undo || m_hilite_hint || m_hilite_solver); 
+    }
+    
+    public boolean isTutorDisplaying() { 
+        return m_tutor_active; 
+    }    
+    
+    public HUDStateEnum GetState() { 
+        return m_state; 
+    }
+        
+    public bool GetShowHint() { 
+        return m_show_hint; 
+    }        
+}
