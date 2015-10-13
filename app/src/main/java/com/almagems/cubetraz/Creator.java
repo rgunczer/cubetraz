@@ -1,6 +1,11 @@
 package com.almagems.cubetraz;
 
 
+import java.util.ArrayList;
+
+import static com.almagems.cubetraz.Constants.*;
+
+
 public final class Creator
 {	
     public static Menu _pHost;
@@ -20,7 +25,7 @@ public final class Creator
 		m_list_cubefonts_pool.add(cubeFont);
 	}
 
-    public String getLevelMotto(DifficultyEnum difficulty, int level_number) {
+    public static String getLevelMotto(DifficultyEnum difficulty, int level_number) {
 	    final String[] aeasy = {
 		    "00.dummy",
 		    "01.to get to the key\nsimply swipe once\nto the right direction",
@@ -149,7 +154,7 @@ public final class Creator
 		    "60.last\nnormal level\nhope you like it"
 	    };
 
-        final String[] ahard[] = {
+        final String[] ahard = {
 		    "00.dummy",
 		    "01.cubes on the wall\nswipe several times\nto the goal(key)",
 		    "02.really!?\nis this a\nhard level",
@@ -221,10 +226,10 @@ public final class Creator
         }
 	
         str.toUpperCase();	
-	    return st;
+	    return str;
     }
 
-    public void fillPools() {
+    public static void fillPools() {
         // cubefont
 	    list<cCubeFont*>::iterator it;
 	    for (it = m_list_cubefonts_used.begin(); it != m_list_cubefonts_used.end(); ++it) {
@@ -240,7 +245,7 @@ public final class Creator
 	    m_list_levelcubes_used.clear();
     }
 
-    public LevelCube getLevelCubeFromPool() {
+    public static LevelCube getLevelCubeFromPool() {
         LevelCube cube;
     
         if (m_list_levelcubes_pool.isEmpty()) {
@@ -254,18 +259,18 @@ public final class Creator
         return cube;
     }
 
-    public CubeFont getCubeFontFromPool() {
+    public static CubeFont getCubeFontFromPool() {
         CubeFont cubeFont;
     
         if (m_list_cubefonts_pool.isEmpty()) {
-            cubeFont = new cCubeFont();
+            cubeFont = new CubeFont();
         } else {
             cubeFont = m_list_cubefonts_pool.get( m_list_cubefonts_pool.size() - 1 );
             m_list_cubefonts_pool.remove(cubeFont);
         }
     	
-	    m_list_cubefonts_used.push_back(pCubeFont);    
-        return pCubeFont;
+	    m_list_cubefonts_used.add(cubeFont);
+        return cubeFont;
     }
 
 //void cCreator::CreateStaticTexts()
@@ -303,7 +308,7 @@ public final class Creator
 //  	_pHost->m_cubefont_restore = pCubeFont;
 //}
 
-    public void createTextsLevelPausedFace(Level level) {
+    public static void createTextsLevelPausedFace(Level level) {
 	    fillPools();
 	
         level.m_list_fonts.clear();
@@ -313,24 +318,24 @@ public final class Creator
         pCubeFont = getCubeFontFromPool();
         pCubeFont.init('R', new CubePos(0,5,1));
         pCubeFont.pos.x -= FONT_OVERLAY_OFFSET;
-        pLevel.m_cubefont_up = pCubeFont;
+        level.m_cubefont_up = pCubeFont;
     
         pCubeFont = getCubeFontFromPool();
         pCubeFont.init('R', new CubePos(0,3,1));
         pCubeFont.pos.x -= FONT_OVERLAY_OFFSET;
-        pLevel.m_cubefont_mid = pCubeFont;
+        level.m_cubefont_mid = pCubeFont;
     
         pCubeFont = getCubeFontFromPool();
         pCubeFont.init('Q', new CubePos(0,1,1));
         pCubeFont.pos.x -= FONT_OVERLAY_OFFSET;
-        pLevel.m_cubefont_low = pCubeFont;
+        level.m_cubefont_low = pCubeFont;
     
         createCubeFonts(new CubePos(1, 5, 1), new CubePos(0, 0, 1), "RESUME", level.m_list_fonts, new Vector(-FONT_OVERLAY_OFFSET, 0.0f, 0.0f));
         createCubeFonts(new CubePos(1, 3, 1), new CubePos(0, 0, 1), "RESET", level.m_list_fonts, new Vector(-FONT_OVERLAY_OFFSET, 0.0f, 0.0f));
         createCubeFonts(new CubePos(1, 1, 1), new CubePos(0, 0, 1), "QUIT", level.m_list_fonts, new Vector(FONT_OVERLAY_OFFSET, 0.0f, 0.0f));
     }
  
-    public void createTextsLevelCompletedFace(Level level, CompletedFaceNextActionEnum type) {
+    public static void createTextsLevelCompletedFace(Level level, CompletedFaceNextActionEnum type) {
 	    fillPools();
 	
         level.m_list_fonts.clear();
@@ -382,7 +387,7 @@ public final class Creator
         createCubeFonts(new CubePos(7, 1, 1), new CubePos(-1, 0, 0), "QUIT", level.m_list_fonts, new Vector(0.0f, 0.0f, FONT_OVERLAY_OFFSET));
     }
 
-    public void createCubeFonts(CubePos from, CubePos step, const char* text, list<cCubeFont*>& list, vec3 offset) {
+    public static void createCubeFonts(CubePos from, CubePos step, const char* text, list<cCubeFont*>& list, vec3 offset) {
         char ch;
         int len = (int)strlen(text);
  
@@ -441,7 +446,7 @@ public final class Creator
 //    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
 //}
 
-    public void createCubes() {
+    public static void createCubes() {
         Cube cube;
     
         for(int x = 0; x < MAX_CUBE_COUNT; ++x) {        
@@ -460,72 +465,72 @@ public final class Creator
 				    cube.reset();
 				
                     if ( (x > 1 && x < MAX_CUBE_COUNT - 2) && (y > 1 && y < MAX_CUBE_COUNT - 2) && (z > 1 && z < MAX_CUBE_COUNT - 2) ) {
-                        cube.type = CubeIsInvisible;
+                        cube.type = CubeTypeEnum.CubeIsInvisible;
                     } else {
-                        cube.type = CubeIsVisibleAndObstacle;
+                        cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
                     }
                 }
             }
         }
     }
 
-    public void createMovingCubesForMenu() {    
-        MenuCube* menuCube;
+    public static void createMovingCubesForMenu() {
+        MenuCube menuCube;
     
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 5, 8), new Color(255, 0, 0, 255));
         _pHost.m_pMenuCubePlay = menuCube;
     
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 3, 8), new Color(200, 0, 0, 255));
-        _pHost.m_pMenuCubeOptions = pMenuCube;
+        _pHost.m_pMenuCubeOptions = menuCube;
    
-        pMenuCube = new cMenuCube();
-        pMenuCube->Init(new CubePos(7, 1, 8), new Color(100, 0, 0, 255));
-        _pHost.m_pMenuCubeStore = pMenuCube;
+        menuCube = new MenuCube();
+        menuCube.init(new CubePos(7, 1, 8), new Color(100, 0, 0, 255));
+        _pHost.m_pMenuCubeStore = menuCube;
 
     
         // option cubes    
-	    menuCube = new cMenuCube();
+	    menuCube = new MenuCube();
 	    menuCube.init(new CubePos(7,8,3), new Color(255, 255, 255, 255));
-        _pHost.m_arOptionsCubes[0] = pMenuCube;
+        _pHost.m_arOptionsCubes[0] = menuCube;
     
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
 	    menuCube.init(new CubePos(1,8,3), new Color(254, 255, 255, 255));
         _pHost.m_arOptionsCubes[1] = menuCube;
     
-        menuCube = new cMenuCube();
-	    menuCube->Init(new CubePos(7,8,6), new Color(253, 255, 255, 255));
+        menuCube = new MenuCube();
+	    menuCube.init(new CubePos(7,8,6), new Color(253, 255, 255, 255));
         _pHost.m_arOptionsCubes[2] = menuCube;
     
-        pMenuCube = new cMenuCube();
-	    menuCube->Init(new CubePos(1,8,6), new Color(252, 255, 255, 255));
+        pMenuCube = new MenuCube();
+	    menuCube.init(new CubePos(1, 8, 6), new Color(252, 255, 255, 255));
         _pHost.m_arOptionsCubes[3] = menuCube;
     
     
         // store cubes
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
         menuCube.init(new CubePos(1,0,6), new Color(40, 255, 255, 255));
         menuCube.setHiliteOffset(new CubePos(0,1,0));
         _pHost.m_pStoreCubeNoAds = menuCube;
     
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
         menuCube.init(new CubePos(1,0,4), new Color(50, 255, 255, 255));
         menuCube.setHiliteOffset(new CubePos(0,1,0));
         _pHost.m_pStoreCubeSolvers = menuCube;
     
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
         menuCube.init(new CubePos(1,0,2), new Color(60, 255, 255, 255));
         menuCube.setHiliteOffset(new CubePos(0,1,0));
         _pHost.m_pStoreCubeRestore = menuCube;
 
         // credits
-        menuCube = new cMenuCube();
+        menuCube = new MenuCube();
         menuCube.init(new CubePos(8,0,8), new Color(1,100,100,255));
         _pHost.m_pCubeCredits = menuCube;
     }
 
-    public void addLevelCube(int level_number, CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int x, int y, int z) {
+    public static void addLevelCube(int level_number, int face_type, CubeFaceNamesEnum face_id, int x, int y, int z) {
         LevelCube cube = getLevelCubeFromPool();
 		
         cube.init(level_number, face_type, face_id, new CubePos(x, y, z));
@@ -562,7 +567,7 @@ public final class Creator
         Game.ar_cubefacedata[face_type].lst_level_cubes.add(cube);
     }
 
-	public void addCubeFont(const char ch, CubePos cube_pos, CubeFaceTypesEnum face_type) {
+	public static void addCubeFont(final char ch, CubePos cube_pos, int face_type) {
 		CubeFont cubeFont = getCubeFontFromPool();
 		Cube cube = Game.cubes[cube_pos.x][cube_pos.y][cube_pos.z];
 
@@ -570,7 +575,7 @@ public final class Creator
 		cube.ar_fonts[face_type] = cubeFont;
 	}
 
-	public void addCubeFontSymbol(const SymbolEnum symbol_id, CubePos cube_pos, CubeFaceTypesEnum face_type) {
+	public static void addCubeFontSymbol(final int symbol_id, CubePos cube_pos, int face_type) {
 		CubeFont cubeFont = getCubeFontFromPool();
 		Cube cube = Game.cubes[cube_pos.x][cube_pos.y][cube_pos.z];
 		

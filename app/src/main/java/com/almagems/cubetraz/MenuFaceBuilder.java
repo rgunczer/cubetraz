@@ -1,18 +1,18 @@
 package com.almagems.cubetraz;
 
 
-#define FACE_SIZE MAX_CUBE_COUNT * MAX_CUBE_COUNT 
+import static com.almagems.cubetraz.Constants.*;
 
-public final class MenuFaceBuilder
-{	
-	private static final FaceTransformsEnum transforms[MAX_FACE_TRANSFORM_COUNT];
+
+public final class MenuFaceBuilder {
+
+	private static final FaceTransformsEnum[] transforms = new FaceTransformsEnum[MAX_FACE_TRANSFORM_COUNT];
 	
     // ctor
     private MenuFaceBuilder() {
     }
-    
-//    static void DumpFace(char* ar);
 
+/*
 	template<class T>
 	static void DoTransforms(T a[])
 	{
@@ -150,267 +150,189 @@ public final class MenuFaceBuilder
 		for (int i = 0; i < MAX_CUBE_COUNT * MAX_CUBE_COUNT; ++i)
 			a[i] = tmp[i];
 	}
+*/
 
-    static void SetupFaceX(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id);
-    static void SetupFaceY(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id);
-    static void SetupFaceZ(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id);
+    public static void resetTransforms() {
+	    for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i) {
+            transforms[i] = FaceTransformsEnum.NoTransform;
+        }
+    }
 
-    static void SetupFontFaceX(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int x);
-    static void SetupFontFaceY(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int y);
-    static void SetupFontFaceZ(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int z);
+    public static void copyTransforms(FaceTransformsEnum trans[]) {
+	    for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i) {
+            transforms[i] = trans[i];
+        }
+    }
+
+    public static void addTransform(FaceTransformsEnum type, int count) {
+	    for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i) {
+		    if (FaceTransformsEnum.NoTransform == transforms[i]) {
+                for (int j = i; j < i + count; ++j) {
+                    transforms[j] = type;
+                }
+                return;
+            }
+		}
+	}
+
+    public static void setupFaceX(final char a[], int face_type, CubeFaceNamesEnum face_id) {
+	    int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+        int counter = 0;
+        char ch;
+	    Cube cube;
 	
-	static void SetupFontFaceSymbolX(const int a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int x);
-	static void SetupFontFaceSymbolY(const int a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int y);
-	static void SetupFontFaceSymbolZ(const int a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int z);
+	    for (int y = MAX_CUBE_COUNT - 1; y > -1; --y) {
+		    for (int z = MAX_CUBE_COUNT - 1; z > -1; --z) {
+			    cube = Game.cubes[x][y][z];
+			    ch = a[counter];
+			
+			    Game.setCubeTypeOnFace(cube, ch, face_type, face_id);
+			    ++counter;
+		    }
+	    }
+    }
+
+    public static void setupFaceY(final char a[], int face_type, CubeFaceNamesEnum face_id) {
+	    int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+        int counter = 0;
+        char ch;
+	    Cube cube;
+    
+	    for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+		    for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+			    cube = Game.cubes[x][y][z];
+			    ch = a[counter];
+			
+			    Game.setCubeTypeOnFace(cube, ch, face_type, face_id);
+			    ++counter;
+		    }
+	    }
+    }
+
+    public static void setupFaceZ(final char a[], int face_type, CubeFaceNamesEnum face_id) {
+	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+        int counter = 0;
+        char ch;
+	    Cube cube;
+    
+	    for (int y = MAX_CUBE_COUNT - 1; y > -1; --y) {
+		    for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+			    cube = Game.cubes[x][y][z];
+			    ch = a[counter];
+			
+			    Game.setCubeTypeOnFace(cube, ch, face_type, face_id);
+			    ++counter;
+		    }
+	    }
+    }
+
+    public static void setupFontFaceX(final char a[], int face_type, CubeFaceNamesEnum face_id, int x) {
+        int counter = 0;
+        char ch;
+	    Cube cube;
 	
-	static void GetFaceHelpText(CubeFaceNamesEnum face_id, char* a);
-	static void GetFaceText(CubeFaceNamesEnum face_id, char* a);
-	static void GetFaceTitle(CubeFaceNamesEnum face_id, char* a);
-	static void GetFace(CubeFaceNamesEnum face_id, char* a);
-	static void GetFaceSymbol(CubeFaceNamesEnum face_id, int* a);
-	static void GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a);
-
-
-
-FaceTransformsEnum cMenuFaceBuilder::transforms[MAX_FACE_TRANSFORM_COUNT];
-
-
-#pragma mark - ResetTransforms
-
-void cMenuFaceBuilder::ResetTransforms()
-{
-	for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i)
-		transforms[i] = NoTransform;
-}
-
-#pragma mark - CopyTransforms
-
-void cMenuFaceBuilder::CopyTransforms(FaceTransformsEnum trans[MAX_FACE_TRANSFORM_COUNT])
-{
-	for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i)
-		transforms[i] = trans[i];
-}
-
-#pragma mark - AddTransfrorm
-
-void cMenuFaceBuilder::AddTransform(FaceTransformsEnum type, int count)
-{
-	for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i)
-	{
-		if (NoTransform == transforms[i])
-		{
-			for (int j = i; j < i + count; ++j)
-				transforms[j] = type;
+	    for (int y = MAX_CUBE_COUNT - 1; y > -1; --y) {
+		    for (int z = MAX_CUBE_COUNT - 1; z > -1; --z) {
+			    cube = Game.cubes[x][y][z];
+			    ch = a[counter];
 			
-			return;
-		}
-	}
-}
+			    if (' ' != ch && 'x' != ch && 'o' != ch) {
+				    Creator.addCubeFont(ch, new CubePos(x,y,z), face_type);
+			    }
+			    ++counter;
+		    }
+	    }
+    }
 
-#pragma mark - SetupFace
+    public static void setupFontFaceY(final char a[], int face_type, CubeFaceNamesEnum face_id, int y) {
+        int counter = 0;
+        char ch;
+	    Cube cube;
+    
+	    for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+		    for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+			    cube = Game.cubes[x][y][z];
+			    ch = a[counter];
+			
+			    if (' ' != ch && 'x' != ch && 'o' != ch) {
+				    Creator.addCubeFont(ch, new CubePos(x,y,z), face_type);
+			    }
+			    ++counter;
+		    }
+	    }
+    }
 
-void cMenuFaceBuilder::SetupFaceX(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id)
-{
-	int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-    int counter = 0;
-    char ch;
-	cCube* pCube;
+    public static void setupFontFaceZ(final char a[], int face_type, CubeFaceNamesEnum face_id, int z) {
+        int counter = 0;
+        char ch;
+	    Cube cube;
+    
+	    for (int y = MAX_CUBE_COUNT - 1; y > -1; --y) {
+		    for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+			    cube = Game.cubes[x][y][z];
+			    ch = a[counter];
 	
-	for (int y = MAX_CUBE_COUNT - 1; y > -1; --y)
-	{
-		for (int z = MAX_CUBE_COUNT - 1; z > -1; --z)
-		{
-			pCube = &engine->cubes[x][y][z];
-			ch = a[counter];
-			
-			engine->SetCubeTypeOnFace(pCube, ch, face_type, face_id);
-			++counter;
-		}
-	}
-}
+			    if (' ' != ch && 'x' != ch && 'o' != ch) {
+				    Creator::AddCubeFont(ch, CubePos(x,y,z), face_type);
+			    }
+			    ++counter;
+		    }
+	    }
+    }
 
-void cMenuFaceBuilder::SetupFaceY(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id)
-{
-	int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-    int counter = 0;
-    char ch;
-	cCube* pCube;
-    
-	for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-	{
-		for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-		{
-			pCube = &engine->cubes[x][y][z];
-			ch = a[counter];
-			
-			engine->SetCubeTypeOnFace(pCube, ch, face_type, face_id);
-			++counter;
-		}
-	}
-}
-
-void cMenuFaceBuilder::SetupFaceZ(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id)
-{
-	int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
-    int counter = 0;
-    char ch;
-	cCube* pCube;
-    
-	for (int y = MAX_CUBE_COUNT - 1; y > -1; --y)
-	{
-		for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-		{
-			pCube = &engine->cubes[x][y][z];
-			ch = a[counter];
-			
-			engine->SetCubeTypeOnFace(pCube, ch, face_type, face_id);
-			++counter;
-		}
-	}
-}
-
-#pragma mark - SetupFontFace
-
-void cMenuFaceBuilder::SetupFontFaceX(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int x)
-{
-    int counter = 0;
-    char ch;
-	cCube* pCube;
+    public static void setupFontFaceSymbolX(final int a[], int face_type, CubeFaceNamesEnum face_id, int x) {
+        int counter = 0;
+        int symbol_id;
+	    Cube cube;
 	
-	for (int y = MAX_CUBE_COUNT - 1; y > -1; --y)
-	{
-		for (int z = MAX_CUBE_COUNT - 1; z > -1; --z)
-		{
-			pCube = &engine->cubes[x][y][z];
-			ch = a[counter];
+	    for (int y = MAX_CUBE_COUNT - 1; y > -1; --y) {
+		    for (int z = MAX_CUBE_COUNT - 1; z > -1; --z) {
+			    cube = Game.cubes[x][y][z];
+			    symbol_id = a[counter];
 			
-			if (' ' != ch && 'x' != ch && 'o' != ch)
-			{
-				cCreator::AddCubeFont(ch, CubePos(x,y,z), face_type);
-			}
+			    if (SymbolEmpty != symbol_id) {
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), face_type);
+			    }
+			    ++counter;
+		    }
+	    }
+    }
 
-			++counter;
-		}
-	}	
-}
-
-void cMenuFaceBuilder::SetupFontFaceY(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int y)
-{
-    int counter = 0;
-    char ch;
-	cCube* pCube;
+    public static void setupFontFaceSymbolY(final int a[], int face_type, CubeFaceNamesEnum face_id, int y) {
+        int counter = 0;
+        int symbol_id;
+	    Cube cube;
     
-	for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-	{
-		for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-		{
-			pCube = &engine->cubes[x][y][z];
-			ch = a[counter];
+	    for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+		    for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+			    cube = Game.cubes[x][y][z];
+			    symbol_id = a[counter];
 			
-			if (' ' != ch && 'x' != ch && 'o' != ch)
-			{
-				cCreator::AddCubeFont(ch, CubePos(x,y,z), face_type);
-			}
-			
-			++counter;
-		}
-	}
-}
+			    if (SymbolEmpty != symbol_id) {
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), face_type);
+			    }
+			    ++counter;
+		    }
+	    }
+    }
 
-void cMenuFaceBuilder::SetupFontFaceZ(const char a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int z)
-{
-    int counter = 0;
-    char ch;
-	cCube* pCube;
+    public static void setupFontFaceSymbolZ(final int a[], int face_type, CubeFaceNamesEnum face_id, int z) {
+        int counter = 0;
+        int symbol_id;
+	    Cube cube;
     
-	for (int y = MAX_CUBE_COUNT - 1; y > -1; --y)
-	{
-		for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-		{
-			pCube = &engine->cubes[x][y][z];
-			ch = a[counter];
-	
-			if (' ' != ch && 'x' != ch && 'o' != ch)
-			{
-				cCreator::AddCubeFont(ch, CubePos(x,y,z), face_type);
-			}
-			++counter;
-		}
-	}
-}
-
-
-#pragma mark - SetupFontFaceSymbol
-
-void cMenuFaceBuilder::SetupFontFaceSymbolX(const int a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int x)
-{
-    int counter = 0;
-    int symbol_id;
-	cCube* pCube;
-	
-	for (int y = MAX_CUBE_COUNT - 1; y > -1; --y)
-	{
-		for (int z = MAX_CUBE_COUNT - 1; z > -1; --z)
-		{
-			pCube = &engine->cubes[x][y][z];
-			symbol_id = a[counter];
+	    for (int y = MAX_CUBE_COUNT - 1; y > -1; --y) {
+            for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+			    cube = Game.cubes[x][y][z];
+			    symbol_id = a[counter];
 			
-			if (SymbolEmpty != symbol_id)
-			{
-				cCreator::AddCubeFontSymbol((SymbolEnum)symbol_id, CubePos(x,y,z), face_type);
-			}
-			
-			++counter;
-		}
-	}
-}
-
-void cMenuFaceBuilder::SetupFontFaceSymbolY(const int a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int y)
-{
-    int counter = 0;
-    int symbol_id;
-	cCube* pCube;
-    
-	for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-	{
-		for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-		{
-			pCube = &engine->cubes[x][y][z];
-			symbol_id = a[counter];
-			
-			if (SymbolEmpty != symbol_id)
-			{
-				cCreator::AddCubeFontSymbol((SymbolEnum)symbol_id, CubePos(x,y,z), face_type);
-			}
-			
-			++counter;
-		}
-	}
-}
-
-void cMenuFaceBuilder::SetupFontFaceSymbolZ(const int a[], CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, int z)
-{
-    int counter = 0;
-    int symbol_id;
-	cCube* pCube;
-    
-	for (int y = MAX_CUBE_COUNT - 1; y > -1; --y)
-	{
-		for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-		{
-			pCube = &engine->cubes[x][y][z];
-			symbol_id = a[counter];
-			
-			if (SymbolEmpty != symbol_id)
-			{
-				cCreator::AddCubeFontSymbol((SymbolEnum)symbol_id, CubePos(x,y,z), face_type);
-			}
-			++counter;
-		}
-	}
-}
-
-#pragma mark - Dump
+			    if (SymbolEmpty != symbol_id) {
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), face_type);
+			    }
+			    ++counter;
+		    }
+	    }
+    }
 
 //void cMenuFaceBuilder::DumpFace(char* ar)
 //{
@@ -432,8 +354,6 @@ void cMenuFaceBuilder::SetupFontFaceSymbolZ(const int a[], CubeFaceTypesEnum fac
 //		}
 //	}
 //}
-
-#pragma mark - Custom
 
 //void cMenuFaceBuilder::Custom()
 //{
@@ -459,128 +379,89 @@ void cMenuFaceBuilder::SetupFontFaceSymbolZ(const int a[], CubeFaceTypesEnum fac
 ////	DumpIntArrayAsChars();
 //}
 
-#pragma mark - Build
 
-void cMenuFaceBuilder::Build(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type)
-{
-	BuildCubeFaces(face_id, face_type);
-	BuildTitleTexts(face_id, face_type);
-	BuildTexts(face_id, face_type);
-	BuildSymbolsOnFace(face_id, face_type);
-	BuildSymbolsOnBase(face_id, face_type);
+    public static void build(CubeFaceNamesEnum face_id, int face_type) {
+	    buildCubeFaces(face_id, face_type);
+	    buildTitleTexts(face_id, face_type);
+	    buildTexts(face_id, face_type);
+	    buildSymbolsOnFace(face_id, face_type);
+	    buildSymbolsOnBase(face_id, face_type);
 	
-	ResetTransforms();
-}
-
-void cMenuFaceBuilder::BuildCubeFaces(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type)
-{
-	char* a = new char[FACE_SIZE];
-    GetFace(face_id, a);
-	
-	DoTransforms(a);
-	
-	switch (face_type)
-	{
-		case Face_X_Plus:
-			SetupFaceX(a, face_type, face_id);
-			break;
-			
-		case Face_X_Minus:
-			SetupFaceX(a, face_type, face_id);
-			break;
-			
-		case Face_Y_Plus:
-			SetupFaceY(a, face_type, face_id);
-			break;
-			
-		case Face_Y_Minus:
-			SetupFaceY(a, face_type, face_id);
-			break;
-			
-		case Face_Z_Plus:
-			SetupFaceZ(a, face_type, face_id);
-			break;
-			
-		case Face_Z_Minus:
-			SetupFaceZ(a, face_type, face_id);
-			break;
-	}
-    
-    delete [] a;
-}
-
-void cMenuFaceBuilder::SetFontFromCube(cCubeFont* pCubeFontTarget, CubePos cp, CubePos offset, CubeFaceTypesEnum face_type)
-{
-    char ch;
-    cCube* pCube;
-    cCubeFont* pCubeFont;
-    TexturedQuad* pTexturedQuad;
-    
-    pCube = &engine->cubes[cp.x + offset.x][cp.y + offset.y][cp.z + offset.z];
-    pCubeFont = pCube->ar_fonts[face_type];
-
-    if (pCubeFont)
-    {
-        pTexturedQuad = pCubeFont->GetFont();
-        
-        if (pTexturedQuad)
-        {
-            ch = pTexturedQuad->ch;
-            
-            pCubeFontTarget->Init(ch, cp);
-        }
+	    resetTransforms();
     }
-}
 
-void cMenuFaceBuilder::BuildTexts(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type, bool alt)
-{
-	char* a = new char[FACE_SIZE];
-	
-	if (false == alt)
-		GetFaceText(face_id, a);
-	else
-		GetFaceHelpText(face_id, a);
-		
-	DoTransforms(a);
-	
-	int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	
-	switch (face_type)
-	{
-		case Face_X_Plus:
-			SetupFontFaceX(a, face_type, face_id, x - 1);
-			break;
-			
-		case Face_X_Minus:
-			SetupFontFaceX(a, face_type, face_id, x + 1);
-			break;
-			
-		case Face_Y_Plus:
-			SetupFontFaceY(a, face_type, face_id, y - 1);
-			break;
-			
-		case Face_Y_Minus:
-        {
-			SetupFontFaceY(a, face_type, face_id, y + 1);
-            
-            if (Face_Store == face_id)
-            {
-                CubePos cp;
-                cp = CubePos(1, 0, 6);
-                SetFontFromCube(engine->m_menu->m_cubefont_noads, cp, CubePos(0, 1, 0), face_type);
-                engine->m_menu->m_cubefont_noads->pos.y -= FONT_OVERLAY_OFFSET;
+    public static void buildCubeFaces(CubeFaceNamesEnum face_id, int face_type) {
+	    char[] a = new char[FACE_SIZE];
 
-                cp = CubePos(1, 0, 4);
-                SetFontFromCube(engine->m_menu->m_cubefont_solvers, cp, CubePos(0, 1, 0), face_type);
-                engine->m_menu->m_cubefont_solvers->pos.y -= FONT_OVERLAY_OFFSET;
-                
-                cp = CubePos(1, 0, 2);
-                SetFontFromCube(engine->m_menu->m_cubefont_restore, cp, CubePos(0, 1, 0), face_type);
-                engine->m_menu->m_cubefont_restore->pos.y -= FONT_OVERLAY_OFFSET;
+        getFace(face_id, a);
+	    doTransforms(a);
+	
+	    switch (face_type) {
+		    case Face_X_Plus: setupFaceX(a, face_type, face_id); break;
+		    case Face_X_Minus: setupFaceX(a, face_type, face_id); break;
+		    case Face_Y_Plus: setupFaceY(a, face_type, face_id); break;
+		    case Face_Y_Minus: setupFaceY(a, face_type, face_id); break;
+		    case Face_Z_Plus: setupFaceZ(a, face_type, face_id); break;
+		    case Face_Z_Minus: setupFaceZ(a, face_type, face_id); break;
+	    }
+    }
+
+    public static void setFontFromCube(CubeFont cubeFontTarget, CubePos cp, CubePos offset, int face_type) {
+        char ch;
+        Cube cube;
+        CubeFont cubeFont;
+        TexturedQuad texturedQuad;
+    
+        cube = Game.cubes[cp.x + offset.x][cp.y + offset.y][cp.z + offset.z];
+        cubeFont = cube.ar_fonts[face_type];
+
+        if (cubeFont != null) {
+            texturedQuad = cubeFont.getFont();
+        
+            if (texturedQuad != null) {
+                ch = texturedQuad.ch;
+                cubeFontTarget.init(ch, cp);
             }
         }
+    }
+
+    public static void buildTexts(CubeFaceNamesEnum face_id, int face_type, boolean alt) {
+	    char[] a = new char[FACE_SIZE];
+	
+	    if (false == alt) {
+            getFaceText(face_id, a);
+        } else {
+            getFaceHelpText(face_id, a);
+        }
+		
+	    doTransforms(a);
+	
+	    int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+	    int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+	
+	    switch (face_type) {
+		    case Face_X_Plus: setupFontFaceX(a, face_type, face_id, x - 1); break;
+		    case Face_X_Minus: setupFontFaceX(a, face_type, face_id, x + 1); break;
+		    case Face_Y_Plus: setupFontFaceY(a, face_type, face_id, y - 1); break;
+		    case Face_Y_Minus: {
+			    setupFontFaceY(a, face_type, face_id, y + 1);
+            
+                if (Face_Store == face_id) {
+                    CubePos cp;
+                    cp = CubePos(1, 0, 6);
+                    setFontFromCube(engine->m_menu->m_cubefont_noads, cp, CubePos(0, 1, 0), face_type);
+                    engine->m_menu->m_cubefont_noads->pos.y -= FONT_OVERLAY_OFFSET;
+
+                    cp = CubePos(1, 0, 4);
+                    setFontFromCube(engine->m_menu->m_cubefont_solvers, cp, CubePos(0, 1, 0), face_type);
+                    engine->m_menu->m_cubefont_solvers->pos.y -= FONT_OVERLAY_OFFSET;
+                
+                    cp = CubePos(1, 0, 2);
+                    SetFontFromCube(engine->m_menu->m_cubefont_restore, cp, CubePos(0, 1, 0), face_type);
+                    engine->m_menu->m_cubefont_restore->pos.y -= FONT_OVERLAY_OFFSET;
+                }
+            }
 			break;
 			
 		case Face_Z_Plus:

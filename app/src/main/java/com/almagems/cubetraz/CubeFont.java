@@ -121,7 +121,7 @@ public final class CubeFont {
         m_pTriggerCube = cube; 
     }
         
-    public TexturedQuad GetFont() { 
+    public TexturedQuad getFont() {
         return m_pFont; 
     }
     

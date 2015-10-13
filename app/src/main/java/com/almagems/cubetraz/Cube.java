@@ -4,16 +4,6 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class Cube {
 
-    public enum CubeTypeEnum {
-        CubeIsNotSet,
-
-        CubeIsInvisible,
-        CubeIsInvisibleAndObstacle,
-
-        CubeIsVisibleAndObstacle,
-        CubeIsVisibleAndObstacleAndLevel
-    }
-
     public Color color_current;
     public Color color;
 

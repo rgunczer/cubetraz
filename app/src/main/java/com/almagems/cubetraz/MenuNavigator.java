@@ -1,70 +1,12 @@
 package com.almagems.cubetraz;
 
-public enum CubeFaceNavigationEnum
-{
-    NoNavigation,
-    
-	Tutorial_To_Menu,
-	
-    Menu_To_Options,
-    Options_To_Menu,
-    
-    Menu_To_Store,
-    Store_To_Menu,
-    
-    Menu_To_Easy1,
-    Easy1_To_Menu,
-    
-        Easy1_To_Easy2,
-        Easy2_To_Easy1,
-        
-        Easy2_To_Easy3,
-        Easy3_To_Easy2,
-        
-        Easy3_To_Easy4,
-        Easy4_To_Easy3,
-        
-        Easy4_To_Easy1,
-        Easy1_To_Easy4,
-    
-    Easy1_To_Normal1,
-    Normal1_To_Easy1,
-    
-        Normal1_To_Normal2,
-        Normal2_To_Normal1,
-        
-        Normal2_To_Normal3,
-        Normal3_To_Normal2,
-        
-        Normal3_To_Normal4,
-        Normal4_To_Normal3,
-        
-        Normal4_To_Normal1,
-        Normal1_To_Normal4,
+import static android.opengl.GLES10.*;
 
-    Normal1_To_Hard1,
-    Hard1_To_Normal1,
-	
-        Hard1_To_Hard2,
-        Hard2_To_Hard1,
-        
-        Hard2_To_Hard3,
-        Hard3_To_Hard2,
-        
-        Hard3_To_Hard4,
-        Hard4_To_Hard3,
-        
-        Hard4_To_Hard1,
-        Hard1_To_Hard4,
-    
-    Hard1_To_Menu,
-    
-}
-
+import static com.almagems.cubetraz.Constants.*;
 
 public final class MenuNavigator
 {    
-    private cEaseOutDivideInterpolation m_interpolator;
+    private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
     private boolean m_secondary_rotation;
     
     private CubeRotation m_cube_rotation;
@@ -91,7 +33,7 @@ public final class MenuNavigator
         glRotatef(m_cube_rotation_secondary.degree, m_cube_rotation_secondary.axis.x, m_cube_rotation_secondary.axis.y, m_cube_rotation_secondary.axis.z);
     }
             
-    public void createMenuFaces(bool tutorial) {
+    public void createMenuFaces(boolean tutorial) {
         //printf("\nCreateMenuFaces");
 	
 	    Game.clearCubeFaceData();

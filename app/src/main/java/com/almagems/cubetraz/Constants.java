@@ -84,4 +84,151 @@ public final class Constants {
     public static final int SymbolEmpty = 25;
 
 
+    public static final int FACE_SIZE = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
+
+    public enum SwipeDirEnums {
+        SwipeNone,
+        SwipeUp,
+        SwipeDown,
+        SwipeUpLeft,
+        SwipeUpRight,
+        SwipeDownLeft,
+        SwipeDownRight,
+        SwipeLeft,
+        SwipeRight,
+    }
+
+    public enum CubeTypeEnum {
+        CubeIsNotSet,
+
+        CubeIsInvisible,
+        CubeIsInvisibleAndObstacle,
+
+        CubeIsVisibleAndObstacle,
+        CubeIsVisibleAndObstacleAndLevel
+    }
+
+    public enum CubeFaceNamesEnum {
+        Face_Empty,
+
+        Face_Tutorial,
+
+        Face_Menu,
+        Face_Options,
+        Face_Store,
+
+        Face_Easy01,
+        Face_Easy02,
+        Face_Easy03,
+        Face_Easy04,
+
+        Face_Normal01,
+        Face_Normal02,
+        Face_Normal03,
+        Face_Normal04,
+
+        Face_Hard01,
+        Face_Hard02,
+        Face_Hard03,
+        Face_Hard04
+    }
+
+    public enum PickRenderTypeEnum {
+        RenderAll,
+        RenderOnlyMovingCubes,
+        RenderOnlyLevelCubes,
+        RenderOnlyMovingCubePlay,
+        RenderOnlyMovingCubeOptions,
+        RenderOnlyMovingCubeStore,
+        RenderOnlyOptions,
+        RenderOnlyCubeCredits,
+        RenderOnlyHUD
+    }
+
+    public enum AxisEnum {
+        X_Axis,
+        Y_Axis,
+        Z_Axis
+    }
+
+    public enum FaceTransformsEnum {
+        NoTransform,
+        MirrorHoriz,
+        MirrorVert,
+        RotateCW90,
+        RotateCCW90
+    }
+
+    public enum DifficultyEnum {
+        Easy,
+        Normal,
+        Hard
+    }
+
+    public enum LevelInitActionEnum {
+        FullInit,
+        JustContinue,
+        ShowSolution
+    }
+
+    public enum CubeFaceNavigationEnum {
+        NoNavigation,
+
+        Tutorial_To_Menu,
+
+        Menu_To_Options,
+        Options_To_Menu,
+
+        Menu_To_Store,
+        Store_To_Menu,
+
+        Menu_To_Easy1,
+        Easy1_To_Menu,
+
+        Easy1_To_Easy2,
+        Easy2_To_Easy1,
+
+        Easy2_To_Easy3,
+        Easy3_To_Easy2,
+
+        Easy3_To_Easy4,
+        Easy4_To_Easy3,
+
+        Easy4_To_Easy1,
+        Easy1_To_Easy4,
+
+        Easy1_To_Normal1,
+        Normal1_To_Easy1,
+
+        Normal1_To_Normal2,
+        Normal2_To_Normal1,
+
+        Normal2_To_Normal3,
+        Normal3_To_Normal2,
+
+        Normal3_To_Normal4,
+        Normal4_To_Normal3,
+
+        Normal4_To_Normal1,
+        Normal1_To_Normal4,
+
+        Normal1_To_Hard1,
+        Hard1_To_Normal1,
+
+        Hard1_To_Hard2,
+        Hard2_To_Hard1,
+
+        Hard2_To_Hard3,
+        Hard3_To_Hard2,
+
+        Hard3_To_Hard4,
+        Hard4_To_Hard3,
+
+        Hard4_To_Hard1,
+        Hard1_To_Hard4,
+
+        Hard1_To_Menu,
+    }
+
+
 }
