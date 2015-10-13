@@ -535,24 +535,24 @@ public final class Creator
             case Face_Easy02:
             case Face_Easy03:
             case Face_Easy04:
-                pLevelCube->SetStars(Cubetraz.GetStarsEasy(level_number));
-                pLevelCube->SetSolver(Cubetraz.GetSolvedEasy(level_number));
+                cube.setStars(Cubetraz.getStarsEasy(level_number));
+                cube.setSolver(Cubetraz.getSolvedEasy(level_number));
                 break;
             
             case Face_Normal01:
             case Face_Normal02:
             case Face_Normal03:
             case Face_Normal04:
-                pLevelCube->SetStars(cCubetraz::GetStarsNormal(level_number));
-                pLevelCube->SetSolver(cCubetraz::GetSolvedNormal(level_number));
+                cube.setStars(Cubetraz.getStarsNormal(level_number));
+                cube.setSolver(Cubetraz.getSolvedNormal(level_number));
                 break;
             
             case Face_Hard01:
             case Face_Hard02:
             case Face_Hard03:
             case Face_Hard04:
-			    pLevelCube->SetStars(cCubetraz::GetStarsHard(level_number));
-                pLevelCube->SetSolver(cCubetraz::GetSolvedHard(level_number));
+			    cube.setStars(Cubetraz.getStarsHard(level_number));
+                cube.setSolver(Cubetraz.getSolvedHard(level_number));
                 break;
             
             default:
@@ -562,35 +562,19 @@ public final class Creator
         Game.ar_cubefacedata[face_type].lst_level_cubes.add(cube);
     }
 
-void cCreator::AddCubeFont(const char ch, CubePos cube_pos, CubeFaceTypesEnum face_type)
-{
-	cCubeFont* pCubeFont = GetCubeFontFromPool();
-	assert(NULL != pCubeFont);
-    
-	cCube* pCube = &engine->cubes[cube_pos.x][cube_pos.y][cube_pos.z];
-	assert(NULL != pCube);
-        
-	pCubeFont->Init(ch, cube_pos);
-    
-	pCube->ar_fonts[face_type] = pCubeFont;
-}
+	public void addCubeFont(const char ch, CubePos cube_pos, CubeFaceTypesEnum face_type) {
+		CubeFont cubeFont = getCubeFontFromPool();
+		Cube cube = Game.cubes[cube_pos.x][cube_pos.y][cube_pos.z];
 
-void cCreator::AddCubeFontSymbol(const SymbolEnum symbol_id, CubePos cube_pos, CubeFaceTypesEnum face_type)
-{
-	cCubeFont* pCubeFont = GetCubeFontFromPool();
-	assert(NULL != pCubeFont);
-    
-	cCube* pCube = &engine->cubes[cube_pos.x][cube_pos.y][cube_pos.z];
-	assert(NULL != pCube);
-	
-	pCubeFont->Init(symbol_id, cube_pos);
-    
-	pCube->ar_symbols[face_type] = pCubeFont;
-}
+		cubeFont.init(ch, cube_pos);    
+		cube.ar_fonts[face_type] = cubeFont;
+	}
 
-
-
-
-
-	
+	public void addCubeFontSymbol(const SymbolEnum symbol_id, CubePos cube_pos, CubeFaceTypesEnum face_type) {
+		CubeFont cubeFont = getCubeFontFromPool();
+		Cube cube = Game.cubes[cube_pos.x][cube_pos.y][cube_pos.z];
+		
+		cubeFont.init(symbol_id, cube_pos);    
+		cube.ar_symbols[face_type] = cubeFont;
+	}	
 }
