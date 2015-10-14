@@ -9,12 +9,12 @@ public final class MenuNavigator
     private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
     private boolean m_secondary_rotation;
     
-    private CubeRotation m_cube_rotation;
-    private CubeRotation m_cube_rotation_secondary;
+    public CubeRotation m_cube_rotation;
+    public CubeRotation m_cube_rotation_secondary;
    
     private CubeFaceNavigationEnum m_navigation;
     
-    private Menu m_menu;
+    public Menu m_menu;
         
 	public CubeRotation getCurrentRotation() {
 		return m_cube_rotation;
@@ -111,7 +111,7 @@ public final class MenuNavigator
         MenuFaceBuilder.build(Face_Normal01, Face_Z_Minus);
     }
 
-    void cMenuNavigator::CreateHardFaces() {
+    public void createHardFaces() {
         //printf("\nCreateHardFaces");
 
 	    Game.clearCubeFaceData();

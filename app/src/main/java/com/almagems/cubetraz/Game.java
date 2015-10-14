@@ -13,6 +13,18 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class Game {
 
+    public static Vector getCubePosAt(int x, int y, int z) {
+        Vector pos = new Vector();
+        pos.x = cubes[x][y][z].tx;
+        pos.y = cubes[x][y][z].ty;
+        pos.z = cubes[x][y][z].tz;
+        return pos;
+    }
+
+
+    public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
+    public static MenuInitData menu_init_data = new MenuInitData();
+
     public enum GameState {
         Loading,
         Menu,
@@ -20,6 +32,51 @@ public final class Game {
         Playing,
     }
 
+    public static void resetCubes() {
+        for(int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for(int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                for(int z = 0; z < MAX_CUBE_COUNT; ++z) {
+                    cubes[x][y][z].reset();
+                }
+            }
+        }
+    }
+
+    public static void buildVisibleCubesList(ArrayList<Cube> lst) {
+        lst.clear();
+        CubeTypeEnum type;
+        for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for (int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+                    type = cubes[x][y][z].type;
+                    if (type == CubeTypeEnum.CubeIsVisibleAndObstacle || type == CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel) {
+                        lst.add(cubes[x][y][z]);
+                    }
+                }
+            }
+        }
+        //printf("\nNum of Visible Cubes: %lu", m_list_cubes_to_draw.size());
+    }
+
+    public static void buildVisibleCubesListOnlyOnFaces(ArrayList<Cube> lst) {
+        lst.clear();
+        CubeTypeEnum type;
+        for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for (int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+                    type = cubes[x][y][z].type;
+                    if (type == CubeTypeEnum.CubeIsVisibleAndObstacle || type == CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel) {
+                        if (x == 0 || x == MAX_CUBE_COUNT - 1 ||
+                            y == 0 || y == MAX_CUBE_COUNT - 1 ||
+                            z == 0 || z == MAX_CUBE_COUNT - 1) {
+                                lst.add(cubes[x][y][z]);
+                                cubes[x][y][z].setColor( getFaceColor() );
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
 
@@ -618,19 +675,6 @@ public final class Game {
 
 
 
-    struct CubeFaceData
-    {
-        list<cLevelCube*> lst_level_cubes;
-        list<cLevelCube*> lst_level_cubes_locked;
-        list<cLevelCube*> lst_level_cubes_solvered;
-
-    void Clear()
-    {
-        lst_level_cubes.clear();
-        lst_level_cubes_locked.clear();
-        lst_level_cubes_solvered.clear();
-    }
-};
 
 // Scenes
 #include "Scene.h"
@@ -728,9 +772,9 @@ static GLubyte colors[];
         StatInitData stat_init_data;
         AnimInitData anim_init_data;
         LevelInitData level_init_data;
-        MenuInitData menu_init_data;
 
-        CubeFaceData ar_cubefacedata[6];
+
+
 
 // scenes
         cIntro* m_intro;
@@ -993,16 +1037,6 @@ static GLubyte colors[];
         inline static Color GetLevelNumberColor() { return Color(0, 0, 0, 150); }
 
 
-        inline vec3 GetCubePosAt(int x, int y, int z)
-        {
-        vec3 pos;
-
-        pos.x = cubes[x][y][z].tx;
-        pos.y = cubes[x][y][z].ty;
-        pos.z = cubes[x][y][z].tz;
-
-        return pos;
-        }
 
         inline vec3 GetCubePosAt(CubePos cube_pos)
         {
@@ -1129,73 +1163,8 @@ default:
         cCreator::AddLevelCube(level_number,  face_type, face_id, pCube->x, pCube->y, pCube->z);
         }
 
-        inline void BuildVisibleCubesList(list<cCube*>& lst)
-        {
-        lst.clear();
 
-        CubeTypeEnum type;
 
-        for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-        for (int y = 0; y < MAX_CUBE_COUNT; ++y)
-        {
-        for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-        type = cubes[x][y][z].type;
-
-        if (type == CubeIsVisibleAndObstacle || type == CubeIsVisibleAndObstacleAndLevel)
-        {
-        lst.push_back(&cubes[x][y][z]);
-        }
-        }
-        }
-        }
-
-        //printf("\nNum of Visible Cubes: %lu", m_list_cubes_to_draw.size());
-        }
-
-        inline void BuildVisibleCubesListOnlyOnFaces(list<cCube*>& lst)
-        {
-        lst.clear();
-
-        CubeTypeEnum type;
-
-        for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-        for (int y = 0; y < MAX_CUBE_COUNT; ++y)
-        {
-        for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-        type = cubes[x][y][z].type;
-
-        if (type == CubeIsVisibleAndObstacle || type == CubeIsVisibleAndObstacleAndLevel)
-        {
-        if (x == 0 || x == MAX_CUBE_COUNT - 1 ||
-        y == 0 || y == MAX_CUBE_COUNT - 1 ||
-        z == 0 || z == MAX_CUBE_COUNT - 1)
-        {
-        lst.push_back(&cubes[x][y][z]);
-        cubes[x][y][z].SetColor( GetFaceColor() );
-        }
-        }
-        }
-        }
-        }
-        }
-
-        inline void ResetCubes()
-        {
-        for(int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-        for(int y = 0; y < MAX_CUBE_COUNT; ++y)
-        {
-        for(int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-        cubes[x][y][z].Reset();
-        }
-        }
-        }
-        }
 
 
         inline void ResetCubesColors()

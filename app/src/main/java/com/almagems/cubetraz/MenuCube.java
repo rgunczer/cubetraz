@@ -1,5 +1,8 @@
 package com.almagems.cubetraz;
 
+import java.util.ArrayList;
+
+
 public final class MenuCube {
     
     private CubePos m_cube_hilite_offset;
@@ -14,11 +17,11 @@ public final class MenuCube {
     
     public float speed;
     
-    public final ArrayList<Cube> lst_cubes_to_hilite = new ArrayList();
+    public final ArrayList<Cube> lst_cubes_to_hilite = new ArrayList<Cube>();
 
     public Vector pos;
 	public Color color;
-	public bool visible;
+	public boolean visible;
     
     public CubePos m_cube_pos;
     public CubePos m_cube_pos_destination;

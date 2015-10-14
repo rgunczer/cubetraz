@@ -1,200 +1,98 @@
 package com.almagems.cubetraz;
 
-public class Menu {
+import java.util.ArrayList;
+
+import static android.opengl.GLES10.*;
+
+import static com.almagems.cubetraz.Constants.*;
 
 
-    enum MenuStateEnum
-    {
+public final class Menu extends Scene {
+
+    public enum MenuStateEnum {
         InMenu,
         InCredits,
         AnimToCredits,
         AnimFromCredits
-    };
+    }
 
-    enum LevelCubeDecalTypeEnum
-    {
+    public enum LevelCubeDecalTypeEnum {
         LevelCubeDecalNumber,
         LevelCubeDecalStars,
         LevelCubeDecalSolver
-    };
+    }
 
-    struct MenuInitData
-    {
-        bool reappear;
+    private final ArrayList<ArrayList<CubeFont>> m_lst_titles = new ArrayList<ArrayList<CubeFont>>(6);
+    private final ArrayList<ArrayList<CubeFont>> m_lst_texts = new ArrayList<ArrayList<CubeFont>>(6);
+    private final ArrayList<ArrayList<CubeFont>> m_lst_symbols = new ArrayList<ArrayList<CubeFont>>(6);
 
-        MenuInitData()
-        {
-            reappear = false;
-        }
-    };
+    private MenuStateEnum m_state;
 
+    private float m_t;
+    private float zoom;
 
-    class cMenu : public cScene
-    {
+    private float m_hilite_timeout;
 
-        friend class cAnimator;
-        friend class cCreator;
-        friend class cMenuNavigator;
-        friend class cMenuFaceBuilder;
+    private MenuNavigator m_navigator;
 
-        private:
+    private boolean m_can_alter_text;
 
-        list<cCubeFont*> m_lst_titles[6];
-        list<cCubeFont*> m_lst_texts[6];
-        list<cCubeFont*> m_lst_symbols[6];
+    private float m_credits_offset;
 
-        MenuStateEnum m_state;
+    private Color m_color_down;
+    private Color m_color_up;
 
-        float m_t;
-        float zoom;
+    private boolean m_showing_help;
+    private float m_show_help_timeout;
 
-//    bool render;
+    private Camera m_camera_menu;
+    private Camera m_camera_credits;
+    private Camera m_camera_current;
 
-        float m_hilite_timeout;
+    private int m_prev_face;
+    private float m_menu_rotation;
 
-        cMenuNavigator m_navigator;
+    private Vector m_pos_light_menu;
+    private Vector m_pos_light_current;
 
-        bool m_can_alter_text;
+    private MenuCube m_pMenuCubePlay;
+    private MenuCube m_pMenuCubeOptions;
+    private MenuCube m_pMenuCubeStore;
 
-        float m_credits_offset;
-
-        Color m_color_down;
-        Color m_color_up;
-
-        bool m_showing_help;
-        float m_show_help_timeout;
-
-        cCamera m_camera_menu;
-        cCamera m_camera_credits;
-        cCamera m_camera_current;
-
-        int m_prev_face;
-        float m_menu_rotation;
-
-        vec3 m_pos_light_menu;
-        vec3 m_pos_light_current;
-
-        cMenuCube* m_pMenuCubePlay;
-        cMenuCube* m_pMenuCubeOptions;
-        cMenuCube* m_pMenuCubeStore;
-
-        cMenuCube* m_arOptionsCubes[4];
+    private final MenuCube[] m_arOptionsCubes = new MenuCube[4];
 
         // store
-        cMenuCube* m_pStoreCubeNoAds;
-        cMenuCube* m_pStoreCubeSolvers;
-        cMenuCube* m_pStoreCubeRestore;
+    private MenuCube m_pStoreCubeNoAds;
+    private MenuCube m_pStoreCubeSolvers;
+    private MenuCube m_pStoreCubeRestore;
 
-        cMenuCube* m_pCubeCredits;
+    private MenuCube m_pCubeCredits;
 
-        cMenuCube* m_menu_cube_hilite;
-        cCubeFont m_font_hilite;
-        float m_hilite_alpha;
+    private MenuCube m_menu_cube_hilite;
+    private CubeFont m_font_hilite;
+    private float m_hilite_alpha;
 
-
-        // fonts on red cubes
-        cCubeFont* m_cubefont_play;
-        cCubeFont* m_cubefont_options;
-        cCubeFont* m_cubefont_store;
-        cCubeFont* m_cubefont_noads;
-        cCubeFont* m_cubefont_solvers;
-        cCubeFont* m_cubefont_restore;
+    // fonts on red cubes
+    private CubeFont m_cubefont_play;
+    private CubeFont m_cubefont_options;
+    private CubeFont m_cubefont_store;
+    private CubeFont m_cubefont_noads;
+    private CubeFont m_cubefont_solvers;
+    private CubeFont m_cubefont_restore;
 
 // Cubes
-        list<cCube*> m_list_cubes_base;
-        list<cCube*> m_list_cubes_face;
+    private final ArrayList<Cube> m_list_cubes_base = new ArrayList<Cube>();
+    private final ArrayList<Cube> m_list_cubes_face = new ArrayList<Cube>();
 
-        float m_target_rotation_degree;
+    private float m_target_rotation_degree;
 
-        cEaseOutDivideInterpolation m_interpolators[6];
+    private final EaseOutDivideInterpolation[] m_interpolators = new EaseOutDivideInterpolation[6];
 
-        CubeFaceNamesEnum m_current_cube_face;
-        CubeFaceTypesEnum m_current_cube_face_type;
-
-
-    void DisplayCurrentCubeFaceName();
-    void DisplayMenuCubePlayCoordinates();
-
-    void EventShowCredits();
-    void UpdateInCredits(float dt);
-    void UpdateInMenu(float dt);
-    void EventPlayLevel(DifficultyEnum difficulty, int level_number);
-    void ResetStoreCubes();
-
-    void DrawMenuCubes();
-    void DrawLevelCubes();
-    void DrawLevelCubesLocked();
-    void DrawCredits();
-    void DrawLevelCubeOnFace(cLevelCube* pLevelCube, bool scale);
-    void DrawLevelNumbersOnFace(float rot, GLuint texture_id, list<cLevelCube*>& list);
-    void DrawLevelCubeSymbols();
-    void DrawCubeFaceOptions();
-    void DrawSymbols(Color color);
-    void DrawTexts(Color color);
-    void DrawLevelNumbers();
-    void DrawLevelNumbersOnLocked();
-    void DrawTheCube();
-    void DrawLevelCubeDecalsEasy(list<cLevelCube*>& lst_level_cubes_x_plus,
-                                 list<cLevelCube*>& lst_level_cubes_x_minus,
-                                 list<cLevelCube*>& lst_level_cubes_y_plus,
-                                 list<cLevelCube*>& lst_level_cubes_y_minus,
-                                 LevelCubeDecalTypeEnum decal_type);
-
-    void DrawLevelCubeDecalsNormal(list<cLevelCube*>& lst_level_cubes_z_plus,
-                                   list<cLevelCube*>& lst_level_cubes_z_minus,
-                                   list<cLevelCube*>& lst_level_cubes_y_plus,
-                                   list<cLevelCube*>& lst_level_cubes_y_minus,
-                                   LevelCubeDecalTypeEnum decal_type);
-
-    void DrawLevelCubeDecalsHard(list<cLevelCube*>& lst_level_cubes_x_plus,
-                                 list<cLevelCube*>& lst_level_cubes_x_minus,
-                                 list<cLevelCube*>& lst_level_cubes_y_plus,
-                                 list<cLevelCube*>& lst_level_cubes_y_minus,
-                                 LevelCubeDecalTypeEnum decal_type);
-
-    void DrawTextsTitles(Color color);
-    void DrawCubeHiLite(Color color);
-
-    void DrawTextsDefaultOrientation(list<cCubeFont*>& lst_x_plus, list<cCubeFont*>& lst_x_minus,
-                                     list<cCubeFont*>& lst_y_plus, list<cCubeFont*>& lst_y_minus,
-                                     list<cCubeFont*>& lst_z_plus, list<cCubeFont*>& lst_z_minus, Color color);
-
-    void DrawEasyTitles(list<cCubeFont*>& lst_x_plus, list<cCubeFont*>& lst_x_minus,
-                        list<cCubeFont*>& lst_y_plus, list<cCubeFont*>& lst_y_minus,
-                        list<cCubeFont*>& lst_z_plus, list<cCubeFont*>& lst_z_minus, Color color);
-
-    void DrawNormalTitles(list<cCubeFont*>& lst_x_plus, list<cCubeFont*>& lst_x_minus,
-                          list<cCubeFont*>& lst_y_plus, list<cCubeFont*>& lst_y_minus,
-                          list<cCubeFont*>& lst_z_plus, list<cCubeFont*>& lst_z_minus, Color color);
-
-    void DrawHardTitles(list<cCubeFont*>& lst_x_plus, list<cCubeFont*>& lst_x_minus,
-                        list<cCubeFont*>& lst_y_plus, list<cCubeFont*>& lst_y_minus,
-                        list<cCubeFont*>& lst_z_plus, list<cCubeFont*>& lst_z_minus, Color color);
-
-    void UpdateAnimFromCredits(float dt);
-    void UpdateAnimToCredits(float dt);
-
-    void UpdatePlayCube(float dt);
-    void UpdateOptionsCube(float dt);
-    void UpdateStoreCube(float dt);
-
-    void UpdateCubes(float dt);
-
-    void RenderForPicking(PickRenderTypeEnum type);
-
-    void FingerUpOnFaceOptions();
-    void FingerUpOnFaceMenu();
-    void FingerUpOnFacesEasy();
-    void FingerUpOnFacesNormal();
-    void FingerUpOnFacesHard();
-
-    void UpdateHilite(float dt);
-
-    void HandleSwipe();
-    inline cMenuCube* GetMovingCubeFromColor(int color)
-    {
-        switch (color)
-        {
+    private CubeFaceNamesEnum m_current_cube_face;
+    private int m_current_cube_face_type;
+    
+    private MenuCube getMovingCubeFromColor(int color) {
+        switch (color) {
             case 255: return m_pMenuCubePlay;
             case 200: return m_pMenuCubeOptions;
             case 100: return m_pMenuCubeStore;
@@ -203,252 +101,174 @@ public class Menu {
             case  50: return m_pStoreCubeSolvers;
             case  60: return m_pStoreCubeRestore;
         }
-        return NULL;
+        return null;
     }
 
-    void ReleaseCubeTextsOnFace(CubeFaceTypesEnum face_type);
-    void SetCurrentCubeFaceType(CubeFaceTypesEnum face_type);
+    public void dontHiliteMenuCube() { m_menu_cube_hilite = null; }
 
-    public:
-
-    void DontHiliteMenuCube() { m_menu_cube_hilite = NULL; }
-
-    cCamera GetCamera() const { return m_camera_menu; }
-    vec3 GetLightPositon() const { return m_pos_light_menu; }
-
-    cMenu();
-    virtual ~cMenu();
-
-    virtual void Init(void* init_data = NULL);
-    virtual void Update(float dt);
-    virtual void Render();
-
-    virtual void OnFingerDown(float x, float y, int finger_count);
-    virtual void OnFingerUp(float x, float y, int finger_count);
-    virtual void OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count);
+    public Camera getCamera() { return m_camera_menu; }
+    public Vector getLightPositon() { return m_pos_light_menu; }
 
 
-    virtual void SetupCameras();
-};
-
-
-cMenu::cMenu()
-        {
-//    render = false;
+    public Menu() {
         m_can_alter_text = false;
 
-        m_pos_light_menu = vec3(-10.0f, 3.0f, 12.0f);
+        m_pos_light_menu = new Vector(-10.0f, 3.0f, 12.0f);
 
-        m_cubefont_play = new cCubeFont();
-        m_cubefont_options = new cCubeFont();
-        m_cubefont_store = new cCubeFont();
-        m_cubefont_noads = new cCubeFont();
-        m_cubefont_solvers = new cCubeFont();
-        m_cubefont_restore = new cCubeFont();
-        }
+        m_cubefont_play = new CubeFont();
+        m_cubefont_options = new CubeFont();
+        m_cubefont_store = new CubeFont();
+        m_cubefont_noads = new CubeFont();
+        m_cubefont_solvers = new CubeFont();
+        m_cubefont_restore = new CubeFont();
+    }
 
-        cMenu::~cMenu()
-        {
+    public void setupCameras() {
+        m_camera_credits.eye = new Vector(18.0f / 1.5f, 30.0f / 1.5f, 45.0f / 1.5f);
+        m_camera_credits.target = new Vector(-2.0f / 1.5f, 0.0f, 5.0f / 1.5f);
 
-        }
+        //#if defined(DRAW_AXES_CUBE) || defined(DRAW_AXES_GLOBAL)
+        //m_camera_menu.eye = Vector(1.0f / 1.5f, -1.0f / 1.5f, 34.0f / 1.5f);
+        //#else
+        m_camera_menu.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
+        //#endif
 
-        #pragma mark - Init
+        m_camera_menu.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        void cMenu::SetupCameras()
-        {
-        m_camera_credits.eye = vec3(18.0f / 1.5f, 30.0f / 1.5f, 45.0f / 1.5f);
-        m_camera_credits.target = vec3(-2.0f / 1.5f, 0.0f, 5.0f / 1.5f);
-
-        #if defined(DRAW_AXES_CUBE) || defined(DRAW_AXES_GLOBAL)
-        m_camera_menu.eye = vec3(1.0f / 1.5f, -1.0f / 1.5f, 34.0f / 1.5f);
-        #else
-        m_camera_menu.eye = vec3(0.0f, 0.0f, 35.0f / 1.5f);
-        #endif
-
-        m_camera_menu.target = vec3(0.0f, 0.0f, 0.0f);
-
-        m_camera_menu.eye = m_camera_menu.eye * engine->m_aspectRatio;
-        m_camera_credits.eye = m_camera_credits.eye * engine->m_aspectRatio;
+        m_camera_menu.eye = m_camera_menu.eye.scale(Graphics.aspectRatio);
+        m_camera_credits.eye = m_camera_credits.eye.scale(Graphics.aspectRatio);
 
         m_pos_light_current = m_pos_light_menu;
         m_camera_current = m_camera_menu;
-        }
+    }
 
-        void cMenu::Init(void* init_data)
-        {
-        SetupCameras();
-
+    public public void Init() {
+        setupCameras();
         //printf("\ncCube size: %lu byte, all cubes size: %lu kbyte\n", sizeof(cCube), (sizeof(cCube)*9*9*9) / 1024);
-
-        engine->dirty_alpha = DIRTY_ALPHA;
+        //cMenuFaceBuilder::Custom();
+        //Game.dirty_alpha = DIRTY_ALPHA;
+        //Game.playMusic(MUSIC_CPU);
 
         m_hilite_timeout = 0.0f;
-
-        //cMenuFaceBuilder::Custom();
-
-        m_menu_cube_hilite = NULL;
-
-        cCreator::_pHost = this;
-
+        m_menu_cube_hilite = null;
+        Creator._pHost = this;
         m_showing_help = false;
-
         m_navigator.m_menu = this;
-
-        engine->PlayMusic(MUSIC_CPU);
-
         m_prev_face = -1;
-
-        m_fingerdown = false;
-        m_swipe = false;
-
+        mIsFingerDown = false;
+        mIsSwipe = false;
         m_pos_light_current = m_pos_light_menu;
         m_camera_current = m_camera_menu;
 
-        engine->ResetCubes();
-        engine->SetupHollowCube();
-        engine->BuildVisibleCubesList(m_list_cubes_base);  // could be put in a VBO
+        Game.resetCubes();
+        Game.setupHollowCube();
+        Game.buildVisibleCubesList(m_list_cubes_base);  // could be put in a VBO
 
-        if (true == engine->menu_init_data.reappear)
-        {
-        switch (m_current_cube_face)
-        {
-        case Face_Easy01:
-        case Face_Easy02:
-        case Face_Easy03:
-        case Face_Easy04:
-        m_navigator.CreateEasyFaces();
+        if (true == Game.menu_init_data.reappear) {
+            switch (m_current_cube_face) {
+                case Face_Easy01:
+                case Face_Easy02:
+                case Face_Easy03:
+                case Face_Easy04:
+                    m_navigator.createEasyFaces();
 
-        if (Face_Easy02 == m_current_cube_face || Face_Easy03 == m_current_cube_face || Face_Easy04 == m_current_cube_face)
-        {
-        cMenuFaceBuilder::Build(Face_Empty, Face_Z_Plus);
-        cMenuFaceBuilder::Build(Face_Empty, Face_Z_Minus);
-        }
-        break;
+                    if (CubeFaceNamesEnum.Face_Easy02 == m_current_cube_face || CubeFaceNamesEnum.Face_Easy03 == m_current_cube_face || CubeFaceNamesEnum.Face_Easy04 == m_current_cube_face) {
+                        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Empty, Face_Z_Plus);
+                        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Empty, Face_Z_Minus);
+                    }
+                    break;
 
-        case Face_Normal01:
-        case Face_Normal02:
-        case Face_Normal03:
-        case Face_Normal04:
-        m_navigator.CreateNormalFaces();
+                case Face_Normal01:
+                case Face_Normal02:
+                case Face_Normal03:
+                case Face_Normal04:
+                    m_navigator.createNormalFaces();
 
-        if (Face_Normal02 == m_current_cube_face || Face_Normal03 == m_current_cube_face || Face_Normal04 == m_current_cube_face)
-        {
-        cMenuFaceBuilder::Build(Face_Empty, Face_X_Plus);
-        cMenuFaceBuilder::Build(Face_Empty, Face_X_Minus);
-        }
-        break;
+                    if (CubeFaceNamesEnum.Face_Normal02 == m_current_cube_face || CubeFaceNamesEnum.Face_Normal03 == m_current_cube_face || CubeFaceNamesEnum.Face_Normal04 == m_current_cube_face) {
+                        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Empty, Face_X_Plus);
+                        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Empty, Face_X_Minus);
+                    }
+                    break;
 
-        case Face_Hard01:
-        case Face_Hard02:
-        case Face_Hard03:
-        case Face_Hard04:
-        m_navigator.CreateHardFaces();
+                case Face_Hard01:
+                case Face_Hard02:
+                case Face_Hard03:
+                case Face_Hard04:
+                    m_navigator.createHardFaces();
 
-        if (Face_Hard02 == m_current_cube_face || Face_Hard03 == m_current_cube_face || Face_Hard04 == m_current_cube_face)
-        {
-        cMenuFaceBuilder::Build(Face_Empty, Face_Z_Plus);
-        cMenuFaceBuilder::Build(Face_Empty, Face_Z_Minus);
-        }
-        break;
+                    if (CubeFaceNamesEnum.Face_Hard02 == m_current_cube_face || CubeFaceNamesEnum.Face_Hard03 == m_current_cube_face || CubeFaceNamesEnum.Face_Hard04 == m_current_cube_face) {
+                        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Empty, Face_Z_Plus);
+                        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Empty, Face_Z_Minus);
+                    }
+                    break;
 
-default:
-        break;
-        }
-        }
-        else
-        {
-        cCreator::CreateMovingCubesForMenu();
-        //cCreator::CreateStaticTexts();
+                default:
+                    break;
+            }
+        } else {
+            Creator.createMovingCubesForMenu();
+            //cCreator::CreateStaticTexts();
 
-        m_navigator.Init(this);
-        m_current_cube_face = Face_Tutorial;
-        SetCurrentCubeFaceType(Face_X_Minus);
+            m_navigator.init(this);
+            m_current_cube_face = CubeFaceNamesEnum.Face_Tutorial;
+            setCurrentCubeFaceType(Face_X_Minus);
 
-        m_navigator.CreateMenuFaces(true);
+            m_navigator.createMenuFaces(true);
 
-        m_pMenuCubePlay->SetCubePos(CubePos(0, 5, 4));
-        m_pMenuCubeOptions->SetCubePos(CubePos(1, 3, 8));
-        m_pMenuCubeStore->SetCubePos(CubePos(1, 1, 8));
+            m_pMenuCubePlay.setCubePos(new CubePos(0, 5, 4));
+            m_pMenuCubeOptions.setCubePos(new CubePos(1, 3, 8));
+            m_pMenuCubeStore.setCubePos(new CubePos(1, 1, 8));
 
-        //m_pCubeCredits->SetCubePos(CubePos(1, 1, 8));
+            //m_pCubeCredits.SetCubePos(CubePos(1, 1, 8));
         }
 
-        m_state = InMenu;
-
-        engine->BuildVisibleCubesListOnlyOnFaces(m_list_cubes_face);
-        Update(0.0);
+        m_state = MenuStateEnum.InMenu;
+        Game.buildVisibleCubesListOnlyOnFaces(m_list_cubes_face);
+        update();
 
         glEnable(GL_LIGHT0);
-        }
+    }
 
-        #pragma mark - Misc
-
-        void cMenu::SetCurrentCubeFaceType(CubeFaceTypesEnum face_type)
-        {
-        CubePos offset(0,0,0);
+    public void setCurrentCubeFaceType(int face_type) {
+        CubePos offset = new CubePos(0, 0, 0);
 
         m_current_cube_face_type = face_type;
 
-        switch (face_type)
-        {
-        case Face_X_Plus:
-        offset = CubePos(-1, 0, 0);
-        break;
-
-        case Face_X_Minus:
-        offset = CubePos(1, 0, 0);
-        break;
-
-        case Face_Y_Plus:
-        offset = CubePos(0, -1, 0);
-        break;
-
-        case Face_Y_Minus:
-        offset = CubePos(0, 1, 0);
-        break;
-
-        case Face_Z_Plus:
-        offset = CubePos(0, 0, -1);
-        break;
-
-        case Face_Z_Minus:
-        offset = CubePos(0, 0, 1);
-        break;
-
-default:
-        break;
+        switch (face_type) {
+            case Face_X_Plus: offset = new CubePos(-1, 0, 0); break;
+            case Face_X_Minus: offset = new CubePos(1, 0, 0); break;
+            case Face_Y_Plus: offset = new CubePos(0, -1, 0); break;
+            case Face_Y_Minus: offset = new CubePos(0, 1, 0); break;
+            case Face_Z_Plus: offset = new CubePos(0, 0, -1); break;
+            case Face_Z_Minus: offset = new CubePos(0, 0, 1); break;
+            default:
+                break;
         }
 
-        m_pMenuCubePlay->SetHiliteOffset(offset);
-        m_pMenuCubeOptions->SetHiliteOffset(offset);
-        m_pMenuCubeStore->SetHiliteOffset(offset);
-        }
+        m_pMenuCubePlay.setHiliteOffset(offset);
+        m_pMenuCubeOptions.setHiliteOffset(offset);
+        m_pMenuCubeStore.setHiliteOffset(offset);
+    }
 
-        void cMenu::ResetStoreCubes()
-        {
-        m_pStoreCubeNoAds->SetCubePos( CubePos(1,0,6) );
-        m_pStoreCubeSolvers->SetCubePos( CubePos(1,0,4) );
-        m_pStoreCubeRestore->SetCubePos( CubePos(1,0,2) );
-        }
+    public void resetStoreCubes() {
+        m_pStoreCubeNoAds.setCubePos(new CubePos(1, 0, 6));
+        m_pStoreCubeSolvers.setCubePos(new CubePos(1, 0, 4));
+        m_pStoreCubeRestore.setCubePos(new CubePos(1, 0, 2));
+    }
 
-        void cMenu::ReleaseCubeTextsOnFace(CubeFaceTypesEnum face_type)
-        {
-        list<cCube*>::iterator it;
-        cCube* pCube;
-
-        for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
-        {
-        pCube = *it;
-
-        if (NULL != pCube->ar_fonts[face_type])
-        {
-        cCreator::CubeFontReleased(pCube->ar_fonts[face_type]);
-        pCube->ar_fonts[face_type] = NULL;
+    public void releaseCubeTextsOnFace(int face_type) {
+        int size = m_list_cubes_base.size();
+        Cube cube;
+        for(int i = 0; i < size; ++i) {
+            cube = m_list_cubes_base.get(i);
+            if (null != cube.ar_fonts[face_type]) {
+                Creator.cubeFontReleased(cube.ar_fonts[face_type]);
+                cube.ar_fonts[face_type] = null;
+            }
         }
-        }
-        }
+    }
 
-//void cMenu::DisplayCurrentCubeFaceName()
+//public void DisplayCurrentCubeFaceName()
 //{
 //    switch (m_current_cube_face)
 //    {
@@ -476,661 +296,630 @@ default:
 //    } // switch
 //}
 
-//void cMenu::DisplayMenuCubePlayCoordinates()
+//public void DisplayMenuCubePlayCoordinates()
 //{
-//    printf("\nPlayCube x:%d, y:%d z:%d", m_pMenuCubePlay->m_cube_pos.x, m_pMenuCubePlay->m_cube_pos.y, m_pMenuCubePlay->m_cube_pos.z);
+//    printf("\nPlayCube x:%d, y:%d z:%d", m_pMenuCubePlay.m_cube_pos.x, m_pMenuCubePlay.m_cube_pos.y, m_pMenuCubePlay.m_cube_pos.z);
 //}
 
-        #pragma mark - Draw
+    public void drawMenuCubes() {
+        Graphics.prepare();
+        Graphics.setStreamSource();
 
-        void cMenu::DrawMenuCubes()
-        {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSource();
+        Color color = new Color(255, 255, 255, 255);
+        MenuCube p = m_pMenuCubePlay;
 
-        Color color(255, 255, 255, 255);
-        cMenuCube* p = m_pMenuCubePlay;
-
-        if (p->visible)
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE, color);
-
-        if (m_current_cube_face == Face_Menu || m_current_cube_face == Face_Options || m_navigator.IsCurrentNavigation(Menu_To_Options) || m_navigator.IsCurrentNavigation(Menu_To_Easy1))
-        {
-        p = m_pMenuCubeOptions;
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE, color);
+        if (p.visible) {
+            Graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
         }
 
-        if (m_current_cube_face == Face_Menu || m_current_cube_face == Face_Store ||
-        m_navigator.IsCurrentNavigation(Menu_To_Store) || m_navigator.IsCurrentNavigation(Menu_To_Easy1))
-        {
-        p = m_pMenuCubeStore;
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE, color);
-
-        p = m_pStoreCubeNoAds;
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE, color);
-
-        p = m_pStoreCubeSolvers;
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE, color);
-
-        p = m_pStoreCubeRestore;
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE, color);
+        if (m_current_cube_face == CubeFaceNamesEnum.Face_Menu ||
+            m_current_cube_face == CubeFaceNamesEnum.Face_Options ||
+            m_navigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Options) ||
+            m_navigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Easy1)) {
+            p = m_pMenuCubeOptions;
+            Graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
         }
 
-        cRenderer::RenderTriangles();
+        if (m_current_cube_face == CubeFaceNamesEnum.Face_Menu ||
+            m_current_cube_face == CubeFaceNamesEnum.Face_Store ||
+            m_navigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Store) ||
+            m_navigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Easy1)) {
+                p = m_pMenuCubeStore;
+                Graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
+
+                p = m_pStoreCubeNoAds;
+                Graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
+
+                p = m_pStoreCubeSolvers;
+                Graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
+
+                p = m_pStoreCubeRestore;
+                Graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
+            }
+
+            Graphics.renderTriangles();
         }
 
-        void cMenu::DrawLevelCubes()
-        {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSource();
+    public void drawLevelCubes() {
+        Graphics.prepare();
+        Graphics.setStreamSource();
 
-        list<cLevelCube*>::iterator it;
-        for (int i = 0; i < 6; ++i)
-        {
-        for (it = engine->ar_cubefacedata[i].lst_level_cubes.begin(); it != engine->ar_cubefacedata[i].lst_level_cubes.end(); ++it)
-        cRenderer::AddCube((*it)->pos.x, (*it)->pos.y, (*it)->pos.z);
+        int size;
+        LevelCube levelCube;
+        for (int i = 0; i < 6; ++i) {
+            size = Game.ar_cubefacedata[i].lst_level_cubes.size();
+            for (int i = 0; i < size; ++i) {
+                levelCube = Game.ar_cubefacedata[i].lst_level_cubes.get(i);
+                Graphics.addCube(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z);
+            }
         }
+        Graphics.renderTriangles();
+    }
 
-        cRenderer::RenderTriangles();
+    public void drawLevelCubesLocked() {
+        Graphics.prepare();
+        Graphics.setStreamSource();
+
+        int size;
+        LevelCube levelCube;
+        for (int i = 0; i < 6; ++i) {
+            size = Game.ar_cubefacedata[i].lst_level_cubes_locked.size();
+            for (int i = 0; i < size; ++i) {
+                levelCube = Game.ar_cubefacedata[i].lst_level_cubes_locked.get(i);
+                Graphics.addCube(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z);
+            }
         }
+        Graphics.renderTriangles();
+    }
 
-        void cMenu::DrawLevelCubesLocked()
-        {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSource();
-
-        list<cLevelCube*>::iterator it;
-        for (int i = 0; i < 6; ++i)
-        {
-        for (it = engine->ar_cubefacedata[i].lst_level_cubes_locked.begin(); it != engine->ar_cubefacedata[i].lst_level_cubes_locked.end(); ++it)
-        cRenderer::AddCube((*it)->pos.x, (*it)->pos.y, (*it)->pos.z);
-        }
-
-        cRenderer::RenderTriangles();
-        }
-
-        void cMenu::DrawLevelCubeDecalsEasy(list<cLevelCube*>& lst_level_cubes_x_plus,
-        list<cLevelCube*>& lst_level_cubes_x_minus,
-        list<cLevelCube*>& lst_level_cubes_y_plus,
-        list<cLevelCube*>& lst_level_cubes_y_minus,
-        LevelCubeDecalTypeEnum decal_type)
-        {
-        cLevelCube* pLevelCube;
+    public void drawLevelCubeDecalsEasy(ArrayList<LevelCube> lst_level_cubes_x_plus,
+                                        ArrayList<LevelCube> lst_level_cubes_x_minus,
+                                        ArrayList<LevelCube> lst_level_cubes_y_plus,
+                                        ArrayList<LevelCube> lst_level_cubes_y_minus,
+                                        LevelCubeDecalTypeEnum decal_type) {
+        LevelCube levelCube;
         TexCoordsQuad coords;
-        TexturedQuad* p;
-        Color* color;
-        list<cLevelCube*>::iterator it;
+        TexturedQuad p;
+        Color color = new Color();
+        int size;
 
-        for(it = lst_level_cubes_x_plus.begin(); it != lst_level_cubes_x_plus.end(); ++it)
-        {
-        pLevelCube = *it;
+        size = lst_level_cubes_x_plus.size();
+        for (int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_x_plus.get(i);
+            p = null;
 
-        p = NULL;
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                break;
+            }
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+
+                Graphics.addCubeFace_X_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
+        size = lst_level_cubes_x_minus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_x_minus.get(i);
 
-        cRenderer::AddCubeFace_X_Plus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        for(it = lst_level_cubes_x_minus.begin(); it != lst_level_cubes_x_minus.end(); ++it)
-        {
-        pLevelCube = *it;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                Graphics.addCubeFace_X_Minus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
+        size = lst_level_cubes_y_plus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_y_plus.get(i);
 
-        cRenderer::AddCubeFace_X_Minus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        for(it = lst_level_cubes_y_plus.begin(); it != lst_level_cubes_y_plus.end(); ++it)
-        {
-        pLevelCube = *it;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx3 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                Graphics.addCubeFace_Y_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx1 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx2 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx3 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
+        size = lst_level_cubes_y_minus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_y_minus.get(i);
 
-        cRenderer::AddCubeFace_Y_Plus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
+
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
+
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+
+                Graphics.addCubeFace_Y_Minus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
-        }
+    }
 
-        for(it = lst_level_cubes_y_minus.begin(); it != lst_level_cubes_y_minus.end(); ++it)
-        {
-        pLevelCube = *it;
-
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
-
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
-
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
-        }
-
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-
-        cRenderer::AddCubeFace_Y_Minus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
-        }
-
-        void cMenu::DrawLevelCubeDecalsNormal(list<cLevelCube*>& lst_level_cubes_z_plus,
-        list<cLevelCube*>& lst_level_cubes_z_minus,
-        list<cLevelCube*>& lst_level_cubes_y_plus,
-        list<cLevelCube*>& lst_level_cubes_y_minus,
-        LevelCubeDecalTypeEnum decal_type)
-        {
-        cLevelCube* pLevelCube;
+    public void drawLevelCubeDecalsNormal(ArrayList<LevelCube> lst_level_cubes_z_plus,
+                                          ArrayList<LevelCube> lst_level_cubes_z_minus,
+                                          ArrayList<LevelCube> lst_level_cubes_y_plus,
+                                          ArrayList<LevelCube> lst_level_cubes_y_minus,
+                                          LevelCubeDecalTypeEnum decal_type) {
+        LevelCube levelCube;
         TexCoordsQuad coords;
-        TexturedQuad* p;
-        Color* color;
-        list<cLevelCube*>::iterator it;
+        TexturedQuad p;
+        Color color = new Color();
+        int size;
 
-        for(it = lst_level_cubes_z_plus.begin(); it != lst_level_cubes_z_plus.end(); ++it)
-        {
-        pLevelCube = *it;
+        size = lst_level_cubes_z_plus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_z_plus.get(i);
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
+
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx3 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+
+                Graphics.addCubeFace_Z_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx1 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx2 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx3 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
+        size = lst_level_cubes_z_minus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_z_minus.get(i);
 
-        cRenderer::AddCubeFace_Z_Plus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        for(it = lst_level_cubes_z_minus.begin(); it != lst_level_cubes_z_minus.end(); ++it)
-        {
-        pLevelCube = *it;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx3 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                Graphics.addCubeFace_Z_Minus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx1 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx2 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx3 = vec2(p->tx_up_right.x, p->tx_up_right.y);
+        size = lst_level_cubes_y_plus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_y_plus.get(i);
 
-        cRenderer::AddCubeFace_Z_Minus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        for(it = lst_level_cubes_y_plus.begin(); it != lst_level_cubes_y_plus.end(); ++it)
-        {
-        pLevelCube = *it;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx3 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                Graphics.addCubeFace_Y_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx1 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx2 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx3 = vec2(p->tx_up_right.x, p->tx_up_right.y);
+        size = lst_level_cubes_y_minus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_y_minus.get(i);
 
-        cRenderer::AddCubeFace_Y_Plus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
+
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
+
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx3 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                
+                Graphics.addCubeFace_Y_Minus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
-        }
+    }
 
-        for(it = lst_level_cubes_y_minus.begin(); it != lst_level_cubes_y_minus.end(); ++it)
-        {
-        pLevelCube = *it;
-
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
-
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
-
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
-        }
-
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx1 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx2 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx3 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-
-        cRenderer::AddCubeFace_Y_Minus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
-        }
-
-        void cMenu::DrawLevelCubeDecalsHard(list<cLevelCube*>& lst_level_cubes_x_plus,
-        list<cLevelCube*>& lst_level_cubes_x_minus,
-        list<cLevelCube*>& lst_level_cubes_y_plus,
-        list<cLevelCube*>& lst_level_cubes_y_minus,
-        LevelCubeDecalTypeEnum decal_type)
-        {
-        cLevelCube* pLevelCube;
+    public void drawLevelCubeDecalsHard(ArrayList<LevelCube> lst_level_cubes_x_plus,
+                                        ArrayList<LevelCube> lst_level_cubes_x_minus,
+                                        ArrayList<LevelCube> lst_level_cubes_y_plus,
+                                        ArrayList<LevelCube> lst_level_cubes_y_minus,
+                                        LevelCubeDecalTypeEnum decal_type) {
+        LevelCube levelCube;
         TexCoordsQuad coords;
-        TexturedQuad* p;
-        Color* color;
-        list<cLevelCube*>::iterator it;
+        TexturedQuad p;
+        Color color = new Color();
+        int size;
 
-        for(it = lst_level_cubes_x_plus.begin(); it != lst_level_cubes_x_plus.end(); ++it)
-        {
-        pLevelCube = *it;
+        size = lst_level_cubes_x_plus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_x_plus.get(i);
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                p = levelCube.pNumber;
+                color.init(levelCube.color_number);
+                break;
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            case LevelCubeDecalStars:
+                p = levelCube.pStars;
+                color.init(levelCube.color_stars_and_solver);
+                break;
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            case LevelCubeDecalSolver:
+                p = levelCube.pSolver;
+                color.init(levelCube.color_stars_and_solver);
+                break;
+            }
+
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx3 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+
+                Graphics.addCubeFace_X_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx1 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx2 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx3 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
+        size = lst_level_cubes_x_minus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_x_minus.get(i);
 
-        cRenderer::AddCubeFace_X_Plus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        for(it = lst_level_cubes_x_minus.begin(); it != lst_level_cubes_x_minus.end(); ++it)
-        {
-        pLevelCube = *it;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx3 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                Graphics.addCubeFace_X_Minus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx1 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx2 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx3 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
+        size = lst_level_cubes_y_plus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_y_plus.get(i);
 
-        cRenderer::AddCubeFace_X_Minus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
 
-        for(it = lst_level_cubes_y_plus.begin(); it != lst_level_cubes_y_plus.end(); ++it)
-        {
-        pLevelCube = *it;
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+                Graphics.addCubeFace_Y_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
+        size = lst_level_cubes_y_minus.size();
+        for(int i = 0; i < size; ++i) {
+            levelCube = lst_level_cubes_y_minus.get(i);
 
-        cRenderer::AddCubeFace_Y_Plus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
+            switch (decal_type) {
+                case LevelCubeDecalNumber:
+                    p = levelCube.pNumber;
+                    color.init(levelCube.color_number);
+                    break;
+
+                case LevelCubeDecalStars:
+                    p = levelCube.pStars;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+
+                case LevelCubeDecalSolver:
+                    p = levelCube.pSolver;
+                    color.init(levelCube.color_stars_and_solver);
+                    break;
+            }
+
+            if (p) {
+                coords.tx0 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx3 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+
+                Graphics.addCubeFace_Y_Minus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
+            }
         }
-        }
+    }
 
-        for(it = lst_level_cubes_y_minus.begin(); it != lst_level_cubes_y_minus.end(); ++it)
-        {
-        pLevelCube = *it;
+    public void drawLevelNumbersOnLocked() {
+        Graphics.prepare();
+        Graphics.setStreamSourceFloatAndColor();
 
-        switch (decal_type)
-        {
-        case LevelCubeDecalNumber:
-        p = pLevelCube->pNumber;
-        color = &pLevelCube->color_number;
-        break;
+        switch (m_current_cube_face) {
+            case Face_Easy01:
+            case Face_Easy02:
+            case Face_Easy03:
+            case Face_Easy04:
+                drawLevelCubeDecalsEasy(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes_locked,
+                                        Game.ar_cubefacedata[Face_X_Minus].lst_level_cubes_locked,
+                                        Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes_locked,
+                                        Game.ar_cubefacedata[Face_Y_Minus].lst_level_cubes_locked,
+                                        LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
+                break;
 
-        case LevelCubeDecalStars:
-        p = pLevelCube->pStars;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
+            case Face_Normal01:
+            case Face_Normal02:
+            case Face_Normal03:
+            case Face_Normal04:
+                drawLevelCubeDecalsNormal(Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes_locked,
+                                          Game.ar_cubefacedata[Face_Z_Minus].lst_level_cubes_locked,
+                                          Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes_locked,
+                                          Game.ar_cubefacedata[Face_Y_Minus].lst_level_cubes_locked,
+                                          LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
+                break;
 
-        case LevelCubeDecalSolver:
-        p = pLevelCube->pSolver;
-        color = &pLevelCube->color_stars_and_solver;
-        break;
-        }
+            case Face_Hard01:
+            case Face_Hard02:
+            case Face_Hard03:
+            case Face_Hard04:
+                drawLevelCubeDecalsHard(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes_locked,
+                                        Game.ar_cubefacedata[Face_X_Minus].lst_level_cubes_locked,
+                                        Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes_locked,
+                                        Game.ar_cubefacedata[Face_Y_Minus].lst_level_cubes_locked,
+                                        LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
+                break;
 
-        if (p)
-        {
-        coords.tx0 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx1 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-        coords.tx2 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx3 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-
-        cRenderer::AddCubeFace_Y_Minus(pLevelCube->font_pos.x, pLevelCube->font_pos.y, pLevelCube->font_pos.z, coords, *color);
-        }
-        }
-        }
-
-
-        void cMenu::DrawLevelNumbersOnLocked()
-        {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSourceFloatAndColor();
-
-        switch (m_current_cube_face)
-        {
-        case Face_Easy01:
-        case Face_Easy02:
-        case Face_Easy03:
-        case Face_Easy04:
-        DrawLevelCubeDecalsEasy(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes_locked,
-        LevelCubeDecalNumber);
-
-        break;
-
-        case Face_Normal01:
-        case Face_Normal02:
-        case Face_Normal03:
-        case Face_Normal04:
-        DrawLevelCubeDecalsNormal(engine->ar_cubefacedata[Face_Z_Plus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Z_Minus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes_locked,
-        LevelCubeDecalNumber);
-        break;
-
-        case Face_Hard01:
-        case Face_Hard02:
-        case Face_Hard03:
-        case Face_Hard04:
-        DrawLevelCubeDecalsHard(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes_locked,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes_locked,
-        LevelCubeDecalNumber);
-        break;
-
-default:
-        break;
+            default:
+                break;
         }
 
-        cRenderer::RenderTriangles();
+        Graphics.renderTriangles();
+    }
+
+
+    public void drawLevelNumbers() {
+        Graphics.prepare();
+        Graphics.setStreamSourceFloatAndColor();
+
+        switch (m_current_cube_face) {
+            case Face_Easy01:
+            case Face_Easy02:
+            case Face_Easy03:
+            case Face_Easy04:
+                drawLevelCubeDecalsEasy(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes,
+                                        Game.ar_cubefacedata[Face_X_Minus].lst_level_cubes,
+                                        Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+                                        Game.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+                                        LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
+                break;
+
+            case Face_Normal01:
+            case Face_Normal02:
+            case Face_Normal03:
+            case Face_Normal04:
+                drawLevelCubeDecalsNormal(Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes,
+                                          Game.ar_cubefacedata[Face_Z_Minus].lst_level_cubes,
+                                          Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+                                          Game.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+                                          LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
+                break;
+
+            case Face_Hard01:
+            case Face_Hard02:
+            case Face_Hard03:
+            case Face_Hard04:
+                drawLevelCubeDecalsHard(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes,
+                                        Game.ar_cubefacedata[Face_X_Minus].lst_level_cubes,
+                                        Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+                                        Game.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+                                        LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
+                break;
+
+            default:
+                break;
         }
 
+        Graphics.renderTriangles();
+    }
 
-        void cMenu::DrawLevelNumbers()
-        {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSourceFloatAndColor();
+    public void drawTexts(Color color) {
+        Graphics.prepare();
 
-        switch (m_current_cube_face)
-        {
-        case Face_Easy01:
-        case Face_Easy02:
-        case Face_Easy03:
-        case Face_Easy04:
-        DrawLevelCubeDecalsEasy(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
-        LevelCubeDecalNumber);
+        if ( Math.abs(m_navigator.m_cube_rotation_secondary.degree) < EPSILON) {
+            drawTextsDefaultOrientation(m_lst_texts[Face_X_Plus],
+                                        m_lst_texts[Face_X_Minus],
+                                        m_lst_texts[Face_Y_Plus],
+                                        m_lst_texts[Face_Y_Minus],
+                                        m_lst_texts[Face_Z_Plus],
+                                        m_lst_texts[Face_Z_Minus], color);
+        } else {
+            switch (m_current_cube_face) {
+                case Face_Easy01:
+                case Face_Easy02:
+                case Face_Easy03:
+                case Face_Easy04:
+                    drawEasyTitles(m_lst_texts[Face_X_Plus], m_lst_texts[Face_X_Minus],
+                                   m_lst_texts[Face_Y_Plus], m_lst_texts[Face_Y_Minus],
+                                   m_lst_texts[Face_Z_Plus], m_lst_texts[Face_Z_Minus],
+                                   color);
+                    break;
 
-        break;
+                case Face_Normal01:
+                case Face_Normal02:
+                case Face_Normal03:
+                case Face_Normal04:
+                    drawNormalTitles(m_lst_texts[Face_X_Plus], m_lst_texts[Face_X_Minus],
+                                     m_lst_texts[Face_Y_Plus], m_lst_texts[Face_Y_Minus],
+                                     m_lst_texts[Face_Z_Plus], m_lst_texts[Face_Z_Minus],
+                                     color);
+                    break;
 
-        case Face_Normal01:
-        case Face_Normal02:
-        case Face_Normal03:
-        case Face_Normal04:
-        DrawLevelCubeDecalsNormal(engine->ar_cubefacedata[Face_Z_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Z_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
-        LevelCubeDecalNumber);
-        break;
+                case Face_Hard01:
+                case Face_Hard02:
+                case Face_Hard03:
+                case Face_Hard04:
+                    drawHardTitles(m_lst_texts[Face_X_Plus], m_lst_texts[Face_X_Minus],
+                                   m_lst_texts[Face_Y_Plus], m_lst_texts[Face_Y_Minus],
+                                   m_lst_texts[Face_Z_Plus],  m_lst_texts[Face_Z_Minus],
+                                   color);
+                    break;
 
-        case Face_Hard01:
-        case Face_Hard02:
-        case Face_Hard03:
-        case Face_Hard04:
-        DrawLevelCubeDecalsHard(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
-        LevelCubeDecalNumber);
-        break;
-
-default:
-        break;
+                default:
+                    break;
+            }
         }
 
-        cRenderer::RenderTriangles();
-        }
-
-        void cMenu::DrawTexts(Color color)
-        {
-        cRenderer::Prepare();
-
-        if (abs(m_navigator.m_cube_rotation_secondary.degree) < EPSILON)
-        {
-        DrawTextsDefaultOrientation(m_lst_texts[Face_X_Plus],
-        m_lst_texts[Face_X_Minus],
-        m_lst_texts[Face_Y_Plus],
-        m_lst_texts[Face_Y_Minus],
-        m_lst_texts[Face_Z_Plus],
-        m_lst_texts[Face_Z_Minus], color);
-        }
-        else
-        {
-        switch (m_current_cube_face)
-        {
-        case Face_Easy01:
-        case Face_Easy02:
-        case Face_Easy03:
-        case Face_Easy04:
-        DrawEasyTitles(m_lst_texts[Face_X_Plus],  m_lst_texts[Face_X_Minus], m_lst_texts[Face_Y_Plus],
-        m_lst_texts[Face_Y_Minus], m_lst_texts[Face_Z_Plus],  m_lst_texts[Face_Z_Minus], color);
-        break;
-
-        case Face_Normal01:
-        case Face_Normal02:
-        case Face_Normal03:
-        case Face_Normal04:
-        DrawNormalTitles(m_lst_texts[Face_X_Plus],  m_lst_texts[Face_X_Minus], m_lst_texts[Face_Y_Plus],
-        m_lst_texts[Face_Y_Minus], m_lst_texts[Face_Z_Plus],  m_lst_texts[Face_Z_Minus], color);
-        break;
-
-        case Face_Hard01:
-        case Face_Hard02:
-        case Face_Hard03:
-        case Face_Hard04:
-        DrawHardTitles(m_lst_texts[Face_X_Plus],  m_lst_texts[Face_X_Minus], m_lst_texts[Face_Y_Plus],
-        m_lst_texts[Face_Y_Minus], m_lst_texts[Face_Z_Plus],  m_lst_texts[Face_Z_Minus], color);
-        break;
-
-default:
-        break;
-        }
-        }
-
-        cCubeFont* pCubeFont;
+        CubeFont pCubeFont;
         TexturedQuad* pFont;
         TexCoordsQuad coords;
 
@@ -1139,109 +928,109 @@ default:
         {
         Color colr = color;
 
-        if (m_pMenuCubePlay->IsDone() && m_pMenuCubePlay->m_cube_pos.x == 1)
+        if (m_pMenuCubePlay.IsDone() && m_pMenuCubePlay.m_cube_pos.x == 1)
         {
         pCubeFont = m_cubefont_play;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
         if (pFont)
         {
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_Z_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, colr);
+        Graphics.AddCubeFace_Z_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, colr);
         }
         }
 
-        if (m_pMenuCubeOptions->IsDone() && m_pMenuCubeOptions->m_cube_pos.x == 1)
+        if (m_pMenuCubeOptions.IsDone() && m_pMenuCubeOptions.m_cube_pos.x == 1)
         {
         pCubeFont = m_cubefont_options;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
         if (pFont)
         {
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_Z_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, colr);
+        Graphics.AddCubeFace_Z_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, colr);
         }
         }
 
-        if (m_pMenuCubeStore->IsDone() && m_pMenuCubeStore->m_cube_pos.x == 1)
+        if (m_pMenuCubeStore.IsDone() && m_pMenuCubeStore.m_cube_pos.x == 1)
         {
         pCubeFont = m_cubefont_store;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
         if (pFont)
         {
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_Z_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, colr);
+        Graphics.AddCubeFace_Z_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, colr);
         }
         }
 
-        if (m_pStoreCubeNoAds->IsDone() && m_pStoreCubeNoAds->m_cube_pos.x == 1)
+        if (m_pStoreCubeNoAds.IsDone() && m_pStoreCubeNoAds.m_cube_pos.x == 1)
         {
         pCubeFont = m_cubefont_noads;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
         if (pFont)
         {
-        coords.tx0 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx1 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx2 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, colr);
+        Graphics.AddCubeFace_Y_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, colr);
         }
         }
 
-        if (m_pStoreCubeSolvers->IsDone() && m_pStoreCubeSolvers->m_cube_pos.x == 1)
+        if (m_pStoreCubeSolvers.IsDone() && m_pStoreCubeSolvers.m_cube_pos.x == 1)
         {
         pCubeFont = m_cubefont_solvers;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
         if (pFont)
         {
-        coords.tx0 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx1 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx2 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, colr);
+        Graphics.AddCubeFace_Y_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, colr);
         }
         }
 
-        if (m_pStoreCubeRestore->IsDone() && m_pStoreCubeRestore->m_cube_pos.x == 1)
+        if (m_pStoreCubeRestore.IsDone() && m_pStoreCubeRestore.m_cube_pos.x == 1)
         {
         pCubeFont = m_cubefont_restore;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
         if (pFont)
         {
-        coords.tx0 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx1 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx2 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, colr);
+        Graphics.AddCubeFace_Y_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, colr);
         }
         }
-        }
-
-        cRenderer::RenderTriangles();
         }
 
-        void cMenu::DrawTextsTitles(Color color)
+        Graphics.RenderTriangles();
+        }
+
+        public void DrawTextsTitles(Color color)
         {
-        cRenderer::Prepare();
+        Graphics.Prepare();
 
         if (abs(m_navigator.m_cube_rotation_secondary.degree) < EPSILON)
         DrawTextsDefaultOrientation(m_lst_titles[Face_X_Plus],  m_lst_titles[Face_X_Minus], m_lst_titles[Face_Y_Plus],
@@ -1279,110 +1068,110 @@ default:
         }
         }
 
-        cRenderer::RenderTriangles();
+        Graphics.RenderTriangles();
         }
 
-        void cMenu::DrawTextsDefaultOrientation(list<cCubeFont*>& lst_x_plus,
-        list<cCubeFont*>& lst_x_minus,
-        list<cCubeFont*>& lst_y_plus,
-        list<cCubeFont*>& lst_y_minus,
-        list<cCubeFont*>& lst_z_plus,
-        list<cCubeFont*>& lst_z_minus, Color color)
-        {
-        list<cCubeFont*>::iterator it;
-        cCubeFont* pCubeFont;
-        TexturedQuad* pFont;
+    public void drawTextsDefaultOrientation(ArrayList<CubeFont> lst_x_plus,
+                                            ArrayList<CubeFont> lst_x_minus,
+                                            ArrayList<CubeFont> lst_y_plus,
+                                            ArrayList<CubeFont> lst_y_minus,
+                                            ArrayList<CubeFont> lst_z_plus,
+                                            ArrayList<CubeFont> lst_z_minus,
+                                            Color color) {
+        CubeFont cubeFont;
+        TexturedQuad  font;
         TexCoordsQuad coords;
+        int size;
 
-        for (it = lst_z_plus.begin(); it != lst_z_plus.end(); ++it)
-        {
-        pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        size = lst_z_plus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_z_plus.get(i);
+            font = cubeFont.getFont();
 
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+            coords.tx0 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+            coords.tx1 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+            coords.tx2 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
+            coords.tx3 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_Z_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+            Graphics.addCubeFace_Z_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
         }
 
-        for (it = lst_x_plus.begin(); it != lst_x_plus.end(); ++it)
-        {
-        pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        size = lst_x_plus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_x_plus.get(i);
+            font = cubeFont.getFont();
 
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+            coords.tx0 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+            coords.tx1 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+            coords.tx2 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
+            coords.tx3 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_X_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+            Graphics.addCubeFace_X_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
         }
 
-        for (it = lst_z_minus.begin(); it != lst_z_minus.end(); ++it)
-        {
-        pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        size = lst_z_minus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_z_minus.get(i);
+            font = cubeFont.getFont();
 
-        coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+            coords.tx0 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+            coords.tx1 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
+            coords.tx2 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+            coords.tx3 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
 
-        cRenderer::AddCubeFace_Z_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+            Graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
         }
 
-        for (it = lst_x_minus.begin(); it != lst_x_minus.end(); ++it)
-        {
-        pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        size = lst_x_minus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_x_minus.get(i);
+            font = cubeFont.getFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+            coords.tx0 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
+            coords.tx1 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+            coords.tx2 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+            coords.tx3 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
 
-        cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+            Graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
         }
 
-        for (it = lst_y_plus.begin(); it != lst_y_plus.end(); ++it)
-        {
-        pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        size = lst_y_plus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_y_plus.get(i);
+            font = cubeFont.getFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx1 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx2 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
+            coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+            coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+            coords.tx2 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+            coords.tx3 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
 
-        cRenderer::AddCubeFace_Y_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+            Graphics.addCubeFace_Y_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
         }
 
-        for (it = lst_y_minus.begin(); it != lst_y_minus.end(); ++it)
-        {
-        pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        size = lst_y_minus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_y_minus.get(i);
+            font = cubeFont.getFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx1 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx2 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
+            coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+            coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+            coords.tx2 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+            coords.tx3 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+            Graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
         }
-        }
+    }
 
-        void cMenu::DrawEasyTitles(list<cCubeFont*>& lst_x_plus,
-        list<cCubeFont*>& lst_x_minus,
-        list<cCubeFont*>& lst_y_plus,
-        list<cCubeFont*>& lst_y_minus,
-        list<cCubeFont*>& lst_z_plus,
-        list<cCubeFont*>& lst_z_minus, Color color)
+        public void DrawEasyTitles(ArrayList<CubeFont> lst_x_plus,
+        ArrayList<CubeFont> lst_x_minus,
+        ArrayList<CubeFont> lst_y_plus,
+        ArrayList<CubeFont> lst_y_minus,
+        ArrayList<CubeFont> lst_z_plus,
+        ArrayList<CubeFont> lst_z_minus, Color color)
         {
-        list<cCubeFont*>::iterator it;
+        ArrayList<CubeFont>::iterator it;
         CubeFaceTypesEnum face_type;
-        cCubeFont* pCubeFont;
+        CubeFont pCubeFont;
         TexturedQuad* pFont;
         TexCoordsQuad coords;
 
@@ -1390,69 +1179,69 @@ default:
         for (it = lst_x_plus.begin(); it != lst_x_plus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_X_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_X_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Y_Minus;
         for (it = lst_y_minus.begin(); it != lst_y_minus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_X_Minus;
         for (it = lst_x_minus.begin(); it != lst_x_minus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_X_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Y_Plus;
         for (it = lst_y_plus.begin(); it != lst_y_plus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-        cRenderer::AddCubeFace_Y_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
         }
 
-        void cMenu::DrawNormalTitles(list<cCubeFont*>& lst_x_plus,
-        list<cCubeFont*>& lst_x_minus,
-        list<cCubeFont*>& lst_y_plus,
-        list<cCubeFont*>& lst_y_minus,
-        list<cCubeFont*>& lst_z_plus,
-        list<cCubeFont*>& lst_z_minus, Color color)
+        public void DrawNormalTitles(ArrayList<CubeFont> lst_x_plus,
+        ArrayList<CubeFont> lst_x_minus,
+        ArrayList<CubeFont> lst_y_plus,
+        ArrayList<CubeFont> lst_y_minus,
+        ArrayList<CubeFont> lst_z_plus,
+        ArrayList<CubeFont> lst_z_minus, Color color)
         {
-        list<cCubeFont*>::iterator it;
+        ArrayList<CubeFont>::iterator it;
         CubeFaceTypesEnum face_type;
-        cCubeFont* pCubeFont;
+        CubeFont pCubeFont;
         TexturedQuad* pFont;
         TexCoordsQuad coords;
 
@@ -1460,69 +1249,69 @@ default:
         for (it = lst_z_minus.begin(); it != lst_z_minus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-        cRenderer::AddCubeFace_Z_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Z_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Y_Minus;
         for (it = lst_y_minus.begin(); it != lst_y_minus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Z_Plus;
         for (it = lst_z_plus.begin(); it != lst_z_plus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-        cRenderer::AddCubeFace_Z_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Z_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Y_Plus;
         for (it = lst_y_plus.begin(); it != lst_y_plus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-        cRenderer::AddCubeFace_Y_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
         }
 
-        void cMenu::DrawHardTitles(list<cCubeFont*>& lst_x_plus,
-        list<cCubeFont*>& lst_x_minus,
-        list<cCubeFont*>& lst_y_plus,
-        list<cCubeFont*>& lst_y_minus,
-        list<cCubeFont*>& lst_z_plus,
-        list<cCubeFont*>& lst_z_minus, Color color)
+        public void DrawHardTitles(ArrayList<CubeFont> lst_x_plus,
+        ArrayList<CubeFont> lst_x_minus,
+        ArrayList<CubeFont> lst_y_plus,
+        ArrayList<CubeFont> lst_y_minus,
+        ArrayList<CubeFont> lst_z_plus,
+        ArrayList<CubeFont> lst_z_minus, Color color)
         {
-        list<cCubeFont*>::iterator it;
+        ArrayList<CubeFont>::iterator it;
         CubeFaceTypesEnum face_type;
-        cCubeFont* pCubeFont;
+        CubeFont pCubeFont;
         TexturedQuad* pFont;
         TexCoordsQuad coords;
 
@@ -1530,63 +1319,63 @@ default:
         for (it = lst_x_minus.begin(); it != lst_x_minus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-        cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_X_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Y_Minus;
         for (it = lst_y_minus.begin(); it != lst_y_minus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-        cRenderer::AddCubeFace_Y_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_X_Plus;
         for (it = lst_x_plus.begin(); it != lst_x_plus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-        coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+        coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+        coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-        cRenderer::AddCubeFace_X_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_X_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
 
         face_type = Face_Y_Plus;
         for (it = lst_y_plus.begin(); it != lst_y_plus.end(); ++it)
         {
         pCubeFont = *it;
-        pFont = pCubeFont->GetFont();
+        pFont = pCubeFont.GetFont();
 
-        coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-        coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-        coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-        coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        coords.tx0 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+        coords.tx1 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+        coords.tx2 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+        coords.tx3 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
 
-        cRenderer::AddCubeFace_Y_Plus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Plus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, color);
         }
         }
 
-        void cMenu::DrawSymbols(Color color)
+        public void DrawSymbols(Color color)
         {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSourceFloatAndColor();
+        Graphics.Prepare();
+        Graphics.SetStreamSourceFloatAndColor();
 
         DrawTextsDefaultOrientation(m_lst_symbols[Face_X_Plus],
         m_lst_symbols[Face_X_Minus],
@@ -1595,19 +1384,19 @@ default:
         m_lst_symbols[Face_Z_Plus],
         m_lst_symbols[Face_Z_Minus], color);
 
-        cRenderer::RenderTriangles();
+        Graphics.RenderTriangles();
         }
 
-        void cMenu::DrawCubeFaceOptions()
+        public void DrawCubeFaceOptions()
         {
-        cCube* p = &engine->cubes[2][7][3];
+        cCube* p = &engine.cubes[2][7][3];
 
-        float x = p->tx - HALF_CUBE_SIZE;
-        float y = p->ty + HALF_CUBE_SIZE + 0.01f;
-        float z = p->tz - HALF_CUBE_SIZE;
-        float w = CUBE_SIZE * 5.0f * engine->GetMusicVolume();
-        float ws = CUBE_SIZE * 5.0f * engine->GetSoundVolume();
-        float zs = engine->cubes[2][7][6].tz - HALF_CUBE_SIZE;
+        float x = p.tx - HALF_CUBE_SIZE;
+        float y = p.ty + HALF_CUBE_SIZE + 0.01f;
+        float z = p.tz - HALF_CUBE_SIZE;
+        float w = CUBE_SIZE * 5.0f * engine.GetMusicVolume();
+        float ws = CUBE_SIZE * 5.0f * engine.GetSoundVolume();
+        float zs = engine.cubes[2][7][6].tz - HALF_CUBE_SIZE;
 
         const GLfloat verts[] =
         {
@@ -1660,7 +1449,7 @@ default:
         glDisable(GL_TEXTURE_2D);
 
         glPushMatrix();
-        glTranslatef(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        glTranslatef(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // progress bar music
         glDrawArrays(GL_TRIANGLE_FAN, 4, 4); // progress bar soundfx
         glPopMatrix();
@@ -1668,10 +1457,10 @@ default:
         glEnable(GL_TEXTURE_2D);
         }
 
-        void cMenu::DrawLevelCubeSymbols()
+        public void DrawLevelCubeSymbols()
         {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSourceFloat();
+        Graphics.Prepare();
+        Graphics.SetStreamSourceFloat();
 
         switch (m_current_cube_face)
         {
@@ -1680,16 +1469,16 @@ default:
         case Face_Easy03:
         case Face_Easy04:
 
-        DrawLevelCubeDecalsEasy(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+        DrawLevelCubeDecalsEasy(engine.ar_cubefacedata[Face_X_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_X_Minus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
         LevelCubeDecalStars);
 
-        DrawLevelCubeDecalsEasy(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+        DrawLevelCubeDecalsEasy(engine.ar_cubefacedata[Face_X_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_X_Minus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
         LevelCubeDecalSolver);
 
         break;
@@ -1698,16 +1487,16 @@ default:
         case Face_Normal02:
         case Face_Normal03:
         case Face_Normal04:
-        DrawLevelCubeDecalsNormal(engine->ar_cubefacedata[Face_Z_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Z_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+        DrawLevelCubeDecalsNormal(engine.ar_cubefacedata[Face_Z_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Z_Minus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
         LevelCubeDecalStars);
 
-        DrawLevelCubeDecalsNormal(engine->ar_cubefacedata[Face_Z_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Z_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+        DrawLevelCubeDecalsNormal(engine.ar_cubefacedata[Face_Z_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Z_Minus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
         LevelCubeDecalSolver);
         break;
 
@@ -1715,16 +1504,16 @@ default:
         case Face_Hard02:
         case Face_Hard03:
         case Face_Hard04:
-        DrawLevelCubeDecalsHard(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+        DrawLevelCubeDecalsHard(engine.ar_cubefacedata[Face_X_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_X_Minus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
         LevelCubeDecalStars);
 
-        DrawLevelCubeDecalsHard(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_X_Minus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
-        engine->ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
+        DrawLevelCubeDecalsHard(engine.ar_cubefacedata[Face_X_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_X_Minus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Plus].lst_level_cubes,
+        engine.ar_cubefacedata[Face_Y_Minus].lst_level_cubes,
         LevelCubeDecalSolver);
         break;
 
@@ -1732,10 +1521,10 @@ default:
         break;
         }
 
-        cRenderer::RenderTriangles();
+        Graphics.RenderTriangles();
         }
 
-        void cMenu::DrawCredits()
+        public void DrawCredits()
         {
         const GLfloat vertices[] =
         {
@@ -1799,74 +1588,74 @@ default:
         glPopMatrix();
         }
 
-        void cMenu::DrawTheCube()
+        public void DrawTheCube()
         {
-        cRenderer::Prepare();
-        cRenderer::SetStreamSource();
+        Graphics.Prepare();
+        Graphics.SetStreamSource();
 
-        list<cCube*>::iterator it;
+        ArrayList<cCube*>::iterator it;
         for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
-        cRenderer::AddCubeWithColor((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
+        Graphics.AddCubeWithColor((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
 
-        cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        Graphics.RenderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
-        cRenderer::Prepare();
+        Graphics.Prepare();
 
         for (it = m_list_cubes_face.begin(); it != m_list_cubes_face.end(); ++it)
-        cRenderer::AddCubeWithColor((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
+        Graphics.AddCubeWithColor((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
 
-        cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        Graphics.RenderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
         }
 
-        void cMenu::DrawCubeHiLite(Color color)
+        public void DrawCubeHiLite(Color color)
         {
         TexCoordsQuad coords;
 
         TexturedQuad* p = m_font_hilite.GetFont();
-        coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-        coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-        coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-        coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
+        coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+        coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+        coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+        coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
-        cRenderer::Prepare();
-        cRenderer::SetStreamSourceFloatAndColor();
+        Graphics.Prepare();
+        Graphics.SetStreamSourceFloatAndColor();
 
         switch (m_current_cube_face_type)
         {
         case Face_X_Plus:
-        cRenderer::AddCubeFace_X_Plus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+        Graphics.AddCubeFace_X_Plus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
         break;
 
         case Face_X_Minus:
-        cRenderer::AddCubeFace_X_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+        Graphics.AddCubeFace_X_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
         break;
 
         case Face_Y_Plus:
-        cRenderer::AddCubeFace_Y_Plus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Plus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
         break;
 
         case Face_Y_Minus:
-        cRenderer::AddCubeFace_Y_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+        Graphics.AddCubeFace_Y_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
         break;
 
         case Face_Z_Plus:
-        cRenderer::AddCubeFace_Z_Plus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+        Graphics.AddCubeFace_Z_Plus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
         break;
 
         case Face_Z_Minus:
-        cRenderer::AddCubeFace_Z_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+        Graphics.AddCubeFace_Z_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
         break;
 
 default:
         break;
         }
 
-        cRenderer::RenderTriangles();
+        Graphics.RenderTriangles();
         }
 
         #pragma mark - UpdateAnim
 
-        void cMenu::UpdateAnimToCredits(float dt)
+        public void UpdateAnimToCredits(float dt)
         {
         if (m_t >= 1.0f)
         {
@@ -1879,12 +1668,12 @@ default:
         m_t = 1.0f;
 
         cUtils::LerpCamera(m_camera_menu, m_camera_credits, m_t, m_camera_current);
-        engine->dirty_alpha = LERP(DIRTY_ALPHA, 0, m_t);
+        engine.dirty_alpha = LERP(DIRTY_ALPHA, 0, m_t);
 
-        m_pMenuCubeStore->Update(dt);
+        m_pMenuCubeStore.Update(dt);
         }
 
-        void cMenu::UpdateAnimFromCredits(float dt)
+        public void UpdateAnimFromCredits(float dt)
         {
         if (m_t >= 1.0f)
         {
@@ -1897,26 +1686,26 @@ default:
         m_t = 1.0f;
 
         cUtils::LerpCamera(m_camera_credits, m_camera_menu, m_t, m_camera_current);
-        engine->dirty_alpha = LERP(0, DIRTY_ALPHA, m_t);
+        engine.dirty_alpha = LERP(0, DIRTY_ALPHA, m_t);
         }
 
-        void cMenu::UpdatePlayCube(float dt)
+        public void UpdatePlayCube(float dt)
         {
-        if (m_pMenuCubePlay->IsDone())
+        if (m_pMenuCubePlay.IsDone())
         {
         switch (m_current_cube_face)
         {
         case Face_Tutorial:
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.z == 8)
         {
         m_current_cube_face = Face_Menu;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Tutorial_To_Menu);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 7 && m_can_alter_text)
+        if (m_pMenuCubePlay.m_cube_pos.y == 7 && m_can_alter_text)
         {
         m_can_alter_text = false;
         cMenuFaceBuilder::ResetTransforms();
@@ -1925,7 +1714,7 @@ default:
         cMenuFaceBuilder::BuildTexts(Face_Tutorial, Face_X_Minus, true);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 1 && m_can_alter_text)
+        if (m_pMenuCubePlay.m_cube_pos.y == 1 && m_can_alter_text)
         {
         m_can_alter_text = false;
         cMenuFaceBuilder::ResetTransforms();
@@ -1938,56 +1727,56 @@ default:
 
         case Face_Menu:
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 2 && m_pMenuCubePlay->m_cube_pos.y == 7 && m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 2 && m_pMenuCubePlay.m_cube_pos.y == 7 && m_pMenuCubePlay.m_cube_pos.z == 8)
         {
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 2 && m_pMenuCubePlay->m_cube_pos.y == 5 && m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 2 && m_pMenuCubePlay.m_cube_pos.y == 5 && m_pMenuCubePlay.m_cube_pos.z == 8)
         {
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 8)
         {
         m_current_cube_face = Face_Easy01;
         SetCurrentCubeFaceType(Face_X_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Minus);
         m_navigator.Setup(Menu_To_Easy1);
         }
         break;
 
         case Face_Easy01:
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 0)
+        if (m_pMenuCubePlay.m_cube_pos.z == 0)
         {
         m_current_cube_face = Face_Normal01;
         SetCurrentCubeFaceType(Face_Z_Minus);
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         m_navigator.Setup(Easy1_To_Normal1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.z == 8)
         {
         m_current_cube_face = Face_Menu;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         m_navigator.Setup(Easy1_To_Menu);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 0)
+        if (m_pMenuCubePlay.m_cube_pos.y == 0)
         {
         m_current_cube_face = Face_Easy02;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         m_navigator.Setup(Easy1_To_Easy2);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 8)
+        if (m_pMenuCubePlay.m_cube_pos.y == 8)
         {
         m_current_cube_face = Face_Easy04;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         m_navigator.Setup(Easy1_To_Easy4);
         }
 
@@ -1995,19 +1784,19 @@ default:
 
         case Face_Easy02:
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 8)
         {
         m_current_cube_face = Face_Easy01;
         SetCurrentCubeFaceType(Face_X_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Plus);
         m_navigator.Setup(Easy2_To_Easy1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 0)
+        if (m_pMenuCubePlay.m_cube_pos.x == 0)
         {
         m_current_cube_face = Face_Easy03;
         SetCurrentCubeFaceType(Face_X_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Plus);
         m_navigator.Setup(Easy2_To_Easy3);
         }
 
@@ -2015,19 +1804,19 @@ default:
 
         case Face_Easy03:
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 0)
+        if (m_pMenuCubePlay.m_cube_pos.y == 0)
         {
         m_current_cube_face = Face_Easy02;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Easy3_To_Easy2);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 8)
+        if (m_pMenuCubePlay.m_cube_pos.y == 8)
         {
         m_current_cube_face = Face_Easy04;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Easy3_To_Easy4);
         }
 
@@ -2035,19 +1824,19 @@ default:
 
         case Face_Easy04:
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 8)
         {
         m_current_cube_face = Face_Easy01;
         SetCurrentCubeFaceType(Face_X_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         m_navigator.Setup(Easy4_To_Easy1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 0)
+        if (m_pMenuCubePlay.m_cube_pos.x == 0)
         {
         m_current_cube_face = Face_Easy03;
         SetCurrentCubeFaceType(Face_X_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         m_navigator.Setup(Easy4_To_Easy3);
         }
 
@@ -2055,35 +1844,35 @@ default:
 
         case Face_Normal01:
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 8)
         {
         m_current_cube_face = Face_Easy01;
         SetCurrentCubeFaceType(Face_X_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Plus);
         m_navigator.Setup(Normal1_To_Easy1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 0)
+        if (m_pMenuCubePlay.m_cube_pos.x == 0)
         {
         m_current_cube_face = Face_Hard01;
         SetCurrentCubeFaceType(Face_X_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Plus);
         m_navigator.Setup(Normal1_To_Hard1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 0)
+        if (m_pMenuCubePlay.m_cube_pos.y == 0)
         {
         m_current_cube_face = Face_Normal02;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Plus);
         m_navigator.Setup(Normal1_To_Normal2);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 8)
+        if (m_pMenuCubePlay.m_cube_pos.y == 8)
         {
         m_current_cube_face = Face_Normal04;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Plus);
         m_navigator.Setup(Normal1_To_Normal4);
         }
 
@@ -2091,19 +1880,19 @@ default:
 
         case Face_Normal02:
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 0)
+        if (m_pMenuCubePlay.m_cube_pos.z == 0)
         {
         m_current_cube_face = Face_Normal01;
         SetCurrentCubeFaceType(Face_Z_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Plus);
         m_navigator.Setup(Normal2_To_Normal1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.z == 8)
         {
         m_current_cube_face = Face_Normal03;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Plus);
         m_navigator.Setup(Normal2_To_Normal3);
         }
 
@@ -2111,19 +1900,19 @@ default:
 
         case Face_Normal03:
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 0)
+        if (m_pMenuCubePlay.m_cube_pos.y == 0)
         {
         m_current_cube_face = Face_Normal02;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Minus);
         m_navigator.Setup(Normal3_To_Normal2);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 8)
+        if (m_pMenuCubePlay.m_cube_pos.y == 8)
         {
         m_current_cube_face = Face_Normal04;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Z_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Z_Minus);
         m_navigator.Setup(Normal3_To_Normal4);
         }
 
@@ -2131,19 +1920,19 @@ default:
 
         case Face_Normal04:
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.z == 8)
         {
         m_current_cube_face = Face_Normal03;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         m_navigator.Setup(Normal4_To_Normal3);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 0)
+        if (m_pMenuCubePlay.m_cube_pos.z == 0)
         {
         m_current_cube_face = Face_Normal01;
         SetCurrentCubeFaceType(Face_Z_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         m_navigator.Setup(Normal4_To_Normal1);
         }
 
@@ -2151,35 +1940,35 @@ default:
 
         case Face_Hard01:
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 0)
+        if (m_pMenuCubePlay.m_cube_pos.z == 0)
         {
         m_current_cube_face = Face_Normal01;
         SetCurrentCubeFaceType(Face_Z_Minus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Hard1_To_Normal1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.z == 8)
+        if (m_pMenuCubePlay.m_cube_pos.z == 8)
         {
         m_current_cube_face = Face_Menu;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Hard1_To_Menu);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 0)
+        if (m_pMenuCubePlay.m_cube_pos.y == 0)
         {
         m_current_cube_face = Face_Hard02;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Hard1_To_Hard2);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 8)
+        if (m_pMenuCubePlay.m_cube_pos.y == 8)
         {
         m_current_cube_face = Face_Hard04;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Plus);
+        m_pMenuCubePlay.MoveOnAxis(X_Plus);
         m_navigator.Setup(Hard1_To_Hard4);
         }
 
@@ -2187,19 +1976,19 @@ default:
 
         case Face_Hard02:
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 0)
+        if (m_pMenuCubePlay.m_cube_pos.x == 0)
         {
         m_current_cube_face = Face_Hard01;
         SetCurrentCubeFaceType(Face_X_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Plus);
         m_navigator.Setup(Hard2_To_Hard1);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 8)
         {
         m_current_cube_face = Face_Hard03;
         SetCurrentCubeFaceType(Face_X_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Plus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Plus);
         m_navigator.Setup(Hard2_To_Hard3);
         }
 
@@ -2207,19 +1996,19 @@ default:
 
         case Face_Hard03:
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 8)
+        if (m_pMenuCubePlay.m_cube_pos.y == 8)
         {
         m_current_cube_face = Face_Hard04;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         m_navigator.Setup(Hard3_To_Hard4);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.y == 0)
+        if (m_pMenuCubePlay.m_cube_pos.y == 0)
         {
         m_current_cube_face = Face_Hard02;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubePlay->MoveOnAxis(X_Minus);
+        m_pMenuCubePlay.MoveOnAxis(X_Minus);
         m_navigator.Setup(Hard3_To_Hard2);
         }
 
@@ -2227,19 +2016,19 @@ default:
 
         case Face_Hard04:
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 8)
+        if (m_pMenuCubePlay.m_cube_pos.x == 8)
         {
         m_current_cube_face = Face_Hard03;
         SetCurrentCubeFaceType(Face_X_Plus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         m_navigator.Setup(Hard4_To_Hard3);
         }
 
-        if (m_pMenuCubePlay->m_cube_pos.x == 0)
+        if (m_pMenuCubePlay.m_cube_pos.x == 0)
         {
         m_current_cube_face = Face_Hard01;
         SetCurrentCubeFaceType(Face_X_Minus);
-        m_pMenuCubePlay->MoveOnAxis(Y_Minus);
+        m_pMenuCubePlay.MoveOnAxis(Y_Minus);
         m_navigator.Setup(Hard4_To_Hard1);
         }
 
@@ -2251,35 +2040,35 @@ default:
         }
         else
         {
-        m_pMenuCubePlay->Update(dt);
+        m_pMenuCubePlay.Update(dt);
         m_can_alter_text = true;
         }
         }
 
-        void cMenu::UpdateOptionsCube(float dt)
+        public void UpdateOptionsCube(float dt)
         {
-        if (m_pMenuCubeOptions->IsDone())
+        if (m_pMenuCubeOptions.IsDone())
         {
         switch (m_current_cube_face)
         {
         case Face_Menu:
 
-        if (m_pMenuCubeOptions->m_cube_pos.y == 8)
+        if (m_pMenuCubeOptions.m_cube_pos.y == 8)
         {
         m_prev_face = Face_Menu;
         m_current_cube_face = Face_Options;
         SetCurrentCubeFaceType(Face_Y_Plus);
-        m_pMenuCubeOptions->MoveOnAxis(Z_Minus);
+        m_pMenuCubeOptions.MoveOnAxis(Z_Minus);
 
         m_navigator.Setup(Menu_To_Options);
         }
 
-        if (m_pMenuCubeOptions->m_cube_pos.x == 7)
+        if (m_pMenuCubeOptions.m_cube_pos.x == 7)
         {
         if (Face_Options == m_prev_face)
         {
         m_prev_face = -1;
-        m_pMenuCubeOptions->MoveOnAxis(X_Minus);
+        m_pMenuCubeOptions.MoveOnAxis(X_Minus);
         }
         }
 
@@ -2287,22 +2076,22 @@ default:
 
         case Face_Options:
 
-        if (m_pMenuCubeOptions->m_cube_pos.z == 8)
+        if (m_pMenuCubeOptions.m_cube_pos.z == 8)
         {
         m_prev_face = Face_Options;
         m_current_cube_face = Face_Menu;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubeOptions->MoveOnAxis(Y_Minus);
+        m_pMenuCubeOptions.MoveOnAxis(Y_Minus);
 
         m_navigator.Setup(Options_To_Menu);
         }
 
-        if (m_pMenuCubeOptions->m_cube_pos.x == 7 && m_pMenuCubeOptions->m_cube_pos.y == 8 && m_pMenuCubeOptions->m_cube_pos.z == 1)
+        if (m_pMenuCubeOptions.m_cube_pos.x == 7 && m_pMenuCubeOptions.m_cube_pos.y == 8 && m_pMenuCubeOptions.m_cube_pos.z == 1)
         {
-//                    list<cCubeFont*>::iterator it;
-//                    for (it = engine->ar_cubefacedata[Face_Y_Plus].lst_symbols.begin(); it != engine->ar_cubefacedata[Face_Y_Plus].lst_symbols.end(); ++it)
+//                    ArrayList<CubeFont>::iterator it;
+//                    for (it = engine.ar_cubefacedata[Face_Y_Plus].lst_symbols.begin(); it != engine.ar_cubefacedata[Face_Y_Plus].lst_symbols.end(); ++it)
 //                    {
-//                        (*it)->visible = true;
+//                        (*it).visible = true;
 //                    }
         }
         break;
@@ -2312,42 +2101,42 @@ default:
         } // switch
         }
         else
-        m_pMenuCubeOptions->Update(dt);
+        m_pMenuCubeOptions.Update(dt);
         }
 
-        void cMenu::UpdateStoreCube(float dt)
+        public void UpdateStoreCube(float dt)
         {
-        if (m_pMenuCubeStore->IsDone())
+        if (m_pMenuCubeStore.IsDone())
         {
         switch (m_current_cube_face)
         {
         case Face_Menu:
         #ifdef LITE_VERSION
 
-        if (m_pMenuCubeStore->m_cube_pos.x == 7)
+        if (m_pMenuCubeStore.m_cube_pos.x == 7)
         {
-        m_pMenuCubeStore->MoveOnAxis(X_Minus);
+        m_pMenuCubeStore.MoveOnAxis(X_Minus);
         EventShowCredits();
         }
         #else
-        if (m_pMenuCubeStore->m_cube_pos.y == 0)
+        if (m_pMenuCubeStore.m_cube_pos.y == 0)
         {
         m_prev_face = Face_Menu;
         m_current_cube_face = Face_Store;
         SetCurrentCubeFaceType(Face_Y_Minus);
-        m_pMenuCubeStore->MoveOnAxis(Z_Minus);
+        m_pMenuCubeStore.MoveOnAxis(Z_Minus);
 
         m_navigator.Setup(Menu_To_Store);
         }
 
-        if (m_pMenuCubeStore->m_cube_pos.x == 7)
+        if (m_pMenuCubeStore.m_cube_pos.x == 7)
         {
-        if (!m_pMenuCubeOptions->IsDone() || !m_pMenuCubePlay->IsDone() || m_prev_face == Face_Store)
+        if (!m_pMenuCubeOptions.IsDone() || !m_pMenuCubePlay.IsDone() || m_prev_face == Face_Store)
         {
         if (m_prev_face == Face_Store)
         m_prev_face = -1;
 
-        m_pMenuCubeStore->MoveOnAxis(X_Minus);
+        m_pMenuCubeStore.MoveOnAxis(X_Minus);
         }
         }
         #endif
@@ -2355,14 +2144,14 @@ default:
 
         case Face_Store:
 
-        if (m_pMenuCubeStore->m_cube_pos.z == 8)
+        if (m_pMenuCubeStore.m_cube_pos.z == 8)
         {
         m_prev_face = Face_Store;
         m_current_cube_face = Face_Menu;
         SetCurrentCubeFaceType(Face_Z_Plus);
-        m_pMenuCubeStore->MoveOnAxis(Y_Plus);
+        m_pMenuCubeStore.MoveOnAxis(Y_Plus);
 
-        engine->HideProgressIndicator();
+        engine.HideProgressIndicator();
         m_navigator.Setup(Store_To_Menu);
         }
 
@@ -2374,10 +2163,10 @@ default:
         } // switch
         }
         else
-        m_pMenuCubeStore->Update(dt);
+        m_pMenuCubeStore.Update(dt);
         }
 
-        void cMenu::UpdateCubes(float dt)
+        public void UpdateCubes(float dt)
         {
         for (int i = 0; i < 6; ++i)
         {
@@ -2390,58 +2179,58 @@ default:
 
         cCube* pCube;
 
-        list<cCube*>::iterator it;
+        ArrayList<cCube*>::iterator it;
 
         for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
         {
         pCube = *it;
 
         face_type = Face_X_Plus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_texts[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_texts[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_X_Minus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_texts[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_texts[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Y_Plus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_texts[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_texts[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Y_Minus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_texts[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_texts[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Z_Plus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_texts[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_texts[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Z_Minus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_texts[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_texts[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
         }
 
         for (it = m_list_cubes_face.begin(); it != m_list_cubes_face.end(); ++it)
@@ -2449,51 +2238,51 @@ default:
         pCube = *it;
 
         face_type = Face_X_Plus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_titles[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_titles[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_X_Minus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_titles[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_titles[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Y_Plus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_titles[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_titles[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Y_Minus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_titles[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_titles[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Z_Plus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_titles[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_titles[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
 
 
         face_type = Face_Z_Minus;
-        if (NULL != pCube->ar_fonts[face_type])
-        m_lst_titles[face_type].push_back(pCube->ar_fonts[face_type]);
+        if (null != pCube.ar_fonts[face_type])
+        m_lst_titles[face_type].push_back(pCube.ar_fonts[face_type]);
 
-        if (NULL != pCube->ar_symbols[face_type])
-        m_lst_symbols[face_type].push_back(pCube->ar_symbols[face_type]);
+        if (null != pCube.ar_symbols[face_type])
+        m_lst_symbols[face_type].push_back(pCube.ar_symbols[face_type]);
         }
 
 //    printf("\nFace_Y_Symbol Size: %lu", m_lst_symbols[Face_Y_Plus].size());
@@ -2507,12 +2296,12 @@ default:
         }
 
         for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
-        (*it)->WarmByFactor(WARM_FACTOR);
+        (*it).WarmByFactor(WARM_FACTOR);
         }
 
         #pragma mark - UpdateIn
 
-        void cMenu::UpdateInCredits(float dt)
+        public void UpdateInCredits(float dt)
         {
         m_credits_offset -= 0.05f;
 
@@ -2520,7 +2309,7 @@ default:
         m_credits_offset = 20.0f;
         }
 
-        void cMenu::UpdateInMenu(float dt)
+        public void UpdateInMenu(float dt)
         {
         switch (m_current_cube_face)
         {
@@ -2528,26 +2317,26 @@ default:
         break;
 
         case Face_Store:
-        m_pStoreCubeNoAds->Update(dt);
-        m_pStoreCubeSolvers->Update(dt);
-        m_pStoreCubeRestore->Update(dt);
+        m_pStoreCubeNoAds.Update(dt);
+        m_pStoreCubeSolvers.Update(dt);
+        m_pStoreCubeRestore.Update(dt);
 
-        if (m_pStoreCubeNoAds->IsDone() && m_pStoreCubeNoAds->m_cube_pos.x == 7)
+        if (m_pStoreCubeNoAds.IsDone() && m_pStoreCubeNoAds.m_cube_pos.x == 7)
         {
-        engine->PurchaseRemoveAds();
-        m_pStoreCubeNoAds->MoveOnAxis(X_Minus);
+        engine.PurchaseRemoveAds();
+        m_pStoreCubeNoAds.MoveOnAxis(X_Minus);
         }
 
-        if (m_pStoreCubeSolvers->IsDone() && m_pStoreCubeSolvers->m_cube_pos.x == 7)
+        if (m_pStoreCubeSolvers.IsDone() && m_pStoreCubeSolvers.m_cube_pos.x == 7)
         {
-        engine->PurchaseSolvers();
-        m_pStoreCubeSolvers->MoveOnAxis(X_Minus);
+        engine.PurchaseSolvers();
+        m_pStoreCubeSolvers.MoveOnAxis(X_Minus);
         }
 
-        if (m_pStoreCubeRestore->IsDone() && m_pStoreCubeRestore->m_cube_pos.x == 7)
+        if (m_pStoreCubeRestore.IsDone() && m_pStoreCubeRestore.m_cube_pos.x == 7)
         {
-        engine->PurchaseRestore();
-        m_pStoreCubeRestore->MoveOnAxis(X_Minus);
+        engine.PurchaseRestore();
+        m_pStoreCubeRestore.MoveOnAxis(X_Minus);
         }
         break;
 
@@ -2560,7 +2349,7 @@ default:
         UpdateStoreCube(dt);
         }
 
-        void cMenu::UpdateHilite(float dt)
+        public void UpdateHilite(float dt)
         {
         m_hilite_timeout -= dt;
 
@@ -2570,53 +2359,53 @@ default:
 
         Color color(160, 160, 160, 255);
 
-        if (!m_pMenuCubePlay->lst_cubes_to_hilite.empty())
+        if (!m_pMenuCubePlay.lst_cubes_to_hilite.empty())
         {
-        cCube* p = m_pMenuCubePlay->lst_cubes_to_hilite.front();
-        m_pMenuCubePlay->lst_cubes_to_hilite.pop_front();
+        cCube* p = m_pMenuCubePlay.lst_cubes_to_hilite.front();
+        m_pMenuCubePlay.lst_cubes_to_hilite.pop_front();
 
-        p->color_current = color;
+        p.color_current = color;
         }
 
-        if (!m_pMenuCubeOptions->lst_cubes_to_hilite.empty())
+        if (!m_pMenuCubeOptions.lst_cubes_to_hilite.empty())
         {
-        cCube* p = m_pMenuCubeOptions->lst_cubes_to_hilite.front();
-        m_pMenuCubeOptions->lst_cubes_to_hilite.pop_front();
+        cCube* p = m_pMenuCubeOptions.lst_cubes_to_hilite.front();
+        m_pMenuCubeOptions.lst_cubes_to_hilite.pop_front();
 
-        p->color_current = color;
+        p.color_current = color;
         }
 
-        if (!m_pMenuCubeStore->lst_cubes_to_hilite.empty())
+        if (!m_pMenuCubeStore.lst_cubes_to_hilite.empty())
         {
-        cCube* p = m_pMenuCubeStore->lst_cubes_to_hilite.front();
-        m_pMenuCubeStore->lst_cubes_to_hilite.pop_front();
+        cCube* p = m_pMenuCubeStore.lst_cubes_to_hilite.front();
+        m_pMenuCubeStore.lst_cubes_to_hilite.pop_front();
 
-        p->color_current = color;
+        p.color_current = color;
         }
 
-        if (!m_pStoreCubeNoAds->lst_cubes_to_hilite.empty())
+        if (!m_pStoreCubeNoAds.lst_cubes_to_hilite.empty())
         {
-        cCube* p = m_pStoreCubeNoAds->lst_cubes_to_hilite.front();
-        m_pStoreCubeNoAds->lst_cubes_to_hilite.pop_front();
+        cCube* p = m_pStoreCubeNoAds.lst_cubes_to_hilite.front();
+        m_pStoreCubeNoAds.lst_cubes_to_hilite.pop_front();
 
-        p->color_current = color;
+        p.color_current = color;
         }
 
 
 
-        if (!m_pStoreCubeRestore->lst_cubes_to_hilite.empty())
+        if (!m_pStoreCubeRestore.lst_cubes_to_hilite.empty())
         {
-        cCube* p = m_pStoreCubeRestore->lst_cubes_to_hilite.front();
-        m_pStoreCubeRestore->lst_cubes_to_hilite.pop_front();
+        cCube* p = m_pStoreCubeRestore.lst_cubes_to_hilite.front();
+        m_pStoreCubeRestore.lst_cubes_to_hilite.pop_front();
 
-        p->color_current = color;
+        p.color_current = color;
         }
         }
         }
 
         #pragma mark - Update
 
-        void cMenu::Update(float dt)
+        public void Update(float dt)
         {
         if (m_showing_help)
         {
@@ -2655,16 +2444,16 @@ default:
 
         #pragma mark - Event
 
-        void cMenu::EventPlayLevel(DifficultyEnum difficulty, int level_number)
+        public void EventPlayLevel(DifficultyEnum difficulty, int level_number)
         {
-        if (false == engine->GetCanPlayLockedLevels())
+        if (false == engine.GetCanPlayLockedLevels())
         {
         switch (difficulty)
         {
         case Easy:
         if (LEVEL_LOCKED == cCubetraz::GetStarsEasy(level_number))
         {
-        engine->PlaySound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+        engine.PlaySound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
         return;
         }
         break;
@@ -2672,7 +2461,7 @@ default:
         case Normal:
         if (LEVEL_LOCKED == cCubetraz::GetStarsNormal(level_number))
         {
-        engine->PlaySound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+        engine.PlaySound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
         return;
         }
         break;
@@ -2680,17 +2469,17 @@ default:
         case Hard:
         if (LEVEL_LOCKED == cCubetraz::GetStarsHard(level_number))
         {
-        engine->PlaySound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+        engine.PlaySound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
         return;
         }
         break;
         }
         }
 
-        engine->PlaySound(SOUND_TAP_ON_LEVEL_CUBE);
+        engine.PlaySound(SOUND_TAP_ON_LEVEL_CUBE);
 
-        engine->StopMusic();
-        engine->anim_init_data.ClearTransforms();
+        engine.StopMusic();
+        engine.anim_init_data.ClearTransforms();
 
         switch (difficulty)
         {
@@ -2698,16 +2487,16 @@ default:
         //printf("\nPlay Easy level: %d\n", level_number);
 
         if (level_number >= 1 && level_number <= 15)
-        engine->anim_init_data.SetFaces(Face_Easy01, Face_Easy04, Face_Menu);
+        engine.anim_init_data.SetFaces(Face_Easy01, Face_Easy04, Face_Menu);
 
         if (level_number >= 16 && level_number <= 30)
-        engine->anim_init_data.SetFaces(Face_Easy02, Face_Easy01, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Easy02, Face_Easy01, Face_Empty);
 
         if (level_number >= 31 && level_number <= 45)
-        engine->anim_init_data.SetFaces(Face_Easy03, Face_Easy02, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Easy03, Face_Easy02, Face_Empty);
 
         if (level_number >= 46 && level_number <= 60)
-        engine->anim_init_data.SetFaces(Face_Easy04, Face_Easy03, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Easy04, Face_Easy03, Face_Empty);
 
         break;
 
@@ -2715,16 +2504,16 @@ default:
         //printf("\nPlay Normal level: %d\n", level_number);
 
         if (level_number >= 1 && level_number <= 15)
-        engine->anim_init_data.SetFaces(Face_Normal01, Face_Normal04, Face_Easy01);
+        engine.anim_init_data.SetFaces(Face_Normal01, Face_Normal04, Face_Easy01);
 
         if (level_number >= 16 && level_number <= 30)
-        engine->anim_init_data.SetFaces(Face_Normal02, Face_Normal01, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Normal02, Face_Normal01, Face_Empty);
 
         if (level_number >= 31 && level_number <= 45)
-        engine->anim_init_data.SetFaces(Face_Normal03, Face_Normal02, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Normal03, Face_Normal02, Face_Empty);
 
         if (level_number >= 46 && level_number <= 60)
-        engine->anim_init_data.SetFaces(Face_Normal04, Face_Normal03, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Normal04, Face_Normal03, Face_Empty);
 
         break;
 
@@ -2732,44 +2521,44 @@ default:
         //printf("\nPlay Hard level: %d\n", level_number);
 
         if (level_number >= 1 && level_number <= 15)
-        engine->anim_init_data.SetFaces(Face_Hard01, Face_Hard04, Face_Normal01);
+        engine.anim_init_data.SetFaces(Face_Hard01, Face_Hard04, Face_Normal01);
 
         if (level_number >= 16 && level_number <= 30)
-        engine->anim_init_data.SetFaces(Face_Hard02, Face_Hard01, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Hard02, Face_Hard01, Face_Empty);
 
         if (level_number >= 31 && level_number <= 45)
-        engine->anim_init_data.SetFaces(Face_Hard03, Face_Hard02, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Hard03, Face_Hard02, Face_Empty);
 
         if (level_number >= 46 && level_number <= 60)
-        engine->anim_init_data.SetFaces(Face_Hard04, Face_Hard03, Face_Empty);
+        engine.anim_init_data.SetFaces(Face_Hard04, Face_Hard03, Face_Empty);
 
         break;
         }
 
-        engine->level_init_data.difficulty = difficulty;
-        engine->level_init_data.level_number = level_number;
-        engine->level_init_data.init_action = FullInit;
+        engine.level_init_data.difficulty = difficulty;
+        engine.level_init_data.level_number = level_number;
+        engine.level_init_data.init_action = FullInit;
 
-        engine->anim_init_data.type = AnimToLevel;
+        engine.anim_init_data.type = AnimToLevel;
 
-        engine->anim_init_data.list_cubes_base.clear();
+        engine.anim_init_data.list_cubes_base.clear();
 
-        list<cCube*>::iterator it;
+        ArrayList<cCube*>::iterator it;
         for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
         {
-        engine->anim_init_data.list_cubes_base.push_back(*it);
+        engine.anim_init_data.list_cubes_base.push_back(*it);
         }
 
-        engine->anim_init_data.camera_from = m_camera_current;
-        engine->anim_init_data.camera_to = engine->m_level->m_camera_level;
+        engine.anim_init_data.camera_from = m_camera_current;
+        engine.anim_init_data.camera_to = engine.m_level.m_camera_level;
 
-        engine->anim_init_data.pos_light_from = m_pos_light_current;
-        engine->anim_init_data.pos_light_to = engine->m_level->m_pos_light;
+        engine.anim_init_data.pos_light_from = m_pos_light_current;
+        engine.anim_init_data.pos_light_to = engine.m_level.m_pos_light;
 
-        engine->ShowScene(Scene_Anim);
+        engine.ShowScene(Scene_Anim);
         }
 
-        void cMenu::EventShowCredits()
+        public void EventShowCredits()
         {
         m_credits_offset = 20.0f;
 
@@ -2786,12 +2575,12 @@ default:
         m_interpolators[4].Setup(m_camera_menu.target.y, m_camera_credits.target.y, divisor);
         m_interpolators[5].Setup(m_camera_menu.target.z, m_camera_credits.target.z, divisor);
 
-        engine->HideGameCenterInfo();
+        engine.HideGameCenterInfo();
         }
 
         #pragma mark - Render
 
-        void cMenu::RenderForPicking(PickRenderTypeEnum type)
+        public void RenderForPicking(PickRenderTypeEnum type)
         {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -2801,42 +2590,42 @@ default:
 
         glDisable(GL_TEXTURE_2D);
 
-        engine->SetProjection3D();
-        engine->SetModelViewMatrix3D(m_camera_current);
+        engine.SetProjection3D();
+        engine.SetModelViewMatrix3D(m_camera_current);
 
         m_navigator.ApplyRotations();
 
         glPushMatrix();
-        glTranslatef(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        glTranslatef(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
-        cRenderer::Prepare();
+        Graphics.Prepare();
 
         switch (type)
         {
         case RenderOnlyOptions:
-        cRenderer::AddCubeSize(m_arOptionsCubes[0]->pos.x, m_arOptionsCubes[0]->pos.y, m_arOptionsCubes[0]->pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[0]->color);
-        cRenderer::AddCubeSize(m_arOptionsCubes[1]->pos.x, m_arOptionsCubes[1]->pos.y, m_arOptionsCubes[1]->pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[1]->color);
-        cRenderer::AddCubeSize(m_arOptionsCubes[2]->pos.x, m_arOptionsCubes[2]->pos.y, m_arOptionsCubes[2]->pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[2]->color);
-        cRenderer::AddCubeSize(m_arOptionsCubes[3]->pos.x, m_arOptionsCubes[3]->pos.y, m_arOptionsCubes[3]->pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[3]->color);
+        Graphics.AddCubeSize(m_arOptionsCubes[0].pos.x, m_arOptionsCubes[0].pos.y, m_arOptionsCubes[0].pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[0].color);
+        Graphics.AddCubeSize(m_arOptionsCubes[1].pos.x, m_arOptionsCubes[1].pos.y, m_arOptionsCubes[1].pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[1].color);
+        Graphics.AddCubeSize(m_arOptionsCubes[2].pos.x, m_arOptionsCubes[2].pos.y, m_arOptionsCubes[2].pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[2].color);
+        Graphics.AddCubeSize(m_arOptionsCubes[3].pos.x, m_arOptionsCubes[3].pos.y, m_arOptionsCubes[3].pos.z, HALF_CUBE_SIZE * 1.5f, m_arOptionsCubes[3].color);
         break;
 
         case RenderOnlyMovingCubePlay:
-        cRenderer::AddCubeSize(m_pMenuCubePlay->pos.x, m_pMenuCubePlay->pos.y, m_pMenuCubePlay->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubePlay->color);
+        Graphics.AddCubeSize(m_pMenuCubePlay.pos.x, m_pMenuCubePlay.pos.y, m_pMenuCubePlay.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubePlay.color);
         break;
 
         #ifndef LITE_VERSION
         case RenderOnlyMovingCubeStore:
-        cRenderer::AddCubeSize(m_pMenuCubeStore->pos.x, m_pMenuCubeStore->pos.y, m_pMenuCubeStore->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeStore->color);
+        Graphics.AddCubeSize(m_pMenuCubeStore.pos.x, m_pMenuCubeStore.pos.y, m_pMenuCubeStore.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeStore.color);
         break;
         #endif
 
         case RenderOnlyMovingCubeOptions:
-        cRenderer::AddCubeSize(m_pMenuCubeOptions->pos.x, m_pMenuCubeOptions->pos.y, m_pMenuCubeOptions->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeOptions->color);
+        Graphics.AddCubeSize(m_pMenuCubeOptions.pos.x, m_pMenuCubeOptions.pos.y, m_pMenuCubeOptions.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeOptions.color);
         break;
 
         #ifndef LITE_VERSION
         case RenderOnlyCubeCredits:
-        cRenderer::AddCubeSize(m_pCubeCredits->pos.x, m_pCubeCredits->pos.y, m_pCubeCredits->pos.z, HALF_CUBE_SIZE * 1.5f, m_pCubeCredits->color);
+        Graphics.AddCubeSize(m_pCubeCredits.pos.x, m_pCubeCredits.pos.y, m_pCubeCredits.pos.z, HALF_CUBE_SIZE * 1.5f, m_pCubeCredits.color);
         break;
         #endif
 
@@ -2845,27 +2634,27 @@ default:
         switch (m_current_cube_face)
         {
         case Face_Options:
-        cRenderer::AddCubeSize(m_pMenuCubeOptions->pos.x, m_pMenuCubeOptions->pos.y, m_pMenuCubeOptions->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeOptions->color);
+        Graphics.AddCubeSize(m_pMenuCubeOptions.pos.x, m_pMenuCubeOptions.pos.y, m_pMenuCubeOptions.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeOptions.color);
         break;
         #ifndef LITE_VERSION
         case Face_Store:
-        cRenderer::AddCubeSize(m_pMenuCubeStore->pos.x, m_pMenuCubeStore->pos.y, m_pMenuCubeStore->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeStore->color);
-        cRenderer::AddCubeSize(m_pStoreCubeNoAds->pos.x, m_pStoreCubeNoAds->pos.y, m_pStoreCubeNoAds->pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeNoAds->color);
-        cRenderer::AddCubeSize(m_pStoreCubeRestore->pos.x, m_pStoreCubeRestore->pos.y, m_pStoreCubeRestore->pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeRestore->color);
-        cRenderer::AddCubeSize(m_pStoreCubeSolvers->pos.x, m_pStoreCubeSolvers->pos.y, m_pStoreCubeSolvers->pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeSolvers->color);
+        Graphics.AddCubeSize(m_pMenuCubeStore.pos.x, m_pMenuCubeStore.pos.y, m_pMenuCubeStore.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeStore.color);
+        Graphics.AddCubeSize(m_pStoreCubeNoAds.pos.x, m_pStoreCubeNoAds.pos.y, m_pStoreCubeNoAds.pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeNoAds.color);
+        Graphics.AddCubeSize(m_pStoreCubeRestore.pos.x, m_pStoreCubeRestore.pos.y, m_pStoreCubeRestore.pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeRestore.color);
+        Graphics.AddCubeSize(m_pStoreCubeSolvers.pos.x, m_pStoreCubeSolvers.pos.y, m_pStoreCubeSolvers.pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeSolvers.color);
         break;
         #endif
         case Face_Menu:
-        cRenderer::AddCubeSize(m_pMenuCubePlay->pos.x, m_pMenuCubePlay->pos.y, m_pMenuCubePlay->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubePlay->color);
-        cRenderer::AddCubeSize(m_pMenuCubeOptions->pos.x, m_pMenuCubeOptions->pos.y, m_pMenuCubeOptions->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeOptions->color);
-        cRenderer::AddCubeSize(m_pMenuCubeStore->pos.x, m_pMenuCubeStore->pos.y, m_pMenuCubeStore->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeStore->color);
+        Graphics.AddCubeSize(m_pMenuCubePlay.pos.x, m_pMenuCubePlay.pos.y, m_pMenuCubePlay.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubePlay.color);
+        Graphics.AddCubeSize(m_pMenuCubeOptions.pos.x, m_pMenuCubeOptions.pos.y, m_pMenuCubeOptions.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeOptions.color);
+        Graphics.AddCubeSize(m_pMenuCubeStore.pos.x, m_pMenuCubeStore.pos.y, m_pMenuCubeStore.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubeStore.color);
         #ifndef LITE_VERSION
-        cRenderer::AddCubeSize(m_pCubeCredits->pos.x, m_pCubeCredits->pos.y, m_pCubeCredits->pos.z, HALF_CUBE_SIZE * 1.5f, m_pCubeCredits->color);
+        Graphics.AddCubeSize(m_pCubeCredits.pos.x, m_pCubeCredits.pos.y, m_pCubeCredits.pos.z, HALF_CUBE_SIZE * 1.5f, m_pCubeCredits.color);
         #endif
         break;
 
 default:
-        cRenderer::AddCubeSize(m_pMenuCubePlay->pos.x, m_pMenuCubePlay->pos.y, m_pMenuCubePlay->pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubePlay->color);
+        Graphics.AddCubeSize(m_pMenuCubePlay.pos.x, m_pMenuCubePlay.pos.y, m_pMenuCubePlay.pos.z, HALF_CUBE_SIZE * 1.5f, m_pMenuCubePlay.color);
         break;
         } // switch
 
@@ -2873,15 +2662,15 @@ default:
 
         case RenderOnlyLevelCubes:
         {
-        cLevelCube* p;
-        list<cLevelCube*>::iterator it;
+        LevelCube p;
+        ArrayList<LevelCube>::iterator it;
 
-        for (it = engine->ar_cubefacedata[m_current_cube_face_type].lst_level_cubes.begin(); it != engine->ar_cubefacedata[m_current_cube_face_type].lst_level_cubes.end(); ++it)
+        for (it = engine.ar_cubefacedata[m_current_cube_face_type].lst_level_cubes.begin(); it != engine.ar_cubefacedata[m_current_cube_face_type].lst_level_cubes.end(); ++it)
         {
         p = *it;
-        if (m_current_cube_face == p->face_id)
+        if (m_current_cube_face == p.face_id)
         {
-        cRenderer::AddCubeSize(p->pos.x, p->pos.y, p->pos.z, HALF_CUBE_SIZE * 1.5f, p->color);
+        Graphics.AddCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE * 1.5f, p.color);
         }
         }
         }
@@ -2891,15 +2680,15 @@ default:
         break;
         }	// switch
 
-        cRenderer::SetStreamSourceOnlyVerticeAndColor();
-        cRenderer::RenderTriangles();
+        Graphics.SetStreamSourceOnlyVerticeAndColor();
+        Graphics.RenderTriangles();
 
         glPopMatrix();
         }
 
-        void cMenu::Render()
+        public void Render()
         {
-        //printf("\nAspect ratio: %f", engine->m_aspectRatio);
+        //printf("\nAspect ratio: %f", engine.m_aspectRatio);
 
         //printf("\nm_camera_current %f, %f, %f", m_camera_current.eye.x, m_camera_current.eye.y, m_camera_current.eye.z);
 
@@ -2907,8 +2696,8 @@ default:
 //    if (render)
 //        return RenderForPicking(RenderOnlyLevelCubes);
 
-        engine->SetProjection2D();
-        engine->SetModelViewMatrix2D();
+        engine.SetProjection2D();
+        engine.SetModelViewMatrix2D();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -2918,14 +2707,14 @@ default:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color(255, 255, 255, engine->dirty_alpha);
-        engine->DrawFBOTexture(engine->texture_id_dirty, color);
+        Color color(255, 255, 255, engine.dirty_alpha);
+        engine.DrawFBOTexture(engine.texture_id_dirty, color);
 
         glDepthMask(GL_TRUE);
 
 
-        engine->SetProjection3D();
-        engine->SetModelViewMatrix3D(m_camera_current);
+        engine.SetProjection3D();
+        engine.SetModelViewMatrix3D(m_camera_current);
 
         const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
@@ -2938,64 +2727,64 @@ default:
 
         if (InCredits == m_state)
         {
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_credits);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_credits);
         DrawCredits();
         }
 
         #ifdef DRAW_AXES_GLOBAL
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
-        engine->DrawAxis();
+        engine.DrawAxis();
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
         #endif
 
         m_navigator.ApplyRotations();
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_gray_concrete);
         DrawTheCube();
 
         #ifdef DRAW_AXES_CUBE
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
-        engine->DrawAxes();
+        engine.DrawAxes();
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
         #endif
 
         glPushMatrix();
 
-        glTranslatef(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        glTranslatef(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_level_cubes);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_level_cubes);
         DrawLevelCubes();
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_player);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_player);
         DrawMenuCubes();
 
         glPopMatrix();
 
         glDisable(GL_LIGHTING);
-        cRenderer::EnableBlending();
+        Graphics.EnableBlending();
 
-        cRenderer::SetStreamSourceFloatAndColor();
+        Graphics.SetStreamSourceFloatAndColor();
 
         glPushMatrix();
-        glTranslatef(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        glTranslatef(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
         color = cEngine::GetTextColor();
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_fonts);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_fonts);
         DrawTexts(color);
 
         color = cEngine::GetTitleColor();
         DrawTextsTitles(color);
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_numbers);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_numbers);
 
         DrawLevelNumbers();
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_symbols);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_symbols);
 
         DrawLevelCubeSymbols();
 
@@ -3021,23 +2810,23 @@ default:
         glDisable(GL_DEPTH_TEST);
 
         glDisable(GL_TEXTURE_2D);
-        engine->SetProjection2D();
+        engine.SetProjection2D();
         SetModelViewMatrix2D();
 
  //        glDisable(GL_LIGHTING);
  //        glDisableClientState(GL_NORMAL_ARRAY);
  //        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        cRenderer::EnableBlending();
+        Graphics.EnableBlending();
 
-        engine->DrawCircleAt(m_fingermove_x, engine->m_height - m_fingermove_y, 10.0f * engine->m_scaleFactor);
+        engine.DrawCircleAt(m_fingermove_x, engine.m_height - m_fingermove_y, 10.0f * engine.m_scaleFactor);
 
-        cRenderer::DisableBlending();
+        Graphics.DisableBlending();
 
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
 
-        engine->SetProjection3D();
+        engine.SetProjection3D();
     }
 */
 
@@ -3045,17 +2834,17 @@ default:
 
         #pragma mark - OnFinger
 
-        void cMenu::OnFingerDown(float x, float y, int finger_count)
+        public void OnFingerDown(float x, float y, int finger_count)
         {
         //render = !render;
 //    printf("\ncMenu::OnFingerDown");
 
         if ( m_navigator.IsCurrentNavigation(NoNavigation) &&
-        m_pMenuCubePlay->IsDone() &&
-        m_pMenuCubeOptions->IsDone() &&
-        m_pMenuCubeStore->IsDone() &&
-        m_pStoreCubeRestore->IsDone() &&
-        m_pStoreCubeNoAds->IsDone() )
+        m_pMenuCubePlay.IsDone() &&
+        m_pMenuCubeOptions.IsDone() &&
+        m_pMenuCubeStore.IsDone() &&
+        m_pStoreCubeRestore.IsDone() &&
+        m_pStoreCubeNoAds.IsDone() )
         {
         m_fingerdown = true;
 
@@ -3064,20 +2853,20 @@ default:
 
         RenderForPicking(RenderOnlyMovingCubes);
 
-        m_color_down = engine->GetColorFromScreen(m_pos_down);
+        m_color_down = engine.GetColorFromScreen(m_pos_down);
         cMenuCube* pMenuCube = GetMovingCubeFromColor(m_color_down.r);
 
         if (pMenuCube)
         {
         m_hilite_alpha = 0.0f;
         m_menu_cube_hilite = pMenuCube;
-        CubePos cp = m_menu_cube_hilite->m_cube_pos;
+        CubePos cp = m_menu_cube_hilite.m_cube_pos;
         m_font_hilite.Init(SymbolHilite, cp);
         }
         }
         }
 
-        void cMenu::OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count)
+        public void OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count)
         {
         if (m_fingerdown)
         {
@@ -3088,19 +2877,19 @@ default:
         float dist = GetDistance2D(m_pos_down, m_pos_move);
         //printf("\nOnFingerMove: %.2f", dist);
 
-        if (dist > 20.0f * engine->device_scale)
+        if (dist > 20.0f * engine.device_scale)
         m_swipe = true;
         }
         }
 
-        void cMenu::OnFingerUp(float x, float y, int finger_count)
+        public void OnFingerUp(float x, float y, int finger_count)
         {
         m_fingerdown = false;
 
-        if (!m_pMenuCubePlay->IsDone() || !m_pMenuCubeOptions->IsDone() || !m_pMenuCubeStore->IsDone())
+        if (!m_pMenuCubePlay.IsDone() || !m_pMenuCubeOptions.IsDone() || !m_pMenuCubeStore.IsDone())
         return;
 
-        m_menu_cube_hilite = NULL;
+        m_menu_cube_hilite = null;
 
         m_pos_up.x = x;
         m_pos_up.y = y;
@@ -3111,7 +2900,7 @@ default:
         {
         m_t = 0.0f;
         m_state = AnimFromCredits;
-        engine->ShowGameCenterInfo();
+        engine.ShowGameCenterInfo();
         }
         return;
         }
@@ -3162,34 +2951,34 @@ default:
 
         #pragma mark - FingerUpOnFace
 
-        void cMenu::FingerUpOnFaceOptions()
+        public void FingerUpOnFaceOptions()
         {
         RenderForPicking(RenderOnlyOptions);
-        m_color_down = engine->GetColorFromScreen(m_pos_down);
-        m_color_up = engine->GetColorFromScreen(m_pos_up);
+        m_color_down = engine.GetColorFromScreen(m_pos_down);
+        m_color_up = engine.GetColorFromScreen(m_pos_up);
 
         if (m_color_down.r == m_color_up.r)
         {
         switch (m_color_down.r)
         {
         case 255:
-        engine->MusicVolumeUp();
-        engine->PlaySound(SOUND_VOLUME_UP);
+        engine.MusicVolumeUp();
+        engine.PlaySound(SOUND_VOLUME_UP);
         break;
 
         case 254:
-        engine->MusicVolumeDown();
-        engine->PlaySound(SOUND_VOLUME_DOWN);
+        engine.MusicVolumeDown();
+        engine.PlaySound(SOUND_VOLUME_DOWN);
         break;
 
         case 253:
-        engine->SoundVolumeUp();
-        engine->PlaySound(SOUND_VOLUME_UP);
+        engine.SoundVolumeUp();
+        engine.PlaySound(SOUND_VOLUME_UP);
         break;
 
         case 252:
-        engine->SoundVolumeDown();
-        engine->PlaySound(SOUND_VOLUME_DOWN);
+        engine.SoundVolumeDown();
+        engine.PlaySound(SOUND_VOLUME_DOWN);
         break;
 
 default:
@@ -3198,11 +2987,11 @@ default:
         }
         }
 
-        void cMenu::FingerUpOnFacesEasy()
+        public void FingerUpOnFacesEasy()
         {
         RenderForPicking(RenderOnlyLevelCubes);
-        m_color_down = engine->GetColorFromScreen(m_pos_down);
-        m_color_up = engine->GetColorFromScreen(m_pos_up);
+        m_color_down = engine.GetColorFromScreen(m_pos_down);
+        m_color_up = engine.GetColorFromScreen(m_pos_up);
 
         if (m_color_down.r == m_color_up.r)
         {
@@ -3213,11 +3002,11 @@ default:
         }
         }
 
-        void cMenu::FingerUpOnFacesNormal()
+        public void FingerUpOnFacesNormal()
         {
         RenderForPicking(RenderOnlyLevelCubes);
-        m_color_down = engine->GetColorFromScreen(m_pos_down);
-        m_color_up = engine->GetColorFromScreen(m_pos_up);
+        m_color_down = engine.GetColorFromScreen(m_pos_down);
+        m_color_up = engine.GetColorFromScreen(m_pos_up);
 
         if (m_color_down.r == m_color_up.r)
         {
@@ -3228,11 +3017,11 @@ default:
         }
         }
 
-        void cMenu::FingerUpOnFacesHard()
+        public void FingerUpOnFacesHard()
         {
         RenderForPicking(RenderOnlyLevelCubes);
-        m_color_down = engine->GetColorFromScreen(m_pos_down);
-        m_color_up = engine->GetColorFromScreen(m_pos_up);
+        m_color_down = engine.GetColorFromScreen(m_pos_down);
+        m_color_up = engine.GetColorFromScreen(m_pos_up);
 
         if (m_color_down.r == m_color_up.r)
         {
@@ -3243,11 +3032,11 @@ default:
         }
         }
 
-        void cMenu::FingerUpOnFaceMenu()
+        public void FingerUpOnFaceMenu()
         {
         RenderForPicking(RenderOnlyMovingCubes);
-        m_color_down = engine->GetColorFromScreen(m_pos_down);
-        m_color_up = engine->GetColorFromScreen(m_pos_up);
+        m_color_down = engine.GetColorFromScreen(m_pos_down);
+        m_color_up = engine.GetColorFromScreen(m_pos_up);
 
         if (m_color_down.r == m_color_up.r)
         {
@@ -3274,16 +3063,16 @@ default:
 
         #pragma mark - Swipe
 
-        void cMenu::HandleSwipe()
+        public void HandleSwipe()
         {
         SwipeDirEnums swipeDir;
         float length;
-        engine->GetSwipeDirAndLength(m_pos_down, m_pos_up, swipeDir, length);
+        engine.GetSwipeDirAndLength(m_pos_down, m_pos_up, swipeDir, length);
 
-        if ( length > (30.0f * engine->m_scaleFactor) )
+        if ( length > (30.0f * engine.m_scaleFactor) )
         {
         RenderForPicking(RenderOnlyMovingCubes);
-        Color down_color = engine->GetColorFromScreen(m_pos_down);
+        Color down_color = engine.GetColorFromScreen(m_pos_down);
         //printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", m_down_color.r, m_down_color.g, m_down_color.b, m_down_color.a);
 
         cMenuCube* pMenuCube = GetMovingCubeFromColor(down_color.r);
@@ -3299,14 +3088,14 @@ default:
         case Face_Menu:
         case Face_Options:
         case Face_Store:
-        pMenuCube->MoveOnAxis(X_Minus);
+        pMenuCube.MoveOnAxis(X_Minus);
         break;
 
         case Face_Normal01:
         case Face_Normal02:
         case Face_Normal03:
         case Face_Normal04:
-        pMenuCube->MoveOnAxis(X_Plus);
+        pMenuCube.MoveOnAxis(X_Plus);
         break;
 
         case Face_Hard01:
@@ -3314,14 +3103,14 @@ default:
         case Face_Hard03:
         case Face_Hard04:
         case Face_Tutorial:
-        pMenuCube->MoveOnAxis(Z_Minus);
+        pMenuCube.MoveOnAxis(Z_Minus);
         break;
 
         case Face_Easy01:
         case Face_Easy02:
         case Face_Easy03:
         case Face_Easy04:
-        pMenuCube->MoveOnAxis(Z_Plus);
+        pMenuCube.MoveOnAxis(Z_Plus);
         break;
 
 default:
@@ -3336,15 +3125,15 @@ default:
         case Face_Menu:
         case Face_Options:
         case Face_Store:
-        pMenuCube->MoveOnAxis(X_Plus);
+        pMenuCube.MoveOnAxis(X_Plus);
 
         if (Face_Menu == m_current_cube_face)
         {
         if (pMenuCube != m_pMenuCubeOptions)
         {
-        if (7 == m_pMenuCubeOptions->m_cube_pos.x)
+        if (7 == m_pMenuCubeOptions.m_cube_pos.x)
         {
-        m_pMenuCubeOptions->MoveOnAxis(X_Minus);
+        m_pMenuCubeOptions.MoveOnAxis(X_Minus);
         }
         }
         }
@@ -3354,7 +3143,7 @@ default:
         case Face_Normal02:
         case Face_Normal03:
         case Face_Normal04:
-        pMenuCube->MoveOnAxis(X_Minus);
+        pMenuCube.MoveOnAxis(X_Minus);
         break;
 
         case Face_Hard01:
@@ -3362,14 +3151,14 @@ default:
         case Face_Hard03:
         case Face_Hard04:
         case Face_Tutorial:
-        pMenuCube->MoveOnAxis(Z_Plus);
+        pMenuCube.MoveOnAxis(Z_Plus);
         break;
 
         case Face_Easy01:
         case Face_Easy02:
         case Face_Easy03:
         case Face_Easy04:
-        pMenuCube->MoveOnAxis(Z_Minus);
+        pMenuCube.MoveOnAxis(Z_Minus);
         break;
 
 default:
@@ -3382,51 +3171,51 @@ default:
         switch (m_current_cube_face)
         {
         case Face_Store:
-        pMenuCube->MoveOnAxis(Z_Plus);
+        pMenuCube.MoveOnAxis(Z_Plus);
         break;
 
         case Face_Options:
-        pMenuCube->MoveOnAxis(Z_Minus);
+        pMenuCube.MoveOnAxis(Z_Minus);
         break;
 
         case Face_Easy02:
-        pMenuCube->MoveOnAxis(X_Plus);
+        pMenuCube.MoveOnAxis(X_Plus);
         break;
 
         case Face_Easy03:
-        pMenuCube->MoveOnAxis(Y_Minus);
+        pMenuCube.MoveOnAxis(Y_Minus);
         break;
 
         case Face_Easy04:
-        pMenuCube->MoveOnAxis(X_Minus);
+        pMenuCube.MoveOnAxis(X_Minus);
         break;
 
         case Face_Normal02:
-        pMenuCube->MoveOnAxis(Z_Minus);
+        pMenuCube.MoveOnAxis(Z_Minus);
         break;
 
         case Face_Normal03:
-        pMenuCube->MoveOnAxis(Y_Minus);
+        pMenuCube.MoveOnAxis(Y_Minus);
         break;
 
         case Face_Normal04:
-        pMenuCube->MoveOnAxis(Z_Plus);
+        pMenuCube.MoveOnAxis(Z_Plus);
         break;
 
         case Face_Hard02:
-        pMenuCube->MoveOnAxis(X_Minus);
+        pMenuCube.MoveOnAxis(X_Minus);
         break;
 
         case Face_Hard03:
-        pMenuCube->MoveOnAxis(Y_Minus);
+        pMenuCube.MoveOnAxis(Y_Minus);
         break;
 
         case Face_Hard04:
-        pMenuCube->MoveOnAxis(X_Plus);
+        pMenuCube.MoveOnAxis(X_Plus);
         break;
 
 default:
-        pMenuCube->MoveOnAxis(Y_Plus);
+        pMenuCube.MoveOnAxis(Y_Plus);
         break;
         }
         break;
@@ -3436,51 +3225,51 @@ default:
         switch (m_current_cube_face)
         {
         case Face_Store:
-        pMenuCube->MoveOnAxis(Z_Minus);
+        pMenuCube.MoveOnAxis(Z_Minus);
         break;
 
         case Face_Options:
-        pMenuCube->MoveOnAxis(Z_Plus);
+        pMenuCube.MoveOnAxis(Z_Plus);
         break;
 
         case Face_Easy02:
-        pMenuCube->MoveOnAxis(X_Minus);
+        pMenuCube.MoveOnAxis(X_Minus);
         break;
 
         case Face_Easy03:
-        pMenuCube->MoveOnAxis(Y_Plus);
+        pMenuCube.MoveOnAxis(Y_Plus);
         break;
 
         case Face_Easy04:
-        pMenuCube->MoveOnAxis(X_Plus);
+        pMenuCube.MoveOnAxis(X_Plus);
         break;
 
         case Face_Normal02:
-        pMenuCube->MoveOnAxis(Z_Plus);
+        pMenuCube.MoveOnAxis(Z_Plus);
         break;
 
         case Face_Normal03:
-        pMenuCube->MoveOnAxis(Y_Plus);
+        pMenuCube.MoveOnAxis(Y_Plus);
         break;
 
         case Face_Normal04:
-        pMenuCube->MoveOnAxis(Z_Minus);
+        pMenuCube.MoveOnAxis(Z_Minus);
         break;
 
         case Face_Hard02:
-        pMenuCube->MoveOnAxis(X_Plus);
+        pMenuCube.MoveOnAxis(X_Plus);
         break;
 
         case Face_Hard03:
-        pMenuCube->MoveOnAxis(Y_Plus);
+        pMenuCube.MoveOnAxis(Y_Plus);
         break;
 
         case Face_Hard04:
-        pMenuCube->MoveOnAxis(X_Minus);
+        pMenuCube.MoveOnAxis(X_Minus);
         break;
 
 default:
-        pMenuCube->MoveOnAxis(Y_Minus);
+        pMenuCube.MoveOnAxis(Y_Minus);
         break;
         }
         break;

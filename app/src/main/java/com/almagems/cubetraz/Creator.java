@@ -273,6 +273,11 @@ public final class Creator
         return cubeFont;
     }
 
+	public static void cubeFontReleased(CubeFont cubeFont) {
+		m_list_cubefonts_used.remove(cubeFont);
+		m_list_cubefonts_pool.add(cubeFont);
+	}
+
 //void cCreator::CreateStaticTexts()
 //{
 //    cCubeFont* pCubeFont;

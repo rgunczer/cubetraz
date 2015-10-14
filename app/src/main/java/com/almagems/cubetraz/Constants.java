@@ -3,6 +3,9 @@ package com.almagems.cubetraz;
 
 public final class Constants {
 
+    public static final int KILOBYTE = 1024;
+    public static final int BUF_SIZE = 64;
+
     public static final int BYTES_PER_SHORT = 2;
 	public static final int BYTES_PER_FLOAT = 4;
 	public static final float EPSILON = 0.00000001f;
@@ -14,6 +17,8 @@ public final class Constants {
 
     public static final int MAX_CUBE_COUNT = 9;
     public static final int MAX_STARS = 1024;
+
+    public static final int MAX_LEVELS = 61;
 
     public static final String MUSIC_CPU = "POL-a-cpu-life-short";
     public static final String MUSIC_BREEZE = "POL-breeze-short";

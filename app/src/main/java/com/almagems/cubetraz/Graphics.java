@@ -16,6 +16,80 @@ import java.util.Map;
 
 public final class Graphics {
 
+    public static int _vertices_count = 0;
+    public static int _vindex = -1;
+    public static int _cindex = -1;
+    public static int _color_index = -1;
+
+
+    private static float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
+    private static float[] _normals = new float[BUF_SIZE * KILOBYTE];
+    private static float[] _coords_float = new float[BUF_SIZE * KILOBYTE];
+    private static short[] _coords_byte = new short[BUF_SIZE * KILOBYTE];
+    private static byte[] _colors_ubyte = new byte[BUF_SIZE * KILOBYTE];
+
+    public static boolean _blending_enabled = false;
+
+
+
+    public static void addCubeWithColor(float tx, float ty, float tz, Color color) {
+        addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
+    }
+
+
+    private static boolean _blending_enabled;
+
+
+
+    public static int _vertices_count;
+
+    public static void enableBlending() {
+        if (!_blending_enabled) {
+            glEnable(GL_BLEND);
+            _blending_enabled = true;
+        }
+    }
+
+    public static void disableBlending() {
+        if (_blending_enabled) {
+            glDisable(GL_BLEND);
+            _blending_enabled = false;
+        }
+    }
+
+
+    private static int _vindex;
+    private static int _cindex;
+    private static int _color_index;
+
+
+    public static void renderPoints() {
+        glDrawArrays(GL_POINTS, 0, _vertices_count);
+    }
+
+    public static void addCube(float tx, float ty, float tz) {
+        //const Color color(255, 255, 255, 255);
+        //AddCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
+    }
+
+    public static void prepare() {
+        _vertices_count = 0;
+        _vindex = -1;
+        _cindex = -1;
+        _color_index = -1;
+    }
+
+    public static void setStreamSource() {
+        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+        glNormalPointer(GL_FLOAT, 0, _normals);
+        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+
+
 
     int m_width;
     int m_height;
@@ -463,52 +537,14 @@ public final class Graphics {
 
 
 
-    class cRenderer
-    {
 
-        private:
 
-        static int _vindex;
-        static int _cindex;
-        static int _color_index;
 
-        static GLfloat _vertices[];
-        static GLfloat _normals[];
-        static GLshort _coords_byte[];
-        static GLfloat _coords_float[];
-        static GLubyte _colors_ubyte[];
 
-        static bool _blending_enabled;
 
-        public:
 
-        static int _vertices_count;
 
-        static inline void EnableBlending()
-    {
-        if (!_blending_enabled)
-        {
-            glEnable(GL_BLEND);
-            _blending_enabled = true;
-        }
-    }
 
-        static inline void DisableBlending()
-    {
-        if (_blending_enabled)
-        {
-            glDisable(GL_BLEND);
-            _blending_enabled = false;
-        }
-    }
-
-        static inline void Prepare()
-    {
-        _vertices_count = 0;
-        _vindex = -1;
-        _cindex = -1;
-        _color_index = -1;
-    }
 
 //    static inline void DumpVerticesBuffer(int count)
 //    {
@@ -560,26 +596,13 @@ public final class Graphics {
 //        }
 //	}
 
-        static inline void SetStreamSourceOld()
-    {
+    public static void setStreamSourceOld() {
         glVertexPointer(3, GL_FLOAT, 0, _vertices);
         glNormalPointer(GL_FLOAT, 0, _normals);
         glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
     }
 
-        static inline void SetStreamSource()
-    {
-        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-        glNormalPointer(GL_FLOAT, 0, _normals);
-        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
-
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
-
-        static inline void SetStreamSourceOnlyVerticeAndColor()
-    {
+    public static void setStreamSourceOnlyVerticeAndColor() {
         glVertexPointer(3, GL_FLOAT, 0, _vertices);
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
@@ -587,133 +610,48 @@ public final class Graphics {
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-        static inline void SetStreamSourceFloatAndColor()
-    {
+    public static void setStreamSourceFloatAndColor() {
         glVertexPointer(3, GL_FLOAT, 0, _vertices);
         glNormalPointer(GL_FLOAT, 0, _normals);
         glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
     }
 
-        static inline void SetStreamSourceFloat()
-    {
+    public static void setStreamSourceFloat() {
         glVertexPointer(3, GL_FLOAT, 0, _vertices);
         glNormalPointer(GL_FLOAT, 0, _normals);
         glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
     }
 
-        static void SetStreamSourceFloat2D()
-        {
-            glVertexPointer(2, GL_FLOAT, 0, _vertices);
-            glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-            glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+    public static void setStreamSourceFloat2D() {
+        glVertexPointer(2, GL_FLOAT, 0, _vertices);
+        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
-            glDisableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        }
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
 
-        static void SetStreamSourceFloat2DNoTexture()
-        {
-            glVertexPointer(2, GL_FLOAT, 0, _vertices);
-            glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+    public static void setStreamSourceFloat2DNoTexture() {
+        glVertexPointer(2, GL_FLOAT, 0, _vertices);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
-            glDisableClientState(GL_NORMAL_ARRAY);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-        }
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
 
-        static inline void RenderTriangles()
-    {
+    public static void renderTriangles() {
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
     }
 
-        static inline void RenderTriangles(float tx, float ty, float tz)
-    {
+    public static void renderTriangles(float tx, float ty, float tz) {
         glPushMatrix();
         glTranslatef(tx, ty, tz);
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
         glPopMatrix();
     }
 
-        static inline void RenderPoints()
-    {
-        glDrawArrays(GL_POINTS, 0, _vertices_count);
-    }
-
-        static void AddCube(float tx, float ty, float tz);
-        static void AddCubeWithColor(float tx, float ty, float tz, Color color);
-        static void AddCubeSize(float tx, float ty, float tz, float size, Color color);
-
-        static void AddQuad(float x, float y, float w, float h, Color& color);
-        static void AddQuad(float size, float tx, float ty, TexCoordsQuad& coords);
-        static void AddQuad(float size, float tx, float ty, TexCoordsQuad& coords, Color& color);
-
-        static void AddPoint(float x, float y, float z);
-        static void AddPoint(vec3& pos, Color& color);
-
-        static void AddPoint2D(float x, float y);
-
-        static void AddCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color);
-        static void AddCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color);
-        static void AddCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color);
-        static void AddCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color);
-        static void AddCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color);
-        static void AddCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color);
-
-        static void AddCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad& coords);
-        static void AddCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad& coords);
-        static void AddCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad& coords);
-        static void AddCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad& coords);
-        static void AddCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad& coords);
-        static void AddCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad& coords);
-
-        static void AddCubeFace_X_Plus(float tx, float ty, float tz);
-        static void AddCubeFace_X_Minus(float tx, float ty, float tz);
-        static void AddCubeFace_Y_Plus(float tx, float ty, float tz);
-        static void AddCubeFace_Y_Minus(float tx, float ty, float tz);
-        static void AddCubeFace_Z_Plus(float tx, float ty, float tz);
-        static void AddCubeFace_Z_Minus(float tx, float ty, float tz);
-
-        static void AddCubeFace_X_Plus(float tx, float ty, float tz, Color& color);
-        static void AddCubeFace_X_Minus(float tx, float ty, float tz, Color& color);
-        static void AddCubeFace_Y_Plus(float tx, float ty, float tz, Color& color);
-        static void AddCubeFace_Y_Minus(float tx, float ty, float tz, Color& color);
-        static void AddCubeFace_Z_Plus(float tx, float ty, float tz, Color& color);
-        static void AddCubeFace_Z_Minus(float tx, float ty, float tz, Color& color);
-
-
-
-        int cRenderer::_vertices_count = 0;
-        int cRenderer::_vindex = -1;
-        int cRenderer::_cindex = -1;
-        int cRenderer::_color_index = -1;
-
-        #define KILOBYTE 1024
-            #define BUF_SIZE 64//128
-
-        GLfloat cRenderer::_vertices[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
-        GLfloat cRenderer::_normals[BUF_SIZE * KILOBYTE];
-        GLfloat cRenderer::_coords_float[BUF_SIZE * KILOBYTE];
-        GLshort cRenderer::_coords_byte[BUF_SIZE * KILOBYTE];
-        GLubyte cRenderer::_colors_ubyte[BUF_SIZE * KILOBYTE];
-
-        bool cRenderer::_blending_enabled = false;
-
-        #undef KILOBYTE
-        #undef BUF_SIZE
-
-        void cRenderer::AddCube(float tx, float ty, float tz)
-    {
-        const Color color(255, 255, 255, 255);
-        AddCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
-    }
-
-        void cRenderer::AddCubeWithColor(float tx, float ty, float tz, Color color)
-    {
-        AddCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
-    }
-
-        void cRenderer::AddCubeSize(float tx, float ty, float tz, float size, Color color)
-    {
+    public static void addCubeSize(float tx, float ty, float tz, float size, Color color) {
         //printf("\nColor: %d %d %d %d", color.r, color.g, color.b, color.a);
 
         float xp = size + tx;
@@ -968,8 +906,7 @@ public final class Graphics {
     }
 
 
-        void cRenderer::AddQuad(float x, float y, float w, float h, Color& color)
-    {
+    public static void addQuad(float x, float y, float w, float h, Color color) {
         int i = _vindex;
 
         // vertices
@@ -998,8 +935,7 @@ public final class Graphics {
     }
 
 
-        void cRenderer::AddQuad(float size, float tx, float ty, TexCoordsQuad& coords)
-    {
+    public static void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
         int i = _vindex;
 
         _vertices[++i] = tx;			_vertices[++i] = ty;
@@ -1028,8 +964,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddQuad(float size, float tx, float ty, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
         int i = _vindex;
 
         // vertices
@@ -1069,8 +1004,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddPoint(float x, float y, float z)
-    {
+    public static void addPoint(float x, float y, float z) {
         int i = _vindex;
 
         // z-minus
@@ -1083,8 +1017,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-        void cRenderer::AddPoint(vec3& pos, Color& color)
-    {
+    public static void addPoint(Vector pos, Color color) {
         int i = _vindex;
 
         _vertices[++i] = pos.x;
@@ -1105,8 +1038,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-        void cRenderer::AddPoint2D(float x, float y)
-    {
+    public static void addPoint2D(float x, float y) {
         int i = _vindex;
 
         // z-minus
@@ -1118,8 +1050,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-        void cRenderer::AddCubeFace_X_Plus(float tx, float ty, float tz)
-    {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1159,8 +1090,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_X_Minus(float tx, float ty, float tz)
-    {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1200,8 +1130,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Plus(float tx, float ty, float tz)
-    {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1249,8 +1178,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Minus(float tx, float ty, float tz)
-    {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1289,8 +1217,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Plus(float tx, float ty, float tz)
-    {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1329,8 +1256,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Minus(float tx, float ty, float tz)
-    {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1369,8 +1295,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad& coords)
-    {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1421,8 +1346,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad& coords)
-    {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1472,8 +1396,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad& coords)
-    {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1523,8 +1446,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad& coords)
-    {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1574,8 +1496,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad& coords)
-    {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1626,8 +1547,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad& coords)
-    {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1674,11 +1594,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-
-
-
-        void cRenderer::AddCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1729,8 +1645,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1782,8 +1697,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1836,8 +1750,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1889,8 +1802,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1942,8 +1854,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad& coords, Color& color)
-    {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1993,12 +1904,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-
-
-
-
-        void cRenderer::AddCubeFace_X_Plus(float tx, float ty, float tz, Color& color)
-    {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2050,8 +1956,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_X_Minus(float tx, float ty, float tz, Color& color)
-    {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2103,8 +2008,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Plus(float tx, float ty, float tz, Color& color)
-    {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2163,8 +2067,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Y_Minus(float tx, float ty, float tz, Color& color)
-    {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2215,8 +2118,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Plus(float tx, float ty, float tz, Color& color)
-    {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2267,8 +2169,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-        void cRenderer::AddCubeFace_Z_Minus(float tx, float ty, float tz, Color& color)
-    {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2318,6 +2219,5 @@ public final class Graphics {
 
         _vertices_count += 6;
     }
-
 
 }
