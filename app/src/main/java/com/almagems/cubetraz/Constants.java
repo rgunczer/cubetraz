@@ -32,6 +32,15 @@ public final class Constants {
 
     public static final int MAX_FACE_TRANSFORM_COUNT = 8;
 
+    public static final float FONT_OVERLAY_OFFSET = 0.01f;
+    public static final String SAVE_GAME_FILE = "game.dat";
+    public static final String SAVE_GAME_FILE_EASY = "easy_game.dat";
+    public static final String SAVE_GAME_FILE_NORMAL = "normal_game.dat";
+    public static final String SAVE_GAME_FILE_HARD = "hard_game.dat";
+    public static final String SAVE_OPTIONS_FILE = "options.dat";
+    public static final int LEVEL_LOCKED = -1;
+    public static final int LEVEL_UNLOCKED = 0;
+
 
     public static final int Face_X_Plus = 0;
     public static final int Face_X_Minus = 1;
