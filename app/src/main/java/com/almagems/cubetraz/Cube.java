@@ -22,7 +22,7 @@ public final class Cube {
 
     public Vector v;
 
-    public void SetColor(Color col) {
+    public void setColor(Color col) {
         color_current.init(col);
         color.init(col);
     }
@@ -31,29 +31,29 @@ public final class Cube {
         //printf("\ncCube Constructor");
     }
 
-    public void Update(float dt) {
+    public void update() {
         tx += v.x;
         ty += v.y;
         tz += v.z;
     }
 
-    public void Reset()	{
+    public void reset()	{
 		type = CubeTypeEnum.CubeIsInvisible;
 		
 		tx = x * CUBE_SIZE;
 		ty = y * CUBE_SIZE;
 		tz = z * CUBE_SIZE;
 	
-        ResetColor();
-		ResetFonts();
-        ResetSymbols();
+        resetColor();
+		resetFonts();
+        resetSymbols();
 	}
 
-    public void ResetColor() {
+    public void resetColor() {
         color_current = color;
     }
 
-    public void ResetFonts() {
+    public void resetFonts() {
         //printf("\nReset Fonts...");
         
 		ar_fonts[0] = null;
@@ -66,7 +66,7 @@ public final class Cube {
 		ar_fonts[5] = null;
 	}
 
-    public void ResetSymbols() {
+    public void resetSymbols() {
         //printf("\nReset Symbols...");
         
 		ar_symbols[0] = null;
@@ -79,59 +79,55 @@ public final class Cube {
 		ar_symbols[5] = null;
     }
 
-    public void WarmByFactor(int factor) {
-        //return;
-        
-        if (color_current.r < color.r)
-        {
+    public void warmByFactor(int factor) {                
+        if (color_current.r < color.r) {
             color_current.r += factor;
             
-            if (color_current.r > color.r)
+            if (color_current.r > color.r) {
                 color_current.r = color.r;
+            }
         }
         
-        if (color_current.r > color.r)
-        {
+        if (color_current.r > color.r) {
             color_current.r -= factor;
             
-            if (color_current.r < color.r)
+            if (color_current.r < color.r) {
                 color_current.r = color.r;
+            }
         }
-
         
-        if (color_current.g < color.g)
-        {
+        if (color_current.g < color.g) {
             color_current.g += factor;
             
-            if (color_current.g > color.g)
+            if (color_current.g > color.g) {
                 color_current.g = color.g;
+            }
         }
         
-        if (color_current.g > color.g)
-        {
+        if (color_current.g > color.g) {
             color_current.g -= factor;
             
-            if (color_current.g < color.g)
+            if (color_current.g < color.g) {
                 color_current.g = color.g;
+            }
         }
-        
-        
-        if (color_current.b < color.b)
-        {
+                
+        if (color_current.b < color.b) {
             color_current.b += factor;
             
-            if (color_current.b > color.b)
+            if (color_current.b > color.b) {
                 color_current.b = color.b;
+            }
         }
         
-        if (color_current.b > color.b)
-        {
+        if (color_current.b > color.b) {
             color_current.b -= factor;
             
-            if (color_current.b < color.b)
+            if (color_current.b < color.b) {
                 color_current.b = color.b;
-        }
-        
+            }
+        }        
     }
+    
 }
 
