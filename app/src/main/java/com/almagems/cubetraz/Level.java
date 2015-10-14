@@ -1,6 +1,5 @@
 package com.almagems.cubetraz;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static com.almagems.cubetraz.Constants.*;
@@ -94,14 +93,14 @@ public final class Level extends Scene {
     private AppearDisappearListData m_ad_base;
     private AppearDisappearListData m_ad_face;
 
-    private Camera m_camera_level;
-    private Camera m_camera_level_completed;
-    private Camera m_camera_level_paused;
-    private Camera m_camera_current;
+    private final Camera m_camera_level;
+    private final Camera m_camera_level_completed;
+    private final Camera m_camera_level_paused;
+    private final Camera m_camera_current;
 
     private float m_target_rotation_degree;
 
-    private EaseOutDivideInterpolation m_interpolator;
+    private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
 
     private boolean m_alter_view;
     private boolean m_reposition_view;
@@ -128,13 +127,13 @@ public final class Level extends Scene {
     private CubeFont m_cubefont_mid;
     private CubeFont m_cubefont_low;
 
-    private ArrayList<CubeFont> m_list_fonts_pool;
-    private ArrayList<CubeFont> m_list_fonts;
+    private final ArrayList<CubeFont> m_list_fonts_pool = new ArrayList();
+    private final ArrayList<CubeFont> m_list_fonts = new ArrayList();
 
 // spec cubes
-    private ArrayList<MovingCube> m_lst_moving_cubes;
-    private ArrayList<MoverCube> m_lst_mover_cubes;
-    private ArrayList<DeadCube> m_lst_dead_cubes;
+    private final ArrayList<MovingCube> m_lst_moving_cubes = new ArrayList();
+    private final ArrayList<MoverCube> m_lst_mover_cubes = new ArrayList();
+    private final ArrayList<DeadCube> m_lst_dead_cubes = new ArrayList();
 
     private boolean m_anim_undo;
     private float m_anim_undo_alpha;
@@ -160,69 +159,28 @@ public final class Level extends Scene {
 
     private float m_t;
 
-    private MenuCube getMovingCubeFromColor(int color) {
-        switch (color) {
-            case 200: return m_menu_cube_up;
-            case 150: return m_menu_cube_mid;
-            case 100: return m_menu_cube_low;
-        }
-
-        return null;
-    }
-
-    public CubePos GetKeyPos() {
-        return m_cube_pos_key;
-    }
-
-    public int GetLevelNumber() {
-        return m_level_number;
-    }
-
-    public DifficultyEnum GetDifficulty() {
-        return m_difficulty;
-    }
-
-
     public PlayerCube m_player_cube;
 
 
-
-    cLevel::cLevel()
-    {
+    // ctor
+    public Level() {
         float d = 1.0f;
-
         m_anim_undo = false;
-
         m_level_number = 1;
+        
+        m_pos_light = new Vector(3.0f, 5.0f, 20.0f);
+        
+        m_camera_level.eye = new Vector(0.0f, 20.0f, 31.0f);
+        m_camera_level.target = new Vector(0.0f, -1.6f, 0.0f);
 
-        m_pos_light = vec3(3.0f, 5.0f, 20.0f);
+        m_camera_level_completed.eye = new Vector(0.0f, 5.0f, 34.0f);
+        m_camera_level_completed.target = new Vector(0.0f, -1.7f, 0.0f);
 
-        m_camera_level.eye = vec3(0.0f, 20.0f, 31.0f);
-        m_camera_level.target = vec3(0.0f, -1.6f, 0.0f);
+        m_camera_level_paused.eye = new Vector(0.0f, 5.0f, 34.0f);
+        m_camera_level_paused.target = new Vector(0.0f, -1.7f, 0.0f);
 
-        m_camera_level_completed.eye = vec3(0.0f, 5.0f, 34.0f);
-        m_camera_level_completed.target = vec3(0.0f, -1.7f, 0.0f);
-
-        m_camera_level_paused.eye = vec3(0.0f, 5.0f, 34.0f);
-        m_camera_level_paused.target = vec3(0.0f, -1.7f, 0.0f);
-
-        switch (engine->device_type)
-        {
-            case Device_iPhone4inch:
-                d = 1.26f;
-                break;
-
-            case Device_iPhone35inch:
-                d = 1.075f;
-                break;
-
-            case Device_iPad:
-                d = 0.99f;
-                break;
-
-            default:
-                break;
-        }
+        // case Device_iPad:
+        d = 0.99f;
 
         m_camera_level.eye = m_camera_level.eye * d;
 
@@ -232,82 +190,44 @@ public final class Level extends Scene {
         m_camera_level_paused.eye = m_camera_level_paused.eye * d;
         m_camera_level_paused.target = m_camera_level_paused.target * d;
 
-        m_player_cube = new cPlayerCube();
-        m_player_cube->Init(CubePos(4, 4, 4));
+        m_player_cube = new PlayerCube();
+        m_player_cube.init(new CubePos(4, 4, 4));
 
-        m_menu_cube_up = new cMenuCube();
-        m_menu_cube_up->Init(CubePos(0, 0, 0), Color(0, 0, 200, 255));
+        m_menu_cube_up = new MenuCube();
+        m_menu_cube_up.init(new CubePos(0, 0, 0), new Color(0, 0, 200, 255));
 
-        m_menu_cube_mid = new cMenuCube();
-        m_menu_cube_mid->Init(CubePos(0, 0, 0), Color(0, 0, 150, 255));
+        m_menu_cube_mid = new MenuCube();
+        m_menu_cube_mid.init(new CubePos(0, 0, 0), new Color(0, 0, 150, 255));
 
-        m_menu_cube_low = new cMenuCube();
-        m_menu_cube_low->Init(CubePos(0, 0, 0), Color(0, 0, 100, 255));
+        m_menu_cube_low = new MenuCube();
+        m_menu_cube_low.init(new CubePos(0, 0, 0), new Color(0, 0, 100, 255));
 
         m_reposition_view = false;
         m_show_hint_2nd = false;
     }
 
-    cLevel::~cLevel()
-    {
-        if (m_player_cube)
-        {
-            delete m_player_cube;
-            m_player_cube = NULL;
+    private MenuCube getMovingCubeFromColor(int color) {
+        switch (color) {
+            case 200: return m_menu_cube_up;
+            case 150: return m_menu_cube_mid;
+            case 100: return m_menu_cube_low;
         }
+        return null;
     }
 
-//void cLevel::CheckCubes()
-//{
-//    cCube* pCube;
-//
-//    for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-//    {
-//        for (int y = 0; y < MAX_CUBE_COUNT; ++y)
-//        {
-//            for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-//            {
-//                pCube = &engine->cubes[x][y][z];
-//
-//                bool a[] = { false, false, false, false, false, false, false };
-//
-//                a[0] = engine->IsCubeOnAList(pCube, m_list_cubes_level);
-//                a[1] = engine->IsCubeOnAList(pCube, m_list_cubes_wall_y_minus);
-//                a[2] = engine->IsCubeOnAList(pCube, m_list_cubes_wall_x_minus);
-//                a[3] = engine->IsCubeOnAList(pCube, m_list_cubes_wall_z_minus);
-//                a[4] = engine->IsCubeOnAList(pCube, m_list_cubes_edges);
-//                a[5] = engine->IsCubeOnAList(pCube, m_list_cubes_base);
-//                a[6] = engine->IsCubeOnAList(pCube, m_list_cubes_face);
-//
-//                int counter = 0;
-//                for (int i = 0; i < 7; ++i)
-//                {
-//                    if (a[i])
-//                        ++counter;
-//                }
-//
-//                //if (counter > 1)
-//                //{
-//                //    printf("\n\nHERE!!!\n\n");
-//                //}
-//                //                else
-//                //                {
-//                //                    printf("\nOK: %d", counter);
-//                //                }
-//
-//                int count[] = { 0, 0 };
-//                count[0] = engine->CountOnAList(pCube, m_ad_base.lst_appear);
-//                count[1] = engine->CountOnAList(pCube, m_ad_base.lst_disappear);
-//
-//                if (count[0] > 1 || count[1] > 1)
-//                {
-//                    printf("\nagain HERE!!!");
-//                }
-//            }
-//        }
-//    }
-//}
+    public CubePos getKeyPos() {
+        return m_cube_pos_key;
+    }
 
+    public int getLevelNumber() {
+        return m_level_number;
+    }
+
+    public DifficultyEnum getDifficulty() {
+        return m_difficulty;
+    }
+
+/*
     void cLevel::ReportAchievementEasy()
     {
         float number_of_solved_levels = 0.0f;
@@ -323,7 +243,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.easy01facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.easy01facesolved", percent);
         }
 
         if (m_level_number >= 16 && m_level_number <= 30)
@@ -336,7 +256,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.easy02facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.easy02facesolved", percent);
         }
 
         if (m_level_number >= 31 && m_level_number <= 45)
@@ -349,7 +269,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.easy03facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.easy03facesolved", percent);
         }
 
         if (m_level_number >= 46 && m_level_number <= 60)
@@ -362,7 +282,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.easy04facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.easy04facesolved", percent);
         }
     }
 
@@ -381,7 +301,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.normal01facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.normal01facesolved", percent);
         }
 
         if (m_level_number >= 16 && m_level_number <= 30)
@@ -394,7 +314,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.normal02facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.normal02facesolved", percent);
         }
 
         if (m_level_number >= 31 && m_level_number <= 45)
@@ -407,7 +327,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.normal03facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.normal03facesolved", percent);
         }
 
         if (m_level_number >= 46 && m_level_number <= 60)
@@ -420,7 +340,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.normal04facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.normal04facesolved", percent);
         }
     }
 
@@ -439,7 +359,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.hard01facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.hard01facesolved", percent);
         }
 
         if (m_level_number >= 16 && m_level_number <= 30)
@@ -452,7 +372,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.hard02facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.hard02facesolved", percent);
         }
 
         if (m_level_number >= 31 && m_level_number <= 45)
@@ -465,7 +385,7 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.hard03facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.hard03facesolved", percent);
         }
 
         if (m_level_number >= 46 && m_level_number <= 60)
@@ -478,42 +398,36 @@ public final class Level extends Scene {
             }
 
             float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine->ReportAchievement("com.almagems.cubetraz.hard04facesolved", percent);
+            engine.ReportAchievement("com.almagems.cubetraz.hard04facesolved", percent);
         }
     }
+*/
+    
+    public void init(LevelInitData lid) {
+        m_moving_cube = null;
+        m_mover_cube = null;
+        m_dead_cube = null;
 
-    #pragma mark - Init
-
-    void cLevel::Init(void* init_data)
-    {
-        m_moving_cube = NULL;
-        m_mover_cube = NULL;
-        m_dead_cube = NULL;
-
-        //engine->level_init_data.difficulty = Easy;
-        //engine->level_init_data.level_number = 12;
+        //Game.level_init_data.difficulty = Easy;
+        //Game.level_init_data.level_number = 12;
 
         m_tutor_index = 0;
         m_next_action = NoNextAction;
-
-        LevelInitData* lid = (LevelInitData*)init_data;
-
-        switch (lid->init_action)
-        {
-            case FullInit:
-            {
-                m_menu_cube_hilite = NULL;
+        
+        switch (lid.init_action) {
+            case FullInit: {
+                m_menu_cube_hilite = null;
                 m_show_hint_2nd = false;
 
                 m_hilite_timeout = 0.0f;
 
-                m_difficulty = lid->difficulty;
-                m_level_number = lid->level_number;
+                m_difficulty = lid.difficulty;
+                m_level_number = lid.level_number;
 
-                SetupMusic();
+                setupMusic();
 
-                CubePos zero(0,0,0);
-                m_player_cube->Init(zero);
+                CubePos zero = new CubePos(0, 0, 0);
+                m_player_cube.init(zero);
                 m_cube_pos_key = zero;
 
                 m_lst_moving_cubes.clear();
@@ -524,9 +438,9 @@ public final class Level extends Scene {
                 m_lst_undo.erase(m_lst_undo.begin(), m_lst_undo.end());
                 m_lst_undo.clear();
 
-                m_hud.Set1stHint();
-                m_hud.SetTextMoves(m_moves_counter);
-                m_hud.SetTextUndo( m_lst_undo.size() );
+                m_hud.set1stHint();
+                m_hud.setTextMoves(m_moves_counter);
+                m_hud.setTextUndo( m_lst_undo.size() );
 
                 m_fingerdown = false;
                 m_swipe = false;
@@ -534,7 +448,7 @@ public final class Level extends Scene {
                 m_cube_rotation.degree = -45.0f;
                 m_cube_rotation.axis = vec3(0.0f, 1.0f, 0.0f);
 
-                m_user_rotation.Reset();
+                m_user_rotation.reset();
 
                 m_camera_current = m_camera_level;
 
@@ -547,38 +461,30 @@ public final class Level extends Scene {
                 m_list_cubes_face.clear();
                 m_list_cubes_hint.clear();
 
-                m_hud.Init();
+                m_hud.init();
 
-                SetupCubesForLevel();
-
-                SetupAppear();
+                setupCubesForLevel();
+                setupAppear();
             }
             break;
 
             case JustContinue: // take no action ?
-
-                if (SetupAnimToCompleted == m_state)
-                {
+                if (SetupAnimToCompleted == m_state) {
+                
+                } else {
+                    m_hud.setupAppear();
                 }
-                else
-                {
-                    m_hud.SetupAppear();
-                }
-
                 break;
 
             case ShowSolution:
-
-                Reset();
-
+                reset();
                 m_state = PrepareSolving;
                 m_timeout = 3.5f;
-
                 break;
         }
 
-        engine->SetProjection3D();
-        engine->SetModelViewMatrix3D(m_camera_current);
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(m_camera_current);
 
         //const vec4 lightPosition(m_pos_light.x, m_pos_light.y, m_pos_light.z, 1.0f);
         //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
@@ -586,295 +492,233 @@ public final class Level extends Scene {
         glEnable(GL_LIGHT0);
     }
 
-    void cLevel::GetRatings()
-    {
+    public void getRatings() {
         char sign;
 
-        StatInitData& sid = engine->stat_init_data;
+        StatInitData sid = Game.stat_init_data;
 
-        if (m_moves_counter < m_min_solution_steps)
-        {
+        if (m_moves_counter < m_min_solution_steps) {
             sign = '<';
-            strcpy(sid.str_title, "EXPERT");
+            sid.str_title = "EXPERT";
             sid.stars = 3;
         }
 
-        if (m_moves_counter == m_min_solution_steps)
-        {
+        if (m_moves_counter == m_min_solution_steps) {
             sign = '=';
-            strcpy(sid.str_title, "PERFECT");
+            sid.str_title = "PERFECT";
             sid.stars = 3;
         }
 
-        if (m_moves_counter > m_min_solution_steps && m_moves_counter <= m_min_solution_steps + 1)
-        {
+        if (m_moves_counter > m_min_solution_steps && m_moves_counter <= m_min_solution_steps + 1) {
             sign = '>';
-            strcpy(sid.str_title, "EXCELLENT");
+            sid.str_title = "EXCELLENT";
             sid.stars = 3;
         }
 
-        if (m_moves_counter > m_min_solution_steps + 1 && m_moves_counter <= m_min_solution_steps + 4)
-        {
+        if (m_moves_counter > m_min_solution_steps + 1 && m_moves_counter <= m_min_solution_steps + 4) {
             sign = '>';
-            strcpy(sid.str_title, "GREAT");
+            sid.str_title = "GREAT";
             sid.stars = 2;
         }
 
-        if (m_moves_counter > m_min_solution_steps + 4)
-        {
+        if (m_moves_counter > m_min_solution_steps + 4) {
             sign = '>';
-            strcpy(sid.str_title, "GOOD");
+            sid.str_title = "GOOD";
             sid.stars = 1;
         }
 
-        sprintf(sid.str_moves, "PLAYER:%d %c BEST:%d", m_moves_counter, sign, m_min_solution_steps);
+        sid.str_moves = "PLAYER:" + m_moves_counter + " " + sign + " BEST:" + m_min_solution_steps;
     }
-
-
-    #pragma mark - Show
-
-    void cLevel::ShowTutor(int index)
-    {
+    
+    public void showTutor(int index) {
         m_state = Tutorial;
-        m_hud.ClearTutors();
+        m_hud.clearTutors();
 
-        switch (index)
-        {
-            case Swipe:
-                m_hud.ShowTutorSwipeAndGoal();
-                break;
-
-            case Drag:
-                m_hud.ShowTutorDrag();
-                break;
-
-            case Moving:
-                m_hud.ShowTutorMoving();
-                break;
-
-            case Mover:
-                m_hud.ShowTutorMover();
-                break;
-
-            case Dead:
-                m_hud.ShowTutorDead();
-                break;
-
-            case Plain:
-                m_hud.ShowTutorPlain();
-                break;
-
-            case MenuPause:
-                m_hud.ShowTutorMenuPause();
-                break;
-
-            case MenuUndo:
-                m_hud.ShowTutorMenuUndo();
-                break;
-
-            case MenuHint:
-                m_hud.ShowTutorMenuHint();
-                break;
-
-            case MenuSolvers:
-                m_hud.ShowTutorMenuSolvers();
-                break;
-
+        switch (index) {
+            case Swipe: m_hud.showTutorSwipeAndGoal(); break;
+            case Drag: m_hud.showTutorDrag(); break;
+            case Moving: m_hud.showTutorMoving(); break;
+            case Mover: m_hud.showTutorMover(); break;
+            case Dead: m_hud.showTutorDead(); break;
+            case Plain: m_hud.showTutorPlain(); break;
+            case MenuPause: m_hud.showTutorMenuPause(); break;
+            case MenuUndo: m_hud.showTutorMenuUndo(); break;
+            case MenuHint: m_hud.showTutorMenuHint(); break;
+            case MenuSolvers: m_hud.showTutorMenuSolvers(); break;
             default:
                 break;
         }
     }
-
-    #pragma mark - Is
-
-    bool cLevel::IsMovingCube(CubePos& cube_pos, bool set)
-    {
-        cMovingCube* pMovingCube;
+    
+    public boolean isMovingCube(CubePos cube_pos, boolean set) {
+        MovingCube movingCube;
 
         list<cMovingCube*>::iterator it;
-        for(it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it)
-        {
-            pMovingCube = *it;
-            CubePos cp = pMovingCube->GetCubePos();
+        for(it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it) {
+            movingCube = *it;
+            CubePos cp = movingCube.getCubePos();
 
-            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
-            {
-                if (set)
-                    m_player_cube->SetMovingCube(pMovingCube);
-
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool cLevel::IsMoverCube(CubePos& cube_pos, bool set)
-    {
-        cMoverCube* p;
-
-        list<cMoverCube*>::iterator it;
-        for(it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it)
-        {
-            p = *it;
-            CubePos cp = p->GetCubePos();
-
-            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
-            {
-                if (set)
-                {
-                    if (m_mover_cube != p) // bugfix! when player hits the mover cube from behind!
-                        m_player_cube->SetMoverCube(p);
+            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+                if (set) {
+                    m_player_cube.SetMovingCube(pMovingCube);
                 }
-
                 return true;
             }
         }
         return false;
     }
 
-    bool cLevel::IsDeadCube(CubePos& cube_pos, bool set)
-    {
-        cDeadCube* p;
+    public boolean isMoverCube(CubePos cube_pos, boolean set) {
+        MoverCube moverCube;
+        list<cMoverCube*>::iterator it;
+        for(it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it) {
+            moverCube = *it;
+            CubePos cp = moverCube.getCubePos();
 
-        list<cDeadCube*>::iterator it;
-        for(it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it)
-        {
-            p = *it;
-            CubePos cp = p->GetCubePos();
-
-            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
-            {
-                if (set)
-                    m_player_cube->SetDeadCube(p);
-
+            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+                if (set) {
+                    if (m_mover_cube != p) { // bugfix! when player hits the mover cube from behind!
+                        m_player_cube.setMoverCube(p);
+                    }
+                }
                 return true;
             }
         }
         return false;
     }
 
-    bool cLevel::IsSpecCubeObstacle(CubePos& cube_pos,
-                                    cMovingCube* ignore_moving_cube,
-                                    cMoverCube* ignore_mover_cube,
-                                    cDeadCube* ignore_dead_cube)
-    {
+    public boolean isDeadCube(CubePos cube_pos, boolean set) {
+        DeadCube deadCube;
+        CubePos cp;
+        int len = m_lst_dead_cubes.size();        
+        for(int i = 0; i < len; ++it) {
+            deadCube = m_lst_dead_cubes.get(i);
+            cp = deadCube.getCubePos();
+
+            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+                if (set) {
+                    m_player_cube.setDeadCube(p);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isSpecCubeObstacle(CubePos cube_pos,
+                                      MovingCube ignore_moving_cube,
+                                      MoverCube ignore_mover_cube,
+                                      DeadCube ignore_dead_cube) {
         CubePos cp;
 
-        if (!m_lst_dead_cubes.empty())
-        {
-            cDeadCube* p;
+        if (!m_lst_dead_cubes.isEmpty()) {
+            DeadCube deadCube;
             list<cDeadCube*>::iterator it;
-            for(it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it)
-            {
-                p = *it;
+            for(it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it) {
+                deadCube = *it;
+                if (deadCube != ignore_dead_cube) {
+                    cp = deadCube.getCubePos();
 
-                if (p != ignore_dead_cube)
-                {
-                    cp = p->GetCubePos();
-
-                    if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
+                    if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                         return true;
+                    }
                 }
             }
         }
 
-        if (!m_lst_mover_cubes.empty())
-        {
-            cMoverCube* p;
+        if (!m_lst_mover_cubes.isEmpty()) {
+            MoverCube moverCube;
             list<cMoverCube*>::iterator it;
-            for(it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it)
-            {
-                p = *it;
+            for(it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it) {
+                moverCube = *it;
 
-                if (p != ignore_mover_cube)
-                {
-                    cp = p->GetCubePos();
+                if (moverCube != ignore_mover_cube) {
+                    cp = moverCube.getCubePos();
 
-                    if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
+                    if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                         return true;
+                    }
                 }
             }
         }
 
-        if (!m_lst_moving_cubes.empty())
-        {
-            cMovingCube* p;
+        if (!m_lst_moving_cubes.isEmpty()) {
+            MovingCube movingCube;
             list<cMovingCube*>::iterator it;
-            for(it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it)
-            {
-                p = *it;
+            for(it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it) {
+                movingCube = *it;
 
-                if (p != ignore_moving_cube)
-                {
-                    cp = p->GetCubePos();
+                if (p != ignore_moving_cube) {
+                    cp = movingCube.getCubePos();
 
-                    if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
+                    if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                         return true;
+                    }
                 }
             }
         }
-
         return false;
     }
 
-    #pragma mark - Setup
-
-    void cLevel::SetupMusic()
-    {
-        switch (m_difficulty)
-        {
+    public void setupMusic() {
+        switch (m_difficulty) {
             case Easy:
+                if (m_level_number >= 1 && m_level_number <= 15) {
+                    Game.playMusic(MUSIC_BREEZE);
+                }
 
-                if (m_level_number >= 1 && m_level_number <= 15)
-                    engine->PlayMusic(MUSIC_BREEZE);
+                if (m_level_number >= 16 && m_level_number <= 30) {
+                    Game.playMusic(MUSIC_DRONES);
+                }
 
-                if (m_level_number >= 16 && m_level_number <= 30)
-                    engine->PlayMusic(MUSIC_DRONES);
+                if (m_level_number >= 31 && m_level_number <= 45) {
+                    Game.playMusic(MUSIC_WAVES);
+                }
 
-                if (m_level_number >= 31 && m_level_number <= 45)
-                    engine->PlayMusic(MUSIC_WAVES);
-
-                if (m_level_number >= 46 && m_level_number <= 60)
-                    engine->PlayMusic(MUSIC_BREEZE);
-
+                if (m_level_number >= 46 && m_level_number <= 60) {
+                    Game.playMusic(MUSIC_BREEZE);
+                }
                 break;
 
             case Normal:
+                if (m_level_number >= 1 && m_level_number <= 15) {
+                    Game.playMusic(MUSIC_DRONES);
+                }
 
-                if (m_level_number >= 1 && m_level_number <= 15)
-                    engine->PlayMusic(MUSIC_DRONES);
+                if (m_level_number >= 16 && m_level_number <= 30) {
+                    Game.playMusic(MUSIC_WAVES);
+                }
 
-                if (m_level_number >= 16 && m_level_number <= 30)
-                    engine->PlayMusic(MUSIC_WAVES);
+                if (m_level_number >= 31 && m_level_number <= 45) {
+                    Game.playMusic(MUSIC_BREEZE);
+                }
 
-                if (m_level_number >= 31 && m_level_number <= 45)
-                    engine->PlayMusic(MUSIC_BREEZE);
-
-                if (m_level_number >= 46 && m_level_number <= 60)
-                    engine->PlayMusic(MUSIC_DRONES);
-
+                if (m_level_number >= 46 && m_level_number <= 60) {
+                    Game.playMusic(MUSIC_DRONES);
+                }
                 break;
 
             case Hard:
+                if (m_level_number >= 1 && m_level_number <= 15) {
+                    Game.playMusic(MUSIC_WAVES);
+                }
 
-                if (m_level_number >= 1 && m_level_number <= 15)
-                    engine->PlayMusic(MUSIC_WAVES);
+                if (m_level_number >= 16 && m_level_number <= 30) {
+                    Game.playMusic(MUSIC_BREEZE);
+                }
 
-                if (m_level_number >= 16 && m_level_number <= 30)
-                    engine->PlayMusic(MUSIC_BREEZE);
+                if (m_level_number >= 31 && m_level_number <= 45) {
+                    Game.playMusic(MUSIC_DRONES);
+                }                    
 
-                if (m_level_number >= 31 && m_level_number <= 45)
-                    engine->PlayMusic(MUSIC_DRONES);
-
-                if (m_level_number >= 46 && m_level_number <= 60)
-                    engine->PlayMusic(MUSIC_WAVES);
-
+                if (m_level_number >= 46 && m_level_number <= 60) {
+                    Game.playMusic(MUSIC_WAVES);
+                }
                 break;
         }
     }
 
-    void cLevel::SetupAppear()
-    {
+    public void setupAppear() {
         m_state = Appear;
         m_appear_state = SubAppearWait;
         m_draw_menu_cubes = false;
@@ -882,122 +726,104 @@ public final class Level extends Scene {
         m_timeout = 0.0f;
         m_alter_view = false;
 
-        if (rand()%2 == 0)
-        {
+        if (rand()%2 == 0) {
             //printf("\nDownToTop");
-            m_ad_level.SetLevelAndDirection(0, 1);
-        }
-        else
-        {
+            m_ad_level.setLevelAndDirection(0, 1);
+        } else {
             //printf("\nTopToDown");
-            m_ad_level.SetLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+            m_ad_level.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
         }
-
-        m_cube_pos_key.Reset();
+        m_cube_pos_key.reset();
     }
 
-    void cLevel::SetupCubesForLevel()
-    {
+    public void setupCubesForLevel() {
         m_list_cubes_wall_y_minus.clear();
         m_list_cubes_wall_x_minus.clear();
         m_list_cubes_wall_z_minus.clear();
         m_list_cubes_edges.clear();
 
-        engine->ResetCubes();
+        Game.resetCubes();
 
         // ceiling
-        for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-            for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-            {
-                engine->cubes[x][7][z].type = CubeIsInvisibleAndObstacle;
-                engine->cubes[x][1][z].type = CubeIsInvisibleAndObstacle;
+        for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+            for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+                Game.cubes[x][7][z].type = CubeIsInvisibleAndObstacle;
+                Game.cubes[x][1][z].type = CubeIsInvisibleAndObstacle;
 
-                engine->cubes[x][7][z].SetColor( engine->GetBaseColor() );
-                engine->cubes[x][1][z].SetColor( engine->GetBaseColor() );
+                Game.cubes[x][7][z].setColor( Game.getBaseColor() );
+                Game.cubes[x][1][z].setColor( Game.getBaseColor() );
             }
         }
 
         // wall x minus
-        for (int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-            for (int y = 0; y < MAX_CUBE_COUNT; ++y)
-            {
-                engine->cubes[1][y][z].type = CubeIsInvisibleAndObstacle;
-                engine->cubes[1][y][z].SetColor( engine->GetBaseColor() );
+        for (int z = 0; z < MAX_CUBE_COUNT; ++z) {
+            for (int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                Game.cubes[1][y][z].type = CubeIsInvisibleAndObstacle;
+                Game.cubes[1][y][z].setColor( Game.getBaseColor() );
             }
         }
 
         // wall z minus
-        for (int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-            for (int y = 0; y < MAX_CUBE_COUNT; ++y)
-            {
-                engine->cubes[x][y][1].type = CubeIsInvisibleAndObstacle;
-                engine->cubes[x][y][1].SetColor( engine->GetBaseColor() );
+        for (int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for (int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                Game.cubes[x][y][1].type = CubeIsInvisibleAndObstacle;
+                Game.cubes[x][y][1].setColor( Game.getBaseColor() );
             }
         }
 
 
         // wall y minus
-        for (int z = 2; z < MAX_CUBE_COUNT; ++z)
-        {
-            for (int x = 2; x < MAX_CUBE_COUNT; ++x)
-            {
-                engine->cubes[x][1][z].type = CubeIsVisibleAndObstacle;
-                engine->cubes[x][1][z].SetColor( engine->GetBaseColor() );
+        for (int z = 2; z < MAX_CUBE_COUNT; ++z) {
+            for (int x = 2; x < MAX_CUBE_COUNT; ++x) {
+                Game.cubes[x][1][z].type = CubeIsVisibleAndObstacle;
+                Game.cubes[x][1][z].setColor( Game.getBaseColor() );
 
-                m_list_cubes_wall_y_minus.push_back(&engine->cubes[x][1][z]);
+                m_list_cubes_wall_y_minus.add(Game.cubes[x][1][z]);
             }
         }
 
         // walls
-        for (int y = 2; y < 7; ++y)
-        {
-            for (int x = 2; x < MAX_CUBE_COUNT; ++x)
-            {
-                engine->cubes[x][y][1].type = CubeIsVisibleAndObstacle;
-                engine->cubes[x][y][1].SetColor( engine->GetBaseColor() );
+        for (int y = 2; y < 7; ++y) {
+            for (int x = 2; x < MAX_CUBE_COUNT; ++x) {
+                Game.cubes[x][y][1].type = CubeIsVisibleAndObstacle;
+                Game.cubes[x][y][1].setColor( Game.getBaseColor() );
 
-                if (y > 0)
-                    m_list_cubes_wall_z_minus.push_back(&engine->cubes[x][y][1]);
+                if (y > 0) {
+                    m_list_cubes_wall_z_minus.add(Game.cubes[x][y][1]);
+                }
             }
 
-            for (int z = 2; z < MAX_CUBE_COUNT; ++z)
-            {
-                engine->cubes[1][y][z].type = CubeIsVisibleAndObstacle;
-                engine->cubes[1][y][z].SetColor( engine->GetBaseColor() );
+            for (int z = 2; z < MAX_CUBE_COUNT; ++z) {
+                Game.cubes[1][y][z].type = CubeIsVisibleAndObstacle;
+                Game.cubes[1][y][z].setColor( Game.getBaseColor() );
 
-                if (y > 0)
-                    m_list_cubes_wall_x_minus.push_back(&engine->cubes[1][y][z]);
+                if (y > 0) {
+                    m_list_cubes_wall_x_minus.add(Game.cubes[1][y][z]);
+                }
             }
         }
 
         // edges
-        //engine->cubes[1][1][8].color_current = Color(0, 0, 255, 255);
-        Color color = engine->GetBaseColor(); //(255,255,0,255);
+        //engine.cubes[1][1][8].color_current = Color(0, 0, 255, 255);
+        Color color = Game.getBaseColor(); //(255,255,0,255);
 
-        for (int i = 1; i < MAX_CUBE_COUNT; ++i)
-        {
-            m_list_cubes_edges.push_back(&engine->cubes[i][1][1]);
-            engine->cubes[i][1][1].SetColor(color);
+        for (int i = 1; i < MAX_CUBE_COUNT; ++i) {
+            m_list_cubes_edges.add(Game.cubes[i][1][1]);
+            Game.cubes[i][1][1].setColor(color);
         }
 
-        for (int i = 1; i < MAX_CUBE_COUNT; ++i)
-        {
-            m_list_cubes_edges.push_back(&engine->cubes[1][1][i]);
-            engine->cubes[1][1][i].SetColor(color);
+        for (int i = 1; i < MAX_CUBE_COUNT; ++i) {
+            m_list_cubes_edges.add(Game.cubes[1][1][i]);
+            Game.cubes[1][1][i].setColor(color);
         }
 
-        for (int i = 1; i < 7; ++i)
-        {
-            m_list_cubes_edges.push_back(&engine->cubes[1][i][1]);
-            engine->cubes[1][i][1].SetColor(color);
+        for (int i = 1; i < 7; ++i) {
+            m_list_cubes_edges.add(Game.cubes[1][i][1]);
+            Game.cubes[1][i][1].setColor(color);
         }
     }
 
-    void cLevel::SetupAnimUndo()
-    {
+    public void setupAnimUndo() {
         m_anim_undo = true;
         m_anim_undo_alpha = 1.0f;
         m_anim_undo_scale = 0.75f;
@@ -1006,8 +832,7 @@ public final class Level extends Scene {
         m_anim_undo_scale += 0.04f;
     }
 
-    void cLevel::SetupDeadCube(cDeadCube *pDeadCube)
-    {
+    public void setupDeadCube(DeadCube deadCube) {
         m_state = DeadAnim;
         m_timeout = 1.5f;
 
@@ -1015,55 +840,44 @@ public final class Level extends Scene {
         dead_alpha = 0;
         dead_alpha_step = 4;
 
-        m_dead_cube = pDeadCube;
-        m_dead_cube->HiLite();
+        m_dead_cube = deadCube;
+        m_dead_cube.hiLite();
     }
 
-    void cLevel::SetupMoveCube(cMovingCube* pMovingCube)
-    {
+    public void setupMoveCube(MovingCube movingCube) {
         m_state_to_restore = m_state;
         m_state = MovingCube;
         m_timeout = 0.3f;
 
-        m_moving_cube = pMovingCube;
-        m_moving_cube->Move();
+        m_moving_cube = movingCube;
+        m_moving_cube.move();
     }
 
-    void cLevel::SetupMoverCube(cMoverCube *pMoverCube)
-    {
-        AxisMovementEnum movement = pMoverCube->GetMoveDir();
+    public void setupMoverCube(MoverCube moverCube) {
+        AxisMovementEnum movement = moverCube.getMoveDir();
         m_state_to_restore = m_state;
         m_state = MovingPlayer;
         m_timeout = 0.3f;
 
         m_mover_cube = pMoverCube;
-        m_mover_cube->HiLite();
+        m_mover_cube.hiLite();
 
-        m_player_cube->MoveOnAxis(movement);
+        m_player_cube.moveOnAxis(movement);
 
-        UndoData& ud = m_lst_undo.back();
-        ud.moving_cube = m_player_cube->m_moving_cube; //m_lst_moving_cubes.front();
+        UndoData ud = m_lst_undo.back();
+        ud.moving_cube = m_player_cube.m_moving_cube; //m_lst_moving_cubes.front();
 
-        if (ud.moving_cube)
-        {
-            ud.moving_cube_move_dir = ud.moving_cube->GetMovement();
-            ud.moving_cube_pos = ud.moving_cube->GetCubePos();
+        if (ud.moving_cube) {
+            ud.moving_cube_move_dir = ud.moving_cube.getMovement();
+            ud.moving_cube_pos = ud.moving_cube.getCubePos();
         }
     }
-
-
-    #pragma mark - Set
-
-    void cLevel::SetSolversCount()
-    {
-        m_hud.SetTextSolver(engine->GetSolverCount());
+    
+    public void setSolversCount() {
+        m_hud.setTextSolver(Game.getSolverCount());
     }
-
-
-    #pragma mark - Completed
-
-    void cLevel::SetAnimToCompleted()
-    {
+    
+    public void setAnimToCompleted() {
         m_state = AnimToCompleted;
 
         m_draw_menu_cubes = true;
@@ -1075,657 +889,519 @@ public final class Level extends Scene {
         m_ad_face.Clear();
         m_ad_base.Clear();
 
-        cCube* pCube;
+        Cube cube;
 
         // way for menu cubes carved out
-        for (int i = 0; i < MAX_CUBE_COUNT; ++i)
-        {
-            pCube = &engine->cubes[i][1][0];
-            pCube->type = CubeIsInvisible;
+        for (int i = 0; i < MAX_CUBE_COUNT; ++i) {
+            cube = Game.cubes[i][1][0];
+            cube.type = CubeIsInvisible;
 
-            pCube = &engine->cubes[i][3][0];
-            pCube->type = CubeIsInvisible;
+            cube = Game.cubes[i][3][0];
+            cube.type = CubeIsInvisible;
 
-            pCube = &engine->cubes[i][5][0];
-            pCube->type = CubeIsInvisible;
+            cube = Game.cubes[i][5][0];
+            cube.type = CubeIsInvisible;
         }
 
-        for (int i = 0; i < 7; ++i)
-        {
-            pCube = &engine->cubes[8][i][0];
-            pCube->type = CubeIsVisibleAndObstacle;
-            pCube->SetColor( cEngine::GetFaceColor() );
-            m_ad_face.AddAppear(pCube);
+        for (int i = 0; i < 7; ++i) {
+            cube = Game.cubes[8][i][0];
+            cube.type = CubeIsVisibleAndObstacle;
+            cube.setColor( Game.getFaceColor() );
+            m_ad_face.addAppear(cube);
         }
 
-        for (int i = 0; i < 7; ++i)
-        {
-            pCube = &engine->cubes[0][i][1];
-            pCube->type = CubeIsVisibleAndObstacle;
-            pCube->SetColor( cEngine::GetBaseColor() );
-            m_ad_base.AddAppear(pCube);
+        for (int i = 0; i < 7; ++i) {
+            cube = Game.cubes[0][i][1];
+            cube.type = CubeIsVisibleAndObstacle;
+            cube.setColor( Game.getBaseColor() );
+            m_ad_base.addAppear(cube);
         }
 
-        for (int i = 0; i < MAX_CUBE_COUNT; ++i)
-        {
-            pCube = &engine->cubes[i][0][1];
-            pCube->type = CubeIsVisibleAndObstacle;
-            pCube->SetColor( cEngine::GetBaseColor() );
-            m_ad_base.AddAppear(pCube);
+        for (int i = 0; i < MAX_CUBE_COUNT; ++i) {
+            cube = Game.cubes[i][0][1];
+            cube.type = CubeIsVisibleAndObstacle;
+            cube.setColor( Game.getBaseColor() );
+            m_ad_base.addAppear(cube);
         }
 
-        pCube = &engine->cubes[7][0][0];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[7][0][0];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        pCube = &engine->cubes[7][2][0];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[7][2][0];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        pCube = &engine->cubes[7][4][0];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[7][4][0];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        pCube = &engine->cubes[7][6][0];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        pCube = Game.cubes[7][6][0];
+        pCube.type = CubeIsVisibleAndObstacle;
+        pCube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        m_ad_face.SetLevelAndDirection(0, 1);
-        m_ad_base.SetLevelAndDirection(0, 1);
+        m_ad_face.setLevelAndDirection(0, 1);
+        m_ad_base.setLevelAndDirection(0, 1);
 
         m_t = 0.0f;
 
-        if (Hard == m_difficulty && 60 == m_level_number)
+        if (Hard == m_difficulty && 60 == m_level_number) {
             m_completed_face_next_action = Finish;
-        else
+        } else {
             m_completed_face_next_action = Next;
-
-        #ifdef LITE_VERSION
-        if (15 == m_level_number)
-            m_completed_face_next_action = Buy_Full_Version;
-        #endif
-
-        cCreator::CreateTextsLevelCompletedFace(this, m_completed_face_next_action);
-
-        cCubeFont* pCubeFont;
-        Color color = cEngine::GetTextColorOnCubeFace();
-        list<cCubeFont*>::iterator it;
-        for(it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it)
-        {
-            pCubeFont = *it;
-            pCubeFont->SetColor(color);
         }
 
-        color = Color(20, 0, 0, 20);
-        m_cubefont_up->SetColor(color);
-        m_cubefont_mid->SetColor(color);
-        m_cubefont_low->SetColor(color);
+        Creator.createTextsLevelCompletedFace(this, m_completed_face_next_action);
+
+        CubeFont cubeFont;
+        Color color = Game.getTextColorOnCubeFace();
+        list<cCubeFont*>::iterator it;
+        for(it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it) {
+            cubeFont = *it;
+            cubeFont.setColor(color);
+        }
+
+        color = new Color(20, 0, 0, 20);
+        m_cubefont_up.setColor(color);
+        m_cubefont_mid.setColor(color);
+        m_cubefont_low.setColor(color);
 
         m_target_rotation_degree = m_cube_rotation.degree - 90.0f - 45.0f;
 
-        m_interpolator.Setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
+        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
 
-        m_menu_cube_up->SetCubePos(CubePos(0, 5, 0));
-        m_menu_cube_mid->SetCubePos(CubePos(0, 3, 0));
-        m_menu_cube_low->SetCubePos(CubePos(0, 1, 0));
+        m_menu_cube_up.setCubePos(new CubePos(0, 5, 0));
+        m_menu_cube_mid.setCubePos(new CubePos(0, 3, 0));
+        m_menu_cube_low.setCubePos(new CubePos(0, 1, 0));
 
-        CubePos offset(0,0,1);
-        m_menu_cube_up->SetHiliteOffset(offset);
-        m_menu_cube_mid->SetHiliteOffset(offset);
-        m_menu_cube_low->SetHiliteOffset(offset);
+        CubePos offset = new CubePos(0,0,1);
+        m_menu_cube_up.setHiliteOffset(offset);
+        m_menu_cube_mid.setHiliteOffset(offset);
+        m_menu_cube_low.setHiliteOffset(offset);
 
-        m_menu_cube_up->MoveOnAxis(X_Plus);
-        m_menu_cube_mid->MoveOnAxis(X_Plus);
-        m_menu_cube_low->MoveOnAxis(X_Plus);
-
-        //CheckCubes();
+        m_menu_cube_up.moveOnAxis(X_Plus);
+        m_menu_cube_mid.moveOnAxis(X_Plus);
+        m_menu_cube_low.moveOnAxis(X_Plus);        
     }
 
-    void cLevel::UpdateAnimToCompleted(float dt)
-    {
-        m_menu_cube_up->Update(dt);
-        m_menu_cube_mid->Update(dt);
-        m_menu_cube_low->Update(dt);
+    public void updateAnimToCompleted() {
+        m_menu_cube_up.update();
+        m_menu_cube_mid.update();
+        m_menu_cube_low.update();
 
-        cCube* pCube;
+        Cube cube;
+        
+        cube = m_ad_base.GetCubeFromAppearList();
+        if (cube) {
+            m_list_cubes_base.add(cube);
+        }
 
-        pCube = m_ad_base.GetCubeFromAppearList();
+        cube = m_ad_face.GetCubeFromAppearList();
+        if (cube) {
+            m_list_cubes_face.add(cube);
+        }
 
-        if (pCube)
-            m_list_cubes_base.push_back(pCube);
+        //engine.IncT(m_t);
 
-        pCube = m_ad_face.GetCubeFromAppearList();
+        Utils.lerpCamera(m_camera_level, m_camera_level_completed, m_t, m_camera_current);
 
-        if (pCube)
-            m_list_cubes_face.push_back(pCube);
+        m_interpolator.interpolate();
+        m_cube_rotation.degree = m_interpolator.getValue();
 
-        engine->IncT(m_t);
+        float diff = Math.abs(m_target_rotation_degree) - Math.abs(m_interpolator.getValue());
 
-        cUtils::LerpCamera(m_camera_level, m_camera_level_completed, m_t, m_camera_current);
-
-        m_interpolator.Interpolate();
-        m_cube_rotation.degree = m_interpolator.GetValue();
-
-        float diff = abs(m_target_rotation_degree) - abs(m_interpolator.GetValue());
-
-        if (diff < 0.1f && m_ad_base.lst_appear.empty() && m_ad_face.lst_appear.empty() && (abs(1.0f - m_t) < EPSILON))
-        {
+        if (diff < 0.1f && m_ad_base.lst_appear.isEmpty() && m_ad_face.lst_appear.isEmpty() && (Math.abs(1.0f - m_t) < EPSILON)) {
             m_cube_rotation.degree = m_target_rotation_degree;
             m_state = Completed;
 
-            Color color(100, 0, 0, 230);
+            Color color = new Color(100, 0, 0, 230);
 
-            m_cubefont_up->color  = color;
-            m_cubefont_mid->color = color;
-            m_cubefont_low->color = color;
+            m_cubefont_up.color  = color;
+            m_cubefont_mid.color = color;
+            m_cubefont_low.color = color;
 
             m_show_hint_2nd = false;
 
-            for (int i = 0; i < MAX_HINT_CUBES; ++i)
-                m_ar_hint_cubes[i] = NULL;
-
-            #ifdef LITE_VERSION
-            if (15 == m_level_number)
-                engine->AskToBuyFullVersion();
-            #endif
+            for (int i = 0; i < MAX_HINT_CUBES; ++i) {
+                m_ar_hint_cubes[i] = null;
+            }
         }
     }
 
-    void cLevel::UpdateCompleted(float dt)
-    {
-        m_menu_cube_up->Update(dt);
-        m_menu_cube_mid->Update(dt);
-        m_menu_cube_low->Update(dt);
+    public void updateCompleted() {
+        m_menu_cube_up.update();
+        m_menu_cube_mid.update();
+        m_menu_cube_low.update();
 
-        m_cubefont_up->WarmByFactor(60);
-        m_cubefont_mid->WarmByFactor(60);
-        m_cubefont_low->WarmByFactor(60);
+        m_cubefont_up.warmByFactor(60);
+        m_cubefont_mid.warmByFactor(60);
+        m_cubefont_low.warmByFactor(60);
 
-        if (m_menu_cube_up->IsDone()) // next
-        {
-            if (0 == m_menu_cube_up->m_cube_pos.x)
-            {
-                switch (m_completed_face_next_action)
-                {
-                    case Buy_Full_Version:
-                        #ifdef LITE_VERSION
-                        m_menu_cube_up->MoveOnAxis(X_Plus);
-                        engine->BuyFullVersion();
-                        #endif
-                        break;
-
+        if (m_menu_cube_up.isDone()) { // next        
+            if (0 == m_menu_cube_up.m_cube_pos.x) {
+                switch (m_completed_face_next_action) {
                     case Next:
                         ++m_level_number;
-
-                        if (m_level_number > 60)
-                        {
-                            switch (m_difficulty)
-                            {
+                        if (m_level_number > 60) {
+                            switch (m_difficulty) {
                                 case Easy:
                                     m_difficulty = Normal;
                                     m_level_number = 1;
-                                    engine->StopMusic();
-                                    SetupMusic();
+                                    Game.stopMusic();
+                                    setupMusic();
                                     break;
 
                                 case Normal:
                                     m_difficulty = Hard;
                                     m_level_number = 1;
-                                    engine->StopMusic();
-                                    SetupMusic();
+                                    Game.stopMusic();
+                                    setupMusic();
                                     break;
 
                                 case Hard: // win!
                                     break;
                             }
-                        }
-                        else
-                        {
-                            if (m_level_number == 16 || m_level_number == 31 || m_level_number == 46)
-                            {
-                                engine->StopMusic();
-                                SetupMusic();
+                        } else {
+                            if (m_level_number == 16 || m_level_number == 31 || m_level_number == 46) {
+                                Game.stopMusic();
+                                setupMusic();
                             }
                         }
-                        SetAnimFromCompleted();
+                        setAnimFromCompleted();
                         break;
 
                     case Finish:
                         ++m_level_number;
-                        SetAnimFromCompleted();
+                        setAnimFromCompleted();
                         break;
                 }
             }
         }
 
-        if (m_menu_cube_mid->IsDone()) // replay
-        {
-            if (m_menu_cube_mid->m_cube_pos.x == 0)
-            {
-                Reset();
-                SetAnimFromCompleted();
+        if (m_menu_cube_mid.isDone()) { // replay        
+            if (m_menu_cube_mid.m_cube_pos.x == 0) {
+                reset();
+                setAnimFromCompleted();
             }
         }
 
-        if (m_menu_cube_low->IsDone()) // quit
-        {
-            if (m_menu_cube_low->m_cube_pos.x == 0)
-            {
-                EventQuit();
+        if (m_menu_cube_low.isDone()) { // quit        
+            if (m_menu_cube_low.m_cube_pos.x == 0) {
+                eventQuit();
             }
         }
     }
 
-    void cLevel::SetAnimFromCompleted()
-    {
+    public void setAnimFromCompleted() {
         m_state = AnimFromCompleted;
         m_t = 0.0f;
         m_target_rotation_degree = -45.0f;
 
-        m_interpolator.Setup(m_cube_rotation.degree, m_target_rotation_degree, 6.0f);
+        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 6.0f);
 
-        m_ad_base.SetLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
-        m_ad_face.SetLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
-
-        //CheckCubes();
+        m_ad_base.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        m_ad_face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
     }
 
-    void cLevel::UpdateAnimFromCompleted(float dt)
-    {
-        engine->IncT(m_t);
+    public void updateAnimFromCompleted() {
+        //engine.IncT(m_t);
+        Utils.lerpCamera(m_camera_level_completed, m_camera_level, m_t, m_camera_current);
 
-        cUtils::LerpCamera(m_camera_level_completed, m_camera_level, m_t, m_camera_current);
+        Cube cube;
+        pCube = m_ad_base.getCubeFromDisappearList();
 
-        cCube* pCube;
-        pCube = m_ad_base.GetCubeFromDisappearList();
+        if (cube) {
+            m_list_cubes_base.remove(cube);
+        }
 
-        if (pCube)
-            m_list_cubes_base.remove(pCube);
+        cube = m_ad_face.getCubeFromDisappearList();
 
-        pCube = m_ad_face.GetCubeFromDisappearList();
+        if (cube) {
+            m_list_cubes_face.remove(cube);
+        }
 
-        if (pCube)
-            m_list_cubes_face.remove(pCube);
+        m_interpolator.interpolate();
+        m_cube_rotation.degree = m_interpolator.getValue();
 
-        m_interpolator.Interpolate();
-        m_cube_rotation.degree = m_interpolator.GetValue();
+        float diff = Math.abs(m_cube_rotation.degree) - Math.abs(m_target_rotation_degree);
 
-        float diff = abs(m_cube_rotation.degree) - abs(m_target_rotation_degree);
-
-        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.empty() && m_ad_base.lst_disappear.empty())
-        {
+        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.isEmpty() && m_ad_base.lst_disappear.isEmpty()) {
             m_cube_rotation.degree = m_target_rotation_degree;
 
-            if (Hard == m_difficulty && 61 == m_level_number)
-                engine->ShowScene(Scene_Outro);
-            else
-                SetupAppear();
+            if (Hard == m_difficulty && 61 == m_level_number) {
+                Game.showScene(Scene_Outro);
+            } else {
+                setupAppear();
+            }
         }
     }
-
-
-    #pragma mark - Paused
-
-    void cLevel::SetAnimToPaused()
-    {
+    
+    public void setAnimToPaused() {
         m_state = AnimToPaused;
 
         m_draw_menu_cubes = true;
         m_draw_texts = true;
 
         m_target_rotation_degree = m_cube_rotation.degree + 90.0f + 45.0f;
-        m_interpolator.Setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
+        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
         m_t = 0.0f;
 
-        cCreator::CreateTextsLevelPausedFace(this);
+        Creator.createTextsLevelPausedFace(this);
 
-        cCubeFont* pCubeFont;
-        Color color = cEngine::GetTextColorOnCubeFace();
+        CubeFont cubeFont;
+        Color color = Game.getTextColorOnCubeFace();
         list<cCubeFont*>::iterator it;
-        for(it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it)
-        {
-            pCubeFont = *it;
-            pCubeFont->SetColor(color);
+        for(it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it) {
+            cubeFont = *it;
+            cubeFont.setColor(color);
         }
 
-        color = Color(20, 0, 0, 20);
-        m_cubefont_up->SetColor(color);
-        m_cubefont_mid->SetColor(color);
-        m_cubefont_low->SetColor(color);
+        color = new Color(20, 0, 0, 20);
+        m_cubefont_up.setColor(color);
+        m_cubefont_mid.setColor(color);
+        m_cubefont_low.setColor(color);
 
         m_list_cubes_base.clear();
         m_list_cubes_face.clear();
 
-        m_ad_face.Clear();
-        m_ad_base.Clear();
+        m_ad_face.clear();
+        m_ad_base.clear();
 
-        cCube* pCube;
+        Cube cube;
 
-        for (int i = 1; i < MAX_CUBE_COUNT; ++i)
-        {
-            pCube = &engine->cubes[0][5][i];
-            pCube->type = CubeIsInvisible;
+        for (int i = 1; i < MAX_CUBE_COUNT; ++i) {
+            cube = Game.cubes[0][5][i];
+            cube.type = CubeIsInvisible;
 
-            pCube = &engine->cubes[0][3][i];
-            pCube->type = CubeIsInvisible;
+            cube = Game.cubes[0][3][i];
+            cube.type = CubeIsInvisible;
 
-            pCube = &engine->cubes[0][1][i];
-            pCube->type = CubeIsInvisible;
+            cube = Game.cubes[0][1][i];
+            cube.type = CubeIsInvisible;
         }
 
-        for (int i = 0; i < 7; ++i)
-        {
-            pCube = &engine->cubes[0][i][0];
-            pCube->type = CubeIsVisibleAndObstacle;
-            pCube->SetColor( cEngine::GetFaceColor() );
-            m_ad_face.AddAppear(pCube);
+        for (int i = 0; i < 7; ++i) {
+            cube = Game.cubes[0][i][0];
+            cube.type = CubeIsVisibleAndObstacle;
+            cube.setColor( Game.getFaceColor() );
+            m_ad_face.addAppear(cube);
 
-            pCube = &engine->cubes[1][i][0];
-            pCube->type = CubeIsVisibleAndObstacle;
-            pCube->SetColor( cEngine::GetBaseColor() );
-            m_ad_base.AddAppear(pCube);
+            cube = Game.cubes[1][i][0];
+            cube.type = CubeIsVisibleAndObstacle;
+            cube.setColor( Game.getBaseColor() );
+            m_ad_base.addAppear(cube);
         }
 
-        for (int i = 0; i < MAX_CUBE_COUNT; ++i)
-        {
-            pCube = &engine->cubes[1][0][i];
-            pCube->type = CubeIsVisibleAndObstacle;
-            pCube->SetColor( cEngine::GetBaseColor() );
-            m_ad_base.AddAppear(pCube);
+        for (int i = 0; i < MAX_CUBE_COUNT; ++i) {
+            cube = Game.cubes[1][0][i];
+            cube.type = CubeIsVisibleAndObstacle;
+            cube.setColor( Game.getBaseColor() );
+            m_ad_base.addAppear(cube);
         }
 
-        pCube = &engine->cubes[0][0][1];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[0][0][1];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        pCube = &engine->cubes[0][2][1];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[0][2][1];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        pCube = &engine->cubes[0][4][1];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[0][4][1];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
-        pCube = &engine->cubes[0][6][1];
-        pCube->type = CubeIsVisibleAndObstacle;
-        pCube->SetColor( cEngine::GetFaceColor() );
-        m_ad_face.AddAppear(pCube);
+        cube = Game.cubes[0][6][1];
+        cube.type = CubeIsVisibleAndObstacle;
+        cube.setColor( Game.getFaceColor() );
+        m_ad_face.addAppear(cube);
 
         m_ad_face.SetLevelAndDirection(0, 1);
         m_ad_base.SetLevelAndDirection(0, 1);
 
-        m_menu_cube_up->SetCubePos( CubePos(0, 5, 8));
-        m_menu_cube_mid->SetCubePos(CubePos(0, 3, 8));
-        m_menu_cube_low->SetCubePos(CubePos(0, 1, 8));
+        m_menu_cube_up.setCubePos( CubePos(0, 5, 8));
+        m_menu_cube_mid.setCubePos(CubePos(0, 3, 8));
+        m_menu_cube_low.setCubePos(CubePos(0, 1, 8));
 
-        CubePos offset(1,0,0);
-        m_menu_cube_up->SetHiliteOffset(offset);
-        m_menu_cube_mid->SetHiliteOffset(offset);
-        m_menu_cube_low->SetHiliteOffset(offset);
+        CubePos offset = new CubePos(1, 0, 0);
+        m_menu_cube_up.setHiliteOffset(offset);
+        m_menu_cube_mid.setHiliteOffset(offset);
+        m_menu_cube_low.setHiliteOffset(offset);
 
-        m_menu_cube_up->MoveOnAxis(Z_Minus);
-        m_menu_cube_mid->MoveOnAxis(Z_Minus);
-        m_menu_cube_low->MoveOnAxis(Z_Minus);
-
-        //CheckCubes();
+        m_menu_cube_up.moveOnAxis(Z_Minus);
+        m_menu_cube_mid.moveOnAxis(Z_Minus);
+        m_menu_cube_low.moveOnAxis(Z_Minus);        
     }
 
-    void cLevel::UpdateAnimToPaused(float dt)
-    {
-        m_menu_cube_up->Update(dt);
-        m_menu_cube_mid->Update(dt);
-        m_menu_cube_low->Update(dt);
+    public void updateAnimToPaused() {
+        m_menu_cube_up.update();
+        m_menu_cube_mid.update();
+        m_menu_cube_low.update();
 
-        cCube* pCube;
+        Cube cube;
 
-        pCube = m_ad_base.GetCubeFromAppearList();
+        cube = m_ad_base.GetCubeFromAppearList();
+        if (cube) {
+            m_list_cubes_base.add(cube);
+        }
 
-        if (pCube)
-            m_list_cubes_base.push_back(pCube);
+        cube = m_ad_face.GetCubeFromAppearList();
+        if (pCube) {
+            m_list_cubes_face.add(cube);
+        }
 
-        pCube = m_ad_face.GetCubeFromAppearList();
+        //engine.IncT(m_t);
+        Utils.lerpCamera(m_camera_level, m_camera_level_paused, m_t, m_camera_current);
 
-        if (pCube)
-            m_list_cubes_face.push_back(pCube);
+        m_interpolator.interpolate();
+        m_cube_rotation.degree = m_interpolator.getValue();
 
-        engine->IncT(m_t);
+        float diff = Math.abs(m_interpolator.getValue()) - Math.abs(m_target_rotation_degree);
+        diff = Math.abs(diff);
 
-        cUtils::LerpCamera(m_camera_level, m_camera_level_paused, m_t, m_camera_current);
-
-        m_interpolator.Interpolate();
-        m_cube_rotation.degree = m_interpolator.GetValue();
-
-        float diff = fabs(m_interpolator.GetValue()) - fabs(m_target_rotation_degree);
-        diff = fabs(diff);
-
-        if (diff < 0.1f && ((1.0f - m_t) < EPSILON_SMALL) && m_ad_face.lst_appear.empty() && m_ad_base.lst_appear.empty() )
-        {
+        if (diff < 0.1f && ((1.0f - m_t) < EPSILON_SMALL) && m_ad_face.lst_appear.isEmpty() && m_ad_base.lst_appear.isEmpty() ) {
             m_cube_rotation.degree = m_target_rotation_degree;
             m_state = Paused;
 
-            Color color(100, 0, 0, 230);
-            m_cubefont_up->color  = color;
-            m_cubefont_mid->color = color;
-            m_cubefont_low->color = color;
+            Color color = new Color(100, 0, 0, 230);
+            m_cubefont_up.color  = color;
+            m_cubefont_mid.color = color;
+            m_cubefont_low.color = color;
 
             m_show_hint_2nd = false;
 
-            for (int i = 0; i < MAX_HINT_CUBES; ++i)
-                m_ar_hint_cubes[i] = NULL;
-        }
-    }
-
-    void cLevel::UpdatePaused(float dt)
-    {
-        m_menu_cube_up->Update(dt);
-        m_menu_cube_mid->Update(dt);
-        m_menu_cube_low->Update(dt);
-
-        m_cubefont_up->WarmByFactor(60);
-        m_cubefont_mid->WarmByFactor(60);
-        m_cubefont_low->WarmByFactor(60);
-
-        if (m_menu_cube_up->IsDone()) // back
-        {
-            if (m_menu_cube_up->m_cube_pos.z == 8)
-            {
-                SetAnimFromPaused();
-            }
-        }
-
-        if (m_menu_cube_mid->IsDone()) // reset
-        {
-            if (m_menu_cube_mid->m_cube_pos.z == 8)
-            {
-                Reset();
-                SetAnimFromPaused();
-            }
-        }
-
-        if (m_menu_cube_low->IsDone()) // quit
-        {
-            if (m_menu_cube_low->m_cube_pos.z == 8)
-            {
-                m_menu_cube_low->lst_cubes_to_hilite.clear();
-                EventQuit();
+            for (int i = 0; i < MAX_HINT_CUBES; ++i) {
+                m_ar_hint_cubes[i] = null;
             }
         }
     }
 
-    void cLevel::SetAnimFromPaused()
-    {
-        m_hud.SetupAppear();
+    public void updatePaused() {
+        m_menu_cube_up.update();
+        m_menu_cube_mid.update();
+        m_menu_cube_low.update();
+
+        m_cubefont_up.warmByFactor(60);
+        m_cubefont_mid.warmByFactor(60);
+        m_cubefont_low.warmByFactor(60);
+
+        if (m_menu_cube_up.IsDone()) { // back        
+            if (m_menu_cube_up.m_cube_pos.z == 8) {
+                setAnimFromPaused();
+            }
+        }
+
+        if (m_menu_cube_mid.IsDone()) { // reset        
+            if (m_menu_cube_mid.m_cube_pos.z == 8) {
+                reset();
+                setAnimFromPaused();
+            }
+        }
+
+        if (m_menu_cube_low.IsDone()) { // quit
+            if (m_menu_cube_low.m_cube_pos.z == 8) {
+                m_menu_cube_low.lst_cubes_to_hilite.clear();
+                eventQuit();
+            }
+        }
+    }
+
+    public void setAnimFromPaused() {
+        m_hud.setupAppear();
         m_target_rotation_degree = m_cube_rotation.degree - 90.0f - 45.0f;
-        m_interpolator.Setup(m_cube_rotation.degree, m_target_rotation_degree, 6.0f);
+        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 6.0f);
         m_t = 0.0f;
         m_state = AnimFromPaused;
 
-        m_ad_base.SetLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
-        m_ad_face.SetLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
-
-        //CheckCubes();
+        m_ad_base.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        m_ad_face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
     }
 
-    void cLevel::UpdateAnimFromPaused(float dt)
-    {
-        engine->IncT(m_t);
+    public void updateAnimFromPaused() {
+        //engine.IncT(m_t);
+        Utils.lerpCamera(m_camera_level_paused, m_camera_level, m_t, m_camera_current);
 
-        cUtils::LerpCamera(m_camera_level_paused, m_camera_level, m_t, m_camera_current);
+        Cube cube;
 
-        cCube* pCube;
-        pCube = m_ad_base.GetCubeFromDisappearList();
+        cube = m_ad_base.getCubeFromDisappearList();
+        if (cube) {
+            m_list_cubes_base.remove(cube);
+        }
 
-        if (pCube)
-            m_list_cubes_base.remove(pCube);
+        cube = m_ad_face.getCubeFromDisappearList();
+        if (cube) {
+            m_list_cubes_face.remove(cube);
+        }
 
-        pCube = m_ad_face.GetCubeFromDisappearList();
+        m_interpolator.interpolate();
+        m_cube_rotation.degree = m_interpolator.getValue();
 
-        if (pCube)
-            m_list_cubes_face.remove(pCube);
+        // 90 <. - 45
+        float diff = Math.abs( Math.abs(m_target_rotation_degree) - Math.abs(m_interpolator.getValue()) );
 
-        m_interpolator.Interpolate();
-        m_cube_rotation.degree = m_interpolator.GetValue();
-
-        // 90 <-> - 45
-        float diff = fabs( fabs(m_target_rotation_degree) - fabs(m_interpolator.GetValue()) );
-
-        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.empty() && m_ad_base.lst_disappear.empty() )
-        {
+        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.isEmpty() && m_ad_base.lst_disappear.isEmpty() ) {
             m_cube_rotation.degree = m_target_rotation_degree;
             m_state = Playing;
             m_draw_menu_cubes = false;
             m_draw_texts = false;
         }
     }
-
-
-    #pragma mark - Update
-
-    void cLevel::Update(float dt)
-    {
-//    Color color = engine->cubes[1][1][8].color_current;
-//    printf("\n%d %d %d %d",  color.r, color.g, color.b, color.a);
-
-        switch (m_state)
-        {
-            case Playing:
-                UpdatePlaying(dt);
-                break;
-
-            case Undo:
-                UpdateUndo(dt);
-                break;
-
-            case PrepareSolving:
-                UpdatePrepareSolving(dt);
-                break;
-
-            case Solving:
-                UpdateSolving(dt);
-                break;
-
-            case MovingCube:
-                UpdateMovingCube(dt);
-                break;
-
-            case MovingPlayer:
-                UpdateMovingPlayer(dt);
-                break;
-
-            case Completed:
-                UpdateCompleted(dt);
-                break;
-
-            case Paused:
-                UpdatePaused(dt);
-                break;
-
-            case Appear:
-                UpdateAppear(dt);
-                break;
-
-            case AnimFromCompleted:
-                UpdateAnimFromCompleted(dt);
-                break;
-
-            case AnimFromPaused:
-                UpdateAnimFromPaused(dt);
-                break;
-
-            case AnimToCompleted:
-                UpdateAnimToCompleted(dt);
-                break;
-
-            case AnimToPaused:
-                UpdateAnimToPaused(dt);
-                break;
-
-            case SetupAnimToCompleted:
-                SetAnimToCompleted();
-                break;
-
-            case SetupAnimToPaused:
-                SetAnimToPaused();
-                break;
-
-            case SetupAnimFromCompleted:
-                SetAnimFromCompleted();
-                break;
-
-            case SetupAnimFromPaused:
-                SetAnimFromPaused();
-                break;
-
-            case DeadAnim:
-                UpdateDeadAnim(dt);
-                break;
-
-            case Tutorial:
-                UpdateTutorial(dt);
-                break;
-
-            default:
-                //printf("\nUnhandled state in cLevel Update!!!");
+    
+    public void update() {
+        switch (m_state) {
+            case Playing:                   UpdatePlaying();            break;
+            case Undo:                      UpdateUndo();               break;
+            case PrepareSolving:            UpdatePrepareSolving();     break;
+            case Solving:                   UpdateSolving();            break;
+            case MovingCube:                UpdateMovingCube();         break;
+            case MovingPlayer:              UpdateMovingPlayer();       break;
+            case Completed:                 UpdateCompleted();          break; 
+            case Paused:                    UpdatePaused();             break;
+            case Appear:                    UpdateAppear();             break;
+            case AnimFromCompleted:         UpdateAnimFromCompleted();  break;
+            case AnimFromPaused:            UpdateAnimFromPaused();     break;
+            case AnimToCompleted:           UpdateAnimToCompleted();    break;
+            case AnimToPaused:              UpdateAnimToPaused();       break;
+            case SetupAnimToCompleted:      SetAnimToCompleted();       break;
+            case SetupAnimToPaused:         SetAnimToPaused();          break; 
+            case SetupAnimFromCompleted:    SetAnimFromCompleted();     break;
+            case SetupAnimFromPaused:       SetAnimFromPaused();        break;
+            case DeadAnim:                  UpdateDeadAnim();           break; 
+            case Tutorial:                  UpdateTutorial();           break;
+            default:                
                 break;
         }
 
-        WarmCubes(dt);
+        warmCubes(dt);
 
-        if (m_reposition_view)
-        {
+        if (m_reposition_view) {
             m_t += 0.1f;
 
-            if (m_t >= 1.0f)
-            {
+            if (m_t >= 1.0f) {
                 m_t = 1.0f;
                 m_reposition_view = false;
-                m_user_rotation.Reset();
-            }
-            else
-            {
+                m_user_rotation.reset();
+            } else {
                 m_user_rotation.current.x = LERP(m_user_rotation.from.x, 0.0f, m_t);
                 m_user_rotation.current.y = LERP(m_user_rotation.from.y, 0.0f, m_t);
             }
         }
 
-        m_hud.Update(dt);
+        m_hud.update();
 
-        if (NoNextAction != m_next_action)
-        {
-            if ( DoneHUD == m_hud.GetState() )
-            {
-                switch (m_next_action)
-                {
+        if (NoNextAction != m_next_action) {
+            if ( DoneHUD == m_hud.GetState() ) {
+                switch (m_next_action) {
                     case ShowSceneSolvers:
-                        engine->RenderToFBO(this);
-                        engine->ShowScene(Scene_Solvers);
+                        Engine.renderToFBO(this);
+                        Game.showScene(Scene_Solvers);
                         m_next_action = NoNextAction;
                         break;
 
@@ -1735,327 +1411,292 @@ public final class Level extends Scene {
             }
         }
 
-        if (m_menu_cube_hilite)
-        {
+        if (m_menu_cube_hilite) {
             m_hilite_alpha += 0.05f;
 
-            if (m_hilite_alpha > 0.2f)
+            if (m_hilite_alpha > 0.2f) {
                 m_hilite_alpha = 0.2f;
+            }
         }
 
-        if (m_show_hint_2nd)
-        {
+        if (m_show_hint_2nd) {
             m_hint_timeout -= dt;
 
-            if (m_hint_timeout < 0.0f)
-            {
+            if (m_hint_timeout < 0.0f) {
                 m_hint_timeout = 0.15f;
-                cCube* pCube = m_ar_hint_cubes[m_hint_index];
+                Cube cube = m_ar_hint_cubes[m_hint_index];
 
-                if (pCube)
-                {
-                    Color col(255, 0, 0, 255);
+                if (cube) {
+                    Color col = new Color(255, 0, 0, 255);
 
-                    pCube->color_current = col;
+                    cube.color_current = col;
                     ++m_hint_index;
 
                     // locate cube among moving cubes
-                    cMovingCube* pMovingCube;
+                    MovingCube movingCube;
                     list<cMovingCube*>::iterator it;
                     for (it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it)
                     {
-                        pMovingCube = *it;
-                        CubePos cube_pos(pCube->x, pCube->y, pCube->z);
-                        CubePos moving_cube_pos = pMovingCube->GetCubePos();
+                        movingCube = *it;
+                        CubePos cube_pos = new CubePos(cube.x, cube.y, cube.z);
+                        CubePos moving_cube_pos = movingCube.getCubePos();
 
-                        if (moving_cube_pos.x == cube_pos.x && moving_cube_pos.y == cube_pos.y && moving_cube_pos.z == cube_pos.z)
-                        {
-                            pMovingCube->SetCurrentColor(col);
+                        if (moving_cube_pos.x == cube_pos.x && moving_cube_pos.y == cube_pos.y && moving_cube_pos.z == cube_pos.z) {
+                            movingCube.setCurrentColor(col);
                         }
                     }
-                }
-                else
+                } else {
                     m_show_hint_2nd = false;
+                }
             }
         }
     }
 
-    void cLevel::WarmCubes(float dt)
-    {
+    public void warmCubes() {
         m_hilite_timeout -= dt;
 
-        if (m_hilite_timeout < 0.0f)
-        {
+        if (m_hilite_timeout < 0.0f) {
             m_hilite_timeout = 0.05f;
-            Color color(99, 99, 99, 255);
+            Color color = new Color(99, 99, 99, 255);
 
-            if (!m_menu_cube_up->lst_cubes_to_hilite.empty())
-            {
-                cCube* p = m_menu_cube_up->lst_cubes_to_hilite.front();
-                m_menu_cube_up->lst_cubes_to_hilite.pop_front();
+            if (!m_menu_cube_up.lst_cubes_to_hilite.isEmpty()) {
+                Cube p = m_menu_cube_up.lst_cubes_to_hilite.front();
+                m_menu_cube_up.lst_cubes_to_hilite.pop_front();
 
-                p->color_current = color;
+                p.color_current = color;
             }
 
-            if (!m_menu_cube_mid->lst_cubes_to_hilite.empty())
-            {
-                cCube* p = m_menu_cube_mid->lst_cubes_to_hilite.front();
-                m_menu_cube_mid->lst_cubes_to_hilite.pop_front();
+            if (!m_menu_cube_mid.lst_cubes_to_hilite.isEmpty()) {
+                Cube p = m_menu_cube_mid.lst_cubes_to_hilite.front();
+                m_menu_cube_mid.lst_cubes_to_hilite.pop_front();
 
-                p->color_current = color;
+                p.color_current = color;
             }
 
-            if (!m_menu_cube_low->lst_cubes_to_hilite.empty())
-            {
-                cCube* p = m_menu_cube_low->lst_cubes_to_hilite.front();
-                m_menu_cube_low->lst_cubes_to_hilite.pop_front();
+            if (!m_menu_cube_low.lst_cubes_to_hilite.isEmpty()) {
+                Cube p = m_menu_cube_low.lst_cubes_to_hilite.front();
+                m_menu_cube_low.lst_cubes_to_hilite.pop_front();
 
-                p->color_current = color;
+                p.color_current = color;
             }
         }
 
         list<cCube*>::iterator it;
-        for (it = m_list_cubes_wall_x_minus.begin(); it != m_list_cubes_wall_x_minus.end(); ++it)
-            (*it)->WarmByFactor(WARM_FACTOR);
+        for (it = m_list_cubes_wall_x_minus.begin(); it != m_list_cubes_wall_x_minus.end(); ++it) {
+            (*it).warmByFactor(WARM_FACTOR);
+        }
 
-        for (it = m_list_cubes_edges.begin(); it != m_list_cubes_edges.end(); ++it)
-            (*it)->WarmByFactor(WARM_FACTOR);
+        for (it = m_list_cubes_edges.begin(); it != m_list_cubes_edges.end(); ++it) {
+            (*it).warmByFactor(WARM_FACTOR);
+        }
 
-        for (it = m_list_cubes_wall_y_minus.begin(); it != m_list_cubes_wall_y_minus.end(); ++it)
-            (*it)->WarmByFactor(WARM_FACTOR);
+        for (it = m_list_cubes_wall_y_minus.begin(); it != m_list_cubes_wall_y_minus.end(); ++it) {
+            (*it).warmByFactor(WARM_FACTOR);
+        }
 
-        for (it = m_list_cubes_wall_z_minus.begin(); it != m_list_cubes_wall_z_minus.end(); ++it)
-            (*it)->WarmByFactor(WARM_FACTOR);
+        for (it = m_list_cubes_wall_z_minus.begin(); it != m_list_cubes_wall_z_minus.end(); ++it) {
+            (*it).warmByFactor(WARM_FACTOR);
+        }
 
-        for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
-            (*it)->WarmByFactor(WARM_FACTOR);
+        for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it) {
+            (*it).warmByFactor(WARM_FACTOR);
+        }
 
-        for (it = m_list_cubes_level.begin(); it != m_list_cubes_level.end(); ++it)
-            (*it)->WarmByFactor(WARM_FACTOR);
+        for (it = m_list_cubes_level.begin(); it != m_list_cubes_level.end(); ++it) {
+            (*it).warmByFactor(WARM_FACTOR);
+        }
 
         list<cMovingCube*>::iterator itm;
-        for (itm = m_lst_moving_cubes.begin(); itm != m_lst_moving_cubes.end(); ++itm)
-            (*itm)->WarmByFactor(WARM_FACTOR);
+        for (itm = m_lst_moving_cubes.begin(); itm != m_lst_moving_cubes.end(); ++itm) {
+            (*itm).warmByFactor(WARM_FACTOR);
+        }
     }
 
-    void cLevel::UpdateDeadAnim(float dt)
-    {
+    public void updateDeadAnim() {
         m_timeout -= dt;
         dead_size += 4.0f;
         dead_alpha += dead_alpha_step;
 
-        if (dead_alpha_step > 0)
-        {
+        if (dead_alpha_step > 0) {
             if (dead_alpha > 130)
                 dead_alpha_step = -3;
-        }
-        else
-        {
-            if (dead_alpha < 0)
-            {
+        } else {
+            if (dead_alpha < 0) {
                 Reset();
                 m_state = Playing;
-                m_dead_cube = NULL;
+                m_dead_cube = null;
             }
         }
     }
 
-    void cLevel::UpdateMovingCube(float dt)
-    {
+    public void UpdateMovingCube() {
         m_timeout -= dt;
 
-        if (m_timeout < 0.0f)
-        {
-            m_moving_cube->Update(dt);
+        if (m_timeout < 0.0f) {
+            m_moving_cube.update(dt);
 
-            if (m_moving_cube->IsDone())
-            {
+            if (m_moving_cube.isDone()) {
                 m_state = m_state_to_restore;
-                m_moving_cube = NULL;
+                m_moving_cube = null;
 
-                if (Solving == m_state_to_restore)
+                if (Solving == m_state_to_restore) {
                     m_timeout = 1.0f;
+                }
             }
         }
     }
 
-    void cLevel::UpdateMovingPlayer(float dt)
-    {
+    public void updateMovingPlayer() {
         m_timeout -= dt;
 
-        if (m_timeout < 0.0f)
-        {
-            m_player_cube->Update(dt);
+        if (m_timeout < 0.0f) {
+            m_player_cube.update(dt);
 
-            if (m_player_cube->IsDone())
-            {
-                if (m_mover_cube)
-                {
-                    m_mover_cube->NoHiLite();
-                    m_mover_cube = NULL;
+            if (m_player_cube.isDone()) {
+                if (m_mover_cube) {
+                    m_mover_cube.NoHiLite();
+                    m_mover_cube = null;
                 }
 
-                if (m_moving_cube)
-                {
-                    m_moving_cube->NoHiLite();
-                    m_moving_cube = NULL;
+                if (m_moving_cube) {
+                    m_moving_cube.NoHiLite();
+                    m_moving_cube = null;
                 }
 
-                if (m_dead_cube)
-                {
-                    m_dead_cube->NoHilite();
-                    m_dead_cube = NULL;
+                if (m_dead_cube) {
+                    m_dead_cube.NoHilite();
+                    m_dead_cube = null;
                 }
 
-                engine->PlaySound(SOUND_CUBE_HIT);
+                Game.playSound(SOUND_CUBE_HIT);
 
                 m_state = m_state_to_restore;
 
-                if (Solving == m_state_to_restore)
+                if (Solving == m_state_to_restore) {
                     m_timeout = 1.0f;
-
-                CubePos player = m_player_cube->GetCubePos();
-                CubePos& key = m_cube_pos_key;
-
-                if (player.x == key.x && player.y == key.y && player.z == key.z)
-                {
-                    engine->LevelComplete();
                 }
-                else
-                {
-                    if (m_player_cube->m_dead_cube)
-                        SetupDeadCube(m_player_cube->m_dead_cube);
-                    else if (m_player_cube->m_moving_cube)
-                        SetupMoveCube(m_player_cube->m_moving_cube);
-                    else if (m_player_cube->m_mover_cube)
-                        SetupMoverCube(m_player_cube->m_mover_cube);
+
+                CubePos player = m_player_cube.getCubePos();
+                CubePos key = m_cube_pos_key;
+
+                if (player.x == key.x && player.y == key.y && player.z == key.z) {
+                    Game.levelComplete();
+                } else {
+                    if (m_player_cube.m_dead_cube) {
+                        setupDeadCube(m_player_cube.m_dead_cube);
+                    } else if (m_player_cube.m_moving_cube) {
+                        setupMoveCube(m_player_cube.m_moving_cube);
+                    } else if (m_player_cube.m_mover_cube) {
+                        setupMoverCube(m_player_cube.m_mover_cube);
+                    }
                 }
             }
         }
     }
 
-    void cLevel::UpdateSolving(float dt)
-    {
+    public void updateSolving() {
         m_timeout -= dt;
 
-        if (m_timeout <= 0.0f)
-        {
+        if (m_timeout <= 0.0f) {
             m_timeout = 1.0f;
 
-            if (m_player_cube->IsDone())
-            {
+            if (m_player_cube.isDone()) {
                 AxisMovementEnum dir = m_ar_solution[m_solution_pointer++];
 
-                bool success = m_player_cube->MoveOnAxis(dir);
+                boolean success = m_player_cube.MoveOnAxis(dir);
 
-                if (success)
-                {
+                if (success) {
                     m_state_to_restore = m_state;
                     m_state = MovingPlayer;
                     m_timeout = 0.0f;
 
                     ++m_moves_counter;
-                    m_hud.SetTextMoves(m_moves_counter);
+                    m_hud.setTextMoves(m_moves_counter);
                 }
             }
         }
 
-        m_player_cube->Update(dt);
+        m_player_cube.update();
     }
 
-    void cLevel::UpdatePrepareSolving(float dt)
-    {
-        m_hud.Update(dt);
+    public void updatePrepareSolving() {
+        m_hud.update();
 
         m_timeout -= dt;
 
-        if (m_timeout < 2.5f)
-            m_hud.ShowPrepareSolving(true, m_min_solution_steps);
+        if (m_timeout < 2.5f) {
+            m_hud.showPrepareSolving(true, m_min_solution_steps);
+        }
 
-        if (m_timeout <= 0.0f)
-        {
-            m_hud.ShowPrepareSolving(false, m_min_solution_steps);
+        if (m_timeout <= 0.0f) {
+            m_hud.showPrepareSolving(false, m_min_solution_steps);
 
             m_state = Solving;
             m_solution_pointer = 0;
             m_fade_value = 1.0f;
             m_timeout = 1.0f;
-            m_hud.SetupAppear();
+            m_hud.setupAppear();
         }
     }
 
-    void cLevel::UpdateAppear(float dt)
-    {
+    public void updateAppear() {
         m_timeout += dt;
 
-        switch (m_appear_state)
-        {
-            case SubAppearWait:
+        switch (m_appear_state) {
+            case SubAppearWait: 
+                if (m_timeout > 0.2f) {
+                    Cube cube;
 
-                if (m_timeout > 0.2f)
-                {
-                    cCube* pCube;
-
-                    pCube = m_ad_level.GetCubeFromDisappearList();
-                    if (pCube)
-                    {
-                        pCube->type = CubeIsInvisible;
-                        m_list_cubes_level.remove(pCube);
+                    cube = m_ad_level.getCubeFromDisappearList();
+                    if (cube) {
+                        cube.type = CubeIsInvisible;
+                        m_list_cubes_level.remove(cube);
                     }
 
-                    pCube = m_ad_level.GetCubeFromDisappearList();
-                    if (pCube)
-                    {
-                        pCube->type = CubeIsInvisible;
-                        m_list_cubes_level.remove(pCube);
+                    cube = m_ad_level.getCubeFromDisappearList();
+                    if (cube) {
+                        cube.type = CubeIsInvisible;
+                        m_list_cubes_level.remove(cube);
                     }
 
-                    if (!m_lst_moving_cubes.empty())
-                    {
-                        cMovingCube* pMovingCube = m_lst_moving_cubes.front();
+                    if (!m_lst_moving_cubes.isEmpty()) {
+                        MovingCube* movingCube = m_lst_moving_cubes.front();
                         m_lst_moving_cubes.pop_front();
-                        cLevelBuilder::lst_moving_cubes.push_back(pMovingCube);
+                        LevelBuilder.lst_moving_cubes.add(movingCube);
                     }
 
-                    if (!m_lst_mover_cubes.empty())
-                    {
-                        cMoverCube* pMoverCube = m_lst_mover_cubes.front();
+                    if (!m_lst_mover_cubes.isEmpty()) {
+                        MoverCube moverCube = m_lst_mover_cubes.front();
                         m_lst_mover_cubes.pop_front();
-                        cLevelBuilder::lst_mover_cubes.push_back(pMoverCube);
+                        LevelBuilder.lst_mover_cubes.add(moverCube);
                     }
 
-                    if (!m_lst_dead_cubes.empty())
-                    {
-                        cDeadCube* pDeadCube = m_lst_dead_cubes.front();
+                    if (!m_lst_dead_cubes.empty()) {
+                        DeadCube deadCube = m_lst_dead_cubes.front();
                         m_lst_dead_cubes.pop_front();
-                        cLevelBuilder::lst_dead_cubes.push_back(pDeadCube);
+                        LevelBuilder.lst_dead_cubes.add(deadCube);
                     }
 
-                    if (m_list_cubes_level.empty() &&
-                            m_lst_moving_cubes.empty() &&
-                            m_lst_mover_cubes.empty() &&
-                            m_lst_dead_cubes.empty())
-                    {
+                    if (m_list_cubes_level.isEmpty() &&
+                            m_lst_moving_cubes.isEmpty() &&
+                            m_lst_mover_cubes.isEmpty() &&
+                            m_lst_dead_cubes.isEmpty()) {
                         m_timeout = 0.0f;
                         m_appear_state = SubAppearKeyAndPlayer;
                         m_t = 0.0;
                         m_fade_value = 0.0f;
 
-                        EventBuildLevel();
-                        Reset();
+                        eventBuildLevel();
+                        reset();
                     }
                 }
-
                 break;
 
             case SubAppearKeyAndPlayer:
-
-                if (m_timeout > 0.1f)
-                {
+                if (m_timeout > 0.1f) {
                     m_t += 0.1;
 
-                    if (m_t > 1.0f)
-                    {
+                    if (m_t > 1.0f) {
                         m_timeout = 0.0f;
                         m_t = 1.0f;
                         m_appear_state = SubAppearWaitAgain;
@@ -2066,78 +1707,75 @@ public final class Level extends Scene {
                 break;
 
             case SubAppearWaitAgain:
-
-                if (m_timeout > 0.2)
+                if (m_timeout > 0.2) {
                     m_appear_state = SubAppearLevel;
-
+                }
                 break;
 
             case SubAppearLevel:
-
-                if (m_ad_level.lst_appear.empty() &&
-                        cLevelBuilder::lst_moving_cubes.empty() &&
-                    cLevelBuilder::lst_mover_cubes.empty() &&
-                    cLevelBuilder::lst_dead_cubes.empty())
-            {
+                if (m_ad_level.lst_appear.isEmpty() &&
+                    LevelBuilder.lst_moving_cubes.isEmpty() &&
+                    LevelBuilder.lst_mover_cubes.isEmpty() &&
+                    LevelBuilder.lst_dead_cubes.isEmpty()) {
                 m_state = Playing;
 
-                if (Easy == m_difficulty)
-                {
-                    if (1 == m_level_number)
-                        ShowTutor(Swipe);
-
-                    if (2 == m_level_number)
-                        ShowTutor(MenuPause);
-
-                    if (3 == m_level_number)
-                        ShowTutor(MenuHint);
-
-                    if (4 == m_level_number)
-                        ShowTutor(Drag);
-
-                    if (5 == m_level_number)
-                        ShowTutor(Plain);
-
-                    if (10 == m_level_number)
-                        ShowTutor(Moving);
-
-                    if (12 == m_level_number)
-                        ShowTutor(Mover);
-
-                    if (19 == m_level_number)
-                        ShowTutor(Dead);
-                }
-
-                //engine->cubes[1][1][8].color_current = Color(0, 0, 255, 255);
-            }
-            else
-            {
-                if (m_timeout > 0.02f)
-                {
-                    cCube* pCube = m_ad_level.GetCubeFromAppearList();
-
-                    if (pCube)
-                        m_list_cubes_level.push_back(pCube);
-
-                    if (!cLevelBuilder::lst_moving_cubes.empty())
-                    {
-                        cMovingCube* pMovingCube = cLevelBuilder::lst_moving_cubes.front();
-                        cLevelBuilder::lst_moving_cubes.pop_front();
-                        m_lst_moving_cubes.push_back(pMovingCube);
+                if (Easy == m_difficulty) {
+                    if (1 == m_level_number) {
+                        showTutor(Swipe);
                     }
 
-                    if (!cLevelBuilder::lst_mover_cubes.empty())
-                    {
-                        cMoverCube* pMoverCube = cLevelBuilder::lst_mover_cubes.front();
+                    if (2 == m_level_number) {
+                        showTutor(MenuPause);
+                    }
+
+                    if (3 == m_level_number) {
+                        showTutor(MenuHint);
+                    }
+
+                    if (4 == m_level_number) {
+                        showTutor(Drag);
+                    }
+
+                    if (5 == m_level_number) {
+                        showTutor(Plain);
+                    }
+
+                    if (10 == m_level_number) {
+                        showTutor(Moving);
+                    }
+
+                    if (12 == m_level_number) {
+                        showTutor(Mover);
+                    }
+
+                    if (19 == m_level_number) {
+                        showTutor(Dead);
+                    }
+                }                
+            } else {
+                if (m_timeout > 0.02f) {
+                    Cube* cube = m_ad_level.getCubeFromAppearList();
+
+                    if (cube) {
+                        m_list_cubes_level.add(cube);
+                    }
+
+                    if (!LevelBuilder.lst_moving_cubes.isEmpty()) {
+                        MovingCube movingCube = LevelBuilder.lst_moving_cubes.front();
+                        LevelBuilder.lst_moving_cubes.pop_front();
+                        m_lst_moving_cubes.add(movingCube);
+                    }
+
+                    if (!cLevelBuilder::lst_mover_cubes.empty()) {
+                        MoverCube moverCube = LevelBuilder.lst_mover_cubes.front();
                         cLevelBuilder::lst_mover_cubes.pop_front();
-                        m_lst_mover_cubes.push_back(pMoverCube);
+                        m_lst_mover_cubes.add(moverCube);
                     }
 
-                    if (!cLevelBuilder::lst_dead_cubes.empty())
-                    {
-                        cDeadCube* pDeadCube = cLevelBuilder::lst_dead_cubes.front();
-                        cLevelBuilder::lst_dead_cubes.pop_front();
-                        m_lst_dead_cubes.push_back(pDeadCube);
+                    if (!cLevelBuilder::lst_dead_cubes.empty()) {
+                        DeadCube deadCube = LevelBuilder.lst_dead_cubes.front();
+                        LevelBuilder.lst_dead_cubes.pop_front();
+                        m_lst_dead_cubes.add(deadCube);
                     }
 
                     m_timeout = 0.0f;
@@ -2150,25 +1788,21 @@ public final class Level extends Scene {
         } // switch
     }
 
-    void cLevel::UpdateTutorial(float dt)
-    {
-        if (!m_hud.IsTutorDisplaying())
+    public void updateTutorial() {
+        if (!m_hud.isTutorDisplaying()) {
             m_state = Playing;
+        }
     }
 
-    void cLevel::UpdatePlaying(float dt)
-    {
-        m_player_cube->Update(dt);
+    public void updatePlaying() {
+        m_player_cube.update();
     }
 
-    void cLevel::UpdateUndo(float dt)
-    {
+    public void cLevel::updateUndo() {
         m_timeout_undo -= dt;
 
-        if (m_timeout_undo <= 0.0f)
-        {
-            if (m_player_cube->IsDone())
-            {
+        if (m_timeout_undo <= 0.0f) {
+            if (m_player_cube.isDone()) {
 //            if (!m_lst_undo.empty())
 //            {
 //                UndoData ud = m_lst_undo.back();
@@ -2181,16 +1815,11 @@ public final class Level extends Scene {
 //            }
                 m_state = Playing;
             }
-
             m_timeout_undo = UNDO_TIMEOUT;
         }
     }
 
-
-    #pragma mark - Draw
-
-    void cLevel::DrawTheCube()
-    {
+    public void drawTheCube() {
         glClear(GL_STENCIL_BUFFER_BIT);
 
         list<cCube*>::iterator it;
@@ -2198,10 +1827,10 @@ public final class Level extends Scene {
         //glEnable(GL_LIGHTING);
 
         //glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
 
-        vec3 light = m_pos_light;
-        vec3 light_tmp;
+        Vector light = m_pos_light;
+        Vector light_tmp;
         Rotate3D_AroundYAxis(m_pos_light.x, m_pos_light.y, m_pos_light.z, -m_cube_rotation.degree - m_user_rotation.current.y, light.x, light.y, light.z);
         Rotate3D_AroundXAxis(light.x, light.y, light.z, -m_user_rotation.current.x, light_tmp.x, light_tmp.y, light_tmp.z);
         light = light_tmp;
@@ -2209,39 +1838,35 @@ public final class Level extends Scene {
         glEnable(GL_STENCIL_TEST);
         glDisable(GL_CULL_FACE);
 
-        cRenderer::SetStreamSource();
+        Graphics.setStreamSource();
 
         float shadowMat[16];
 
 //    if (false)
         for (int j = 0; j < 3; ++j) // 3 times (1 floor + 2 walls)
         {
-            cRenderer::Prepare();
+            Graphics.prepare();
 
-            switch (j)
-            {
+            switch (j) {
                 case 0: // floor
-                    cUtils::CalcShadowMatrixFloor(light, shadowMat, 0.0f);
-
-                    for (it = m_list_cubes_wall_y_minus.begin(); it != m_list_cubes_wall_y_minus.end(); ++it)
-                        cRenderer::AddCubeFace_Y_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-
+                    Utils.calcShadowMatrixFloor(light, shadowMat, 0.0f);
+                    for (it = m_list_cubes_wall_y_minus.begin(); it != m_list_cubes_wall_y_minus.end(); ++it) {
+                        Graphics.addCubeFace_Y_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+                    }
                     break;
 
                 case 1: // wall x
-                    cUtils::CalcShadowMatrixWallX(light, shadowMat, 0.0f);
-
-                    for (it = m_list_cubes_wall_x_minus.begin(); it != m_list_cubes_wall_x_minus.end(); ++it)
-                        cRenderer::AddCubeFace_X_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-
+                    Utils.calcShadowMatrixWallX(light, shadowMat, 0.0f);
+                    for (it = m_list_cubes_wall_x_minus.begin(); it != m_list_cubes_wall_x_minus.end(); ++it) {
+                        Graphics.addCubeFace_X_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+                    }
                     break;
 
                 case 2: // wall z
-                    cUtils::CalcShadowMatrixWallZ(light, shadowMat, 0.0f);
-
-                    for (it = m_list_cubes_wall_z_minus.begin(); it != m_list_cubes_wall_z_minus.end(); ++it)
-                        cRenderer::AddCubeFace_Z_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-
+                    Utils.calcShadowMatrixWallZ(light, shadowMat, 0.0f);
+                    for (it = m_list_cubes_wall_z_minus.begin(); it != m_list_cubes_wall_z_minus.end(); ++it) {
+                        Graphics.addCubeFace_Z_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+                    }
                     break;
             } // switch
 
@@ -2249,59 +1874,63 @@ public final class Level extends Scene {
             glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
             glStencilFunc(GL_ALWAYS, 0xff, 0xff);
 
-            cRenderer::DisableBlending();
+            Graphics.DisableBlending();
             glEnable(GL_LIGHTING);
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_TEXTURE_2D);
 
             // draw shadow receivers (floor and two walls)
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             //----------------------------------------
             // cast shadow on a receiver
-            Color shadow_color(0, 0, 0, (m_fade_value / 2.0f) * 255);
+            Color shadow_color = new Color(0, 0, 0, (m_fade_value / 2.0f) * 255);
 
-            cRenderer::Prepare();
+            Graphics.prepare();
 
             // with level cubes
-            for (it = m_list_cubes_level.begin(); it != m_list_cubes_level.end(); ++it)
-                cRenderer::AddCubeSize((*it)->tx + engine->cube_offset.x, (*it)->ty + engine->cube_offset.y, (*it)->tz + engine->cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+            for (it = m_list_cubes_level.begin(); it != m_list_cubes_level.end(); ++it) {
+                Graphics.addCubeSize((*it).tx + engine.cube_offset.x, (*it).ty + engine.cube_offset.y, (*it).tz + engine.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+            }
 
             // moving cubes
-            if (!m_lst_moving_cubes.empty())
-            {
+            if (!m_lst_moving_cubes.isEmpty()) {
                 list<cMovingCube*>::iterator it;
-                for(it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it)
-                    cRenderer::AddCubeSize((*it)->pos.x + engine->cube_offset.x, (*it)->pos.y + engine->cube_offset.y, (*it)->pos.z + engine->cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+                for(it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it) {
+                    Graphics.addCubeSize((*it).pos.x + engine.cube_offset.x, (*it).pos.y + engine.cube_offset.y, (*it).pos.z + engine.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+                }
             }
 
             // mover cubes
-            if (!m_lst_mover_cubes.empty())
-            {
+            if (!m_lst_mover_cubes.isEmpty()) {
                 list<cMoverCube*>::iterator it;
-                for(it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it)
-                    cRenderer::AddCubeSize((*it)->pos.x + engine->cube_offset.x, (*it)->pos.y + engine->cube_offset.y, (*it)->pos.z + engine->cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+                for(it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it) {
+                    Graphics.addCubeSize((*it).pos.x + engine.cube_offset.x, (*it).pos.y + engine.cube_offset.y, (*it).pos.z + engine.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+                }
             }
 
             // dead cubes
-            if (!m_lst_dead_cubes.empty())
-            {
+            if (!m_lst_dead_cubes.isEmpty()) {
                 list<cDeadCube*>::iterator it;
-                for(it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it)
-                    cRenderer::AddCubeSize((*it)->pos.x + engine->cube_offset.x, (*it)->pos.y + engine->cube_offset.y, (*it)->pos.z + engine->cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+                for(it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it) {
+                    Graphics.addCubeSize((*it).pos.x + engine.cube_offset.x, (*it).pos.y + engine.cube_offset.y, (*it).pos.z + engine.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+                }
             }
 
             // with player cube
-            if (m_player_cube->m_cube_pos.x != 0)
-                cRenderer::AddCubeSize(m_player_cube->pos.x + engine->cube_offset.x, m_player_cube->pos.y + engine->cube_offset.y, m_player_cube->pos.z + engine->cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+            if (m_player_cube.m_cube_pos.x != 0) {
+                Graphics.addCubeSize(m_player_cube.pos.x + engine.cube_offset.x, m_player_cube.pos.y + engine.cube_offset.y, m_player_cube.pos.z + engine.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+            }
 
             // with key cube
-            if (m_cube_pos_key.x != 0)
-                cRenderer::AddCubeSize(engine->cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tx + engine->cube_offset.x,
-                engine->cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].ty + engine->cube_offset.y,
-                engine->cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + engine->cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+            if (m_cube_pos_key.x != 0) {
+                Graphics.addCubeSize(engine.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tx + engine.cube_offset.x,
+            }
 
-            cRenderer::EnableBlending();
+            Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].ty + engine.cube_offset.y,
+            Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + engine.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
+
+            Graphics.enableBlending();
             glDisable(GL_LIGHTING);
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_DEPTH_TEST);
@@ -2311,7 +1940,7 @@ public final class Level extends Scene {
 
             glPushMatrix();
             glMultMatrixf(shadowMat);
-            cRenderer::RenderTriangles();
+            Graphics.renderTriangles();
             glPopMatrix();
             //----------------------------------------
         } // for
@@ -2320,278 +1949,266 @@ public final class Level extends Scene {
 
         glDisable(GL_STENCIL_TEST);
         glEnable(GL_CULL_FACE);
-        cRenderer::DisableBlending();
+        Graphics.disableBlending();
         glEnable(GL_LIGHTING);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
 
         // draw rest of the floor and walls (not shadow receivers)
-        cRenderer::Prepare();
+        Graphics.prepare();
 
-        for (it = m_list_cubes_wall_y_minus.begin(); it != m_list_cubes_wall_y_minus.end(); ++it)
-        {
-            cRenderer::AddCubeFace_X_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_X_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Z_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Z_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Y_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
+        for (it = m_list_cubes_wall_y_minus.begin(); it != m_list_cubes_wall_y_minus.end(); ++it) {
+            Graphics.addCubeFace_X_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_X_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Z_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Z_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Y_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
         }
 
-        for (it = m_list_cubes_wall_x_minus.begin(); it != m_list_cubes_wall_x_minus.end(); ++it)
-        {
-            cRenderer::AddCubeFace_X_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Y_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Z_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Z_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
+        for (it = m_list_cubes_wall_x_minus.begin(); it != m_list_cubes_wall_x_minus.end(); ++it) {
+            Graphics.addCubeFace_X_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Y_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Z_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Z_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
         }
 
-        for (it = m_list_cubes_wall_z_minus.begin(); it != m_list_cubes_wall_z_minus.end(); ++it)
-        {
-            cRenderer::AddCubeFace_X_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_X_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Y_Plus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
-            cRenderer::AddCubeFace_Z_Minus((*it)->tx, (*it)->ty, (*it)->tz, (*it)->color_current);
+        for (it = m_list_cubes_wall_z_minus.begin(); it != m_list_cubes_wall_z_minus.end(); ++it) {
+            Graphics.addCubeFace_X_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_X_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Y_Plus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
+            Graphics.addCubeFace_Z_Minus((*it).tx, (*it).ty, (*it).tz, (*it).color_current);
         }
 
         // draw edges
-        for (it = m_list_cubes_edges.begin(); it != m_list_cubes_edges.end(); ++it)
-            cRenderer::AddCubeSize((*it)->tx, (*it)->ty, (*it)->tz, HALF_CUBE_SIZE, (*it)->color_current);
-
-        // level cubes
-        for (it = m_list_cubes_level.begin(); it != m_list_cubes_level.end(); ++it)
-            cRenderer::AddCubeSize((*it)->tx, (*it)->ty, (*it)->tz, HALF_CUBE_SIZE, (*it)->color_current);
-
-        list<cMovingCube*>::iterator itmo;
-        for (itmo = m_lst_moving_cubes.begin(); itmo != m_lst_moving_cubes.end(); ++itmo)
-            (*itmo)->RenderCube();
-
-        list<cMoverCube*>::iterator itmu;
-        for (itmu = m_lst_mover_cubes.begin(); itmu != m_lst_mover_cubes.end(); ++itmu)
-            (*itmu)->RenderCube();
-
-        list<cDeadCube*>::iterator itde;
-        for (itde = m_lst_dead_cubes.begin(); itde != m_lst_dead_cubes.end(); ++itde)
-            (*itde)->RenderCube();
-
-        if (Playing != m_state)
-        {
-            for (it = m_list_cubes_face.begin(); it != m_list_cubes_face.end(); ++it)
-                cRenderer::AddCubeSize((*it)->tx, (*it)->ty, (*it)->tz, HALF_CUBE_SIZE, (*it)->color_current);
-
-            for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
-                cRenderer::AddCubeSize((*it)->tx, (*it)->ty, (*it)->tz, HALF_CUBE_SIZE, (*it)->color_current);
+        for (it = m_list_cubes_edges.begin(); it != m_list_cubes_edges.end(); ++it) {
+            Graphics.addCubeSize((*it).tx, (*it).ty, (*it).tz, HALF_CUBE_SIZE, (*it).color_current);
         }
 
-        cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        // level cubes
+        for (it = m_list_cubes_level.begin(); it != m_list_cubes_level.end(); ++it) {
+            Graphics.addCubeSize((*it).tx, (*it).ty, (*it).tz, HALF_CUBE_SIZE, (*it).color_current);
+        }
+
+        list<cMovingCube*>::iterator itmo;
+        for (itmo = m_lst_moving_cubes.begin(); itmo != m_lst_moving_cubes.end(); ++itmo) {
+            (*itmo).renderCube();
+        }
+
+        list<cMoverCube*>::iterator itmu;
+        for (itmu = m_lst_mover_cubes.begin(); itmu != m_lst_mover_cubes.end(); ++itmu) {
+            (*itmu).renderCube();
+        }
+
+        list<cDeadCube*>::iterator itde;
+        for (itde = m_lst_dead_cubes.begin(); itde != m_lst_dead_cubes.end(); ++itde) {
+            (*itde).renderCube();
+        }
+
+        if (Playing != m_state) {
+            for (it = m_list_cubes_face.begin(); it != m_list_cubes_face.end(); ++it) {
+                Graphics.addCubeSize((*it).tx, (*it).ty, (*it).tz, HALF_CUBE_SIZE, (*it).color_current);
+            }
+
+            for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it) {
+                Graphics.addCubeSize((*it).tx, (*it).ty, (*it).tz, HALF_CUBE_SIZE, (*it).color_current);
+            }
+        }
+
+        Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
         glPopMatrix();
     }
 
-    void cLevel::DrawTextsCompleted()
-    {
-        cCubeFont* pCubeFont;
+    public void drawTextsCompleted() {
+        CubeFont cubeFont;
         TexCoordsQuad coords;
-        TexturedQuad* pFont;
+        TexturedQuad pFont;
 
-        cRenderer::SetStreamSourceFloat();
-        cRenderer::Prepare();
+        Graphics.setStreamSourceFloat();
+        Graphics.prepare();
 
         list<cCubeFont*>::iterator it;
-        for (it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it)
-        {
-            pCubeFont = *it;
-            pFont = pCubeFont->GetFont();
+        for (it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it) {
+            cubeFont = *it;
+            pFont = cubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+            coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            cRenderer::AddCubeFace_Z_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        if (m_menu_cube_up->IsDone() && m_menu_cube_up->m_cube_pos.x == 7)
-        {
-            pCubeFont = m_cubefont_up;
-            pFont = pCubeFont->GetFont();
+        if (m_menu_cube_up.isDone() && m_menu_cube_up.m_cube_pos.x == 7) {
+            cubeFont = m_cubefont_up;
+            pFont = cubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+            coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            cRenderer::AddCubeFace_Z_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        if (m_menu_cube_mid->IsDone() && m_menu_cube_mid->m_cube_pos.x == 7)
-        {
-            pCubeFont = m_cubefont_mid;
-            pFont = pCubeFont->GetFont();
+        if (m_menu_cube_mid.isDone() && m_menu_cube_mid.m_cube_pos.x == 7) {
+            cubeFont = m_cubefont_mid;
+            pFont = cubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+            coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            cRenderer::AddCubeFace_Z_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        if (m_menu_cube_low->IsDone() && m_menu_cube_low->m_cube_pos.x == 7)
-        {
+        if (m_menu_cube_low.isDone() && m_menu_cube_low.m_cube_pos.x == 7) {
             pCubeFont = m_cubefont_low;
-            pFont = pCubeFont->GetFont();
+            pFont = cubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx2 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx3 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
+            coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            cRenderer::AddCubeFace_Z_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.addCubeFace_Z_Minus(pCubeFont.pos.x, pCubeFont.pos.y, pCubeFont.pos.z, coords, pCubeFont.color_current);
         }
 
-        cRenderer::RenderTriangles();
+        Graphics.renderTriangles();
     }
 
-    void cLevel::DrawTextsPaused()
-    {
-        cCubeFont* pCubeFont;
+    public void drawTextsPaused() {
+        CubeFont cubeFont;
         TexCoordsQuad coords;
-        TexturedQuad* pFont;
+        TexturedQuad pFont;
 
-        cRenderer::SetStreamSourceFloat();
-        cRenderer::Prepare();
+        Graphics.setStreamSourceFloat();
+        Graphics.prepare();
 
         list<cCubeFont*>::iterator it;
-        for (it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it)
-        {
-            pCubeFont = *it;
-            pFont = pCubeFont->GetFont();
+        for (it = m_list_fonts.begin(); it != m_list_fonts.end(); ++it) {
+            cubeFont = *it;
+            pFont = pCubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-            coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+            coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        if (m_menu_cube_up->IsDone() && m_menu_cube_up->m_cube_pos.z == 1)
-        {
-            pCubeFont = m_cubefont_up;
-            pFont = pCubeFont->GetFont();
+        if (m_menu_cube_up.isDone() && m_menu_cube_up.m_cube_pos.z == 1) {
+            cubeFont = m_cubefont_up;
+            pFont = pCubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-            coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+            coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        if (m_menu_cube_mid->IsDone() && m_menu_cube_mid->m_cube_pos.z == 1)
-        {
-            pCubeFont = m_cubefont_mid;
-            pFont = pCubeFont->GetFont();
+        if (m_menu_cube_mid.IsDone() && m_menu_cube_mid.m_cube_pos.z == 1) {
+            cubeFont = m_cubefont_mid;
+            pFont = cubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-            coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+            coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.AddCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        if (m_menu_cube_low->IsDone() && m_menu_cube_low->m_cube_pos.z == 1)
-        {
-            pCubeFont = m_cubefont_low;
-            pFont = pCubeFont->GetFont();
+        if (m_menu_cube_low.IsDone() && m_menu_cube_low.m_cube_pos.z == 1) {
+            cubeFont = m_cubefont_low;
+            pFont = cubeFont.getFont();
 
-            coords.tx0 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-            coords.tx1 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-            coords.tx2 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-            coords.tx3 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
+            coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
+            coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
+            coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
+            coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            cRenderer::AddCubeFace_X_Minus(pCubeFont->pos.x, pCubeFont->pos.y, pCubeFont->pos.z, coords, pCubeFont->color_current);
+            Graphics.AddCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
-
-        cRenderer::RenderTriangles();
+        Graphics.renderTriangles();
     }
 
-    void cLevel::Draw()
-    {
-        Color color(255, 255, 255, m_fade_value * 255);
-        cRenderer::SetStreamSource();
+    public void draw() {
+        Color color = new Color(255, 255, 255, m_fade_value * 255);
+        Graphics.setStreamSource();
 
-        if (m_fade_value < 1.0f)
-        {
+        if (m_fade_value < 1.0f) {
             glEnable(GL_BLEND);
             glDisable(GL_DEPTH_TEST);
         }
 
         glEnable(GL_LIGHTING);
 
-        if (m_draw_menu_cubes || 0 != m_player_cube->m_cube_pos.x)
-        {
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_player);
+        if (m_draw_menu_cubes || 0 != m_player_cube.m_cube_pos.x) {
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
 
-            cRenderer::Prepare();
+            Graphics.prepare();
 
-            if (0 != m_player_cube->m_cube_pos.x)
-                cRenderer::AddCubeSize(m_player_cube->pos.x, m_player_cube->pos.y, m_player_cube->pos.z, HALF_CUBE_SIZE, color);
-
-            if (m_draw_menu_cubes)
-            {
-                cRenderer::AddCube(m_menu_cube_up->pos.x, m_menu_cube_up->pos.y, m_menu_cube_up->pos.z);
-                cRenderer::AddCube(m_menu_cube_mid->pos.x, m_menu_cube_mid->pos.y, m_menu_cube_mid->pos.z);
-                cRenderer::AddCube(m_menu_cube_low->pos.x, m_menu_cube_low->pos.y, m_menu_cube_low->pos.z);
+            if (0 != m_player_cube.m_cube_pos.x) {
+                Graphics.addCubeSize(m_player_cube.pos.x, m_player_cube.pos.y, m_player_cube.pos.z, HALF_CUBE_SIZE, color);
             }
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+
+            if (m_draw_menu_cubes) {
+                Graphics.addCube(m_menu_cube_up.pos.x, m_menu_cube_up.pos.y, m_menu_cube_up.pos.z);
+                Graphics.addCube(m_menu_cube_mid.pos.x, m_menu_cube_mid.pos.y, m_menu_cube_mid.pos.z);
+                Graphics.addCube(m_menu_cube_low.pos.x, m_menu_cube_low.pos.y, m_menu_cube_low.pos.z);
+            }
+            Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
         }
 
-        if (0 != m_cube_pos_key.x)
-        {
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_key);
+        if (0 != m_cube_pos_key.x) {
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
 
-            cCube* pCube = &engine->cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
+            cCube* pCube = &engine.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
 
-            cRenderer::Prepare();
-            cRenderer::AddCubeSize(pCube->tx, pCube->ty, pCube->tz, HALF_CUBE_SIZE * 0.99f, color);
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            Graphics.prepare();
+            Graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.99f, color);
+            Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
         }
 
-        if (m_fade_value < 1.0f)
-        {
+        if (m_fade_value < 1.0f) {
             glDisable(GL_BLEND);
             glEnable(GL_DEPTH_TEST);
         }
 
-        if (!m_lst_moving_cubes.empty() || !m_lst_mover_cubes.empty() || !m_lst_dead_cubes.empty())
-        {
+        if (!m_lst_moving_cubes.isEmpty() || !m_lst_mover_cubes.isEmpty() || !m_lst_dead_cubes.isEmpty()) {
             list<cMovingCube*>::iterator itmo;
             list<cMoverCube*>::iterator itmu;
             list<cDeadCube*>::iterator itde;
 
-            cRenderer::Prepare();
+            Graphics.prepare();
 
-            for (itmo = m_lst_moving_cubes.begin(); itmo != m_lst_moving_cubes.end(); ++itmo)
-                (*itmo)->RenderSymbols();
+            for (itmo = m_lst_moving_cubes.begin(); itmo != m_lst_moving_cubes.end(); ++itmo) {
+                (*itmo).renderSymbols();
+            }
 
-            for (itmu = m_lst_mover_cubes.begin(); itmu != m_lst_mover_cubes.end(); ++itmu)
-                (*itmu)->RenderSymbols();
+            for (itmu = m_lst_mover_cubes.begin(); itmu != m_lst_mover_cubes.end(); ++itmu) {
+                (*itmu).renderSymbols();
+            }
 
-            for (itde = m_lst_dead_cubes.begin(); itde != m_lst_dead_cubes.end(); ++itde)
-                (*itde)->RenderSymbols();
+            for (itde = m_lst_dead_cubes.begin(); itde != m_lst_dead_cubes.end(); ++itde) {
+                (*itde).renderSymbols();
+            }
 
             glDisable(GL_LIGHTING);
             glEnable(GL_BLEND);
-            cRenderer::SetStreamSourceFloatAndColor();
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_symbols);
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            Graphics.setStreamSourceFloatAndColor();
+            glBindTexture(GL_TEXTURE_2D, engine.texture_id_symbols);
+            Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
         }
 
-        if (m_menu_cube_hilite)
-        {
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_symbols);
+        if (m_menu_cube_hilite) {
+            glBindTexture(GL_TEXTURE_2D, engine.texture_id_symbols);
             color.a = m_hilite_alpha * 255;
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_CULL_FACE);
@@ -2599,66 +2216,60 @@ public final class Level extends Scene {
 
             TexCoordsQuad coords;
 
-            TexturedQuad* p = m_font_hilite.GetFont();
-            coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-            coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-            coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-            coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
+            TexturedQuad* p = m_font_hilite.getFont();
+            coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+            coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+            coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+            coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
-            cRenderer::Prepare();
-            cRenderer::SetStreamSourceFloatAndColor();
+            Graphics.prepare();
+            Graphics.setStreamSourceFloatAndColor();
 
-            switch (m_state)
-            {
+            switch (m_state) {
                 case Paused: //Face_X_Minus:
-                    cRenderer::AddCubeFace_X_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+                    Graphics.addCubeFace_X_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
                     break;
 
                 case Completed: //Face_Z_Minus:
-                    cRenderer::AddCubeFace_Z_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
+                    Graphics.addCubeFace_Z_Minus(m_font_hilite.pos.x, m_font_hilite.pos.y, m_font_hilite.pos.z, coords, color);
                     break;
 
                 default:
                     break;
             }
             glEnable(GL_BLEND);
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
             glEnable(GL_LIGHTING);
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_CULL_FACE);
         }
 
-        if (m_draw_texts)
-        {
+        if (m_draw_texts) {
             glPushMatrix();
-            glTranslatef(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            glTranslatef(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_fonts);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts);
 
             glEnable(GL_BLEND);
             glDisable(GL_LIGHTING);
             glDisableClientState(GL_NORMAL_ARRAY);
 
-            if (m_state == AnimToPaused || m_state == AnimFromPaused || m_state == Paused)
+            if (m_state == AnimToPaused || m_state == AnimFromPaused || m_state == Paused) {
                 DrawTextsPaused();
-            else
+            } else {
                 DrawTextsCompleted();
-
+            }
             glPopMatrix();
         }
     }
-
-
-    #pragma mark - Render
-
-    void cLevel::Render()
-    {
+    
+    publci void Render() {
         //return RenderForPicking(RenderOnlyHUD);
 
-        engine->SetProjection2D();
-        engine->SetModelViewMatrix2D();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -2668,21 +2279,21 @@ public final class Level extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color(255, 255, 255, engine->dirty_alpha);
-        engine->DrawFBOTexture(engine->texture_id_dirty, color);
+        Color color = new Color(255, 255, 255, engine.dirty_alpha);
+        Graphics.DrawFBOTexture(Graphics.texture_id_dirty, color);
 
         glDepthMask(GL_TRUE);
 
-        engine->SetProjection3D();
-        engine->SetModelViewMatrix3D(m_camera_current);
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(m_camera_current);
 
         #ifdef DRAW_AXES_GLOBAL
         glDisable(GL_TEXTURE_2D);
-        engine->DrawAxes();
+        Graphics.drawAxes();
         glEnable(GL_TEXTURE_2D);
         #endif
 
-        const vec4 lightPosition(m_pos_light.x, m_pos_light.y, m_pos_light.z, 1.0f);
+        final Vector4 lightPosition(m_pos_light.x, m_pos_light.y, m_pos_light.z, 1.0f);
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
 
         glEnable(GL_LIGHTING);
@@ -2694,31 +2305,30 @@ public final class Level extends Scene {
         glPushMatrix();
         glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
 
-        DrawTheCube();
+        drawTheCube();
 
         #ifdef DRAW_AXES_CUBE
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
-        engine->DrawAxes();
+        Graphics.drawAxes();
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
         #endif
 
-        Draw();
+        draw();
 
         glPopMatrix();
 
         glPopMatrix();
 
-        m_hud.Render();
+        m_hud.render();
     }
 
-    void cLevel::RenderForPicking(PickRenderTypeEnum type)
-    {
+    public void renderForPicking(PickRenderTypeEnum type) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glDisable(GL_LIGHTING);
-        cRenderer::DisableBlending();
+        Graphics.disableBlending();
         glEnable(GL_DEPTH_TEST);
 
         glDisable(GL_TEXTURE_2D);
@@ -2726,29 +2336,27 @@ public final class Level extends Scene {
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        engine->SetProjection3D();
-        engine->SetModelViewMatrix3D(m_camera_current);
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(m_camera_current);
 
         glPushMatrix();
 
-        switch (type)
-        {
+        switch (type) {
             case RenderOnlyHUD:
-                m_hud.RenderForPicking();
+                m_hud.renderForPicking();
                 break;
 
             case RenderOnlyMovingCubes:
-
-                cRenderer::Prepare();
-                cRenderer::SetStreamSource();
+                Graphics.prepare();
+                Graphics.setStreamSource();
 
                 glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
 
-                cRenderer::AddCubeSize(m_menu_cube_up->pos.x, m_menu_cube_up->pos.y, m_menu_cube_up->pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_up->color);
-                cRenderer::AddCubeSize(m_menu_cube_mid->pos.x, m_menu_cube_mid->pos.y, m_menu_cube_mid->pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_mid->color);
-                cRenderer::AddCubeSize(m_menu_cube_low->pos.x, m_menu_cube_low->pos.y, m_menu_cube_low->pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_low->color);
+                Graphics.addCubeSize(m_menu_cube_up.pos.x, m_menu_cube_up.pos.y, m_menu_cube_up.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_up.color);
+                Graphics.addCubeSize(m_menu_cube_mid.pos.x, m_menu_cube_mid.pos.y, m_menu_cube_mid.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_mid.color);
+                Graphics.addCubeSize(m_menu_cube_low.pos.x, m_menu_cube_low.pos.y, m_menu_cube_low.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_low.color);
 
-                cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+                Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
 
                 break;
 
@@ -2759,12 +2367,11 @@ public final class Level extends Scene {
         glPopMatrix();
     }
 
-    void cLevel::RenderToFBO()
-    {
+    public void renderToFBO() {
         //return Render();
 
-        engine->SetProjection2D();
-        engine->SetModelViewMatrix2D();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -2774,15 +2381,13 @@ public final class Level extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color_dirty(255, 255, 255, engine->dirty_alpha);
-        engine->DrawFBOTexture(engine->texture_id_dirty, color_dirty);
+        Color color_dirty(255, 255, 255, Graphics.dirty_alpha);
+        Graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty);
 
         glDepthMask(GL_TRUE);
 
-
-
-        engine->SetProjection3D();
-        engine->SetModelViewMatrix3D(m_camera_current);
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(m_camera_current);
 
         glEnable(GL_LIGHTING);
         //glEnable(GL_LIGHT0);
@@ -2790,335 +2395,296 @@ public final class Level extends Scene {
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
 
         glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
-        DrawTheCube();
+        drawTheCube();
 
-        cRenderer::EnableBlending();
+        Graphics.enableBlending();
 
-        if (!m_lst_moving_cubes.empty() || !m_lst_mover_cubes.empty() || !m_lst_dead_cubes.empty())
-        {
+        if (!m_lst_moving_cubes.empty() || !m_lst_mover_cubes.empty() || !m_lst_dead_cubes.empty()) {
             list<cMovingCube*>::iterator itmo;
             list<cMoverCube*>::iterator itmu;
             list<cDeadCube*>::iterator itde;
 
-            cRenderer::Prepare();
+            Graphics.prepare();
 
-            for (itmo = m_lst_moving_cubes.begin(); itmo != m_lst_moving_cubes.end(); ++itmo)
-                (*itmo)->RenderSymbols();
+            for (itmo = m_lst_moving_cubes.begin(); itmo != m_lst_moving_cubes.end(); ++itmo) {
+                (*itmo).renderSymbols();
+            }
 
-            for (itmu = m_lst_mover_cubes.begin(); itmu != m_lst_mover_cubes.end(); ++itmu)
-                (*itmu)->RenderSymbols();
+            for (itmu = m_lst_mover_cubes.begin(); itmu != m_lst_mover_cubes.end(); ++itmu) {
+                (*itmu).renderSymbols();
+            }
 
-            for (itde = m_lst_dead_cubes.begin(); itde != m_lst_dead_cubes.end(); ++itde)
-                (*itde)->RenderSymbols();
+            for (itde = m_lst_dead_cubes.begin(); itde != m_lst_dead_cubes.end(); ++itde) {
+                (*itde).renderSymbols();
+            }
 
             glDisable(GL_LIGHTING);
             glEnable(GL_BLEND);
-            cRenderer::SetStreamSourceFloatAndColor();
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_symbols);
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            Graphics.setStreamSourceFloatAndColor();
+            glBindTexture(GL_TEXTURE_2D, engine.texture_id_symbols);
+            Graphics.renderTriangles(engine.cube_offset.x, engine.cube_offset.y, engine.cube_offset.z);
         }
 
-        cRenderer::SetStreamSource();
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_key);
+        Graphics.setStreamSource();
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
 
-        Color color(255,255,255,255);
+        Color color = new Color(255, 255, 255, 255);
 
-        if (0 != m_cube_pos_key.x)
-        {
+        if (0 != m_cube_pos_key.x) {
             glEnable(GL_LIGHTING);
-            glBindTexture(GL_TEXTURE_2D, engine->texture_id_key);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
 
-            cCube* pCube = &engine->cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
+            Cube cube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
 
-            cRenderer::Prepare();
-            cRenderer::AddCubeSize(pCube->tx, pCube->ty, pCube->tz, HALF_CUBE_SIZE * 0.99f, color);
-            cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+            Graphics.Prepare();
+            Graphics.AddCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.99f, color);
+            Graphics.RenderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glDisable(GL_LIGHTING);
         }
 
-        cRenderer::DisableBlending();
+        Graphics.disableBlending();
 
         // draw player cube
-        cRenderer::Prepare();
-        //cRenderer::SetStreamSource();
+        Graphics.prepare();
+        //Graphics.SetStreamSource();
         glEnable(GL_LIGHTING);
         //Color color(255, 255, 255, 255);
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_player);
-        cRenderer::AddCubeSize(m_player_cube->pos.x, m_player_cube->pos.y, m_player_cube->pos.z, HALF_CUBE_SIZE, color);
-        cRenderer::RenderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+        Graphics.addCubeSize(m_player_cube.pos.x, m_player_cube.pos.y, m_player_cube.pos.z, HALF_CUBE_SIZE, color);
+        Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
         glDisable(GL_LIGHTING);
     }
 
-    #pragma mark - Event
-
-    void cLevel::EventBuildLevel()
+    public void eventBuildLevel()
     {
-        switch (m_difficulty)
-        {
-            case Easy:
-                cLevelBuilderEasy::Build(m_level_number);
-                break;
-
-            case Normal:
-                cLevelBuilderNormal::Build(m_level_number);
-                break;
-
-            case Hard:
-                cLevelBuilderHard::Build(m_level_number);
-                break;
+        switch (m_difficulty) {
+            case Easy: LevelBuilderEasy.build(m_level_number); break;
+            case Normal: LevelBuilderNormal.build(m_level_number); break; 
+            case Hard: LevelBuilderHard.build(m_level_number); break;
         }
 
-        m_cube_pos_key = cLevelBuilder::key;
+        m_cube_pos_key = LevelBuilder.key;
 
-        m_player_cube->SetCubePos(cLevelBuilder::player);
-        m_player_cube->SetKeyCubePos(m_cube_pos_key);
+        m_player_cube.setCubePos(cLevelBuilder::player);
+        m_player_cube.setKeyCubePos(m_cube_pos_key);
 
-        if (rand()%2 == 0)
-            m_ad_level.SetLevelAndDirection(0, 1);
-        else
-            m_ad_level.SetLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        if (rand()%2 == 0) {
+            m_ad_level.setLevelAndDirection(0, 1);
+        } else {
+            m_ad_level.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        }
 
         char str[512];
 
-        m_hud.Set1stHint();
+        m_hud.set1stHint();
 
         // level
-        engine->GetLevelTypeAndNumberString(m_difficulty, m_level_number, str);
-        m_hud.SetTextLevel(str);
+        engine.getLevelTypeAndNumberString(m_difficulty, m_level_number, str);
+        m_hud.setTextLevel(str);
 
         // stars
-        m_hud.SetTextStars(cCubetraz::GetStarCount());
+        m_hud.setTextStars(Cubetraz.getStarCount());
 
         // moves
-        m_hud.SetTextMoves(0);
+        m_hud.setTextMoves(0);
 
         // motto
-        cCreator::GetLevelMotto(m_difficulty, m_level_number, str);
-        m_hud.SetTextMotto(str);
+        Creator.getLevelMotto(m_difficulty, m_level_number, str);
+        m_hud.setTextMotto(str);
 
-        m_hud.SetupAppear();
+        m_hud.setupAppear();
     }
 
-    void cLevel::EventShowHint()
-    {
-        if (0 == m_moves_counter)
-        {
-            m_hud.ShowHint(m_ar_solution[0]); // show first hint
-        }
-        else
-        {
+    public void eventShowHint() {
+        if (0 == m_moves_counter) {
+            m_hud.showHint(m_ar_solution[0]); // show first hint
+        } else {
             m_show_hint_2nd = true;
             m_hint_index = 0;
             m_hint_timeout = 0.0f;
-
-            int i;
-            for (i = 0; i < MAX_HINT_CUBES; ++i)
-                m_ar_hint_cubes[i] = NULL;
-
-            i = 0;
+            
+            for (int i = 0; i < MAX_HINT_CUBES; ++i) {
+                m_ar_hint_cubes[i] = null;
+            }
+            
             list<cCube*>::iterator it;
-            for (it = m_list_cubes_hint.begin(); it != m_list_cubes_hint.end(); ++it)
+            for (it = m_list_cubes_hint.begin(); it != m_list_cubes_hint.end(); ++it) {
                 m_ar_hint_cubes[i++] = (*it);
+            }
         }
     }
 
-    void cLevel::EventSolver()
-    {
-        if (ShowSceneSolvers == m_next_action || PrepareSolving == m_state)
+    public void eventSolver() {
+        if (ShowSceneSolvers == m_next_action || PrepareSolving == m_state) {
             return;
-
-        bool solved = false;
-
-        switch (m_difficulty)
-        {
-            case Easy:
-                solved = cCubetraz::GetSolvedEasy(m_level_number);
-                break;
-
-            case Normal:
-                solved = cCubetraz::GetSolvedNormal(m_level_number);
-                break;
-
-            case Hard:
-                solved = cCubetraz::GetSolvedHard(m_level_number);
-                break;
         }
 
-        if (solved)
-        {
-            Reset();
+        boolean solved = false;
+
+        switch (m_difficulty) {
+            case Easy: solved = Cubetraz.getSolvedEasy(m_level_number); break;
+            case Normal: solved = Cubetraz.getSolvedNormal(m_level_number); break;
+            case Hard: solved = Cubetraz.getSolvedHard(m_level_number); break;
+        }
+
+        if (solved) {
+            reset();
             m_state = PrepareSolving;
             m_timeout = 2.0f;
-        }
-        else
-        {
+        } else {
             m_next_action = ShowSceneSolvers;
         }
 
-        m_hud.SetupDisappear();
+        m_hud.setupDisappear();
     }
 
-    void cLevel::EventQuit()
-    {
-        engine->anim_init_data.list_cubes_base.clear();
+    public void eventQuit() {
+        engine.anim_init_data.list_cubes_base.clear();
 
         list<cCube*>::iterator it;
-        for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it)
-        {
-            engine->anim_init_data.list_cubes_base.push_back(*it);
+        for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it) {
+            engine.anim_init_data.list_cubes_base.add(*it);
         }
 
-        for (it = m_list_cubes_edges.begin(); it != m_list_cubes_edges.end(); ++it)
-        {
-            engine->anim_init_data.list_cubes_base.push_back(*it);
+        for (it = m_list_cubes_edges.begin(); it != m_list_cubes_edges.end(); ++it) {
+            engine.anim_init_data.list_cubes_base.add(*it);
         }
 
-        engine->anim_init_data.cube_rotation_degree = m_cube_rotation.degree;
+        engine.anim_init_data.cube_rotation_degree = m_cube_rotation.degree;
 
-        if (Paused == m_state)
-            engine->anim_init_data.type = AnimToMenuFromPaused;
-        else
-            engine->anim_init_data.type = AnimToMenuFromCompleted;
+        if (Paused == m_state) {
+            engine.anim_init_data.type = AnimToMenuFromPaused;
+        } else {
+            engine.anim_init_data.type = AnimToMenuFromCompleted;
+        }
 
-        engine->ShowScene(Scene_Anim);
+        engine.showScene(Scene_Anim);
     }
 
-    void cLevel::EventLevelPause()
-    {
-        m_hud.SetupDisappear();
-        SetAnimToPaused();
+    public void eventLevelPause() {
+        m_hud.setupDisappear();
+        setAnimToPaused();
     }
 
-    void cLevel::EventLevelComplete()
-    {
-        engine->PlaySound(SOUND_LEVEL_COMPLETED);
+    public void eventLevelComplete() {
+        Game.playSound(SOUND_LEVEL_COMPLETED);
 
-        engine->RenderToFBO(this);
+        Game.renderToFBO(this);
 
-        m_hud.SetupDisappear();
+        m_hud.setupDisappear();
 
-        StatInitData& sid = engine->stat_init_data;
+        StatInitData& sid = engine.stat_init_data;
 
-        GetRatings();
+        getRatings();
 
-        switch (m_difficulty)
-        {
+        switch (m_difficulty) {
             case Easy:
-                cCubetraz::SetStarsEasy(m_level_number, sid.stars);
-                cCubetraz::SetMovesEasy(m_level_number, m_moves_counter);
+                Cubetraz.setStarsEasy(m_level_number, sid.stars);
+                Cubetraz.setMovesEasy(m_level_number, m_moves_counter);
 
-                if (m_level_number < 60)
-                {
-                    if (LEVEL_LOCKED == cCubetraz::GetStarsEasy(m_level_number + 1))
-                    cCubetraz::SetStarsEasy(m_level_number + 1, LEVEL_UNLOCKED);
+                if (m_level_number < 60) {
+                    if (LEVEL_LOCKED == Cubetraz.getStarsEasy(m_level_number + 1))
+                    Cubetraz.setStarsEasy(m_level_number + 1, LEVEL_UNLOCKED);
                 }
 
-                ReportAchievementEasy();
+                //reportAchievementEasy();
                 break;
 
             case Normal:
-                cCubetraz::SetStarsNormal(m_level_number, sid.stars);
-                cCubetraz::SetMovesNormal(m_level_number, m_moves_counter);
+                Cubetraz.setStarsNormal(m_level_number, sid.stars);
+                Cubetraz.setMovesNormal(m_level_number, m_moves_counter);
 
-                if (m_level_number < 60)
-                {
-                    if (LEVEL_LOCKED == cCubetraz::GetStarsNormal(m_level_number + 1))
-                    cCubetraz::SetStarsNormal(m_level_number + 1, LEVEL_UNLOCKED);
+                if (m_level_number < 60) {
+                    if (LEVEL_LOCKED == Cubetraz.getStarsNormal(m_level_number + 1)) {
+                        Cubetraz.setStarsNormal(m_level_number + 1, LEVEL_UNLOCKED);
+                    }
                 }
 
-                ReportAchievementNormal();
+                //reportAchievementNormal();
                 break;
 
             case Hard:
-                cCubetraz::SetStarsHard(m_level_number, sid.stars);
-                cCubetraz::SetMovesHard(m_level_number, m_moves_counter);
+                Cubetraz.setStarsHard(m_level_number, sid.stars);
+                Cubetraz.setMovesHard(m_level_number, m_moves_counter);
 
-                if (m_level_number < 60)
-                {
-                    if (LEVEL_LOCKED == cCubetraz::GetStarsHard(m_level_number + 1))
-                    cCubetraz::SetStarsHard(m_level_number + 1, LEVEL_UNLOCKED);
+                if (m_level_number < 60) {
+                    if (LEVEL_LOCKED == Cubetraz.getStarsHard(m_level_number + 1)) {
+                        Cubetraz.setStarsHard(m_level_number + 1, LEVEL_UNLOCKED);
+                    }
                 }
 
-                ReportAchievementHard();
+                //reportAchievementHard();
                 break;
         } // switch
 
-        cCubetraz::Save();
-
-        engine->SubmitScore(cCubetraz::GetStarCount());
-
+        Cubetraz.save();
+        //Game.submitScore(cCubetraz::GetStarCount());
         m_state = SetupAnimToCompleted;
-
-        engine->ShowScene(Scene_Stat);
+        Game.showScene(Scene_Stat);
     }
 
-    void cLevel::Reset()
-    {
+    public void reset() {
         m_moves_counter = 0;
-        m_lst_undo.erase (m_lst_undo.begin(), m_lst_undo.end());
+        m_lst_undo.erase(m_lst_undo.begin(), m_lst_undo.end());
         m_lst_undo.clear();
 
-        m_hud.Set1stHint();
-        m_hud.SetTextMoves(m_moves_counter);
-        m_hud.SetTextUndo( m_lst_undo.size() );
+        m_hud.set1stHint();
+        m_hud.setTextMoves(m_moves_counter);
+        m_hud.setTextUndo( m_lst_undo.size() );
 
-        m_player_cube->SetCubePos(cLevelBuilder::player);
+        m_player_cube.setCubePos(cLevelBuilder::player);
 
-        engine->ResetCubesColors();
+        Game.resetCubesColors();
 
-        if (!m_lst_moving_cubes.empty())
-        {
+        if (!m_lst_moving_cubes.isEmpty()) {
             list<cMovingCube*>::iterator it;
-            for (it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it)
-                (*it)->Reposition();
+            for (it = m_lst_moving_cubes.begin(); it != m_lst_moving_cubes.end(); ++it) {
+                (*it).reposition();
+            }
         }
 
-        if (!m_lst_mover_cubes.empty())
-        {
+        if (!m_lst_mover_cubes.empty()) {
             list<cMoverCube*>::iterator it;
-            for (it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it)
-                (*it)->Reposition();
+            for (it = m_lst_mover_cubes.begin(); it != m_lst_mover_cubes.end(); ++it) {
+                (*it).reposition();
+            }
         }
 
-        if (!m_lst_dead_cubes.empty())
-        {
+        if (!m_lst_dead_cubes.empty()) {
             list<cDeadCube*>::iterator it;
-            for (it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it)
-                (*it)->Reposition();
+            for (it = m_lst_dead_cubes.begin(); it != m_lst_dead_cubes.end(); ++it) {
+                (*it).reposition();
+            }
         }
     }
 
-    void cLevel::EventUndo()
-    {
+    public void eventUndo() {
         m_timeout_undo = UNDO_TIMEOUT;
 
-        if (m_moves_counter > 0)
-        {
+        if (m_moves_counter > 0) {
             --m_moves_counter;
-            m_hud.SetTextMoves(m_moves_counter);
+            m_hud.setTextMoves(m_moves_counter);
 
-            UndoData& ud = m_lst_undo.back();
+            UndoData ud = m_lst_undo.back();
             m_lst_undo.pop_back();
 
-            m_player_cube->SetCubePos(ud.player_pos);
+            m_player_cube.setCubePos(ud.player_pos);
 
-            if (NULL != ud.moving_cube)
-                ud.moving_cube->Init(ud.moving_cube_pos, ud.moving_cube_move_dir);
+            if (null != ud.moving_cube) {
+                ud.moving_cube.init(ud.moving_cube_pos, ud.moving_cube_move_dir);
+            }
 
-            if (0 == m_moves_counter)
-                m_hud.Set1stHint();
+            if (0 == m_moves_counter) {
+                m_hud.set1stHint();
+            }
 
             m_state = Undo;
         }
     }
 
-
-    #pragma mark - OnFinger
-
-    void cLevel::OnFingerDown(float x, float y, int finger_count)
-    {
+    public void onFingerDown(float x, float y, int finger_count) {
         m_fingerdown = true;
 
         m_pos_down.x = x;
@@ -3128,34 +2694,17 @@ public final class Level extends Scene {
         {
             Color down_color;
 
-            switch (m_state)
-            {
+            switch (m_state) {
                 case Playing:
+                    if ( DoneHUD == m_hud.getState() ) {
+                        renderForPicking(RenderOnlyHUD);
 
-                    if ( DoneHUD == m_hud.GetState() )
-                    {
-                        RenderForPicking(RenderOnlyHUD);
-
-                        down_color = engine->GetColorFromScreen(m_pos_down);
-
-                        switch (down_color.b)
-                        {
-                            case 200:
-                                m_hud.SetHilitePause(true);
-                                break;
-
-                            case 150:
-                                m_hud.SetHiliteUndo(true);
-                                break;
-
-                            case 100:
-                                m_hud.SetHiliteHint(true);
-                                break;
-
-                            case 50:
-                                m_hud.SetHiliteSolver(true);
-                                break;
-
+                        down_color = Graphics.getColorFromScreen(m_pos_down);
+                        switch (down_color.b) {
+                            case 200: m_hud.setHilitePause(true); break;
+                            case 150: m_hud.setHiliteUndo(true); break;
+                            case 100: m_hud.setHiliteHint(true); break;
+                            case 50: m_hud.setHiliteSolver(true); break;
                             default:
                                 break;
                         }
@@ -3163,20 +2712,18 @@ public final class Level extends Scene {
                     break;
 
                 case Paused:
-                case Completed:
-                {
-                    RenderForPicking(RenderOnlyMovingCubes);
+                case Completed: {
+                    renderForPicking(RenderOnlyMovingCubes);
 
-                    down_color = engine->GetColorFromScreen(m_pos_down);
-                    cMenuCube* pMenuCube = GetMovingCubeFromColor(down_color.b);
+                    down_color = Graphics.getColorFromScreen(m_pos_down);
+                    MenuCube menuCube = getMovingCubeFromColor(down_color.b);
 
-                    if (pMenuCube)
-                    {
+                    if (menuCube) {
                         m_hilite_alpha = 0.0f;
                         m_menu_cube_hilite = pMenuCube;
-                        CubePos cp = m_menu_cube_hilite->m_cube_pos;
+                        CubePos cp = m_menu_cube_hilite.m_cube_pos;
                         //printf("\nCubePos: %d, %d, %d", cp.x, cp.y, cp.z);
-                        m_font_hilite.Init(SymbolHilite, cp);
+                        m_font_hilite.init(SymbolHilite, cp);
                     }
                 }
                 break;
@@ -3187,8 +2734,7 @@ public final class Level extends Scene {
         }
     }
 
-    void cLevel::OnFingerUp(float x, float y, int finger_count)
-    {
+    public void onFingerUp(float x, float y, int finger_count) {
 /*
     int ln = m_level_number + 1;
     DifficultyEnum diff = m_difficulty;
@@ -3206,38 +2752,37 @@ public final class Level extends Scene {
             diff = Easy;
     }
 
-    engine->level_init_data.difficulty = diff;
-    engine->level_init_data.level_number = ln;
-    engine->level_init_data.init_action = FullInit;
+    engine.level_init_data.difficulty = diff;
+    engine.level_init_data.level_number = ln;
+    engine.level_init_data.init_action = FullInit;
 
-    engine->ShowScene(Scene_Level);
+    engine.ShowScene(Scene_Level);
     return;
 */
         m_pos_up.x = x;
         m_pos_up.y = y;
 
-        switch (m_state)
-        {
+        switch (m_state) {
             case Playing:
-                FingerUpPlaying(x, y, finger_count);
-                m_hud.SetHilitePause(false);
-                m_hud.SetHiliteUndo(false);
-                m_hud.SetHiliteHint(false);
-                m_hud.SetHiliteSolver(false);
+                fingerUpPlaying(x, y, finger_count);
+                m_hud.setHilitePause(false);
+                m_hud.setHiliteUndo(false);
+                m_hud.setHiliteHint(false);
+                m_hud.setHiliteSolver(false);
                 break;
 
             case Completed:
-                m_menu_cube_hilite = NULL;
-                FingerUpCompleted(x, y);
+                m_menu_cube_hilite = null;
+                fingerUpCompleted(x, y);
                 break;
 
             case Paused:
-                m_menu_cube_hilite = NULL;
-                FingerUpPaused(x, y);
+                m_menu_cube_hilite = null;
+                fingerUpPaused(x, y);
                 break;
 
             case Tutorial:
-                m_hud.HideTutor();
+                m_hud.hideTutor();
                 break;
 
             default:
@@ -3245,144 +2790,61 @@ public final class Level extends Scene {
         }
     }
 
-    void cLevel::OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count)
-    {
+    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
         m_pos_move.x = cur_x;
         m_pos_move.y = cur_y;
 
-        float dist = GetDistance2D(m_pos_down, m_pos_move);
+        float dist = getDistance2D(m_pos_down, m_pos_move);
 
         //printf("\nOnFingerMove: %.2f", dist);
 
-        if (dist > 20.0f * engine->device_scale)
+        if (dist > 20.0f * engine.device_scale) {
             m_swipe = true;
+        }
 
-        if (2 == finger_count)
-        {
-            if (Playing == m_state)
-            {
-                vec2 dir;
-                dir.x = (m_pos_down.x - cur_x) / engine->device_scale;
-                dir.y = (m_pos_down.y - cur_y) / engine->device_scale;
+        if (2 == finger_count) {
+            if (Playing == m_state) {
+                Vector2 dir = new Vector2();
+                dir.x = (m_pos_down.x - cur_x) / Graphics.device_scale;
+                dir.y = (m_pos_down.y - cur_y) / Graphics.device_scale;
 
                 m_alter_view = true;
 
                 m_user_rotation.current.x = -dir.y * 0.3f;
                 m_user_rotation.current.y = -dir.x * 0.3f;
-                m_user_rotation.Clamp();
+                m_user_rotation.clamp();
 
                 m_swipe = false;
             }
         }
     }
 
-    #pragma mark - FingerUps
-
-    void cLevel::FingerUpPaused(float x, float y)
-    {
+    public void fingerUpPaused(float x, float y) {
 //    float fingerup_x = x;
 //    float fingerup_y = y;
 
-        if (m_swipe)
-        {
+        if (m_swipe) {
             m_swipe = false;
-
-            RenderForPicking(RenderOnlyMovingCubes);
-
-            Color down_color = engine->GetColorFromScreen(m_pos_down);
+            renderForPicking(RenderOnlyMovingCubes);
+            Color down_color = Graphics.getColorFromScreen(m_pos_down);
 
             SwipeDirEnums swipeDir;
             float length;
-            engine->GetSwipeDirAndLength(m_pos_down, m_pos_up, swipeDir, length);
+            Graphics.getSwipeDirAndLength(m_pos_down, m_pos_up, swipeDir, length);
 
-            if (length > 30.0f * engine->m_scaleFactor)
-            {
-                cMenuCube* pMenuCube = NULL;
+            if (length > 30.0f * Graphics.m_scaleFactor) {
+                MenuCube menuCube = null;
 
-                switch (down_color.b)
-                {
-                    case 200:
-                        pMenuCube = m_menu_cube_up;
-                        break;
-
-                    case 150:
-                        pMenuCube = m_menu_cube_mid;
-                        break;
-
-                    case 100:
-                        pMenuCube = m_menu_cube_low;
-                        break;
-                } // switch
-
-                if (pMenuCube)
-                {
-                    switch (swipeDir)
-                    {
-                        case SwipeRight:
-                            pMenuCube->MoveOnAxis(Z_Plus);
-                            break;
-
-                        case SwipeLeft:
-                            pMenuCube->MoveOnAxis(Z_Minus);
-                            break;
-
-                        default:
-                            break;
-                    } // switch
-                }
-            }
-        }
-    }
-
-    void cLevel::FingerUpCompleted(float x, float y)
-    {
-//    float fingerup_x = x;
-//    float fingerup_y = y;
-
-        if (m_swipe)
-        {
-            m_swipe = false;
-
-            RenderForPicking(RenderOnlyMovingCubes);
-            Color down_color = engine->GetColorFromScreen(m_pos_down);
-
-//		printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", down_color.r, down_color.g, down_color.b, down_color.a);
-
-            SwipeDirEnums swipeDir;
-            float length;
-            engine->GetSwipeDirAndLength(m_pos_down, m_pos_up, swipeDir, length);
-
-            if (length > 30.0f * engine->m_scaleFactor)
-            {
-                cMenuCube* pMenuCube = NULL;
-
-                switch (down_color.b)
-                {
-                    case 200:
-                        pMenuCube = m_menu_cube_up;
-                        break;
-
-                    case 150:
-                        pMenuCube = m_menu_cube_mid;
-                        break;
-
-                    case 100:
-                        pMenuCube = m_menu_cube_low;
-                        break;
+                switch (down_color.b) {
+                    case 200: menuCube = m_menu_cube_up; break;
+                    case 150: menuCube = m_menu_cube_mid; break;
+                    case 100: menuCube = m_menu_cube_low; break;
                 }
 
-                if (pMenuCube)
-                {
-                    switch (swipeDir)
-                    {
-                        case SwipeLeft:
-                            pMenuCube->MoveOnAxis(X_Plus);
-                            break;
-
-                        case SwipeRight:
-                            pMenuCube->MoveOnAxis(X_Minus);
-                            break;
-
+                if (menuCube) {
+                    switch (swipeDir) {
+                        case SwipeRight: menuCube.moveOnAxis(Z_Plus); break;
+                        case SwipeLeft:  menuCube.moveOnAxis(Z_Minus); break;
                         default:
                             break;
                     }
@@ -3391,21 +2853,55 @@ public final class Level extends Scene {
         }
     }
 
-    void cLevel::FingerUpPlaying(float x, float y, int finger_count)
-    {
-        if (m_hud.GetShowHint())
-            return;
+    public void fingerUpCompleted(float x, float y) {
+//    float fingerup_x = x;
+//    float fingerup_y = y;
 
-        if (!m_player_cube->IsDone())
-        {
+        if (m_swipe) {
+            m_swipe = false;
+
+            renderForPicking(RenderOnlyMovingCubes);
+            Color down_color = Graphics.getColorFromScreen(m_pos_down);
+
+//		printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", down_color.r, down_color.g, down_color.b, down_color.a);
+
+            SwipeDirEnums swipeDir;
+            float length;
+            Engine.getSwipeDirAndLength(m_pos_down, m_pos_up, swipeDir, length);
+
+            if (length > 30.0f * Graphics.m_scaleFactor) {
+                MenuCube menuCube = null;
+
+                switch (down_color.b) {
+                    case 200: menuCube = m_menu_cube_up; break;
+                    case 150: menuCube = m_menu_cube_mid; break;
+                    case 100: menuCube = m_menu_cube_low; break;
+                }
+
+                if (menuCube) {
+                    switch (swipeDir) {
+                        case SwipeLeft: menuCube.moveOnAxis(X_Plus); break;
+                        case SwipeRight: menuCube.moveOnAxis(X_Minus); break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void fingerUpPlaying(float x, float y, int finger_count) {
+        if (m_hud.getShowHint()) {
+            return;
+        }
+
+        if (!m_player_cube.isDone()) {
             m_swipe = false;
             return;
         }
 
-        if (m_alter_view)
-        {
-            if ( fabs(m_user_rotation.current.x) > EPSILON || fabs(m_user_rotation.current.y) > EPSILON )
-            {
+        if (m_alter_view) {
+            if ( Math.abs(m_user_rotation.current.x) > EPSILON || Math.abs(m_user_rotation.current.y) > EPSILON ) {
                 m_reposition_view = true;
                 m_alter_view = false;
                 m_t = 0.0f;
@@ -3414,45 +2910,29 @@ public final class Level extends Scene {
             return;
         }
 
-        if (!m_swipe)
-        {
-            if (Playing == m_state)
-            {
-                RenderForPicking(RenderOnlyHUD);
-                vec2 pos(x,y);
-                Color color = engine->GetColorFromScreen(pos);
+        if (!m_swipe) {
+            if (Playing == m_state) {
+                renderForPicking(RenderOnlyHUD);
+                Vector2 pos = new Vector2(x,y);
+                Color color = Graphics.getColorFromScreen(pos);
 
-                switch (color.b)
-                {
-                    case 200:
-                        EventLevelPause();
-                        break;
-
-                    case 150:
-                        EventUndo();
-                        break;
-
-                    case 100:
-                        EventShowHint();
-                        break;
-
-                    case 50:
-                        EventSolver();
-                        break;
-
+                switch (color.b) {
+                    case 200: eventLevelPause(); break;
+                    case 150: eventUndo(); break;
+                    case 100: eventShowHint(); break;
+                    case 50: eventSolver(); break;
                     default:
                         break;
                 }
 
             }
             return;
-        }
-        else // swipe
-        {
+        } else { // swipe        
             m_swipe = false;
 
-            if (m_hud.IsAnythingHilited())
+            if (m_hud.isAnythingHilited()) {
                 return;
+            }
 
             // flip the Y-axis because pixel coordinates increase toward the bottom (iPhone 3D Programming 86. page)
             float fingerdown_x = m_pos_down.x;
@@ -3461,7 +2941,7 @@ public final class Level extends Scene {
             float fingerup_x = x;
             float fingerup_y = -y;
 
-            vec2 dir;
+            Vector2 dir = new Vector2();
             dir.x = fingerup_x - fingerdown_x;
             dir.y = fingerup_y - fingerdown_y;
 
@@ -3469,10 +2949,11 @@ public final class Level extends Scene {
 
             //printf("\nSwipe Length: %.2f", len);
 
-            if (len < 20.0f * engine->device_scale)
+            if (len < 20.0f * Graphics.device_scale){
                 return;
+            }
 
-            dir.Normalize();
+            dir.normalize();
 
             float degree = TO_DEG(atan2(dir.y, dir.x));
 
@@ -3487,91 +2968,76 @@ public final class Level extends Scene {
             const float space = 30.0f;
 
             center = 90.0f; // Y plus
-            if (degree > (center - space) && degree < (center + space))
-                success = m_player_cube->MoveOnAxis(Y_Plus);
+            if (degree > (center - space) && degree < (center + space)) {
+                success = m_player_cube.MoveOnAxis(Y_Plus);
+            }
 
             center = -90.0f; // Y minus
-            if (degree > (center - space) && degree < (center + space))
-                success = m_player_cube->MoveOnAxis(Y_Minus);
+            if (degree > (center - space) && degree < (center + space)) {
+                success = m_player_cube.MoveOnAxis(Y_Minus);
+            }
 
             center = 30.0f; // Z plus
-            if (degree > (center - space) && degree < (center + space))
-                success = m_player_cube->MoveOnAxis(Z_Minus);
+            if (degree > (center - space) && degree < (center + space)) {
+                success = m_player_cube.MoveOnAxis(Z_Minus);
+            }
 
             center = -150.0f; // Z minus
-            if (degree > (center - space) && degree < (center + space))
-                success = m_player_cube->MoveOnAxis(Z_Plus);
+            if (degree > (center - space) && degree < (center + space)) {
+                success = m_player_cube.MoveOnAxis(Z_Plus);
+            }
 
             center = -30.0f; // X minus
-            if (degree > (center - space) && degree < (center + space))
-                success = m_player_cube->MoveOnAxis(X_Plus);
+            if (degree > (center - space) && degree < (center + space)) {
+                success = m_player_cube.MoveOnAxis(X_Plus);
+            }
 
             center = 150.0f; // X plus
-            if (degree > (center - space) && degree < (center + space))
-                success = m_player_cube->MoveOnAxis(X_Minus);
+            if (degree > (center - space) && degree < (center + space)) {
+                success = m_player_cube.MoveOnAxis(X_Minus);
+            }
 
-            if (success)
-                AddMove();
+            if (success) {
+                addMove();
+            }
         }
     }
 
-    void cLevel::AddMove()
-    {
+    public void addMove() {
         ++m_moves_counter;
-        m_hud.SetTextMoves(m_moves_counter);
+        m_hud.setTextMoves(m_moves_counter);
 
-        if (1 == m_moves_counter)
-            m_hud.Set2ndHint();
-
-        UndoData ud(m_player_cube->GetCubePos());
-
-        if (m_player_cube->m_moving_cube)
-        {
-            ud.moving_cube = m_player_cube->m_moving_cube;
-            ud.moving_cube_pos = m_player_cube->m_moving_cube->GetCubePos();
-            ud.moving_cube_move_dir = m_player_cube->m_moving_cube->GetMovement();
+        if (1 == m_moves_counter) {
+            m_hud.set2ndHint();
         }
 
-        if (m_player_cube->m_mover_cube)
-        {
-            CubePos cp = m_player_cube->m_cube_pos_destination;
+        UndoData ud = new UndoData(m_player_cube.getCubePos());
+
+        if (m_player_cube.m_moving_cube) {
+            ud.moving_cube = m_player_cube.m_moving_cube;
+            ud.moving_cube_pos = m_player_cube.m_moving_cube.GetCubePos();
+            ud.moving_cube_move_dir = m_player_cube.m_moving_cube.GetMovement();
+        }
+
+        if (m_player_cube.m_mover_cube) {
+            CubePos cp = m_player_cube.m_cube_pos_destination;
             CubePos cp_new = cp;
 
             // check if cube can move in a selected dir
-            m_player_cube->CalcMovement(cp_new, m_player_cube->m_mover_cube->GetMoveDir(), false);
+            m_player_cube.calcMovement(cp_new, m_player_cube.m_mover_cube.GetMoveDir(), false);
 
-            if (cp.x != cp_new.x || cp.y != cp_new.y || cp.z != cp_new.z)
-                ud.mover_cube = m_player_cube->m_mover_cube;
+            if (cp.x != cp_new.x || cp.y != cp_new.y || cp.z != cp_new.z) {
+                ud.mover_cube = m_player_cube.m_mover_cube;
+            }
         }
 
-        m_lst_undo.push_back(ud);
+        m_lst_undo.add(ud);
 
-        m_hud.SetTextUndo( m_lst_undo.size() );
+        m_hud.setTextUndo( m_lst_undo.size() );
 
         m_state_to_restore = m_state;
         m_state = MovingPlayer;
         m_timeout = 0.0f; // move immediately
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
