@@ -19,11 +19,11 @@ public final class Utils {
     }
 
     public static void calcShadowMatrixFloor(Vector light_pos, float shadow_matrix[], float degree) {
-        float vLightPos[] = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
+        float[] vLightPos = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
 
-        float vPointOnPlane0[] = { 1.0f, -3.3f + 0.55f, 0.0f };
-        float vPointOnPlane1[] = { 0.0f, -3.3f + 0.55f, 0.0f };
-        float vPointOnPlane2[] = { 0.0f, -3.3f + 0.55f, 1.0f };
+        float[] vPointOnPlane0 = { 1.0f, -3.3f + 0.55f, 0.0f };
+        float[] vPointOnPlane1 = { 0.0f, -3.3f + 0.55f, 0.0f };
+        float[] vPointOnPlane2 = { 0.0f, -3.3f + 0.55f, 1.0f };
 
 //    float p0[3];
 //    float p1[3];
@@ -38,11 +38,11 @@ public final class Utils {
     }
 
     public static void calcShadowMatrixWallZ(Vector light_pos, float shadow_matrix[], float degree) {
-        float vLightPos[] = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
+        float[] vLightPos = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
 
-        float vPointOnPlane0[] = {  0.0f,          0.0f, -3.3f + 0.55f };
-        float vPointOnPlane1[] = { -1.0f,          0.0f, -3.3f + 0.55f };
-        float vPointOnPlane2[] = {  0.0f, -4.4f + 0.55f, -3.3f + 0.55f };
+        float[] vPointOnPlane0 = {  0.0f,          0.0f, -3.3f + 0.55f };
+        float[] vPointOnPlane1 = { -1.0f,          0.0f, -3.3f + 0.55f };
+        float[] vPointOnPlane2 = {  0.0f, -4.4f + 0.55f, -3.3f + 0.55f };
 
 //    float p0[3];
 //    float p1[3];
@@ -57,11 +57,11 @@ public final class Utils {
     }
 
     public static void calcShadowMatrixWallX(Vector light_pos, float shadow_matrix[], float degree) {
-        float vLightPos[] = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
+        float[] vLightPos = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
 
-        float vPointOnPlane0[] = { -3.3f + 0.55f,          0.0f,  0.0f };
-        float vPointOnPlane1[] = { -3.3f + 0.55f, -4.4f + 0.55f,  0.0f };
-        float vPointOnPlane2[] = { -3.3f + 0.55f,          0.0f, -1.0f };
+        float[] vPointOnPlane0 = { -3.3f + 0.55f,          0.0f,  0.0f };
+        float[] vPointOnPlane1 = { -3.3f + 0.55f, -4.4f + 0.55f,  0.0f };
+        float[] vPointOnPlane2 = { -3.3f + 0.55f,          0.0f, -1.0f };
 
 //    float p0[3];
 //    float p1[3];
