@@ -23,5 +23,11 @@ public final class CubePos {
     public void reset() {
         x = y = z = 0;
     }
+    
+    public void init(final CubePos other) {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+    }
 
 }
