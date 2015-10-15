@@ -13,6 +13,148 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class Game {
 
+    public static void musicVolumeUp() {
+
+    }
+
+    public static void musicVolumeDown() {
+
+    }
+
+    public static void soundVolumeUp() {
+
+    }
+
+    public static void soundVolumeDown() {
+
+    }
+
+    public static Color getFaceColor(float alpha) { return new Color(0.75f * 255, 0.8f * 255, 0.75f * 255, alpha * 255); }
+    public static Color getBaseColor() { return new Color(255, 255, 255, 255); }
+    public static Color getTitleColor() { return new Color(139, 0, 0, 200); }
+    public static Color getTextColor() { return new Color(80, 0, 0, 130);  }
+    public static Color getSymbolColor() { return new Color(76, 0, 0, 150);  }
+    public static Color getTextColorOnCubeFace() { return new Color(76, 0, 0, 153); }
+    public static Color getLockedLevelNumberColor() { return new Color(0, 0, 0, 60); }
+    public static Color getLevelNumberColor() { return new  Color(0, 0, 0, 150); }
+
+
+
+    public static void showScene(int scene_id) {
+        Scene scene = null;
+
+//        switch (scene_id) {
+//            case Scene_Intro:
+//                m_intro = new cIntro();
+//                m_intro.init();
+//
+//                scene = m_intro;
+//                break;
+//
+//            case Scene_Menu:
+//                //showFullScreenAd();
+//
+//                if (m_intro) {
+//                    delete m_intro;
+//                    m_intro = NULL;
+//                }
+//
+//                if (m_outro) {
+//                    delete m_outro;
+//                    m_outro = NULL;
+//                    engine->menu_init_data.reappear = false;
+//                }
+//
+//                if (NULL == m_menu)
+//                    m_menu = new cMenu();
+//
+//                m_menu->Init();
+//
+//                scene = m_menu;
+//                break;
+//
+//            case Scene_Anim:
+//
+//                if (NULL == m_animator)
+//                    m_animator = new cAnimator();
+//
+//                m_animator->Init();
+//
+//                scene = m_animator;
+//                break;
+//
+//            case Scene_Level:
+//
+//                m_level->Init(&level_init_data);
+//
+//                scene = m_level;
+//                break;
+//
+//            case Scene_Stat:
+//
+//                if (NULL == m_statistics)
+//                    m_statistics = new cStatistics();
+//
+//                m_statistics->Init();
+//
+//                scene = m_statistics;
+//                break;
+//
+//            case Scene_Solvers:
+//
+//                m_solvers->Init();
+//
+//                scene = m_solvers;
+//                break;
+//
+//            case Scene_Outro:
+//
+//                if (NULL == m_outro)
+//                    m_outro = new cOutro();
+//
+//                m_outro->Init();
+//
+//                scene = m_outro;
+//                break;
+//        }
+//
+//        m_scene = scene;
+    }
+
+
+    public static final Level level = new Level();
+
+    public static final LevelInitData level_init_data = new LevelInitData();
+    public static final AnimInitData anim_init_data = new AnimInitData();
+
+    public static void stopMusic() {
+
+    }
+
+    public static void playSound(String soundName) {
+
+    }
+
+    public static boolean getCanPlayLockedLevels() {
+        return true;
+    }
+
+    public static void hideProgressIndicator() {
+
+    }
+
+    public static float dirty_alpha;
+
+    public static final Vector cube_offset = new Vector();
+
+    public static float getMusicVolume() {
+        return 0.5f;
+    }
+
+    public static float getSoundVolume() {
+        return 0.5f;
+    }
+
     public static Vector getCubePosAt(int x, int y, int z) {
         Vector pos = new Vector();
         pos.x = cubes[x][y][z].tx;
@@ -607,49 +749,7 @@ public final class Game {
             #define LEVEL_LOCKED -1
             #define LEVEL_UNLOCKED 0
 
-    enum SymbolEnum
-    {
-        SymbolInfo = 0,
-        SymbolLock = 1,
-        SymbolPlus = 2,
-        SymbolMinus = 3,
-        SymbolQuestionmark = 4,
-        SymbolGoLeft = 5,
-        SymbolGoRight = 6,
-        SymbolGoUp = 7,
-        SymbolGoDown = 8,
-        SymbolUndo = 9,
-        SymbolSolver = 10,
-        SymbolPause = 11,
-        Symbol3Star = 12,
-        Symbol2Star = 13,
-        Symbol1Star = 14,
-        SymbolStar = 15,
-        SymbolTriangleUp = 16,
-        SymbolTriangleDown = 17,
-        SymbolHilite = 18,
-        SymbolSolved = 19,
-        SymbolDeath = 20,
-        SymbolLightning = 21,
-        SymbolCracks = 22,
-        SymbolTriangleLeft = 23,
-        SymbolTriangleRight = 24,
-        SymbolEmpty = 25
-    };
 
-    enum DifficultyEnum
-    {
-        Easy,
-        Normal,
-        Hard
-    };
-
-    enum LevelInitActionEnum
-    {
-        FullInit,
-        JustContinue,
-        ShowSolution
-    };
 
     struct CubeRotation
     {
@@ -742,22 +842,6 @@ static GLfloat normals[];
 static GLshort texture_coordinates[];
 static GLubyte colors[];
 
-        // textures
-        GLuint texture_id_gray_concrete;
-        GLuint texture_id_key;
-        GLuint texture_id_fonts;
-        GLuint texture_id_fonts_clear;
-        GLuint texture_id_level_cubes;
-        GLuint texture_id_fonts_big;
-        GLuint texture_id_level_cubes_locked;
-        GLuint texture_id_numbers;
-        GLuint texture_id_player;
-        GLuint texture_id_star;
-        GLuint texture_id_symbols;
-        GLuint texture_id_stat_background;
-        GLuint texture_id_credits;
-        GLuint texture_id_dirty;
-        GLuint texture_id_tutor;
 
         cCube cubes[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
 
@@ -766,12 +850,12 @@ static GLubyte colors[];
 
         TexturedQuad* m_newlinefont;
 
-        vec3 cube_offset;
+
         DeviceTypeEnum device_type;
 
         StatInitData stat_init_data;
-        AnimInitData anim_init_data;
-        LevelInitData level_init_data;
+
+
 
 
 
@@ -780,7 +864,7 @@ static GLubyte colors[];
         cIntro* m_intro;
         cMenu* m_menu;
         cAnimator* m_animator;
-        cLevel* m_level;
+
         cStatistics* m_statistics;
         cOutro* m_outro;
         cSolvers* m_solvers;
@@ -792,7 +876,7 @@ static GLubyte colors[];
         void Init(int width, int height, float scaleFactor, DeviceTypeEnum device_type, float banner_height);
         void Update(float dt);
         void Render();
-        void ShowScene(int scene_id);
+
 
         void EnteredBackground();
         void EnteredForeground();
@@ -892,7 +976,7 @@ static GLubyte colors[];
 
         bool GetCanSkipIntro();
         void SetCanSkipIntro();
-        bool GetCanPlayLockedLevels();
+
 
         float m_scaleFactor;
 
@@ -948,7 +1032,7 @@ static GLubyte colors[];
 
 
         void DrawQuad();
-        void DrawAxes();
+
         void DrawCircleAt(float x, float y, float radius, Color& color);
 
         inline TexturedQuad* GetFont(char ch)
@@ -978,8 +1062,8 @@ static GLubyte colors[];
         return m_newlinefont;
         }
 
-        Color GetColorFromScreen(vec2& pos);
-        void GetSwipeDirAndLength(vec2& pos_down, vec2& pos_up, SwipeDirEnums& swipeDir, float& length);
+
+
 
         float GetTextWidth(const char* text, float scale);
 
@@ -996,10 +1080,10 @@ static GLubyte colors[];
         }
 
 // SetProjection
-        void SetProjection2D();
-        void SetProjection3D();
-        void SetModelViewMatrix3D(cCamera& camera);
-        void SetModelViewMatrix2D();
+
+
+
+
 
 // IAP
         void PurchaseRestore();
@@ -1027,14 +1111,6 @@ static GLubyte colors[];
         void SetupHollowCube();
         void CreateBaseCubesList(list<cCube*>& lst);
 
-        inline static Color GetFaceColor(float alpha = 1.0f) { return Color(0.75f * 255, 0.8f * 255, 0.75f * 255, alpha * 255); }
-        inline static Color GetBaseColor() { return Color(255, 255, 255, 255); }
-        inline static Color GetTitleColor() { return Color(139, 0, 0, 200); }
-        inline static Color GetTextColor() { return Color(80, 0, 0, 130);  }
-        inline static Color GetSymbolColor() { return Color(76, 0, 0, 150);  }
-        inline static Color GetTextColorOnCubeFace() { return Color(76, 0, 0, 153); }
-        inline static Color GetLockedLevelNumberColor() { return Color(0, 0, 0, 60); }
-        inline static Color GetLevelNumberColor() { return Color(0, 0, 0, 150); }
 
 
 
@@ -1288,7 +1364,7 @@ default:
         #endif
 
         void RenderToFBO(cScene* scene);
-        void DrawFBOTexture(GLuint texture_id, Color& color, bool magic = false);
+
         void BuyPackOfSolvers(int number_of_solvers);
         void DrawFullScreenQuad(Color& color);
 
@@ -1335,7 +1411,7 @@ default:
         return count;
         }
 
-        int dirty_alpha;
+
 
 private:
 
@@ -2343,39 +2419,8 @@ private:
 
     #pragma mark - SetProjection
 
-    void cEngine::SetProjection2D()
-    {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrthof(0.0f, m_width, 0.0f, m_height, -1.0f, 1.0f);
-    }
 
-    void cEngine::SetProjection3D()
-    {
-        const float zNear = 1.0f;
-        const float zFar = 1000.0f;
-        const float fieldOfView = 30.0f;
 
-        GLfloat size = zNear * tanf( TO_RAD(fieldOfView) / 2.0f );
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glFrustumf(-size, size, -size / m_aspectRatio, size / m_aspectRatio, zNear, zFar);
-    }
-
-    void cEngine::SetModelViewMatrix3D(cCamera& camera)
-    {
-        mat4 matLookAt = mat4::LookAt(camera.eye, camera.target, vec3(0.0f, 1.0f, 0.0f));
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadMatrixf(matLookAt.Pointer());
-    }
-
-    void cEngine::SetModelViewMatrix2D()
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-    }
 
     #pragma mark - IAP
 
@@ -2626,42 +2671,6 @@ private:
         glDrawArrays(GL_TRIANGLE_FAN, 0, v_index/2+1);
     }
 
-    void cEngine::DrawAxes()
-    {
-        const GLfloat axis[] =
-            {
-                    -100.0f,    0.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // x
-                    0.0f, -100.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // y
-                    0.0f,    0.0f, -100.0f,        0.0f,    0.0f,    0.0f,    // z
-
-                    0.0f,    0.0f,    0.0f,		100.0f,    0.0f,    0.0f,    // x
-                    0.0f,    0.0f,    0.0f,		  0.0f,  100.0f,    0.0f,    // y
-                    0.0f,    0.0f,    0.0f,	      0.0f,    0.0f,  100.0f,    // z
-            };
-
-        const GLubyte colors[] =
-            {
-                    0, 0, 255, 255,				0, 0, 255, 255,	// x
-                    0, 255, 0, 255,				0, 255, 0, 255, // y
-                    255, 0, 0, 255,				255, 0, 0, 255, // z
-
-                    0, 0, 255, 255,				0, 0, 255, 255, // x
-                    0, 255, 0, 255,				0, 255, 0, 255, // y
-                    255, 0, 0, 255,				255, 0, 0, 255, // z
-            };
-
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        glVertexPointer(3, GL_FLOAT, 0, axis);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-        glLineWidth(3.0f);
-
-        glDrawArrays(GL_LINES, 6, 6);
-
-        glLineWidth(1.0f);
-        glDrawArrays(GL_LINES, 0, 6);
-    }
 
     #pragma mark - DrawCubeFace
 
@@ -2886,92 +2895,6 @@ private:
         return width;
     }
 
-    void cEngine::ShowScene(int scene_id)
-    {
-        cScene* scene = NULL;
-
-        switch (scene_id)
-        {
-            case Scene_Intro:
-
-                m_intro = new cIntro();
-                m_intro->Init();
-
-                scene = m_intro;
-                break;
-
-            case Scene_Menu:
-
-                ShowFullScreenAd();
-
-                if (m_intro)
-                {
-                    delete m_intro;
-                    m_intro = NULL;
-                }
-
-                if (m_outro)
-                {
-                    delete m_outro;
-                    m_outro = NULL;
-                    engine->menu_init_data.reappear = false;
-                }
-
-                if (NULL == m_menu)
-                    m_menu = new cMenu();
-
-                m_menu->Init();
-
-                scene = m_menu;
-                break;
-
-            case Scene_Anim:
-
-                if (NULL == m_animator)
-                    m_animator = new cAnimator();
-
-                m_animator->Init();
-
-                scene = m_animator;
-                break;
-
-            case Scene_Level:
-
-                m_level->Init(&level_init_data);
-
-                scene = m_level;
-                break;
-
-            case Scene_Stat:
-
-                if (NULL == m_statistics)
-                    m_statistics = new cStatistics();
-
-                m_statistics->Init();
-
-                scene = m_statistics;
-                break;
-
-            case Scene_Solvers:
-
-                m_solvers->Init();
-
-                scene = m_solvers;
-                break;
-
-            case Scene_Outro:
-
-                if (NULL == m_outro)
-                    m_outro = new cOutro();
-
-                m_outro->Init();
-
-                scene = m_outro;
-                break;
-        }
-
-        m_scene = scene;
-    }
 
     bool cEngine::GetCanSkipIntro()
     {
@@ -2983,83 +2906,8 @@ private:
         m_resourceManager->SetCanSkipIntro();
     }
 
-    bool cEngine::GetCanPlayLockedLevels()
-    {
-        return m_resourceManager->CanPlayLockedLevels();
-    }
 
-    Color cEngine::GetColorFromScreen(vec2& pos)
-    {
-        int ix = pos.x;
-        int iy = m_height - pos.y;
 
-        GLuint argb;
-        glReadPixels(ix, iy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &argb);
-
-        Color color;
-        color.r = (argb)       & 0xFF;
-        color.g = (argb >> 8)  & 0xFF;
-        color.b = (argb >> 16) & 0xFF;
-        color.a = (argb >> 24) & 0xFF;
-
-        //printf("\nx:%d, y:%d, red:%d, green:%d, blue:%d, alpha:%d", ix, iy, color.r, color.g, color.b, color.a);
-
-        return color;
-    }
-
-    void cEngine::GetSwipeDirAndLength(vec2& pos_down, vec2& pos_up, SwipeDirEnums& swipeDir, float& length)
-    {
-        swipeDir = SwipeNone;
-
-        float up_x = pos_up.x;
-        float up_y = pos_up.y;
-
-        float down_x = pos_down.x;
-        float down_y = pos_down.y;
-
-        up_y = -up_y;
-        down_y = -down_y;
-
-        vec2 dir;
-        dir.x = up_x - down_x;
-        dir.y = up_y - down_y;
-
-        length = dir.Length();
-
-        float diff_x = pos_up.x - pos_down.x;
-        float diff_y = pos_up.y - pos_down.y;
-
-//    printf("\ndiff x:%.2f, y:%.2f", diff_x, diff_y);
-
-        if ( abs(diff_x) > abs(diff_y) )
-        {
-            if (diff_x < 0.0f)
-            {
-//            printf("\nSwipe Down");
-                swipeDir = SwipeLeft; // SwipeDown;
-            }
-
-            if (diff_x > 0.0f)
-            {
-//            printf("\nSwipe Up");
-                swipeDir = SwipeRight; // SwipeUp;
-            }
-        }
-        else
-        {
-            if (diff_y < 0.0f)
-            {
-//            printf("\nSwipe Left");
-                swipeDir = SwipeUp;
-            }
-
-            if (diff_y > 0.0f)
-            {
-//            printf("\nSwipe Right");
-                swipeDir = SwipeDown;
-            }
-        }
-    }
 
     void cEngine::BuyPackOfSolvers(int number_of_solvers)
     {
@@ -3093,46 +2941,6 @@ private:
         glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
     }
 
-    void cEngine::DrawFBOTexture(GLuint texture_id, Color& color, bool magic)
-    {
-        const GLfloat verts[] =
-            {
-                    0.0f,               engine->m_height,
-                    0.0f,               0.0f,
-                    engine->m_width,    0.0f,
-                    engine->m_width,    engine->m_height
-            };
-
-        GLfloat coords[] =
-                {
-                        0, 1,
-                        0, 0,
-                        1, 0,
-                        1, 1
-                };
-
-        if (magic)
-        {
-            coords[1] = 1.0f - (m_banner_height / m_height);
-            coords[7] = coords[1];
-        }
-
-        const GLubyte colors[] =
-            {
-                    color.r, color.g, color.b, color.a,
-                    color.r, color.g, color.b, color.a,
-                    color.r, color.g, color.b, color.a,
-                    color.r, color.g, color.b, color.a
-            };
-
-        glBindTexture(GL_TEXTURE_2D, texture_id);
-
-        glVertexPointer(2, GL_FLOAT, 0, verts);
-        glTexCoordPointer(2, GL_FLOAT, 0, coords);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    }
 
     void cEngine::DrawFullScreenQuad(Color& color)
     {

@@ -32,6 +32,12 @@ public final class Vector {
 		this.y = another.y;
 		this.z = another.z;
 	}
+
+	public void init(Vector another) {
+		this.x = another.x;
+		this.y = another.y;
+		this.z = another.z;
+	}
 			
 	public float length() {
 		return (float)Math.sqrt(x*x + y*y + z*z);

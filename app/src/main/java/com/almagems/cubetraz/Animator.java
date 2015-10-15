@@ -7,7 +7,7 @@ import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.Constants.*;
 
 
-public final class Animator extends Scene {
+public final class Animator {
       
     private float m_t;
 	private float m_t_camera;
@@ -34,25 +34,25 @@ public final class Animator extends Scene {
 	private float m_hilite_alpha;
     
     private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
-    private final EaseOutDivideInterpolation[] m_interpolators = new EaseOutDivideInterpolation[6];
+    //private final EaseOutDivideInterpolation[] m_interpolators = new EaseOutDivideInterpolation[6];
 
-	private CubeRotation m_cube_rotation;
+	private final CubeRotation m_cube_rotation = new CubeRotation();
 	
-	private final ArrayList<CubeFont> m_lst_titles[6];
-	private final ArrayList<CubeFont> m_lst_texts[6];
-    private final ArrayList<CubeFont> m_lst_symbols[6];
+	private final ArrayList<ArrayList<CubeFont>> m_lst_titles = new ArrayList<>(6);
+	private final ArrayList<ArrayList<CubeFont>> m_lst_texts = new ArrayList<>(6);
+    private final ArrayList<ArrayList<CubeFont>> m_lst_symbols = new ArrayList<>(6);
 	
-	private final ArrayList<LevelCube> m_lst_level_cubes_x_plus = new ArrayList();
-	private final ArrayList<LevelCube> m_lst_level_cubes_y_plus = new ArrayList();
-	private final ArrayList<LevelCube> m_lst_level_cubes_z_plus = new ArrayList();
+	private final ArrayList<LevelCube> m_lst_level_cubes_x_plus = new ArrayList<>();
+	private final ArrayList<LevelCube> m_lst_level_cubes_y_plus = new ArrayList<>();
+	private final ArrayList<LevelCube> m_lst_level_cubes_z_plus = new ArrayList<>();
 	
 // cubes
-	private final ArrayList<Cube> m_list_cubes_base = new ArrayList();
-    private final ArrayList<Cube> m_list_cubes_face = new ArrayList();
+	private final ArrayList<Cube> m_list_cubes_base = new ArrayList<>();
+    private final ArrayList<Cube> m_list_cubes_face = new ArrayList<>();
 	
-	private AppearDisappearListData m_ad_base_disappear;
-	private AppearDisappearListData m_ad_base_appear;
-	private AppearDisappearListData m_ad_face;
+	private final AppearDisappearListData m_ad_base_disappear = new AppearDisappearListData();
+	private final AppearDisappearListData m_ad_base_appear = new AppearDisappearListData();
+	private final AppearDisappearListData m_ad_face = new AppearDisappearListData();
 			        	
 	private LevelCube getLevelCubeFrom(ArrayList<LevelCube> lst) {
 		if (lst.isEmpty()) {
@@ -63,7 +63,7 @@ public final class Animator extends Scene {
 	}
     
 	private Cube getCubeFrom(ArrayList<Cube> lst) {
-		if (lst.empty()) {
+		if (lst.isEmpty()) {
 			return null;
 		} else {
 			return lst.get( lst.size() - 1);
@@ -72,9 +72,9 @@ public final class Animator extends Scene {
 					
     // ctor   
     public Animator() {
-	    m_face_name_x_plus = Face_Empty;
-	    m_face_name_y_plus = Face_Empty;
-	    m_face_name_z_plus = Face_Empty;
+	    m_face_name_x_plus = CubeFaceNamesEnum.Face_Empty;
+	    m_face_name_y_plus = CubeFaceNamesEnum.Face_Empty;
+	    m_face_name_z_plus = CubeFaceNamesEnum.Face_Empty;
     }
 
     public void init() {

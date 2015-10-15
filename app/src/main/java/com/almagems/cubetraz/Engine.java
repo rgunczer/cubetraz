@@ -10,6 +10,61 @@ import javax.microedition.khronos.opengles.GL10;
 
 public final class Engine {
 
+
+    public static void getSwipeDirAndLength(Vector2 pos_down, Vector2 pos_up, SwipeDirEnums swipeDir, float length) {
+//        swipeDir = SwipeNone;
+//
+//        float up_x = pos_up.x;
+//        float up_y = pos_up.y;
+//
+//        float down_x = pos_down.x;
+//        float down_y = pos_down.y;
+//
+//        up_y = -up_y;
+//        down_y = -down_y;
+//
+//        vec2 dir;
+//        dir.x = up_x - down_x;
+//        dir.y = up_y - down_y;
+//
+//        length = dir.Length();
+//
+//        float diff_x = pos_up.x - pos_down.x;
+//        float diff_y = pos_up.y - pos_down.y;
+//
+////    printf("\ndiff x:%.2f, y:%.2f", diff_x, diff_y);
+//
+//        if ( abs(diff_x) > abs(diff_y) )
+//        {
+//            if (diff_x < 0.0f)
+//            {
+////            printf("\nSwipe Down");
+//                swipeDir = SwipeLeft; // SwipeDown;
+//            }
+//
+//            if (diff_x > 0.0f)
+//            {
+////            printf("\nSwipe Up");
+//                swipeDir = SwipeRight; // SwipeUp;
+//            }
+//        }
+//        else
+//        {
+//            if (diff_y < 0.0f)
+//            {
+////            printf("\nSwipe Left");
+//                swipeDir = SwipeUp;
+//            }
+//
+//            if (diff_y > 0.0f)
+//            {
+////            printf("\nSwipe Right");
+//                swipeDir = SwipeDown;
+//            }
+//        }
+    }
+
+
     // android
     public static CubeTrazRenderer renderer;
     public static MainActivity activity;

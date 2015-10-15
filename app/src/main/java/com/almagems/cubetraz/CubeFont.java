@@ -1,8 +1,12 @@
 package com.almagems.cubetraz;
 
+
+import static com.almagems.cubetraz.Constants.*;
+
+
 public final class CubeFont {
     
-    private TexturedQuad* m_pFont;
+    private TexturedQuad m_pFont;
     private CubePos m_cube_pos;
     private MenuCube m_pTriggerCube;
     private AxisEnum m_trigger_axis;
@@ -131,7 +135,7 @@ public final class CubeFont {
         m_pTriggerCube = null;
 
         m_cube_pos = cube_pos;
-        pos_origin = pos = engine->GetCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
+        pos_origin = pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
     }
 
     public void init(char ch, CubePos cube_pos) {
@@ -139,9 +143,9 @@ public final class CubeFont {
         init(cube_pos);
     }
 
-    void cCubeFont::Init(SymbolEnum type, CubePos cube_pos) {    
+    public void init(int type, CubePos cube_pos) {
         m_pFont = Game.getSymbol(type);    
-        Init(cube_pos);
+        init(cube_pos);
     }
 
 }

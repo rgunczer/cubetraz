@@ -1,16 +1,19 @@
 package com.almagems.cubetraz;
 
-public class LevelInitData {
+import static com.almagems.cubetraz.Constants.*;
 
-    DifficultyEnum difficulty;
+
+public final class LevelInitData {
+
     int level_number;
+    DifficultyEnum difficulty;
     LevelInitActionEnum init_action;
 
-    LevelInitData()
-    {
-        difficulty = Easy;
+    // ctor
+    public LevelInitData() {
+        difficulty = DifficultyEnum.Easy;
         level_number = 1;
-        init_action = FullInit;
+        init_action = LevelInitActionEnum.FullInit;
     }
 
 }

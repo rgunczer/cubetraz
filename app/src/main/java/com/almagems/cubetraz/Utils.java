@@ -2,20 +2,31 @@ package com.almagems.cubetraz;
 
 public final class Utils {
 
-    public static void lerpCamera(Camera a, Camera b, float t, Camera c) {
-        c.eye.x = LERP(a.eye.x, b.eye.x, t);
-        c.eye.y = LERP(a.eye.y, b.eye.y, t);
-        c.eye.z = LERP(a.eye.z, b.eye.z, t);
+    public static float getDistance2D(final Vector2 a, final Vector2 b) {
+        float dx = a.x - b.x;
+        float dy = a.y - b.y;
 
-        c.target.x = LERP(a.target.x, b.target.x, t);
-        c.target.y = LERP(a.target.y, b.target.y, t);
-        c.target.z = LERP(a.target.z, b.target.z, t);
+        return (float)Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public static float lerp(float a, float b, float t) {
+        return (a + t * (b - a) );
+    }
+
+    public static void lerpCamera(Camera a, Camera b, float t, Camera c) {
+        c.eye.x = lerp(a.eye.x, b.eye.x, t);
+        c.eye.y = lerp(a.eye.y, b.eye.y, t);
+        c.eye.z = lerp(a.eye.z, b.eye.z, t);
+
+        c.target.x = lerp(a.target.x, b.target.x, t);
+        c.target.y = lerp(a.target.y, b.target.y, t);
+        c.target.z = lerp(a.target.z, b.target.z, t);
     }
 
     public static void lerpVec3(Vector from, Vector to, float t, Vector result) {
-        result.x = LERP(from.x, to.x, t);
-        result.y = LERP(from.y, to.y, t);
-        result.z = LERP(from.z, to.z, t);
+        result.x = lerp(from.x, to.x, t);
+        result.y = lerp(from.y, to.y, t);
+        result.z = lerp(from.z, to.z, t);
     }
 
     public static void calcShadowMatrixFloor(Vector light_pos, float shadow_matrix[], float degree) {

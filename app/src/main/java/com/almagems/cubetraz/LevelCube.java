@@ -1,5 +1,7 @@
 package com.almagems.cubetraz;
 
+import static com.almagems.cubetraz.Constants.*;
+
 
 public final class LevelCube {
             

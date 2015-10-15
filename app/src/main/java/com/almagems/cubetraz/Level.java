@@ -93,7 +93,7 @@ public final class Level extends Scene {
     private AppearDisappearListData m_ad_base;
     private AppearDisappearListData m_ad_face;
 
-    private final Camera m_camera_level;
+    public final Camera m_camera_level;
     private final Camera m_camera_level_completed;
     private final Camera m_camera_level_paused;
     private final Camera m_camera_current;
@@ -144,7 +144,7 @@ public final class Level extends Scene {
     private CubeRotation m_cube_rotation_current;
     private CubeRotation m_cube_rotation;
 
-    private Vector m_pos_light;
+    public Vector m_pos_light;
 
     private MovingCube m_moving_cube;
     private MoverCube m_mover_cube;

@@ -3,6 +3,8 @@ package com.almagems.cubetraz;
 
 public final class Constants {
 
+    public static final int WARM_FACTOR = 5;
+
     public static final int KILOBYTE = 1024;
     public static final int BUF_SIZE = 64;
 
@@ -33,7 +35,7 @@ public final class Constants {
     public static final String SOUND_TAP_ON_LEVEL_CUBE = "open";
     public static final String SOUND_TAP_ON_LOCKED_LEVEL_CUBE = "locked";
 
-    public static final int DIRTY_ALPHA = 60;
+    public static final float DIRTY_ALPHA = 60f;
 
     public static final int MAX_FACE_TRANSFORM_COUNT = 8;
 
@@ -99,6 +101,30 @@ public final class Constants {
 
 
     public static final int FACE_SIZE = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
+
+    public enum LevelInitActionEnum {
+        FullInit,
+        JustContinue,
+        ShowSolution
+    }
+
+    public enum DifficultyEnum {
+        Easy,
+        Normal,
+        Hard
+    }
+
+    public enum AnimTypeEnum {
+        AnimToLevel,
+        AnimToMenuFromPaused,
+        AnimToMenuFromCompleted
+    }
+
+    public enum LevelCubeDecalTypeEnum {
+        LevelCubeDecalNumber,
+        LevelCubeDecalStars,
+        LevelCubeDecalSolver
+    }
 
     public enum SwipeDirEnums {
         SwipeNone,

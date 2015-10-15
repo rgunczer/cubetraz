@@ -16,6 +16,181 @@ import java.util.Map;
 
 public final class Graphics {
 
+    public static float device_scale = 1f;
+
+    public static Color getColorFromScreen(Vector2 pos) {
+//        int ix = pos.x;
+//        int iy = m_height - pos.y;
+//
+//        GLuint argb;
+//        glReadPixels(ix, iy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &argb);
+//
+//        Color color;
+//        color.r = (argb)       & 0xFF;
+//        color.g = (argb >> 8)  & 0xFF;
+//        color.b = (argb >> 16) & 0xFF;
+//        color.a = (argb >> 24) & 0xFF;
+//
+//        //printf("\nx:%d, y:%d, red:%d, green:%d, blue:%d, alpha:%d", ix, iy, color.r, color.g, color.b, color.a);
+//
+//        return color;
+        return null;
+    }
+
+
+    public static void drawAxes() {
+
+
+
+//        EdgeDrawer edgeDrawer = new EdgeDrawer(2);
+//
+//        float x = 1f;
+//        float y = aspectRatio; // 1f
+//
+//        edgeDrawer.begin();
+//        edgeDrawer.addLine(-x, 0f, 0f, x, 0f, 0f);
+//
+//        edgeDrawer.addLine(0f, -y, 0f, 0f, y, 0f);
+//
+//        setIdentityM(modelMatrix, 0);
+//        multiplyMM(mvpMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0);
+//
+//        singleColorShader.useProgram();
+//        singleColorShader.setUniforms(mvpMatrix, Color.YELLOW);
+//        edgeDrawer.bindData(singleColorShader);
+//        edgeDrawer.draw();
+
+
+
+        final float axis[] =
+            {
+                    -100.0f,    0.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // x
+                    0.0f, -100.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // y
+                    0.0f,    0.0f, -100.0f,        0.0f,    0.0f,    0.0f,    // z
+
+                    0.0f,    0.0f,    0.0f,		100.0f,    0.0f,    0.0f,    // x
+                    0.0f,    0.0f,    0.0f,		  0.0f,  100.0f,    0.0f,    // y
+                    0.0f,    0.0f,    0.0f,	      0.0f,    0.0f,  100.0f,    // z
+            };
+
+        final short colors[] =
+            {
+                    0, 0, 255, 255,				0, 0, 255, 255,	// x
+                    0, 255, 0, 255,				0, 255, 0, 255, // y
+                    255, 0, 0, 255,				255, 0, 0, 255, // z
+
+                    0, 0, 255, 255,				0, 0, 255, 255, // x
+                    0, 255, 0, 255,				0, 255, 0, 255, // y
+                    255, 0, 0, 255,				255, 0, 0, 255, // z
+            };
+
+//        glDisableClientState(GL_NORMAL_ARRAY);
+//        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+//
+//        glVertexPointer(3, GL_FLOAT, 0, axis);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+//        glLineWidth(3.0f);
+//
+//        glDrawArrays(GL_LINES, 6, 6);
+//
+//        glLineWidth(1.0f);
+//        glDrawArrays(GL_LINES, 0, 6);
+    }
+
+    // textures
+    public static int texture_id_gray_concrete;
+    public static int texture_id_key;
+    public static int texture_id_fonts;
+    public static int texture_id_fonts_clear;
+    public static int texture_id_level_cubes;
+    public static int texture_id_fonts_big;
+    public static int texture_id_level_cubes_locked;
+    public static int texture_id_numbers;
+    public static int texture_id_player;
+    public static int texture_id_star;
+    public static int texture_id_symbols;
+    public static int texture_id_stat_background;
+    public static int texture_id_credits;
+    public static int texture_id_dirty;
+    public static int texture_id_tutor;
+
+
+    public static void drawFBOTexture(int texture_id, Color color, boolean magic) {
+//        const GLfloat verts[] =
+//            {
+//                    0.0f,               engine->m_height,
+//                    0.0f,               0.0f,
+//                    engine->m_width,    0.0f,
+//                    engine->m_width,    engine->m_height
+//            };
+//
+//        GLfloat coords[] =
+//                {
+//                        0, 1,
+//                        0, 0,
+//                        1, 0,
+//                        1, 1
+//                };
+//
+//        if (magic)
+//        {
+//            coords[1] = 1.0f - (m_banner_height / m_height);
+//            coords[7] = coords[1];
+//        }
+//
+//        const GLubyte colors[] =
+//            {
+//                    color.r, color.g, color.b, color.a,
+//                    color.r, color.g, color.b, color.a,
+//                    color.r, color.g, color.b, color.a,
+//                    color.r, color.g, color.b, color.a
+//            };
+//
+//        glBindTexture(GL_TEXTURE_2D, texture_id);
+//
+//        glVertexPointer(2, GL_FLOAT, 0, verts);
+//        glTexCoordPointer(2, GL_FLOAT, 0, coords);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+//
+//        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+
+
+    public static void setModelViewMatrix2D() {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+    }
+
+    public static void setProjection2D() {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrthof(0.0f, m_width, 0.0f, m_height, -1.0f, 1.0f);
+    }
+
+
+    public static float m_aspectRatio = 1.0f;
+
+
+    public static void setModelViewMatrix3D(final Camera camera) {
+        //mat4 matLookAt = mat4::LookAt(camera.eye, camera.target, vec3(0.0f, 1.0f, 0.0f));
+
+        glMatrixMode(GL_MODELVIEW);
+        //glLoadMatrixf(matLookAt.Pointer());
+    }
+
+
+    public static void setProjection3D() {
+        final float zNear = 1.0f;
+        final float zFar = 1000.0f;
+        final float fieldOfView = 30.0f;
+        final float size = zNear * Math.tan(( Math.toRadians(fieldOfView) / 2.0f );
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustumf(-size, size, -size / m_aspectRatio, size / m_aspectRatio, zNear, zFar);
+    }
+
+
     public static int _vertices_count = 0;
     public static int _vindex = -1;
     public static int _cindex = -1;
@@ -96,7 +271,7 @@ public final class Graphics {
     int m_half_width;
     int m_half_height;
 
-    float device_scale;
+
 
     public static float screenWidth;
     public static float screenHeight;
@@ -445,25 +620,6 @@ public final class Graphics {
         return temp[0];
     }
 
-    public void drawAxes() {
-//        EdgeDrawer edgeDrawer = new EdgeDrawer(2);
-//
-//        float x = 1f;
-//        float y = aspectRatio; // 1f
-//
-//        edgeDrawer.begin();
-//        edgeDrawer.addLine(-x, 0f, 0f, x, 0f, 0f);
-//
-//        edgeDrawer.addLine(0f, -y, 0f, 0f, y, 0f);
-//
-//        setIdentityM(modelMatrix, 0);
-//        multiplyMM(mvpMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0);
-//
-//        singleColorShader.useProgram();
-//        singleColorShader.setUniforms(mvpMatrix, Color.YELLOW);
-//        edgeDrawer.bindData(singleColorShader);
-//        edgeDrawer.draw();
-    }
 
     public static void prepareFrame() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

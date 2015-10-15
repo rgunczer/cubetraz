@@ -3,9 +3,9 @@ package com.almagems.cubetraz;
 
 public abstract class Scene {
 
-    protected Vector mPosDown;
-    protected Vector mPosMove;
-    protected Vector mPosUp;
+    protected Vector2 mPosDown;
+    protected Vector2 mPosMove;
+    protected Vector2 mPosUp;
 
     protected boolean mIsFingerDown;
     protected boolean mIsSwipe;

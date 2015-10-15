@@ -52,7 +52,7 @@ public final class MenuCube {
         m_cube_hilite_offset = offset;
     }
     
-    public void update(float dt) {
+    public void update() {
         if (!m_done) {
 		    m_t += m_step_t;        
 		    if (m_t >= 1.0f) {
@@ -66,7 +66,7 @@ public final class MenuCube {
         }
 	}
 
-    public void calcMove(CubePos& cube_pos, AxisMovementEnum type) {
+    public void calcMove(CubePos cube_pos, AxisMovementEnum type) {
         CubePos prev = cube_pos;
 	
         switch(type) {
@@ -147,7 +147,7 @@ public final class MenuCube {
         }
     }
 
-    public void moveOnAxis(AxisMovementEnum type) {
+    public void moveOnAxis(int type) {
 	    if (m_done) {
 		    CubePos cube_pos = m_cube_pos;
 		    calcMove(cube_pos, type);
@@ -266,7 +266,7 @@ public final class MenuCube {
 		}
 	}
     
-    public boolean IsDone() { 
+    public boolean isDone() {
         return m_done; 
     }
     
