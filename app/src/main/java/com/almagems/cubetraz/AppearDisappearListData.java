@@ -1,131 +1,109 @@
 package com.almagems.cubetraz;
 
-public class AppearDisappearListData {
+import java.util.ArrayList;
 
-        int level;
-        int direction;
+import static com.almagems.cubetraz.Constants.*;
 
-        list<cCube*> lst_appear;
-        list<cCube*> lst_disappear;
 
-        inline void Clear()
-        {
-            lst_appear.clear();
-            lst_disappear.clear();
+public final class AppearDisappearListData {
+
+    public int level;
+    public int direction;
+
+    public final ArrayList<Cube> lst_appear = new ArrayList<>();
+    public final ArrayList<Cube> lst_disappear = new ArrayList<>();
+
+    public void clear() {
+        lst_appear.clear();
+        lst_disappear.clear();
+    }
+
+    public void setLevelAndDirection(int level, int direction) {
+        this.level = level;
+        this.direction = direction;
+    }
+
+    public void initAppearListFrom(ArrayList<Cube> lst) {
+        lst_appear.clear();
+        int size = lst.size();
+        Cube cube;
+        for (int i = 0; i < size; ++i) {
+            cube = lst.get(i);
+            addAppear(cube);
         }
+    }
 
-        inline void SetLevelAndDirection(int level, int direction)
-        {
-            this->level = level;
-            this->direction = direction;
+    public void initDisappearListFrom(ArrayList<Cube> lst) {
+        lst_disappear.clear();
+        int size = lst.size();
+        Cube cube;
+        for (int i = 0; i < size; ++i) {
+            cube = lst.get(i);
+            addDisappear(cube);
         }
+    }
 
-        inline void InitAppearListFrom(list<cCube*>& lst)
-        {
-            lst_appear.clear();
-
-            list<cCube*>::iterator it;
-            for (it = lst.begin(); it != lst.end(); ++it)
-            {
-                AddAppear(*it);
+    public void addAppear(Cube theCube) {
+        int size = lst_appear.size();
+        Cube cube;
+        for (int i = 0; i < size; ++i) {
+            cube = lst_appear.get(i);
+            if (cube == theCube) {
+                return;
             }
         }
+        lst_appear.add(theCube);
+    }
 
-        inline void InitDisappearListFrom(list<cCube*>& lst)
-        {
-            lst_disappear.clear();
-
-            list<cCube*>::iterator it;
-            for (it = lst.begin(); it != lst.end(); ++it)
-            {
-                AddDisappear(*it);
+    public void addDisappear(Cube theCube) {
+        int size = lst_disappear.size();
+        Cube cube;
+        for (int i = 0; i < size; ++i) {
+            cube = lst_disappear.get(i);
+            if (cube == theCube) {
+                return;
             }
         }
+        lst_disappear.add(theCube);
+    }
 
-        inline void AddAppear(cCube* pCube)
-        {
-            assert(NULL != pCube);
+    public Cube getCubeFromAppearList() {
+        int size;
+        Cube cube;
 
-            list<cCube*>::iterator it;
-            for (it = lst_appear.begin(); it != lst_appear.end(); ++it)
-            {
-                if (pCube == *it)
-                {
-                    //printf("\nDuplicate(AddAppear)...");
-                    return;
+        while (level > -1 && level < MAX_CUBE_COUNT) {
+            size = lst_appear.size();
+            for(int i = 0; i < size; ++i) {
+                cube = lst_appear.get(i);
+                if (cube.y == level) {
+                    lst_disappear.add(cube);
+                    lst_appear.remove(cube);
+                    return cube;
                 }
             }
-
-            lst_appear.push_back(pCube);
+            level += direction;
         }
+        return null;
+    }
 
-        inline void AddDisappear(cCube* pCube)
-        {
-            assert(NULL != pCube);
+    public Cube getCubeFromDisappearList() {
+        int size;
+        Cube cube;
 
-            list<cCube*>::iterator it;
-            for (it = lst_disappear.begin(); it != lst_disappear.end(); ++it)
-            {
-                if (pCube == *it)
-                {
-                    //printf("\nDuplicate(AddDisappear)...");
-                    return;
+        while (level > -1 && level < MAX_CUBE_COUNT) {
+            size = lst_disappear.size();
+            for(int i = 0; i < size; ++i) {
+                cube = lst_disappear.get(i);
+
+                if (cube.y == level) {
+                    lst_appear.add(cube);
+                    lst_disappear.remove(cube);
+                    return cube;
                 }
             }
-
-            lst_disappear.push_back(pCube);
+            level += direction;
         }
-
-        inline cCube* GetCubeFromAppearList()
-        {
-            cCube* pCube;
-            list<cCube*>::iterator it;
-
-            while (level > -1 && level < MAX_CUBE_COUNT)
-            {
-                for(it = lst_appear.begin(); it != lst_appear.end(); ++it)
-                {
-                    pCube = *it;
-
-                    if (pCube->y == level)
-                    {
-                        lst_disappear.push_back(pCube);
-                        lst_appear.remove(pCube);
-                        return pCube;
-                    }
-                }
-
-                level += direction;
-            }
-
-            return NULL;
-        }
-
-        inline cCube* GetCubeFromDisappearList()
-        {
-            cCube* pCube;
-            list<cCube*>::iterator it;
-
-            while (level > -1 && level < MAX_CUBE_COUNT)
-            {
-                for(it = lst_disappear.begin(); it != lst_disappear.end(); ++it)
-                {
-                    pCube = *it;
-
-                    if (pCube->y == level)
-                    {
-                        lst_appear.push_back(pCube);
-                        lst_disappear.remove(pCube);
-                        return pCube;
-                    }
-                }
-
-                level += direction;
-            }
-
-            return NULL;
-        }
-
-
+        return null;
+    }
 
 }

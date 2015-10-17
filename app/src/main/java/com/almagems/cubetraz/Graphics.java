@@ -16,6 +16,12 @@ import java.util.Map;
 
 public final class Graphics {
 
+
+    public static int width;
+    public static int height;
+    public static int half_width;
+    public static int half_height;
+
     public static float device_scale = 1f;
 
     public static Color getColorFromScreen(Vector2 pos) {
@@ -266,10 +272,6 @@ public final class Graphics {
 
 
 
-    int m_width;
-    int m_height;
-    int m_half_width;
-    int m_half_height;
 
 
 
@@ -328,6 +330,10 @@ public final class Graphics {
 
         // texture
         //textureLoading = loadTexture(R.drawable.almagems_android_loading);
+    }
+
+    public static int loadTexture(String fileName) {
+        // todo
     }
 
     private int loadTexture(int resourceId) {

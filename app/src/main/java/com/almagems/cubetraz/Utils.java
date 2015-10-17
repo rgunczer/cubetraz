@@ -2,6 +2,8 @@ package com.almagems.cubetraz;
 
 public final class Utils {
 
+    public static final RandomXS128 rand = new RandomXS128();
+
     public static float getDistance2D(final Vector2 a, final Vector2 b) {
         float dx = a.x - b.x;
         float dy = a.y - b.y;
@@ -45,7 +47,7 @@ public final class Utils {
 //    Rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree, p2[0], p2[1], p2[2]);
 //
 //    engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
-        Graphics.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
+        //Graphics.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
     }
 
     public static void calcShadowMatrixWallZ(Vector light_pos, float shadow_matrix[], float degree) {
@@ -63,16 +65,16 @@ public final class Utils {
 //    Rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree, p1[0], p1[1], p1[2]);
 //    Rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree, p2[0], p2[1], p2[2]);
 
-        Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
+        //Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
 //    engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
     }
 
     public static void calcShadowMatrixWallX(Vector light_pos, float shadow_matrix[], float degree) {
-        float[] vLightPos = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
+        float[] vLightPos = new float[] { light_pos.x, light_pos.y, light_pos.z, 1.0f };
 
-        float[] vPointOnPlane0 = { -3.3f + 0.55f,          0.0f,  0.0f };
-        float[] vPointOnPlane1 = { -3.3f + 0.55f, -4.4f + 0.55f,  0.0f };
-        float[] vPointOnPlane2 = { -3.3f + 0.55f,          0.0f, -1.0f };
+        float[] vPointOnPlane0 = new float[] { -3.3f + 0.55f,          0.0f,  0.0f };
+        float[] vPointOnPlane1 = new float[] { -3.3f + 0.55f, -4.4f + 0.55f,  0.0f };
+        float[] vPointOnPlane2 = new float[] { -3.3f + 0.55f,          0.0f, -1.0f };
 
 //    float p0[3];
 //    float p1[3];
@@ -84,7 +86,7 @@ public final class Utils {
 //
 //	engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
 
-        Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
+        //Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
     }
 
     // ctor

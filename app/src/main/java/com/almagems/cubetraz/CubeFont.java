@@ -14,7 +14,7 @@ public final class CubeFont {
     private int m_align_axis_value;
     private int m_align_value;
         
-    private Vector pos_origin;
+    private Vector pos_origin = new Vector();
             
     public Vector pos;
     public Color color_current;
@@ -131,7 +131,7 @@ public final class CubeFont {
     
 
     public void init(CubePos cube_pos) {    
-        m_trigger_axis = X_Axis;
+        m_trigger_axis = AxisEnum.X_Axis;
         m_pTriggerCube = null;
 
         m_cube_pos = cube_pos;

@@ -5,7 +5,7 @@ public final class MoverCube {
     
     private CubePos m_cube_pos_starting;
     private CubePos m_cube_pos;
-    private AxisMovementEnum m_move_dir;
+    private int m_move_dir;
     private TexturedQuad[] m_ar_cube_symbols = new TexturedQuad[6];
 
     private Color m_color = new Color();
@@ -131,7 +131,7 @@ public final class MoverCube {
         return m_cube_pos; 
     }
     
-    public AxisMovementEnum getMoveDir() { 
+    public int getMoveDir() {
         return m_move_dir; 
     }
     

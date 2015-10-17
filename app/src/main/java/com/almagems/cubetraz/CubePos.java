@@ -24,7 +24,7 @@ public final class CubePos {
         x = y = z = 0;
     }
     
-    public void init(final CubePos other) {
+    public void init(CubePos other) {
         x = other.x;
         y = other.y;
         z = other.z;

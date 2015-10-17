@@ -3,15 +3,10 @@ package com.almagems.cubetraz;
 
 import java.util.ArrayList;
 
+import static com.almagems.cubetraz.Constants.*;
+
+
 public final class Text {
-
-    private static final int MAX_TEXT_LINES = 4;
-
-    public enum TextAlignEnum {
-        LeftAlign,
-        CenterAlign,
-        RightAlign
-    }
 
     private String m_text;
     private ArrayList<TexturedQuad> m_ar_lines[MAX_TEXT_LINES];

@@ -20,13 +20,13 @@ public final class LevelCube {
     
     public CubePos cube_pos;
 	public CubeFaceNamesEnum face_id;
-    public CubeFaceTypesEnum face_type;
+    public int face_type;
 
     // ctor
     public LevelCube() {
     }
 
-    public void init(int level_number, CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id, CubePos cube_pos) {
+    public void init(int level_number, int face_type, CubeFaceNamesEnum face_id, CubePos cube_pos) {
         this.face_type = face_type;
         this.face_id = face_id;
         this.color = new Color(255 - level_number, 0, 0, 255);
@@ -52,12 +52,11 @@ public final class LevelCube {
             case 1: pStars = Game.getSymbol(Symbol1Star); break;            
             case 2: pStars = Game.getSymbol(Symbol2Star); break;            
             case 3: pStars = Game.getSymbol(Symbol3Star); break;
-            default:
-                pStars = null;
+            default: pStars = null; break;
         }
     }
 
-    public void setSolver(bool solved) {
+    public void setSolver(boolean solved) {
         if (solved) {
             pSolver = Game.getSymbol(SymbolSolved);
         }

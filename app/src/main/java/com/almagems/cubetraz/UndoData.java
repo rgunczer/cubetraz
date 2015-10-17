@@ -8,7 +8,7 @@ public class UndoData {
     CubePos player_pos;
     MovingCube moving_cube;
     CubePos moving_cube_pos;
-    AxisMovementEnum moving_cube_move_dir;
+    int moving_cube_move_dir;
     MoverCube mover_cube;
 
     // ctor

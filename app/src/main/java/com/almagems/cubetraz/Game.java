@@ -1,17 +1,140 @@
 package com.almagems.cubetraz;
 
-// opengl
-import static android.opengl.GLES10.*;
 
-// java
 import java.util.ArrayList;
-
-
-// mine
+import java.util.HashMap;
+import java.util.Map;
+import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.Constants.*;
 
 
 public final class Game {
+
+
+    public static void resetCubesColors() {
+        for(int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for(int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                for(int z = 0; z < MAX_CUBE_COUNT; ++z) {
+                    cubes[x][y][z].resetColor();
+                }
+            }
+        }
+    }
+
+    public static String getLevelTypeAndNumberString(DifficultyEnum difficulty, int level_number) {
+        String str = "";
+        switch (difficulty) {
+            case Easy: str = "EASY-" + level_number + " " + (Cubetraz.getSolvedEasy(level_number) ? "\nSOLVED" : ""); break;
+            case Normal: str = "NORMAL-" + level_number + " " + (Cubetraz.getSolvedNormal(level_number) ? "\nSOLVED" : ""); break;
+            case Hard: str = "HARD-" + level_number + " " + (Cubetraz.getSolvedHard(level_number) ? "\nSOLVED" : ""); break;
+        }
+        return str;
+    }
+
+    public static void levelComplete() {
+        if (level != null) {
+            level.eventLevelComplete();
+        }
+    }
+
+    public static int getSolverCount() {
+        return 12;
+    }
+
+    public static boolean isObstacle(CubePos cube_pos) {
+        Cube cube = cubes[cube_pos.x][cube_pos.y][cube_pos.z];
+
+        if (cube.type == CubeTypeEnum.CubeIsVisibleAndObstacle || cube.type == CubeTypeEnum.CubeIsInvisibleAndObstacle || cube.type == CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static void playMusic(String string) {
+
+    }
+
+    public static StatInitData stat_init_data = new StatInitData();
+
+    public static TexturedQuad getNumberFont(int number) {
+        return m_numbers.get(number);
+    }
+
+    public static TexturedQuad getSymbol(int key) {
+        return m_symbols.get(key);
+    }
+
+    public static Map<String, TexturedQuad> m_fonts = new HashMap<String, TexturedQuad>();
+    public static Map<String, TexturedQuad> m_fonts_big = new HashMap<String, TexturedQuad>();
+    public static Map<Integer, TexturedQuad> m_numbers = new HashMap<Integer, TexturedQuad>();
+    public static Map<Integer, TexturedQuad> m_symbols = new HashMap<Integer, TexturedQuad>();
+
+    public static TexturedQuad getFont(char ch) {
+        //printf("\nNumber of Fonts:%lu", m_fonts.size());
+        return m_fonts.get("" + ch);
+    }
+
+
+    public static Menu menu;
+
+    public static boolean isOnAList(Cube theCube, ArrayList<Cube> lst) {
+        int size = lst.size();
+        Cube cube;
+        for (int i = 0; i < size; ++i) {
+            cube = lst.get(i);
+            if ( cube == theCube ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static ArrayList<Cube> createBaseCubesList() {
+        ArrayList<Cube> lst = new ArrayList<>();
+        Cube cube;
+
+        for(int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for(int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                for(int z = 0; z < MAX_CUBE_COUNT; ++z) {
+                    cube = cubes[x][y][z];
+
+                    if ( x > 1 && x < MAX_CUBE_COUNT - 2 && y > 1 && y < MAX_CUBE_COUNT - 2 && z > 1 && z < MAX_CUBE_COUNT - 2 ) {
+
+                    } else {
+                        if (x == 0 || x == MAX_CUBE_COUNT - 1 || y == 0 || y == MAX_CUBE_COUNT - 1 || z == 0 || z == MAX_CUBE_COUNT - 1) {
+
+                        } else {
+                            lst.add(cube);
+                        }
+                    }
+                }
+            }
+        }
+        return lst;
+    }
+
+    public static void resetCubesFonts() {
+        Cube cube;
+        for(int x = 0; x < MAX_CUBE_COUNT; ++x) {
+            for(int y = 0; y < MAX_CUBE_COUNT; ++y) {
+                for(int z = 0; z < MAX_CUBE_COUNT; ++z) {
+                    cube = cubes[x][y][z];
+
+                    cube.resetFonts();
+                    cube.resetSymbols();
+                }
+            }
+        }
+    }
+
+    public static  void clearCubeFaceData() {
+        for (int i = 0; i < 6; ++i) {
+            ar_cubefacedata[i].clear();
+        }
+        resetCubesFonts();
+    }
+
 
     public static void musicVolumeUp() {
 
@@ -296,7 +419,7 @@ public final class Game {
 //        menu.init();
 	}
 
-    public void renderToFBO() {
+    public static void renderToFBO(Scene scene) {
         //graphics.fboBackground.bind();
         //glViewport(0, 0, graphics.fboBackground.getWidth(), graphics.fboBackground.getHeight());
 
@@ -308,11 +431,11 @@ public final class Game {
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_BLEND);
 
-            graphics.setProjectionMatrix2D();
-            graphics.updateViewProjMatrix();
+            //graphics.setProjectionMatrix2D();
+            //graphics.updateViewProjMatrix();
 
             // custom drawing
-            graphics.bindNoTexture();
+            //graphics.bindNoTexture();
             glDisable(GL_TEXTURE_2D);
 
             //Color color = new Color(0f, 0f, 0f);
@@ -335,8 +458,8 @@ public final class Game {
         }
 
         if (true) {
-            graphics.setProjectionMatrix3D();
-            graphics.updateViewProjMatrix();
+            //graphics.setProjectionMatrix3D();
+            //graphics.updateViewProjMatrix();
 
             glDisable(GL_BLEND);
             glEnable(GL_DEPTH_TEST);
@@ -757,40 +880,10 @@ public final class Game {
         vec3 axis;
     };
 
-    #include "Utils.h"
-            #include "Creator.h"
-            #include "GLRenderer.h"
-
-            #include "Camera.h"
-
-            #include "Starfield.h"
-            #include "Cube.h"
-            #include "LevelCube.h"
-            #include "MovingCube.h"
-            #include "MoverCube.h"
-            #include "MenuCube.h"
-            #include "DeadCube.h"
-            #include "CubeFont.h"
-            #include "PlayerCube.h"
-
 
 
 
 // Scenes
-#include "Scene.h"
-        #include "Menu.h"
-        #include "Level.h"
-        #include "Animator.h"
-        #include "Statistics.h"
-        #include "Solvers.h"
-
-        #include "Intro.h"
-        #include "Outro.h"
-
-        #include "Cubetraz.h"
-
-        #include "MenuFaceBuilder.h"
-        #include "MenuNavigator.h"
 
 
 enum MoveDir
@@ -853,7 +946,7 @@ static GLubyte colors[];
 
         DeviceTypeEnum device_type;
 
-        StatInitData stat_init_data;
+
 
 
 
@@ -862,7 +955,7 @@ static GLubyte colors[];
 
 // scenes
         cIntro* m_intro;
-        cMenu* m_menu;
+
         cAnimator* m_animator;
 
         cStatistics* m_statistics;
@@ -881,7 +974,7 @@ static GLubyte colors[];
         void EnteredBackground();
         void EnteredForeground();
 
-        void LevelComplete();
+
         void PlayGame(DifficultyEnum difficulty, int level_number);
 
         GLuint LoadTexture(const char* name);
@@ -913,10 +1006,6 @@ static GLubyte colors[];
 
         void ShowFullScreenAd();
         bool GetAdsFlag();
-
-        #ifdef LITE_VERSION
-        void BuyFullVersion();
-        #endif
 
 // volumes
         void MusicVolumeUp();
@@ -996,27 +1085,22 @@ static GLubyte colors[];
         {
         glDrawArrays(GL_TRIANGLES, 30, 6);
         }
-
         inline void DrawCubeFaceY_Minus()
         {
         glDrawArrays(GL_TRIANGLES, 18, 6);
         }
-
         inline void DrawCubeFaceX_Plus()
         {
         glDrawArrays(GL_TRIANGLES, 12, 6);
         }
-
         inline void DrawCubeFaceX_Minus()
         {
         glDrawArrays(GL_TRIANGLES, 24, 6);
         }
-
         inline void DrawCubeFaceZ_Plus()
         {
         glDrawArrays(GL_TRIANGLES, 6, 6);
         }
-
         inline void DrawCubeFaceZ_Minus()
         {
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -1030,16 +1114,10 @@ static GLubyte colors[];
         bool z_plus,
         bool z_minus);
 
-
         void DrawQuad();
 
         void DrawCircleAt(float x, float y, float radius, Color& color);
 
-        inline TexturedQuad* GetFont(char ch)
-        {
-        //printf("\nNumber of Fonts:%lu", m_fonts.size());
-        return m_fonts[ch];
-        }
 
         inline TexturedQuad* GetFontBig(char ch)
         {
@@ -1047,23 +1125,14 @@ static GLubyte colors[];
         return m_fonts_big[ch];
         }
 
-        inline TexturedQuad* GetSymbol(SymbolEnum type)
-        {
-        return m_symbols[type];
-        }
 
-        inline TexturedQuad* GetNumberFont(int number)
-        {
-        return m_numbers[number];
-        }
+
+
 
         inline TexturedQuad* GetNewLineFont()
         {
         return m_newlinefont;
         }
-
-
-
 
         float GetTextWidth(const char* text, float scale);
 
@@ -1080,9 +1149,6 @@ static GLubyte colors[];
         }
 
 // SetProjection
-
-
-
 
 
 // IAP
@@ -1109,7 +1175,7 @@ static GLubyte colors[];
         void SetTextureID(GLuint id);
 
         void SetupHollowCube();
-        void CreateBaseCubesList(list<cCube*>& lst);
+
 
 
 
@@ -1243,90 +1309,13 @@ default:
 
 
 
-        inline void ResetCubesColors()
-        {
-        for(int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-        for(int y = 0; y < MAX_CUBE_COUNT; ++y)
-        {
-        for(int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-        cubes[x][y][z].ResetColor();
-        }
-        }
-        }
-        }
 
 
-        inline void ResetCubesFonts()
-        {
-        cCube* pCube;
 
-        for(int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-        for(int y = 0; y < MAX_CUBE_COUNT; ++y)
-        {
-        for(int z = 0; z < MAX_CUBE_COUNT; ++z)
-        {
-        pCube = &cubes[x][y][z];
-
-        pCube->ResetFonts();
-        pCube->ResetSymbols();
-        }
-        }
-        }
-        }
-
-        inline void ClearCubeFaceData()
-        {
-        for (int i = 0; i < 6; ++i)
-        ar_cubefacedata[i].Clear();
-
-        ResetCubesFonts();
-        }
-
-        bool IsOnAList(cCube* pCube, list<cCube*>& lst)
-        {
-        list<cCube*>::iterator it;
-        for (it = lst.begin(); it != lst.end(); ++it)
-        {
-        if ( (*it) == pCube )
-        return true;
-        }
-
-        return false;
-        }
-
-        inline void GetLevelTypeAndNumberString(DifficultyEnum difficulty, int level_number, char* str) const
-        {
-        switch (difficulty)
-        {
-        case Easy:
-        sprintf(str, "EASY-%02d%s", level_number, cCubetraz::GetSolvedEasy(level_number) ? "\nSOLVED" : "");
-        break;
-
-        case Normal:
-        sprintf(str, "NORMAL-%02d%s", level_number, cCubetraz::GetSolvedNormal(level_number) ? "\nSOLVED" : "");
-        break;
-
-        case Hard:
-        sprintf(str, "HARD-%02d%s", level_number, cCubetraz::GetSolvedHard(level_number) ? "\nSOLVED" : "");
-        break;
-        }
-        }
 
         void WarmCache();
         void ResetHelp();
 
-        inline bool IsObstacle(CubePos& cube_pos)
-        {
-        cCube* pCube = &cubes[cube_pos.x][cube_pos.y][cube_pos.z];
-
-        if (pCube->type == CubeIsVisibleAndObstacle || pCube->type == CubeIsInvisibleAndObstacle || pCube->type == CubeIsVisibleAndObstacleAndLevel)
-        return true;
-        else
-        return false;
-        }
 
         inline void SetCubeTypeInvisible(CubePos cube_pos)
         {
@@ -1370,7 +1359,7 @@ default:
 
         void UpdateDisplayedSolvers();
 
-        int GetSolverCount();
+
         void SetSolverCount(int count);
 
         void DecSolverCount();
@@ -1416,10 +1405,6 @@ default:
 private:
 
 
-        std::map<char, TexturedQuad*> m_fonts;
-        std::map<char, TexturedQuad*> m_fonts_big;
-        std::map<int, TexturedQuad*> m_numbers;
-        std::map<int, TexturedQuad*> m_symbols;
 
         void InitTextures();
         void InitFontsBig();
@@ -1835,13 +1820,6 @@ private:
         destMat[11] = 0.0f - vLightPos[3] * vPlaneEquation[2];
         destMat[15] =  dot - vLightPos[3] * vPlaneEquation[3];
     }
-
-    #ifdef LITE_VERSION
-    void cEngine::AskToBuyFullVersion()
-    {
-        m_resourceManager->AskToBuyFullVersion();
-    }
-    #endif
 
     void cEngine::ShowFullScreenAd()
     {
@@ -2458,10 +2436,6 @@ private:
         m_texture_id = id;
     }
 
-    int cEngine::GetSolverCount()
-    {
-        return m_resourceManager->GetSolvers();
-    }
 
     void cEngine::SetSolverCount(int count)
     {
@@ -2803,12 +2777,6 @@ private:
         //printf("\nReset Help Here...\n");
     }
 
-    void cEngine::LevelComplete()
-    {
-        if (m_level)
-            m_level->EventLevelComplete();
-    }
-
     void cEngine::SetupHollowCube()
     {
         int number_of_visible_cubes = 0;
@@ -2847,37 +2815,6 @@ private:
         //printf("\nNumber of Invisible Cubes: %d", number_of_invisible_cubes);
     }
 
-    void cEngine::CreateBaseCubesList(list<cCube*>& lst)
-    {
-        cCube* pCube;
-
-        for(int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-            for(int y = 0; y < MAX_CUBE_COUNT; ++y)
-            {
-                for(int z = 0; z < MAX_CUBE_COUNT; ++z)
-                {
-                    pCube = &cubes[x][y][z];
-
-                    if ( x > 1 && x < MAX_CUBE_COUNT - 2 && y > 1 && y < MAX_CUBE_COUNT - 2 && z > 1 && z < MAX_CUBE_COUNT - 2 )
-                    {
-
-                    }
-                    else
-                    {
-                        if (x == 0 || x == MAX_CUBE_COUNT - 1 || y == 0 || y == MAX_CUBE_COUNT - 1 || z == 0 || z == MAX_CUBE_COUNT - 1)
-                        {
-
-                        }
-                        else
-                        {
-                            lst.push_back(pCube);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     float cEngine::GetTextWidth(const char* text, float scale)
     {

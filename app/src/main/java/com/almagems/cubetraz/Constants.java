@@ -3,6 +3,14 @@ package com.almagems.cubetraz;
 
 public final class Constants {
 
+    public static final int MAX_TUTOR_COUNT = 11;
+
+    public static final float EPSILON_SMALL = 0.001f;
+
+    public static final int MAX_SOLUTION_MOVES = 16;
+    public static final int MAX_HINT_CUBES = 48;
+    public static final float UNDO_TIMEOUT = 0.2f;
+
     public static final int WARM_FACTOR = 5;
 
     public static final int KILOBYTE = 1024;
@@ -100,7 +108,39 @@ public final class Constants {
     public static final int SymbolEmpty = 25;
 
 
+    public static final int Tutor_Dead = 0;
+    public static final int Tutor_Swipe = 1;
+    public static final int Tutor_Goal = 2;
+    public static final int Tutor_Moving = 3;
+    public static final int Tutor_Mover = 4;
+    public static final int Tutor_Drag = 5;
+    public static final int Tutor_Plain = 6;
+    public static final int Tutor_MenuPause = 7;
+    public static final int Tutor_MenuUndo = 8;
+    public static final int Tutor_MenuHint = 9;
+    public static final int Tutor_MenuSolvers = 10;
+
     public static final int FACE_SIZE = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
+
+    public static final int MAX_TEXT_LINES = 4;
+
+    public enum TextAlignEnum {
+        LeftAlign,
+        CenterAlign,
+        RightAlign
+    }
+
+    public enum TutorStateEnum {
+        TutorAppear,
+        TutorDisappear,
+        TutorDone
+    }
+
+    public enum HUDStateEnum {
+        AppearHUD,
+        DisappearHUD,
+        DoneHUD,
+    }
 
     public enum LevelInitActionEnum {
         FullInit,
@@ -191,24 +231,19 @@ public final class Constants {
         Z_Axis
     }
 
+    public enum CompletedFaceNextActionEnum {
+        //Unlock,
+        Finish,
+        Next,
+        Buy_Full_Version,
+    }
+
     public enum FaceTransformsEnum {
         NoTransform,
         MirrorHoriz,
         MirrorVert,
         RotateCW90,
         RotateCCW90
-    }
-
-    public enum DifficultyEnum {
-        Easy,
-        Normal,
-        Hard
-    }
-
-    public enum LevelInitActionEnum {
-        FullInit,
-        JustContinue,
-        ShowSolution
     }
 
     public enum CubeFaceNavigationEnum {

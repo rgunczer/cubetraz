@@ -63,15 +63,15 @@ public final class DeadCube {
     public void update(float dt) {    
     }
 
-    public renderCube() {
+    public void renderCube() {
         Graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
-    public renderSymbols() {
-        TexCoordsQuad coords;
-        TexturedQuad* pTQ = m_ar_cube_textures[Face_X_Plus];
+    public void renderSymbols() {
+        TexCoordsQuad coords = new TexCoordsQuad();
+        TexturedQuad pTQ = m_ar_cube_textures[Face_X_Plus];
     
-        if (pTQ) {
+        if (pTQ != null) {
             coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y);
             coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y);
             coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y);
@@ -80,7 +80,7 @@ public final class DeadCube {
         }
     
         pTQ = m_ar_cube_textures[Face_Z_Plus];
-        if (pTQ) {
+        if (pTQ != null) {
             coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y);
             coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y);
             coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y);

@@ -13,9 +13,9 @@ public final class Cubetraz {
     public static int getStarsNormal(final int level_number)   { return ar_levels_normal[level_number-1].stars;    }
     public static int getStarsHard(final int level_number)     { return ar_levels_hard[level_number-1].stars;      }
 
-    public static boolean getSolvedEasy(final int level_number)   { return ar_levels_easy[level_number-1].solved;     }
-    public static boolean getSolvedNormal(final int level_number) { return ar_levels_normal[level_number-1].solved;   }
-    public static boolean getSolvedHard(final int level_number)   { return ar_levels_hard[level_number-1].solved;     }
+    public static boolean getSolvedEasy(int level_number)   { return ar_levels_easy[level_number-1].solved;     }
+    public static boolean getSolvedNormal(int level_number) { return ar_levels_normal[level_number-1].solved;   }
+    public static boolean getSolvedHard(int level_number)   { return ar_levels_hard[level_number-1].solved;     }
 
     public static void setStarsEasy(final int level_number, final int stars) {
         int index = level_number - 1;

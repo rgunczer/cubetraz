@@ -2,7 +2,7 @@ package com.almagems.cubetraz;
 
 public final class MovingCube {
         
-	private bool m_done;
+	private boolean m_done;
     private float m_t;
     private float m_step_t;
     private float m_start_value;
@@ -20,8 +20,8 @@ public final class MovingCube {
     private CubePos m_cube_pos = new CubePos();
 	private CubePos m_cube_pos_destination = new CubePos();
 	
-    private AxisMovementEnum m_move_dir;
-    private AxisMovementEnum m_move_dir_starting;	
+    private int m_move_dir;
+    private int m_move_dir_starting;
     
     public Vector pos;
     public TexturedQuad[] ar_cube_textures = new TexturedQuad[6];
@@ -44,7 +44,11 @@ public final class MovingCube {
         pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
     }
 
-    public void init(CubePos cube_pos, AxisMovementEnum move_dir) {
+	public void init(MovingCube other) {
+
+	}
+
+    public void init(CubePos cube_pos, int move_dir) {
         setCubePos(cube_pos);
         m_cube_pos_starting = m_cube_pos;
         m_move_dir_starting = move_dir;
@@ -335,7 +339,7 @@ public final class MovingCube {
         return m_done; 
     }
     
-	public AxisMovementEnum getMovement() { 
+	public int getMovement() {
         return m_move_dir; 
     }
     

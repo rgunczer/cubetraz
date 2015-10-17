@@ -12,15 +12,15 @@ public final class PlayerCube {
     private float m_end_value;
     private float position; // pointer (java)
 	
-    private AxisMovementEnum m_prev_movement;
+    private int m_prev_movement;
     private CubePos m_cube_pos_key;
 
-	private CubePos m_cube_pos;
-	private CubePos m_cube_pos_destination;
+	public CubePos m_cube_pos;
+	public CubePos m_cube_pos_destination;
     
-	private cMovingCube m_moving_cube; // pointer (java)
-    private cMoverCube m_mover_cube; // pointer (java)
-    private cDeadCube m_dead_cube; // pointer (java)
+	public MovingCube m_moving_cube; // pointer (java)
+    public MoverCube m_mover_cube; // pointer (java)
+    public DeadCube m_dead_cube; // pointer (java)
 		    
 	public Vector pos;
 	
@@ -44,7 +44,7 @@ public final class PlayerCube {
         m_dead_cube = null;
     }
     
-    public void update(float dt) {
+    public void update() {
 	    if (!m_done) {
 		    m_t += m_step_t;
 		
@@ -52,7 +52,7 @@ public final class PlayerCube {
 			    m_t = 1.0f;
 			    setCubePos(m_cube_pos_destination);
 		    } else {
-			    position = LERP(m_start_value, m_end_value, m_t); // pointer (java)
+			    position = Utils.lerp(m_start_value, m_end_value, m_t);
             }
 	    }
     }
@@ -65,7 +65,7 @@ public final class PlayerCube {
         }
     }
 
-    public void calcMovement(CubePos cube_pos, AxisMovementEnum type, boolean set) {
+    public void calcMovement(CubePos cube_pos, int type, boolean set) {
         boolean is_obstacle;
         boolean is_moving;
         boolean is_mover;
@@ -74,15 +74,15 @@ public final class PlayerCube {
         CubePos prev = cube_pos;
 
         switch(type) {
-            case X_Plus: 			
+            case AxisMovement_X_Plus:
 			    while (cube_pos.x <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.m_level.isMovingCube(cube_pos, set);
-                    is_mover = Game.m_level.isMoverCube(cube_pos, set);
-                    is_dead = Game.m_level.isDeadCube(cube_pos, set);
+                    is_moving = Game.level.isMovingCube(cube_pos, set);
+                    is_mover = Game.level.isMoverCube(cube_pos, set);
+                    is_dead = Game.level.isDeadCube(cube_pos, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				
@@ -96,15 +96,15 @@ public final class PlayerCube {
 			    --cube_pos.x;
                 break;
             
-            case X_Minus: 			
+            case AxisMovement_X_Minus:
 			    while (cube_pos.x >= 0) {
 				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.m_level.isMovingCube(cube_pos, set);
-                    is_mover = Game.m_level.isMoverCube(cube_pos, set);
-                    is_dead = Game.m_level.isDeadCube(cube_pos, set);
+                    is_moving = Game.level.isMovingCube(cube_pos, set);
+                    is_mover = Game.level.isMoverCube(cube_pos, set);
+                    is_dead = Game.level.isDeadCube(cube_pos, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-                        cube_pos = prev;
+                        cube_pos.init(prev);
 					    return;
 				    }
 				
@@ -118,15 +118,15 @@ public final class PlayerCube {
 			    ++cube_pos.x;
                 break;
             
-            case Y_Plus:			
+            case AxisMovement_Y_Plus:
 			    while (cube_pos.y <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.m_level.isMovingCube(cube_pos, set);
-                    is_mover = Game.m_level.isMoverCube(cube_pos, set);
-                    is_dead = Game.m_level.isDeadCube(cube_pos, set);
+                    is_moving = Game.level.isMovingCube(cube_pos, set);
+                    is_mover = Game.level.isMoverCube(cube_pos, set);
+                    is_dead = Game.level.isDeadCube(cube_pos, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				
@@ -140,15 +140,15 @@ public final class PlayerCube {
 			    --cube_pos.y;
                 break;
             
-            case Y_Minus:			
+            case AxisMovement_Y_Minus:
 			    while (cube_pos.y >= 0) {
 				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.m_level.isMovingCube(cube_pos, set);
-                    is_mover = Game.m_level.isMoverCube(cube_pos, set);
-                    is_dead = Game.m_level.isDeadCube(cube_pos, set);
+                    is_moving = Game.level.isMovingCube(cube_pos, set);
+                    is_mover = Game.level.isMoverCube(cube_pos, set);
+                    is_dead = Game.level.isDeadCube(cube_pos, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				
@@ -162,15 +162,15 @@ public final class PlayerCube {
 			    ++cube_pos.y;
                 break;
             
-            case Z_Plus:			
+            case AxisMovement_Z_Plus:
 			    while (cube_pos.z <= MAX_CUBE_COUNT - 1) {			
 				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.m_level.isMovingCube(cube_pos, set);
-                    is_mover = Game.m_level.isMoverCube(cube_pos, set);
-                    is_dead = Game.m_level.isDeadCube(cube_pos, set);
+                    is_moving = Game.level.isMovingCube(cube_pos, set);
+                    is_mover = Game.level.isMoverCube(cube_pos, set);
+                    is_dead = Game.level.isDeadCube(cube_pos, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				
@@ -184,15 +184,15 @@ public final class PlayerCube {
 			    --cube_pos.z;
                 break;
             
-            case Z_Minus: 			
+            case AxisMovement_Z_Minus:
 			    while (cube_pos.z >= 0) {
                     is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.m_level.isMovingCube(cube_pos, set);
-                    is_mover = Game.m_level.isMoverCube(cube_pos, set);
-                    is_dead = Game.m_level.isDeadCube(cube_pos, set);
+                    is_moving = Game.level.isMovingCube(cube_pos, set);
+                    is_mover = Game.level.isMoverCube(cube_pos, set);
+                    is_dead = Game.level.isDeadCube(cube_pos, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 
@@ -211,14 +211,14 @@ public final class PlayerCube {
         }
     }
 
-    public boolean moveOnAxis(AxisMovementEnum type) {
+    public boolean moveOnAxis(int type) {
 	    if (m_done) {
 		    m_moving_cube = null;
             m_mover_cube = null;
             m_dead_cube = null;
 		
 		    CubePos cube_pos = m_cube_pos;
-		    calcMovement(cube_pos, type);
+		    calcMovement(cube_pos, type, false);
 		
 		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {            
 			    m_cube_pos_destination = cube_pos;
@@ -226,22 +226,22 @@ public final class PlayerCube {
 			    Vector pos_destination = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
 			
 			    switch (type) {
-				    case X_Plus:
-				    case X_Minus:
+				    case AxisMovement_X_Plus:
+				    case AxisMovement_X_Minus:
 					    m_start_value = pos.x;
 					    m_end_value = pos_destination.x;
 					    position = pos.x;
 					    break;
 					
-				    case Y_Plus:
-				    case Y_Minus:
+				    case AxisMovement_Y_Plus:
+				    case AxisMovement_Y_Minus:
 					    m_start_value = pos.y;
 					    m_end_value = pos_destination.y;
 					    position = pos.y;
 					    break;
 					
-				    case Z_Plus:
-				    case Z_Minus:
+				    case AxisMovement_Z_Plus:
+				    case AxisMovement_Z_Minus:
 					    m_start_value = pos.z;
 					    m_end_value = pos_destination.z;
 					    position = pos.z;
@@ -251,7 +251,7 @@ public final class PlayerCube {
                         break;
 			    }
 			
-			    const float speed = 0.5f;
+			    final float speed = 0.5f;
 			    float distance = Math.abs(m_start_value - m_end_value);
 			    float step = distance / speed;
 			    m_t = 0.0f;
@@ -264,14 +264,14 @@ public final class PlayerCube {
     }
             
     public void setKeyCubePos(CubePos cube_pos) { 
-        m_cube_pos_key = new CubePos(cube_pos); 
+        m_cube_pos_key.init(cube_pos);
     }
     
     public void setKeyCubePos(int x, int y, int z) { 
         m_cube_pos_key = new CubePos(x, y, z); 
     }
 	    
-    public AxisMovementEnum GetPrevMovement() { 
+    public int getPrevMovement() {
         return m_prev_movement; 
     }
     
@@ -279,8 +279,7 @@ public final class PlayerCube {
         return m_cube_pos; 
     }
     
-    public boolean isLevelCompleted(int x, int y, int z)
-    {
+    public boolean isLevelCompleted(int x, int y, int z) {
         CubePos cp = new CubePos(x, y, z);
         return isKeyCube(cp);
     }
@@ -300,4 +299,5 @@ public final class PlayerCube {
     public void setDeadCube(DeadCube cube) { 
         m_dead_cube = cube; 
     }
-};
+
+}

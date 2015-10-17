@@ -2,6 +2,10 @@ package com.almagems.cubetraz;
 
 
 
+import java.util.Stack;
+
+import static com.almagems.cubetraz.Constants.*;
+
 public final class HUD {
         
     private final boolean[] m_arr_tutor_displayed = new boolean[MAX_TUTOR_COUNT];
@@ -66,11 +70,11 @@ public final class HUD {
     private Vector2 m_start;
     private Vector2 m_end;
     
-    private stack<int> m_tutors;
+    private Stack<Integer> m_tutors = new Stack<>();
     private TutorStateEnum m_tutor_state;
     private boolean m_tutor_active;
     private int m_tutor_alpha;
-    private GLuint m_tutor_texture_id;
+    private int m_tutor_texture_id;
     
     
     // ctor
@@ -91,10 +95,10 @@ public final class HUD {
         m_ar_text_center[1].setDisplay(m_text_display);
     
         // align
-        m_text_level.setAlign(RightAlign);
-        m_text_stars.setAlign(RightAlign);
-        m_text_moves.setAlign(RightAlign);
-        m_text_motto.setAlign(RightAlign);
+        m_text_level.setAlign(TextAlignEnum.RightAlign);
+        m_text_stars.setAlign(TextAlignEnum.RightAlign);
+        m_text_moves.setAlign(TextAlignEnum.RightAlign);
+        m_text_motto.setAlign(TextAlignEnum.RightAlign);
         
         // setscale
         m_text_pause.setScale(1.0f, 1.0f);
@@ -138,154 +142,151 @@ public final class HUD {
     }
 
     public void showTutorSwipeAndGoal() {
-        if (!m_arr_tutor_displayed[Swipe]) {
-            m_tutors.push(Goal);
-            m_tutors.push(Swipe);
+        if (!m_arr_tutor_displayed[Tutor_Swipe]) {
+            m_tutors.push(Tutor_Goal);
+            m_tutors.push(Tutor_Swipe);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_swipe");
-            m_arr_tutor_displayed[Swipe] = true;
+            m_arr_tutor_displayed[Tutor_Swipe] = true;
         }
     }
 
     public void showTutorGoal() {
-        if (!m_arr_tutor_displayed[Goal]) {
+        if (!m_arr_tutor_displayed[Tutor_Goal]) {
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_goal");
-            m_arr_tutor_displayed[Goal] = true;
+            m_arr_tutor_displayed[Tutor_Goal] = true;
         }
     }
 
     public void showTutorDrag() {
-        if (!m_arr_tutor_displayed[Drag]) {
-            m_tutors.push(Drag);
+        if (!m_arr_tutor_displayed[Tutor_Drag]) {
+            m_tutors.push(Tutor_Drag);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_drag");
-            m_arr_tutor_displayed[Drag] = true;
+            m_arr_tutor_displayed[Tutor_Drag] = true;
         }
     }
 
     public void showTutorDead() {
-        if (!m_arr_tutor_displayed[Dead]) {
-            m_tutors.push(Dead);
+        if (!m_arr_tutor_displayed[Tutor_Dead]) {
+            m_tutors.push(Tutor_Dead);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_dead");
-            m_arr_tutor_displayed[Dead] = true;
+            m_arr_tutor_displayed[Tutor_Dead] = true;
         }
     }
 
     public void showTutorMoving() {
-        if (!m_arr_tutor_displayed[Moving]) {
-            m_tutors.push(Moving);
+        if (!m_arr_tutor_displayed[Tutor_Moving]) {
+            m_tutors.push(Tutor_Moving);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_moving");
-            m_arr_tutor_displayed[Moving] = true;
+            m_arr_tutor_displayed[Tutor_Moving] = true;
         }
     }
 
     public void showTutorMover() {
-        if (!m_arr_tutor_displayed[Mover]) {
-            m_tutors.push(Mover);
+        if (!m_arr_tutor_displayed[Tutor_Mover]) {
+            m_tutors.push(Tutor_Mover);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_pusher");
-            m_arr_tutor_displayed[Mover] = true;
+            m_arr_tutor_displayed[Tutor_Mover] = true;
         }
     }
 
     public void showTutorPlain() {
-        if (!m_arr_tutor_displayed[Plain]) {
-            m_tutors.push(Plain);
+        if (!m_arr_tutor_displayed[Tutor_Plain]) {
+            m_tutors.push(Tutor_Plain);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_plain");
-            m_arr_tutor_displayed[Plain] = true;
+            m_arr_tutor_displayed[Tutor_Plain] = true;
         }
     }
 
     public void showTutorMenuPause() {
-        if (!m_arr_tutor_displayed[MenuPause]) {
-            m_tutors.push(MenuUndo);
-            m_tutors.push(MenuPause);
+        if (!m_arr_tutor_displayed[Tutor_MenuPause]) {
+            m_tutors.push(Tutor_MenuUndo);
+            m_tutors.push(Tutor_MenuPause);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_menu_pause");
-            m_arr_tutor_displayed[MenuPause] = true;        
+            m_arr_tutor_displayed[Tutor_MenuPause] = true;
             //printf("\ntutors %lu", m_tutors.size());
         }
     }
 
     public void showTutorMenuUndo() {
-        if (!m_arr_tutor_displayed[MenuUndo]) {
+        if (!m_arr_tutor_displayed[Tutor_MenuUndo]) {
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_menu_undo");
-            m_arr_tutor_displayed[MenuUndo] = true;
+            m_arr_tutor_displayed[Tutor_MenuUndo] = true;
         }
     }
 
     public void showTutorMenuHint() {
-        if (!m_arr_tutor_displayed[MenuHint]) {
-            m_tutors.push(MenuSolvers);
-            m_tutors.push(MenuHint);
+        if (!m_arr_tutor_displayed[Tutor_MenuHint]) {
+            m_tutors.push(Tutor_MenuSolvers);
+            m_tutors.push(Tutor_MenuHint);
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_menu_hint");
-            m_arr_tutor_displayed[MenuHint] = true;
+            m_arr_tutor_displayed[Tutor_MenuHint] = true;
         }
     }
 
     public void showTutorMenuSolvers() {
-        if (!m_arr_tutor_displayed[MenuSolvers]) {
+        if (!m_arr_tutor_displayed[Tutor_MenuSolvers]) {
             m_tutor_active = true;
             m_tutor_alpha = 0;
-            m_tutor_state = TutorAppear;
+            m_tutor_state = TutorStateEnum.TutorAppear;
             m_tutor_texture_id = Graphics.loadTexture("tutor_menu_solver");
-            m_arr_tutor_displayed[MenuSolvers] = true;
+            m_arr_tutor_displayed[Tutor_MenuSolvers] = true;
         }
     }
 
     public void hideTutor() {
-        if (m_tutor_active && TutorDone == m_tutor_state) {
-            m_tutor_state = TutorDisappear;
+        if (m_tutor_active && TutorStateEnum.TutorDone == m_tutor_state) {
+            m_tutor_state = TutorStateEnum.TutorDisappear;
         }
     }
 
     public void setTextMotto(final String str) {
         m_text_motto.init(str, true);
-	    m_motto_height = m_text_motto.GetHeight();
+	    m_motto_height = m_text_motto.getHeight();
     }
 
     public void setTextLevel(final String str) {
-        char buf[32];
-        sprintf(buf, "LEVEL\n%s", str);    
-        m_text_level.Init(buf, true);
+        String buf = "LEVEL\n" + str;
+        m_text_level.init(buf, true);
     }
 
-    public void setTextMoves(const int moves_count) {
-        char buf[32];
-        sprintf(buf, "MOVES\n%d", moves_count);    
-        m_text_moves.Init(buf, true);
+    public void setTextMoves(final int moves_count) {
+        String buf = "MOVES\n" + moves_count;
+        m_text_moves.init(buf, true);
     }
 
-    public void setTextStars(const int stars) {
-        char buf[32];
-        sprintf(buf, "STARS\n%d", stars);    
-        m_text_stars.Init(buf, true);
+    public void setTextStars(final int stars) {
+        String buf = "STARS\n" + stars;
+        m_text_stars.init(buf, true);
     }
 
     public void set1stHint() {
@@ -298,19 +299,18 @@ public final class HUD {
 	    m_hint_index = 2;
     }
 
-    public void setTextUndo(const int count) {            
+    public void setTextUndo(final int count) {
 //        char str[32];
 //        sprintf(str, "UNDO\n%d", count);    
 //        m_text_undo.Init(str, true);
     }
 
-    public void setTextSolver(const int count) {
-        char str[32];
-        sprintf(str, "SOLVERS\n%d", count);    
-        m_text_solver.Init(str, true);
+    public void setTextSolver(final int count) {
+        String str = "SOLVERS\n" + count;
+        m_text_solver.init(str, true);
     }
 
-    public void showPrepareSolving(bool value, int moves_count) {
+    public void showPrepareSolving(boolean value, int moves_count) {
         if (m_show_prepare_solving == value) {
             return;
         }
@@ -319,8 +319,7 @@ public final class HUD {
             m_show_prepare_solving = value;
         }
     
-        char str[32];
-        sprintf(str, "IN %d MOVES", moves_count);
+        String str = "IN " + moves_count + " MOVES";
         
         m_ar_text_center[0].init("THE SOLUTION", true);
         m_ar_text_center[1].init(str, true);
@@ -331,7 +330,7 @@ public final class HUD {
     }
 
     public void setupAppear() {
-	    m_state = AppearHUD;
+	    m_state = HUDStateEnum.AppearHUD;
     
 	    m_icons_alpha = 0;
         m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
@@ -352,7 +351,7 @@ public final class HUD {
     }
 
     public void setupDisappear() {
-	    m_state = DisappearHUD;
+	    m_state = HUDStateEnum.DisappearHUD;
 	
 	    m_icons_alpha = 255;
         m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
@@ -364,50 +363,57 @@ public final class HUD {
 
     public void showHint(int hint_type) {
         float degree = 0.0f;
+        float rad;
     
 	    m_show_hint = true;
 	    m_hint_type = hint_type;
 	    m_hint_timeout = 2.0f;
         m_t = 0.0f;
-        m_radius = 10.0f * engine->device_scale;
+        m_radius = 10.0f * Graphics.device_scale;
     
-        m_start = new Vector2(0.0f, -40.0f * engine->device_scale);
-        m_end = new Vector2(0.0f, 40.0f * engine->device_scale);
+        m_start = new Vector2(0.0f, -40.0f * Graphics.device_scale);
+        m_end = new Vector2(0.0f, 40.0f * Graphics.device_scale);
 
         switch (m_hint_type) {
-            case X_Plus:
+            case AxisMovement_X_Plus:
                 degree = -120.0f;
-                m_start = engine->Rotate(m_start, degree);
-                m_end = engine->Rotate(m_end, degree);
+                rad = (float)Math.toRadians(degree);
+                m_start.rotateRad(rad); // =  engine.Rotate(m_start, degree);
+                m_end.rotateRad(rad); //  = engine.Rotate(m_end, degree);
                 break;
             
-            case X_Minus:
+            case AxisMovement_X_Minus:
                 degree = 60.0f;
-                m_start = engine->Rotate(m_start, degree);
-                m_end = engine->Rotate(m_end, degree);
+                rad = (float)Math.toRadians(degree);
+                m_start.rotateRad(rad); //= engine.Rotate(m_start, degree);
+                m_end.rotateRad(rad); // = engine.Rotate(m_end, degree);
                 break;
             
-            case Y_Plus:
-                m_start = engine->Rotate(m_start, degree);
-                m_end = engine->Rotate(m_end, degree);
+            case AxisMovement_Y_Plus:
+                rad = (float)Math.toRadians(degree);
+                m_start.rotateRad(rad); // = engine.Rotate(m_start, degree);
+                m_end.rotateRad(rad); //  = engine.Rotate(m_end, degree);
                 break;
             
-            case Y_Minus:
+            case AxisMovement_Y_Minus:
                 degree = 180.0f;
-                m_start = engine->Rotate(m_start, degree);
-                m_end = engine->Rotate(m_end, degree);
+                rad = (float)Math.toRadians(degree);
+                m_start.rotateRad(rad); // = engine.Rotate(m_start, degree);
+                m_end.rotateRad(rad); //  = engine.Rotate(m_end, degree);
                 break;
             
-            case Z_Plus:
+            case AxisMovement_Z_Plus:
                 degree = 120.0f;
-                m_start = engine->Rotate(m_start, degree);
-                m_end = engine->Rotate(m_end, degree);
+                rad = (float)Math.toRadians(degree);
+                m_start.rotateRad(rad); // = engine.Rotate(m_start, degree);
+                m_end.rotateRad(rad); // = engine.Rotate(m_end, degree);
                 break;
             
-            case Z_Minus:
+            case AxisMovement_Z_Minus:
                 degree = -60.0f;
-                m_start = engine->Rotate(m_start, degree);
-                m_end = engine->Rotate(m_end, degree);
+                rad = (float)Math.toRadians(degree);
+                m_start.rotateRad(rad); // = engine.Rotate(m_start, degree);
+                m_end.rotateRad(rad); //  = engine.Rotate(m_end, degree);
                 break;
             
             default:
@@ -418,7 +424,7 @@ public final class HUD {
     public void init() {
         m_tutor_active = false;
     
-        m_pos_center = new Vector(engine->m_half_width, engine->m_half_height);
+        m_pos_center = new Vector(Graphics.half_width, Graphics.half_height);
     
 	    m_hint_index = 1;
         m_show_prepare_solving = false;
@@ -430,7 +436,7 @@ public final class HUD {
         m_text_hint.init("HINT\nFIRST\nMOVE");
     
         char str[32];
-        sprintf(str, "SOLVERS\n%d", engine->GetSolverCount());
+        sprintf(str, "SOLVERS\n%d", engine.GetSolverCount());
     
         m_text_solver.Init(str);
     
@@ -439,7 +445,7 @@ public final class HUD {
         m_text_moves.init("MOVES\n0");
         m_text_motto.init("MOTTO\n0\n0");
     
-        float scale = 0.3f * engine->device_scale;
+        float scale = 0.3f * engine.device_scale;
         m_text_level.setScale(scale, scale);
         m_text_stars.setScale(scale, scale);
         m_text_moves.setScale(scale, scale);
@@ -466,8 +472,8 @@ public final class HUD {
 	    m_pos_y_motto_start = -10.0f * Graphics.device_scale;
 	    m_pos_y_motto_end = 30.0f * Graphics.device_scale;
 	
-        m_pos_x_text_right_start = Graphics.m_width + (75.0f * engine->device_scale);
-	    m_pos_x_text_right_end = Graphics.m_width - (6.0f * engine->device_scale);
+        m_pos_x_text_right_start = Graphics.m_width + (75.0f * engine.device_scale);
+	    m_pos_x_text_right_end = Graphics.m_width - (6.0f * engine.device_scale);
 
 	    m_state = DoneHUD;
 	    m_show_hint = false;
@@ -520,8 +526,8 @@ public final class HUD {
     
 	    if (DisappearHUD == m_state) {
 		    const int icon_alpha_speed = -40;
-		    const float text_anim_speed = -10.0f * engine->device_scale;
-            const float text_anim_speed_motto = -10.0f * engine->device_scale;
+		    const float text_anim_speed = -10.0f * engine.device_scale;
+            const float text_anim_speed_motto = -10.0f * engine.device_scale;
 		
 		    m_icons_alpha += icon_alpha_speed;
 
@@ -562,8 +568,8 @@ public final class HUD {
 		    int done_counter = 0;
 		
             const int icon_alpha_speed = 20;
-		    const float text_anim_speed = 8.0f * engine->device_scale;
-            const float text_anim_speed_motto = 3.0f * engine->device_scale;
+		    const float text_anim_speed = 8.0f * engine.device_scale;
+            const float text_anim_speed_motto = 3.0f * engine.device_scale;
 				
             m_icons_alpha += icon_alpha_speed;
 		
@@ -703,10 +709,10 @@ public final class HUD {
         }
     
         if (m_text_stars.isVisible()) {
-            m_text_stars.emitt(m_pos_x_text_right - shadow_offset_x, (undo_quad_y - 12.5f * engine->device_scale) - shadow_offset_y, color_shadow);
+            m_text_stars.emitt(m_pos_x_text_right - shadow_offset_x, (undo_quad_y - 12.5f * engine.device_scale) - shadow_offset_y, color_shadow);
             m_text_display.m_vertex_count += m_text_stars.getVertexCount();
         
-            m_text_stars.emitt(m_pos_x_text_right, undo_quad_y - 12.5f * engine->device_scale, color_text);
+            m_text_stars.emitt(m_pos_x_text_right, undo_quad_y - 12.5f * engine.device_scale, color_text);
             m_text_display.m_vertex_count += m_text_stars.getVertexCount();
         }
     
@@ -719,10 +725,10 @@ public final class HUD {
         }
     
         if (m_text_motto.isVisible()) {
-            m_text_motto.emitt((engine->m_width - 5.0f * engine->device_scale) - shadow_offset_x, m_pos_y_motto + shadow_offset_y, color_shadow);
+            m_text_motto.emitt((engine.m_width - 5.0f * engine.device_scale) - shadow_offset_x, m_pos_y_motto + shadow_offset_y, color_shadow);
             m_text_display.m_vertex_count += m_text_motto.GetVertexCount();
     
-            m_text_motto.Emitt(engine->m_width - 5.0f * engine->device_scale, m_pos_y_motto, color_text);
+            m_text_motto.Emitt(engine.m_width - 5.0f * engine.device_scale, m_pos_y_motto, color_text);
             m_text_display.m_vertex_count += m_text_motto.GetVertexCount();
         }
     
@@ -783,10 +789,10 @@ public final class HUD {
 		    Color color = new Color(0, 0, 0, a);
         
             m_text_display.init();
-            m_ar_text_center[0].emitt(engine->m_half_width - m_ar_text_center[0].getHalfWidth(), Graphics.m_half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_ar_text_center[0].emitt(engine.m_half_width - m_ar_text_center[0].getHalfWidth(), Graphics.m_half_height + m_ar_text_center[0].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
         
-            m_ar_text_center[1].emitt(engine->m_half_width - m_ar_text_center[1].getHalfWidth(), Graphics.m_half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_ar_text_center[1].emitt(engine.m_half_width - m_ar_text_center[1].getHalfWidth(), Graphics.m_half_height - m_ar_text_center[1].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
             glPushMatrix();
@@ -820,31 +826,31 @@ public final class HUD {
         Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, color_shadow);
         Graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    pause_quad_y,                   tcoords, m_hilite_pause ? color_hilite : color_icon);
     
-        tcoords.tx0 = m_symbol_undo->tx_lo_left;
-        tcoords.tx1 = m_symbol_undo->tx_lo_right;
-        tcoords.tx2 = m_symbol_undo->tx_up_right;
-        tcoords.tx3 = m_symbol_undo->tx_up_left;
+        tcoords.tx0 = m_symbol_undo.tx_lo_left;
+        tcoords.tx1 = m_symbol_undo.tx_lo_right;
+        tcoords.tx2 = m_symbol_undo.tx_up_right;
+        tcoords.tx3 = m_symbol_undo.tx_up_left;
         Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
         Graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    undo_quad_y,                    tcoords, m_hilite_undo ? color_hilite : color_icon);
 	
-        tcoords.tx0 = m_symbol_hint->tx_lo_left;
-        tcoords.tx1 = m_symbol_hint->tx_lo_right;
-        tcoords.tx2 = m_symbol_hint->tx_up_right;
-        tcoords.tx3 = m_symbol_hint->tx_up_left;
+        tcoords.tx0 = m_symbol_hint.tx_lo_left;
+        tcoords.tx1 = m_symbol_hint.tx_lo_right;
+        tcoords.tx2 = m_symbol_hint.tx_up_right;
+        tcoords.tx3 = m_symbol_hint.tx_up_left;
         Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
         Graphics.addQuad(ics, 5.0f * Graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
     
-        tcoords.tx0 = m_symbol_solver->tx_lo_left;
-        tcoords.tx1 = m_symbol_solver->tx_lo_right;
-        tcoords.tx2 = m_symbol_solver->tx_up_right;
-        tcoords.tx3 = m_symbol_solver->tx_up_left;
+        tcoords.tx0 = m_symbol_solver.tx_lo_left;
+        tcoords.tx1 = m_symbol_solver.tx_lo_right;
+        tcoords.tx2 = m_symbol_solver.tx_up_right;
+        tcoords.tx3 = m_symbol_solver.tx_up_left;
         cRenderer::AddQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
         cRenderer::AddQuad(ics, 5.0f * Graphics.device_scale,                    solver_quad_y,                   tcoords, m_hilite_solver ? color_hilite : color_icon);
 
-        tcoords.tx0 = m_symbol_star->tx_lo_left;
-        tcoords.tx1 = m_symbol_star->tx_lo_right;
-        tcoords.tx2 = m_symbol_star->tx_up_right;
-        tcoords.tx3 = m_symbol_star->tx_up_left;
+        tcoords.tx0 = m_symbol_star.tx_lo_left;
+        tcoords.tx1 = m_symbol_star.tx_lo_right;
+        tcoords.tx2 = m_symbol_star.tx_up_right;
+        tcoords.tx3 = m_symbol_star.tx_up_left;
         cRenderer::AddQuad(ics, Graphics.m_width - 25.0f * Graphics.device_scale - shadow_offset_x,   undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
         cRenderer::AddQuad(ics, Graphics.m_width - 25.0f * Graphics.device_scale,                     undo_quad_y,                    tcoords, color_icon);
     
@@ -875,12 +881,12 @@ public final class HUD {
         if (DeadAnim == Game.level.state) {
             Graphics.prepare();
         
-		    Color color = new Color(200, 0, 0, engine->m_level->dead_alpha);
+		    Color color = new Color(200, 0, 0, engine.m_level.dead_alpha);
 		
-            tcoords.tx0 = m_symbol_death->tx_lo_left;
-            tcoords.tx1 = m_symbol_death->tx_lo_right;
-            tcoords.tx2 = m_symbol_death->tx_up_right;
-            tcoords.tx3 = m_symbol_death->tx_up_left;
+            tcoords.tx0 = m_symbol_death.tx_lo_left;
+            tcoords.tx1 = m_symbol_death.tx_lo_right;
+            tcoords.tx2 = m_symbol_death.tx_up_right;
+            tcoords.tx3 = m_symbol_death.tx_up_left;
         
             float size = Game.level.dead_size * Graphics.device_scale;
             Graphics.addQuad(size, Graphics.m_half_width - (size / 2.0f), Graphics.m_half_height - (size / 2.0f), tcoords, color);
@@ -933,19 +939,19 @@ public final class HUD {
 
 
 
-    public void setHilitePause(bool hilite) { 
+    public void setHilitePause(boolean hilite) {
         m_hilite_pause = hilite; 
     }
     
-    public void setHiliteUndo(bool hilite) { 
+    public void setHiliteUndo(boolean hilite) {
         m_hilite_undo = hilite; 
     }
     
-    public void setHiliteHint(bool hilite) { 
+    public void setHiliteHint(boolean hilite) {
         m_hilite_hint = hilite; 
     }
     
-    public void setHiliteSolver(bool hilite) { 
+    public void setHiliteSolver(boolean hilite) {
         m_hilite_solver = hilite; 
     }
     
@@ -957,11 +963,11 @@ public final class HUD {
         return m_tutor_active; 
     }    
     
-    public HUDStateEnum GetState() { 
+    public HUDStateEnum getState() {
         return m_state; 
     }
         
-    public bool GetShowHint() { 
+    public boolean getShowHint() {
         return m_show_hint; 
     }        
 }

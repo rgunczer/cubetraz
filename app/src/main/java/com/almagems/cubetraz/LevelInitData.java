@@ -5,9 +5,9 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class LevelInitData {
 
-    int level_number;
-    DifficultyEnum difficulty;
-    LevelInitActionEnum init_action;
+    public int level_number;
+    public DifficultyEnum difficulty;
+    public LevelInitActionEnum init_action;
 
     // ctor
     public LevelInitData() {

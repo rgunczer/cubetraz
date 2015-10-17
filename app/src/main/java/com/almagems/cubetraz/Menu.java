@@ -39,7 +39,7 @@ public final class Menu extends Scene {
     private boolean m_showing_help;
     private float m_show_help_timeout;
 
-    private Camera m_camera_menu;
+    public Camera m_camera_menu;
     private Camera m_camera_credits;
     private Camera m_camera_current;
 
@@ -47,20 +47,20 @@ public final class Menu extends Scene {
     private float m_menu_rotation;
 
     private Vector m_pos_light_menu;
-    private Vector m_pos_light_current;
+    public Vector m_pos_light_current;
 
-    private MenuCube m_pMenuCubePlay;
-    private MenuCube m_pMenuCubeOptions;
-    private MenuCube m_pMenuCubeStore;
+    public MenuCube m_pMenuCubePlay;
+    public MenuCube m_pMenuCubeOptions;
+    public MenuCube m_pMenuCubeStore;
 
-    private final MenuCube[] m_arOptionsCubes = new MenuCube[4];
+    public final MenuCube[] m_arOptionsCubes = new MenuCube[4];
 
     // store
-    private MenuCube m_pStoreCubeNoAds;
-    private MenuCube m_pStoreCubeSolvers;
-    private MenuCube m_pStoreCubeRestore;
+    public MenuCube m_pStoreCubeNoAds;
+    public MenuCube m_pStoreCubeSolvers;
+    public MenuCube m_pStoreCubeRestore;
 
-    private MenuCube m_cubeCredits;
+    public MenuCube m_cubeCredits;
 
     private MenuCube m_menu_cube_hilite;
     private CubeFont m_font_hilite;

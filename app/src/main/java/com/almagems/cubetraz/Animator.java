@@ -7,7 +7,7 @@ import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.Constants.*;
 
 
-public final class Animator {
+public final class Animator extends Scene {
       
     private float m_t;
 	private float m_t_camera;
@@ -53,7 +53,8 @@ public final class Animator {
 	private final AppearDisappearListData m_ad_base_disappear = new AppearDisappearListData();
 	private final AppearDisappearListData m_ad_base_appear = new AppearDisappearListData();
 	private final AppearDisappearListData m_ad_face = new AppearDisappearListData();
-			        	
+
+
 	private LevelCube getLevelCubeFrom(ArrayList<LevelCube> lst) {
 		if (lst.isEmpty()) {
 			return null;
@@ -98,8 +99,7 @@ public final class Animator {
 			    setupAnimToMenu();
 			    break;
 	    }
-
-	    updateCubes(0.0f);
+	    updateCubes();
     }
     
     public void createListOfLevelCubes(ArrayList<Cube> lst) {
@@ -154,7 +154,7 @@ public final class Animator {
 	    
         MenuFaceBuilder.resetTransforms();
 	    MenuFaceBuilder.build(m_face_name_x_plus, Face_X_Plus);
-	    MenuFaceBuilder.addTransform(RotateCCW90);
+	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90, 0);
 	    MenuFaceBuilder.build(m_face_name_y_plus, Face_Y_Plus);
 	    MenuFaceBuilder.build(m_face_name_z_plus, Face_Z_Plus);
     }
@@ -180,7 +180,7 @@ public final class Animator {
 	    Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes.clear();
 	
 	    m_lst_level_cubes_z_plus.clear();
-        len = Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.size(i);
+        len = Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.size();
 	    for (int i = 0 ; i < len; ++i) {	
             cube = Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.get(i);
 		    m_lst_level_cubes_z_plus.add(cube);
@@ -199,17 +199,16 @@ public final class Animator {
 	
 	    createMenuFaces();
 	
-	    m_ad_face.Clear();
+	    m_ad_face.clear();
 	    Game.buildVisibleCubesListOnlyOnFaces(m_ad_face.lst_appear);
 	    m_list_cubes_face.clear();
 
 	    createListOfLevelCubes(m_list_cubes_base);
 		
 	    aid.list_cubes_base.clear();
-	    m_ad_base_disappear.Clear();
-	
-	    //list<cCube*> lst;
-	    ArrayList<Cube> lst = Game.createBaseCubesList(); //lst); function name should begin with get.... (todo)
+	    m_ad_base_disappear.clear();
+
+	    ArrayList<Cube> lst = Game.createBaseCubesList();
 	
         int len = m_list_cubes_base.size();
 	    Cube cube;
@@ -223,7 +222,7 @@ public final class Animator {
         len = lst.size();
 	    for (int i = 0; i < len; ++i) {
             cube = lst.get(i);
-		    if ( !Game->isOnAList(cube, m_list_cubes_base)) {
+		    if ( !Game.isOnAList(cube, m_list_cubes_base)) {
 			    m_ad_base_appear.addAppear(cube);
             }
 	    }
@@ -235,22 +234,21 @@ public final class Animator {
 	
 	    m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 9);
 		
-	    m_camera_from = Game.level.m_camera_current;
-	    m_camera_to = Game.level.m_camera_level;
-	    m_camera_current = m_camera_from;
+	    m_camera_from.init(Game.level.m_camera_current);
+	    m_camera_to.init(Game.level.m_camera_level);
+	    m_camera_current.init(m_camera_from);
 	
-	    m_pos_light_from = Game.level.m_pos_light;
-	    m_pos_light_to = Game.menu.m_pos_light_current;
-	    m_pos_light_current = m_pos_light_from;
+	    m_pos_light_from.init(Game.level.m_pos_light);
+	    m_pos_light_to.init(Game.menu.m_pos_light_current);
+	    m_pos_light_current.init(m_pos_light_from);
 
 	    m_ad_face.setLevelAndDirection(0, 1);
 	    m_ad_base_appear.setLevelAndDirection(0, 1);
 	    m_ad_base_disappear.setLevelAndDirection(0, 1);
     }
 
-    public void cAnimator::SetupAnimToLevel() {
+    public void setupAnimToLevel() {
 	    //printf("\nSetup Anim To Level...");
-    
 	    AnimInitData aid = Game.anim_init_data;
 
 	    m_hilite_alpha = 0.0f;
@@ -274,10 +272,13 @@ public final class Animator {
 	    m_ad_face.initDisappearListFrom(m_list_cubes_face);
 	
 	    m_list_cubes_base.clear();
-	
-	    list<cCube*>::iterator it;
-	    for (it = aid.list_cubes_base.begin(); it != aid.list_cubes_base.end(); ++it) {
-		    m_list_cubes_base.push_back(*it);
+
+        Cube cube;
+		int size = aid.list_cubes_base.size();
+
+	    for (int i = 0; i < size; ++i) {
+            cube = aid.list_cubes_base.get(i);
+		    m_list_cubes_base.add(cube);
         }
 	
 	    aid.list_cubes_base.clear();
@@ -287,17 +288,18 @@ public final class Animator {
 	    m_camera_current.init(m_camera_from);
 	
 	    m_pos_light_from.init(aid.pos_light_from);
-	    m_pos_light_to.init(aid.pos_light_to);
+        m_pos_light_to.init(aid.pos_light_to);
 	    m_pos_light_current.init(m_pos_light_from);
 	
 	    m_ad_base_disappear.clear();
 	        
-	    list<cCube*> lst_level;
+	    ArrayList<Cube> lst_level = new ArrayList<>();
 	    createListOfLevelCubes(lst_level);
-	
-	    for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it) {
-		    if ( !engine->IsOnAList(*it, lst_level) ) {
-			    m_ad_base_disappear.AddDisappear(*it);
+	    size = m_list_cubes_base.size();
+	    for (int i = 0; i < size; ++i) {
+            cube = m_list_cubes_base.get(i);
+		    if ( !Game.isOnAList(cube, lst_level) ) {
+			    m_ad_base_disappear.addDisappear(cube);
             }
 	    }
 
@@ -308,11 +310,11 @@ public final class Animator {
 	    }
 	
 	    for (int i = 2; i < 8; ++i) {
-		    m_ad_base_appear.AddAppear(Game.cubes[8][1][i]);
-		    m_ad_base_appear.AddAppear(Game.cubes[i][1][8]);
+		    m_ad_base_appear.addAppear(Game.cubes[8][1][i]);
+		    m_ad_base_appear.addAppear(Game.cubes[i][1][8]);
 	    }
 	
-	    m_ad_base_appear.AddAppear(Game.cubes[8][1][8]);
+	    m_ad_base_appear.addAppear(Game.cubes[8][1][8]);
 
 	    m_ad_face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
 	    m_ad_base_disappear.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
@@ -322,62 +324,64 @@ public final class Animator {
     }
 
     public void locateLevelCube() {
-	    int level_number = engine->level_init_data.level_number;
-
-	    list<cLevelCube*>::iterator it;
-	    for (it = engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes.begin(); it != engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes.end(); ++it) {
-		    if ((*it)->level_number == level_number) {
-                m_level_cube_hilite = *it;
-                m_level_cube_hilite->color_number = new Color(255, 255, 0, 255);
+	    int level_number = Game.level_init_data.level_number;
+        int size = Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.size();
+	    LevelCube levelCube;
+	    for(int i = 0; i < size; ++i) {
+            levelCube = Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.get(i);
+		    if (levelCube.level_number == level_number) {
+                m_level_cube_hilite = levelCube;
+                m_level_cube_hilite.color_number = new Color(255, 255, 0, 255);
                 return;
             }
 	    }
     }
 
-    public void updateAnimToMenu(float dt) {
+    public void updateAnimToMenu() {
 	    if (0 == m_anim_to_menu_phase) {
-		    updateAnimToMenuPhaseOne(dt);
+		    updateAnimToMenuPhaseOne();
         } else {
-		    updateAnimToMenuPhaseTwo(dt);
+		    updateAnimToMenuPhaseTwo();
         }
     }
 
-    public void updateAnimToMenuPhaseTwo(float dt) {
+    public void updateAnimToMenuPhaseTwo() {
         m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
-	
-	    //engine->IncT(m_t_camera); // TODO replace remove this 
+
+        m_t_camera += 0.01f;
 	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t_camera, m_camera_current);
 	
 	    Cube cube;    
         cube = m_ad_face.getCubeFromAppearList();
-	    if (cube) {
+	    if (cube != null) {
 		    m_list_cubes_face.add(cube);
 	    }
 
         cube = m_ad_face.getCubeFromAppearList();
-	    if (cube) {
+	    if (cube != null) {
 		    m_list_cubes_face.add(cube);
 	    }
 
         cube = m_ad_face.getCubeFromAppearList(); 
-	    if (pCube) {
+	    if (cube != null) {
 		    m_list_cubes_face.add(cube);
 	    }
     
         float diff = Math.abs( Math.abs(m_target_rotation_degree) - Math.abs(m_interpolator.getValue()));
 	
-        if (diff < EPSILON && fabs(1.0f - m_t) < EPSILON && Math.abs(1.0f - m_t_camera) < EPSILON && m_ad_face.lst_appear.isEmpty()) {
+        if (diff < EPSILON && Math.abs(1.0f - m_t) < EPSILON && Math.abs(1.0f - m_t_camera) < EPSILON && m_ad_face.lst_appear.isEmpty()) {
 		    Game.menu_init_data.reappear = true;
 		    Game.showScene(Scene_Menu);
         }
     }
 
-    public void updateAnimToMenuPhaseOne(float dt) {
+    public void updateAnimToMenuPhaseOne() {
         m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
 	
-        //engine->IncT(m_t);
+        //engine.IncT(m_t);
+        m_t += 0.01f;
         Utils.lerpVec3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
 	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
 		
@@ -385,63 +389,63 @@ public final class Animator {
 	    boolean done_base = true;
 	
         cube = m_ad_base_appear.getCubeFromAppearList();    
-        if (cube) {
+        if (cube != null) {
             m_list_cubes_base.add(cube);
             done_base = false;
         }
     
-        cube = m_ad_base_appear.GetCubeFromAppearList();    
-        if (cube) {
+        cube = m_ad_base_appear.getCubeFromAppearList();
+        if (cube != null) {
             m_list_cubes_base.add(cube);
             done_base = false;
         }
 
-        cube = m_ad_base_disappear.GetCubeFromDisappearList();    
-        if (cube) {
+        cube = m_ad_base_disappear.getCubeFromDisappearList();
+        if (cube != null) {
             m_list_cubes_base.remove(cube);
             done_base = false;
         }
  
 	    if (done_base) {
-            m_timeout -= dt;
+            m_timeout -= 0.01f;
         
             if (m_timeout <= 0.0f) {
-                LevelCube pLevelCube;
+                LevelCube levelCube;
             
-                pLevelCube = getLevelCubeFrom(m_lst_level_cubes_x_plus);
-                if (pLevelCube) {
-                    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.add(pLevelCube);
-                    m_lst_level_cubes_x_plus.remove(pLevelCube);
+                levelCube = getLevelCubeFrom(m_lst_level_cubes_x_plus);
+                if (levelCube != null) {
+                    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.add(levelCube);
+                    m_lst_level_cubes_x_plus.remove(levelCube);
                 }
             
-                pLevelCube = GetLevelCubeFrom(m_lst_level_cubes_y_plus);
-                if (pLevelCube) {
-                    Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes.add(pLevelCube);
-                    m_lst_level_cubes_y_plus.remove(pLevelCube);
+                levelCube = getLevelCubeFrom(m_lst_level_cubes_y_plus);
+                if (levelCube != null) {
+                    Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes.add(levelCube);
+                    m_lst_level_cubes_y_plus.remove(levelCube);
                 }
             
-                pLevelCube = GetLevelCubeFrom(m_lst_level_cubes_z_plus);
-                if (pLevelCube) {
-                    Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.add(pLevelCube);
-                    m_lst_level_cubes_z_plus.remove(pLevelCube);
+                levelCube = getLevelCubeFrom(m_lst_level_cubes_z_plus);
+                if (levelCube != null) {
+                    Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.add(levelCube);
+                    m_lst_level_cubes_z_plus.remove(levelCube);
                 }
             }
         }
     
-        if (m_lst_level_cubes_x_plus.empty() && m_lst_level_cubes_y_plus.empty() && m_lst_level_cubes_z_plus.empty()) {
-		    pCube = m_ad_face.getCubeFromAppearList();
+        if (m_lst_level_cubes_x_plus.isEmpty() && m_lst_level_cubes_y_plus.isEmpty() && m_lst_level_cubes_z_plus.isEmpty()) {
+		    cube = m_ad_face.getCubeFromAppearList();
 		
-		    if (pCube) {
-			    m_list_cubes_face.add(pCube);
+		    if (cube != null) {
+			    m_list_cubes_face.add(cube);
             }
         
-            //engine->StopMusic();
+            Game.stopMusic();
 		
 		    m_anim_to_menu_phase = 1;
 		
 		    m_t_camera = 0.0f;
 		    m_camera_from.init(m_camera_current);
-		    m_camera_to.init(Game.m_menu->m_camera_menu);
+		    m_camera_to.init(Game.menu.m_camera_menu);
 		
 		    m_cube_rotation.degree = -45.0f;
 		    m_target_rotation_degree = -90.0f;
@@ -449,81 +453,78 @@ public final class Animator {
 	    }
     }
 
-    public void updateAnimToLevel(float dt) {	
-	    m_timeout -= dt;
+    public void updateAnimToLevel() {
+	    m_timeout -= 0.01f;
 	
 	    if (m_timeout <= 0.0f) {
-		    LevelCube pLevelCube;
+		    LevelCube levelCube;
 		
-		    pLevelCube = getLevelCubeFrom(engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes);
-		    if (pLevelCube) {
-			    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.remove(pLevelCube);
+		    levelCube = getLevelCubeFrom(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes);
+		    if (levelCube != null) {
+			    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.remove(levelCube);
 			
-			    if (pLevelCube == m_level_cube_hilite) {
-				    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.add(0, pLevelCube);
+			    if (levelCube == m_level_cube_hilite) {
+				    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.add(0, levelCube);
                 }
 		    }
 		
-		    //printf("\nlevelcubes count: %lu", engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes.size());
+		    //printf("\nlevelcubes count: %lu", engine.ar_cubefacedata[Face_X_Plus].lst_level_cubes.size());
 		
-		    pLevelCube = GetLevelCubeFrom(engine->ar_cubefacedata[Face_Y_Plus].lst_level_cubes);
-		    if (pLevelCube) {
-			    Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes.remove(pLevelCube);
+		    levelCube = getLevelCubeFrom(Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes);
+		    if (levelCube != null) {
+			    Game.ar_cubefacedata[Face_Y_Plus].lst_level_cubes.remove(levelCube);
             }
 		
-		    pLevelCube = GetLevelCubeFrom(engine->ar_cubefacedata[Face_Z_Plus].lst_level_cubes);
-		    if (pLevelCube) {
-			    Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.remove(pLevelCube);
+		    levelCube = getLevelCubeFrom(Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes);
+		    if (levelCube != null) {
+			    Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.remove(levelCube);
             }
-				
 		    m_timeout = 0.03f;
 	    }
-	
-	    //engine->IncT(m_hilite_alpha);
+
+        m_hilite_alpha += 0.01f;
 	
 	    boolean done = true;
-
 	    Cube cube;
 	
 	    // face
 	    cube = m_ad_face.getCubeFromDisappearList();
-	    if (cube) {
+	    if (cube !=  null) {
 		    m_list_cubes_face.remove(cube);
 		    done = false;
 	    }
 
         cube = m_ad_face.getCubeFromDisappearList();
-	    if (cube) {
+	    if (cube != null) {
 		    m_list_cubes_face.remove(cube);
 		    done = false;
 	    }	
     
 	    // base
 	    cube = m_ad_base_disappear.getCubeFromDisappearList();	
-	    if (cube) {
+	    if (cube != null) {
 		    m_list_cubes_base.remove(cube);
 	
 		    cube = m_ad_base_disappear.getCubeFromDisappearList();
-		    if (cube) {
+		    if (cube != null) {
 			    m_list_cubes_base.remove(cube);
 			    done = false;
 		    }
         
 		    cube = m_ad_base_disappear.getCubeFromDisappearList();
-		    if (cube) {		
+		    if (cube != null) {
 			    m_list_cubes_base.remove(cube);
 			    done = false;
 		    }        
 	    }
 	
 	    if (done) {
-		    if (1 == engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes.size()) {
-			    engine->ar_cubefacedata[Face_X_Plus].lst_level_cubes.clear();
+		    if (1 == Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.size()) {
+			    Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.clear();
             }
 		
 		    cube = m_ad_base_appear.getCubeFromAppearList();
-		
-		    if (cube) {
+		    if (cube != null) {
 			    m_list_cubes_base.add(cube);
             }
 	    }
@@ -540,71 +541,70 @@ public final class Animator {
         m_cube_rotation.degree = m_interpolator.getValue();
 
         float diff = m_target_rotation_degree - m_interpolator.getValue();
-    
         if (diff < 0.1f && (1.0f - m_t) < EPSILON && m_ad_base_appear.lst_appear.isEmpty()) {
             m_cube_rotation.degree = m_target_rotation_degree;
-		    Game.ShowScene(Scene_Level);
+		    Game.showScene(Scene_Level);
         }
     }
 
-    public void updateCubes(float dt) {
+    public void updateCubes() {
 	    for (int i = 0; i < 6; ++i) {
-		    m_lst_titles[i].clear();
-		    m_lst_texts[i].clear();
-            m_lst_symbols[i].clear();
+		    m_lst_titles.get(i).clear();
+		    m_lst_texts.get(i).clear();
+            m_lst_symbols.get(i).clear();
 	    }
-	
-	    CubeFaceTypesEnum face_type;	
-	    Cube cube;	
-        list<cCube*>::iterator it;
-	
-	    for (it = m_list_cubes_base.begin(); it != m_list_cubes_base.end(); ++it) {
-		    pCube = *it;
+
+        int size = m_list_cubes_base.size();
+	    int face_type;
+	    Cube cube;
+	    for (int i = 0; i < size; ++i) {
+		    cube = m_list_cubes_base.get(i);
 		
 		    face_type = Face_X_Plus;
-		    if (null != pCube->ar_fonts[face_type]) {
-			    m_lst_texts[face_type].add(pCube->ar_fonts[face_type]);
+		    if (null != cube.ar_fonts[face_type]) {
+			    m_lst_texts.get(face_type).add(cube.ar_fonts[face_type]);
             }
 				
-            if (null != pCube->ar_symbols[face_type]) {
-                m_lst_symbols[face_type].add(pCube->ar_symbols[face_type]);
+            if (null != cube.ar_symbols[face_type]) {
+                m_lst_symbols.get(face_type).add(cube.ar_symbols[face_type]);
             }
         
 		    face_type = Face_Y_Plus;
-		    if (null != pCube->ar_fonts[face_type]) {
-			    m_lst_texts[face_type].add(pCube->ar_fonts[face_type]);
+		    if (null != cube.ar_fonts[face_type]) {
+			    m_lst_texts.get(face_type).add(cube.ar_fonts[face_type]);
             }
 
-            if (null != pCube->ar_symbols[face_type]) {
-                m_lst_symbols[face_type].add(pCube->ar_symbols[face_type]);
+            if (null != cube.ar_symbols[face_type]) {
+                m_lst_symbols.get(face_type).add(cube.ar_symbols[face_type]);
             }
         
 		    face_type = Face_Z_Plus;
-		    if (null != pCube->ar_fonts[face_type]) {
-			    m_lst_texts[face_type].add(pCube->ar_fonts[face_type]);
+		    if (null != cube.ar_fonts[face_type]) {
+			    m_lst_texts.get(face_type).add(cube.ar_fonts[face_type]);
             }
         
-            if (null != pCube->ar_symbols[face_type]) {
-                m_lst_symbols[face_type].add(pCube->ar_symbols[face_type]);
+            if (null != cube.ar_symbols[face_type]) {
+                m_lst_symbols.get(face_type).add(cube.ar_symbols[face_type]);
             }
 	    }
-	
-	    for (it = m_list_cubes_face.begin(); it != m_list_cubes_face.end(); ++it) {
-		    pCube = *it;
+
+        size = m_list_cubes_face.size();
+	    for (int i = 0; i < size; ++i) {
+		    cube = m_list_cubes_face.get(i);
 				
 		    face_type = Face_X_Plus;
-		    if (null != pCube->ar_fonts[face_type]) {            
-			    m_lst_titles[face_type].add(pCube->ar_fonts[face_type]);
+		    if (null != cube.ar_fonts[face_type]) {
+			    m_lst_titles.get(face_type).add(cube.ar_fonts[face_type]);
             }
 				
 		    face_type = Face_Y_Plus;
-		    if (null != pCube->ar_fonts[face_type]) {
-			    m_lst_titles[face_type].add(pCube->ar_fonts[face_type]);
+		    if (null != cube.ar_fonts[face_type]) {
+			    m_lst_titles.get(face_type).add(cube.ar_fonts[face_type]);
             }
 	
 		    face_type = Face_Z_Plus;
-		    if (null != pCube->ar_fonts[face_type]) {
-			    m_lst_titles[face_type].add(pCube->ar_fonts[face_type]);
+		    if (null != cube.ar_fonts[face_type]) {
+			    m_lst_titles.get(face_type).add(cube.ar_fonts[face_type]);
             }
 	    }
     }
@@ -612,49 +612,48 @@ public final class Animator {
     public void update() {
         switch (m_type) {
             case AnimToLevel:
-                updateAnimToLevel(dt);
+                updateAnimToLevel();
                 break;
             
 		    case AnimToMenuFromCompleted:
             case AnimToMenuFromPaused:
-                updateAnimToMenu(dt);
+                updateAnimToMenu();
                 break;
             
             default:
                 break;
         }
-	
-	    updateCubes(dt);
+	    updateCubes();
     }
 
     public void drawTheCube() {        
 	    glEnable(GL_LIGHTING);
 	    glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
 	
         Graphics.prepare();
         Graphics.setStreamSource();
 
 	    Color color = Game.getBaseColor();
-        int len;
+        int size;
         Cube cube;
-        len = m_list_cubes_base.size();
+        size = m_list_cubes_base.size();
         for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_face.get(i);
             Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
     
-        Graphics.renderTriangles(Graphics.cube_offset.x, Graphics.cube_offset.y, Graphics.cube_offset.z);
+        Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 	
-	    color = Graphics.getFaceColor();
+	    color = Game.getFaceColor(1f);
 	    Graphics.prepare();
-        len = m_list_cubes_face.size();
-        for (int i = 0; i < len; ++i) {
+        size = m_list_cubes_face.size();
+        for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_face.get(i);
             Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
 	
-	    Graphics.renderTriangles(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+	    Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
     public void drawLevelCubes() {
@@ -689,150 +688,159 @@ public final class Animator {
     public void drawLevelCubeDecals(LevelCubeDecalTypeEnum decal_type) {
 	    Graphics.prepare();
 	
-	    TexCoordsQuad coords;
-        cLevelCube* pLevelCube;
-	    TexturedQuad* p;
-        Color* color;
-	    CubeFaceTypesEnum face_type;
-	    list<cLevelCube*>::iterator it;
+	    TexCoordsQuad coords = new TexCoordsQuad();
+        LevelCube levelCube;
+	    TexturedQuad p;
+        Color color = new Color();
+	    int face_type;
+        int size;
 
-	    face_type = Face_X_Plus;
-	    for(it = engine->ar_cubefacedata[face_type].lst_level_cubes.begin(); it != engine->ar_cubefacedata[face_type].lst_level_cubes.end(); ++it) {
-		    pLevelCube = *it;
+        face_type = Face_X_Plus;
+        size = Game.ar_cubefacedata[face_type].lst_level_cubes.size();
+	    for(int i = 0; i < size; ++i) {
+		    levelCube = Game.ar_cubefacedata[face_type].lst_level_cubes.get(i);
             p = null;
 
             switch (decal_type) {
                 case LevelCubeDecalNumber:
-                    p = pLevelCube->pNumber;
-                    color = &pLevelCube->color_number;
+                    p = levelCube.pNumber;
+                    color = levelCube.color_number;
                     break;
                 
                 case LevelCubeDecalStars:
-                    p = pLevelCube->pStars;
-                    color = &pLevelCube->color_stars_and_solver;
+                    p = levelCube.pStars;
+                    color = levelCube.color_stars_and_solver;
                     break;
                 
                 case LevelCubeDecalSolver:
-                    p = pLevelCube->pSolver;
-                    color = &pLevelCube->color_stars_and_solver;
+                    p = levelCube.pSolver;
+                    color = levelCube.color_stars_and_solver;
                     break;
             }
 
-            if (p) {
-                coords.tx0 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-                coords.tx1 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
-                coords.tx2 = vec2(p->tx_lo_left.x,  p->tx_lo_left.y);
-                coords.tx3 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
+            if (p != null) {
+                coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
             
-                Graphics.addCubeFace_X_Plus((*it)->pos.x, (*it)->pos.y, (*it)->pos.z, coords, *color);
+                Graphics.addCubeFace_X_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
             }
 	    }
-	
+
+        size = Game.ar_cubefacedata[face_type].lst_level_cubes.size();
 	    face_type = Face_Y_Plus;
-	    for(it = engine->ar_cubefacedata[face_type].lst_level_cubes.begin(); it != engine->ar_cubefacedata[face_type].lst_level_cubes.end(); ++it) {
-		    pLevelCube = *it;
+	    for(int i = 0; i < size; ++i) {
+		    levelCube = Game.ar_cubefacedata[face_type].lst_level_cubes.get(i);
             p = null;
         
             switch (decal_type) {
                 case LevelCubeDecalNumber:
-                    p = pLevelCube->pNumber;
-                    color = &pLevelCube->color_number;
+                    p = levelCube.pNumber;
+                    color = levelCube.color_number;
                     break;
                 
                 case LevelCubeDecalStars:
-                    p = pLevelCube->pStars;
-                    color = &pLevelCube->color_stars_and_solver;
+                    p = levelCube.pStars;
+                    color = levelCube.color_stars_and_solver;
                     break;
                 
                 case LevelCubeDecalSolver:
-                    p = pLevelCube->pSolver;
-                    color = &pLevelCube->color_stars_and_solver;
+                    p = levelCube.pSolver;
+                    color = levelCube.color_stars_and_solver;
                     break;
             }
         
-            if (p) {
-                coords.tx0 = new Vector2(p->tx_lo_left.x,  p->tx_lo_left.y);
-                coords.tx1 = vec2(p->tx_lo_right.x, p->tx_lo_right.y);
-                coords.tx2 = vec2(p->tx_up_right.x, p->tx_up_right.y);
-                coords.tx3 = vec2(p->tx_up_left.x,  p->tx_up_left.y);
+            if (p != null) {
+                coords.tx0 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx1 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
+                coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx3 = new Vector2(p.tx_up_left.x, p.tx_up_left.y);
 
-                Graphics.addCubeFace_Y_Plus((*it)->font_pos.x, (*it)->font_pos.y, (*it)->font_pos.z, coords, *color);
+                Graphics.addCubeFace_Y_Plus(levelCube.font_pos.x, levelCube.font_pos.y, levelCube.font_pos.z, coords, color);
             }
 	    }
-	
+
+        size = Game.ar_cubefacedata[face_type].lst_level_cubes.size();
 	    face_type = Face_Z_Plus;
-	    for(it = engine->ar_cubefacedata[face_type].lst_level_cubes.begin(); it != engine->ar_cubefacedata[face_type].lst_level_cubes.end(); ++it) {
-		    pLevelCube = *it;
+	    for(int i = 0; i < size; ++i) {
+		    levelCube = Game.ar_cubefacedata[face_type].lst_level_cubes.get(i);
             p = null;
         
             switch (decal_type) {
                 case LevelCubeDecalNumber:
-                    p = pLevelCube->pNumber;
-                    color = &pLevelCube->color_number;
+                    p = levelCube.pNumber;
+                    color = levelCube.color_number;
                     break;
                 
                 case LevelCubeDecalStars:
-                    p = pLevelCube->pStars;
-                    color = &pLevelCube->color_stars_and_solver;
+                    p = levelCube.pStars;
+                    color = levelCube.color_stars_and_solver;
                     break;
                 
                 case LevelCubeDecalSolver:
-                    p = pLevelCube->pSolver;
-                    color = &pLevelCube->color_stars_and_solver;
+                    p = levelCube.pSolver;
+                    color = levelCube.color_stars_and_solver;
                     break;
             }
 
-            if (p) {
-                coords.tx0 = new Vector2(p->tx_up_right.x, p->tx_up_right.y);
-                coords.tx1 = new Vector2(p->tx_up_left.x,  p->tx_up_left.y);
-                coords.tx2 = new Vector2(p->tx_lo_left.x,  p->tx_lo_left.y);
-                coords.tx3 = new Vector2(p->tx_lo_right.x, p->tx_lo_right.y);
+            if (p != null) {
+                coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
+                coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
+                coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
+                coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
-                Graphics.addCubeFace_Z_Plus((*it)->pos.x, (*it)->pos.y, (*it)->pos.z, coords, *color);
+                Graphics.addCubeFace_Z_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
             }
 	    }
-	
 	    Graphics.renderTriangles();
     }
 
-    public void drawTexts(list<cCubeFont*>& lst_face_x_plus, list<cCubeFont*>& lst_face_y_plus, list<cCubeFont*>& lst_face_z_plus, Color color) {
-	    list<cCubeFont*>::iterator it;
-	    TexturedQuad* pFont;
-	    TexCoordsQuad coords;
+    public void drawTexts(ArrayList<CubeFont> lst_face_x_plus, ArrayList<CubeFont> lst_face_y_plus, ArrayList<CubeFont> lst_face_z_plus, Color color) {
+	    int size;
+        CubeFont cubeFont;
+	    TexturedQuad font;
+	    TexCoordsQuad coords = new TexCoordsQuad();
 	
 	    Graphics.prepare();
 
-	    for (it = lst_face_x_plus.begin(); it != lst_face_x_plus.end(); ++it) {
-		    pFont = (*it)->GetFont();
+        size = lst_face_x_plus.size();
+	    for (int i = 0; i < size; ++i) {
+            cubeFont = lst_face_x_plus.get(i);
+		    font = cubeFont.getFont();
 		
-		    coords.tx0 = new Vector2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-		    coords.tx1 = new Vector2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-		    coords.tx2 = new Vector2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-		    coords.tx3 = new Vector2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+		    coords.tx0 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+		    coords.tx1 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+		    coords.tx2 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
+		    coords.tx3 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
 		
-		    Graphics.addCubeFace_X_Plus((*it)->pos.x, (*it)->pos.y, (*it)->pos.z, coords, color);
-	    }
-	
-	    for (it = lst_face_y_plus.begin(); it != lst_face_y_plus.end(); ++it) {
-		    pFont = (*it)->GetFont();
-		
-		    coords.tx0 = new Vector2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-		    coords.tx1 = new Vector2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
-		    coords.tx2 = new Vector2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-		    coords.tx3 = new Vector2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-		
-		    Graphics.addCubeFace_Y_Plus((*it)->pos.x, (*it)->pos.y, (*it)->pos.z, coords, color);
+		    Graphics.addCubeFace_X_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
 	    }
 
-	    for (it = lst_face_z_plus.begin(); it != lst_face_z_plus.end(); ++it) {
-		    pFont = (*it)->GetFont();
-					
-		    coords.tx0 = vec2(pFont->tx_up_right.x, pFont->tx_up_right.y);
-		    coords.tx1 = vec2(pFont->tx_up_left.x,  pFont->tx_up_left.y);
-		    coords.tx2 = vec2(pFont->tx_lo_left.x,  pFont->tx_lo_left.y);
-		    coords.tx3 = vec2(pFont->tx_lo_right.x, pFont->tx_lo_right.y);
+        size = lst_face_y_plus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_face_y_plus.get(i);
+		    font = cubeFont.getFont();
 		
-		    Graphics.addCubeFace_Z_Plus((*it)->pos.x, (*it)->pos.y, (*it)->pos.z, coords, color);
+		    coords.tx0 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
+		    coords.tx1 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+		    coords.tx2 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+		    coords.tx3 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
+		
+		    Graphics.addCubeFace_Y_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
+	    }
+
+	    size = lst_face_z_plus.size();
+        for (int i = 0; i < size; ++i) {
+            cubeFont = lst_face_z_plus.get(i);
+            font = cubeFont.getFont();
+					
+		    coords.tx0 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+		    coords.tx1 = new Vector2(font.tx_up_left.x, font.tx_up_left.y);
+		    coords.tx2 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
+		    coords.tx3 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+		
+		    Graphics.addCubeFace_Z_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
 	    }
 	
 	    Graphics.renderTriangles();
@@ -844,22 +852,22 @@ public final class Animator {
     
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
-        glDepthMask(GL_FALSE);
+        glDepthMask(false);// GL_FALSE);
         glEnable(GL_TEXTURE_2D);
     
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
     
-        Color color = new Color(255, 255, 255, engine->dirty_alpha);
-        Graphics.drawFBOTexture(engine->texture_id_dirty, color);
+        Color color = new Color(255, 255, 255, Game.dirty_alpha);
+        Graphics.drawFBOTexture(Graphics.texture_id_dirty, color, false);
     
-        glDepthMask(GL_TRUE);
+        glDepthMask(true); //GL_TRUE);
     
         Graphics.setProjection3D();
         Graphics.setModelViewMatrix3D(m_camera_current);
 	
-        const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
+        //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
+        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
 	
         glEnable(GL_LIGHTING);
     
@@ -870,40 +878,39 @@ public final class Animator {
         if (false) { // DRAW_AXES_CUBE
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_LIGHTING);
-            engine->DrawAxes();
+            Graphics.drawAxes();
             glEnable(GL_LIGHTING);
             glEnable(GL_TEXTURE_2D);
         }
 
 	    glPushMatrix();
-	    glTranslatef(engine->cube_offset.x, engine->cube_offset.y, engine->cube_offset.z);
+	    glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
 	    drawLevelCubes();
     
         glDisable(GL_LIGHTING);
-    
 
 	    Graphics.enableBlending();
 	    glDisableClientState(GL_NORMAL_ARRAY);
 	
 	    Graphics.setStreamSourceFloatAndColor();
 	
-        color = cEngine::GetTextColor();
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_fonts);
-        drawTexts(m_lst_texts[Face_X_Plus], m_lst_texts[Face_Y_Plus], m_lst_texts[Face_Z_Plus], color);
+        color = Game.getTextColor();
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts);
+        drawTexts(m_lst_texts.get(Face_X_Plus), m_lst_texts.get(Face_Y_Plus), m_lst_texts.get(Face_Z_Plus), color);
 	
-	    color = cEngine::GetTitleColor();
-	    drawTexts(m_lst_titles[Face_X_Plus], m_lst_titles[Face_Y_Plus], m_lst_titles[Face_Z_Plus], color);
+	    color = Game.getTitleColor();
+	    drawTexts(m_lst_titles.get(Face_X_Plus), m_lst_titles.get(Face_Y_Plus), m_lst_titles.get(Face_Z_Plus), color);
 
-	    color = cEngine::GetSymbolColor();
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_numbers);
-        drawLevelCubeDecals(LevelCubeDecalNumber);
+	    color = Game.getSymbolColor();
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_numbers);
+        drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
 	
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_symbols);
-        drawLevelCubeDecals(LevelCubeDecalStars);
-        drawLevelCubeDecals(LevelCubeDecalSolver);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
+        drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalStars);
+        drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalSolver);
     
-        drawTexts(m_lst_symbols[Face_X_Plus], m_lst_symbols[Face_Y_Plus], m_lst_symbols[Face_Z_Plus], color);
+        drawTexts(m_lst_symbols.get(Face_X_Plus), m_lst_symbols.get(Face_Y_Plus), m_lst_symbols.get(Face_Z_Plus), color);
     
 	    Graphics.disableBlending();
 	
