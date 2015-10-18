@@ -9,7 +9,7 @@ import static com.almagems.cubetraz.Constants.*;
 public final class Text {
 
     private String m_text;
-    private ArrayList<TexturedQuad> m_ar_lines[MAX_TEXT_LINES];
+    private ArrayList<ArrayList<TexturedQuad>> m_ar_lines = new ArrayList<>(MAX_TEXT_LINES);
     private float m_sx; // scale x
     private float m_sy; // scale y
     private int m_length;
@@ -48,7 +48,7 @@ public final class Text {
 
     public void cleanUp() {
         for (int i = 0; i < MAX_TEXT_LINES; ++i) {
-            m_ar_lines[i].clear();
+            m_ar_lines.get(i).clear();
         }
     }
 
@@ -71,7 +71,7 @@ public final class Text {
             } else {
                 pFont = Game.getFont(ch);
             }
-            m_ar_lines[m_lines_count].add(pFont);
+            m_ar_lines.get(m_lines_count).add(pFont);
         }
         calcTextDimensions();
     }
@@ -129,16 +129,16 @@ public final class Text {
     }
 
     public void emitt(float x, float y, Color color) {
-        Vector2 pos = new Vector2(x, y);
-        emitt(m_display.m_verts, m_display.m_coords, m_display.m_colors,
-                m_display.m_vindex, m_display.m_cindex, m_display.m_color_index,
-                pos, color);
+//        Vector2 pos = new Vector2(x, y);
+//        emitt(m_display.m_verts, m_display.m_coords, m_display.m_colors,
+//                m_display.m_vindex, m_display.m_cindex, m_display.m_color_index,
+//                pos, color);
     }
 
     public void emitt(Vector2 pos, Color color) {
-        emitt(m_display.m_verts, m_display.m_coords, m_display.m_colors,
-                m_display.m_vindex, m_display.m_cindex, m_display.m_color_index,
-                pos, color);
+//        emitt(m_display.m_verts, m_display.m_coords, m_display.m_colors,
+//                m_display.m_vindex, m_display.m_cindex, m_display.m_color_index,
+//                pos, color);
     }
 /*
     public void emitt(float* verts, float* coords, GLubyte* colors,

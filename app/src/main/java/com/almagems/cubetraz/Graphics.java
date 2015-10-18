@@ -17,6 +17,45 @@ import java.util.Map;
 public final class Graphics {
 
 
+
+    public static void drawCube()
+    {
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+
+// draw cube face
+    public static void drawCubeFaceY_Plus()
+    {
+        glDrawArrays(GL_TRIANGLES, 30, 6);
+    }
+    public static void drawCubeFaceY_Minus()
+    {
+        glDrawArrays(GL_TRIANGLES, 18, 6);
+    }
+    public static void drawCubeFaceX_Plus()
+    {
+        glDrawArrays(GL_TRIANGLES, 12, 6);
+    }
+    public static void drawCubeFaceX_Minus()
+    {
+        glDrawArrays(GL_TRIANGLES, 24, 6);
+    }
+    public static void drawCubeFaceZ_Plus()
+    {
+        glDrawArrays(GL_TRIANGLES, 6, 6);
+    }
+    public static void drawCubeFaceZ_Minus()
+    {
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+
+    static float vertices[];
+    static float normals[];
+    static short texture_coordinates[];
+    static byte colors[];
+
+
     public static int width;
     public static int height;
     public static int half_width;

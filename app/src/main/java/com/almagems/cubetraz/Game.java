@@ -11,6 +11,56 @@ import static com.almagems.cubetraz.Constants.*;
 public final class Game {
 
 
+
+
+    public static Vector getCubePosAt(CubePos cube_pos) {
+        Vector pos;
+
+        pos.x = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tx;
+        pos.y = cubes[cube_pos.x][cube_pos.y][cube_pos.z].ty;
+        pos.z = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tz;
+
+        return pos;
+    }
+
+    public static Vector2 rotate(Vector2 a, float degree) {
+        float angle = (float)Math.toRadians(degree);
+        float c = (float)Math.cos(angle);
+        float s = (float)Math.sin(angle);
+        return new Vector2(c*a.x - s*a.y, s*a.x + c*a.y);
+    }
+
+    public static TexturedQuad getNewLineFont()
+    {
+        return m_newlinefont;
+    }
+    public static TexturedQuad m_newlinefont;
+
+    public static TexturedQuad getFontBig(String ch) {
+        //printf("\nNumber of Fonts:%lu", m_fonts.size());
+        return m_fonts_big.get(ch);
+    }
+
+    public static FBO m_fbo;
+
+    public boolean isPlaying() {
+        return m_scene == level;
+    }
+
+    public static Scene m_scene;
+    public static Intro intro;
+    public static Animator animator;
+    public static Statistics statistics;
+    public static Outro outro;
+
+    private static int m_framebuffer;
+    private static int m_colorbuffer;
+    private static int m_depthstencilbuffer;
+
+
+
+
+
     public static void resetCubesColors() {
         for(int x = 0; x < MAX_CUBE_COUNT; ++x) {
             for(int y = 0; y < MAX_CUBE_COUNT; ++y) {
@@ -185,13 +235,13 @@ public final class Game {
 //                if (m_outro) {
 //                    delete m_outro;
 //                    m_outro = NULL;
-//                    engine->menu_init_data.reappear = false;
+//                    engine.menu_init_data.reappear = false;
 //                }
 //
 //                if (NULL == m_menu)
 //                    m_menu = new cMenu();
 //
-//                m_menu->Init();
+//                m_menu.Init();
 //
 //                scene = m_menu;
 //                break;
@@ -201,14 +251,14 @@ public final class Game {
 //                if (NULL == m_animator)
 //                    m_animator = new cAnimator();
 //
-//                m_animator->Init();
+//                m_animator.Init();
 //
 //                scene = m_animator;
 //                break;
 //
 //            case Scene_Level:
 //
-//                m_level->Init(&level_init_data);
+//                m_level.Init(&level_init_data);
 //
 //                scene = m_level;
 //                break;
@@ -218,14 +268,14 @@ public final class Game {
 //                if (NULL == m_statistics)
 //                    m_statistics = new cStatistics();
 //
-//                m_statistics->Init();
+//                m_statistics.Init();
 //
 //                scene = m_statistics;
 //                break;
 //
 //            case Scene_Solvers:
 //
-//                m_solvers->Init();
+//                m_solvers.Init();
 //
 //                scene = m_solvers;
 //                break;
@@ -235,7 +285,7 @@ public final class Game {
 //                if (NULL == m_outro)
 //                    m_outro = new cOutro();
 //
-//                m_outro->Init();
+//                m_outro.Init();
 //
 //                scene = m_outro;
 //                break;
@@ -335,7 +385,7 @@ public final class Game {
                             y == 0 || y == MAX_CUBE_COUNT - 1 ||
                             z == 0 || z == MAX_CUBE_COUNT - 1) {
                                 lst.add(cubes[x][y][z]);
-                                cubes[x][y][z].setColor( getFaceColor() );
+                                cubes[x][y][z].setColor( getFaceColor(1f) );
                         }
                     }
                 }
@@ -843,732 +893,172 @@ public final class Game {
         } // switch
 
         cube.type = CubeTypeEnum.CubeIsInvisibleAndObstacle;
-        //printf("\nLevel Cube at: (%d,%d,%d)", pCube->x, pCube->y, pCube->z);
+        //printf("\nLevel Cube at: (%d,%d,%d)", pCube.x, pCube.y, pCube.z);
         Creator.addLevelCube(level_number,  face_type, face_id, cube.x, cube.y, cube.z);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    #define HALF_CUBE_SIZE CUBE_SIZE / 2.0f
-//#define FONT_OVERLAY_OFFSET ((CUBE_SIZE / 2.0f) + 0.001f)
-            #define FONT_OVERLAY_OFFSET 0.01f
-            #define SAVE_GAME_FILE "game.dat"
-            #define SAVE_GAME_FILE_EASY "easy_game.dat"
-            #define SAVE_GAME_FILE_NORMAL "normal_game.dat"
-            #define SAVE_GAME_FILE_HARD "hard_game.dat"
-            #define SAVE_OPTIONS_FILE "options.dat"
-            #define LEVEL_LOCKED -1
-            #define LEVEL_UNLOCKED 0
-
-
-
-    struct CubeRotation
-    {
-        float degree;
-        vec3 axis;
-    };
-
-
-
-
-// Scenes
-
-
-enum MoveDir
-{
-    MoveNone = 0,
-    MoveY = 1,
-    MoveX = 2,
-    MoveZ = 3
-};
-
-
-struct CellInitData
-        {
-        vec3 offset;
-        int level_index;
-
-        };
-
-        struct Rectangle
-        {
-        Rectangle()
-        {
-        x = y = w = h = 0.0f;
-        }
-
-        Rectangle(int x, int y, int w, int h)
-        {
-        this->x = x;
-        this->y = y;
-        this->w = w;
-        this->h = h;
-        }
-
-        float x;
-        float y;
-        float w;
-        float h;
-        };
-
-
-
-class cEngine : public IEngine
-        {
-
-public:
-
-static GLfloat vertices[];
-static GLfloat normals[];
-static GLshort texture_coordinates[];
-static GLubyte colors[];
-
-
-        cCube cubes[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
-
-        float m_banner_height;
-        float m_aspectRatio;
-
-        TexturedQuad* m_newlinefont;
-
-
-        DeviceTypeEnum device_type;
-
-
-
-
-
-
-
-
-// scenes
-        cIntro* m_intro;
-
-        cAnimator* m_animator;
-
-        cStatistics* m_statistics;
-        cOutro* m_outro;
-        cSolvers* m_solvers;
-
-        cEngine();
-        ~cEngine();
-
-        void ResizeGLView(int width, int height);
-        void Init(int width, int height, float scaleFactor, DeviceTypeEnum device_type, float banner_height);
-        void Update(float dt);
-        void Render();
-
-
-        void EnteredBackground();
-        void EnteredForeground();
-
-
-        void PlayGame(DifficultyEnum difficulty, int level_number);
-
-        GLuint LoadTexture(const char* name);
-
-// input
-        void OnFingerDown(float x, float y, int finger_count);
-        void OnFingerUp(float x, float y, int finger_count);
-        void OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count);
-
-// Save & Load Options
-        void SaveOptions();
-        void LoadOptions();
-
-        void OnSwipe(SwipeDirEnums type);
-
-
-        inline float quadraticIn(float time)
-        {
-        return time * time;
-        }
-
-        inline float quadraticOut(float time)
-        {
-        return time * (2 - time);
-        }
-
-        void ReportAchievement(const char* identifier, float percent);
-
-
-        void ShowFullScreenAd();
-        bool GetAdsFlag();
-
-// volumes
-        void MusicVolumeUp();
-        void MusicVolumeDown();
-
-        void SoundVolumeUp();
-        void SoundVolumeDown();
-        float GetMusicVolume();
-        float GetSoundVolume();
-
-        void SetMusicVolume(float volume);
-        void SetSoundVolume(float volume);
-
-        void PlaySound(const char* key);
-        void PlayMusic(const char* key);
-
-        void PrepareMusicToPlay(const char* key);
-        void PlayPreparedMusic();
-
-        void StopMusic();
-
-        inline bool IsPlaying()
-        {
-        return m_scene == m_level ? true : false;
-        }
-
-//	inline void GetTimeString(char* buffer, double elapsed)
-//    {
-//        sprintf(buffer, "%02.0f:%02.0f:%02.0f", floor(elapsed/3600.0), floor(fmod(elapsed,3600.0)/60.0), fmod(elapsed, 60.0));
-//    }
-
-        void SetResourceManager(void* pResMgr)
-        {
-        m_resourceManager = (IResourceManager*)pResMgr;
-        }
-
-        void SaveGLBuffer()
-        {
-        m_resourceManager->SaveGLBuffer();
-        }
-
-        inline void IncT(float& t)
-        {
-        t += 0.04f;
-
-        if (t > 1.0f)
-        t = 1.0f;
-        }
-
-        inline void DecT(float& t)
-        {
-        t -= 0.04f;
-
-        if (t < 0.0f)
-        t = .0f;
-        }
-
-        bool GetCanSkipIntro();
-        void SetCanSkipIntro();
-
-
-        float m_scaleFactor;
-
-        IResourceManager* m_resourceManager;
-
-        cFBO m_fbo;
-
-        void MakeShadowMatrix(float vPointOnPlane0[3], float vPointOnPlane1[3], float vPointOnPlane2[3], float vLightPos[4], float destMat[16]);
-
-        inline void DrawCube()
-        {
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-// draw cube face
-        inline void DrawCubeFaceY_Plus()
-        {
-        glDrawArrays(GL_TRIANGLES, 30, 6);
-        }
-        inline void DrawCubeFaceY_Minus()
-        {
-        glDrawArrays(GL_TRIANGLES, 18, 6);
-        }
-        inline void DrawCubeFaceX_Plus()
-        {
-        glDrawArrays(GL_TRIANGLES, 12, 6);
-        }
-        inline void DrawCubeFaceX_Minus()
-        {
-        glDrawArrays(GL_TRIANGLES, 24, 6);
-        }
-        inline void DrawCubeFaceZ_Plus()
-        {
-        glDrawArrays(GL_TRIANGLES, 6, 6);
-        }
-        inline void DrawCubeFaceZ_Minus()
-        {
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
-
-// draw cube no face
-        void DrawCubeNoFace(bool x_plus,
-        bool x_minus,
-        bool y_plus,
-        bool y_minus,
-        bool z_plus,
-        bool z_minus);
-
-        void DrawQuad();
-
-        void DrawCircleAt(float x, float y, float radius, Color& color);
-
-
-        inline TexturedQuad* GetFontBig(char ch)
-        {
-        //printf("\nNumber of Fonts:%lu", m_fonts.size());
-        return m_fonts_big[ch];
-        }
-
-
-
-
-
-        inline TexturedQuad* GetNewLineFont()
-        {
-        return m_newlinefont;
-        }
-
-        float GetTextWidth(const char* text, float scale);
-
-        vec2 Rotate(vec2& a, float degree)
-        {
-        float angle = TO_RAD(degree);
-
-        float c = cosf(angle);
-        float s = sinf(angle);
-        return vec2(
-        c*a.x - s*a.y,
-        s*a.x + c*a.y
-        );
-        }
-
-// SetProjection
-
-
-// IAP
-        void PurchaseRestore();
-        void PurchaseSolvers();
-        void PurchaseRemoveAds();
-
-        void HideProgressIndicator();
-        void ShowAlreadyPurchased();
-
-// Game Center
-        void SubmitScore(int score);
-        void ShowLeaderboard();
-        void ShowLocalScore();
-
-        void ShowSocialShare();
-
-
-        void HideGameCenterInfo();
-        void ShowGameCenterInfo();
-
-        GLuint m_texture_id;
-
-        void SetTextureID(GLuint id);
-
-        void SetupHollowCube();
-
-
-
-
-
-        inline vec3 GetCubePosAt(CubePos cube_pos)
-        {
-        vec3 pos;
-
-        pos.x = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tx;
-        pos.y = cubes[cube_pos.x][cube_pos.y][cube_pos.z].ty;
-        pos.z = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tz;
-
-        return pos;
-        }
-
-        inline void SetCubeTypeOnFace(cCube* pCube, char ch, CubeFaceTypesEnum face_type, CubeFaceNamesEnum face_id)
-        {
-        int level_number = -1;
-
-        switch (face_id)
-        {
-        case Face_Easy01:
-        case Face_Normal01:
-        case Face_Hard01:
-        level_number = 0;
-        break;
-
-        case Face_Easy02:
-        case Face_Normal02:
-        case Face_Hard02:
-        level_number = 15;
-        break;
-
-        case Face_Easy03:
-        case Face_Normal03:
-        case Face_Hard03:
-        level_number = 30;
-        break;
-
-        case Face_Easy04:
-        case Face_Normal04:
-        case Face_Hard04:
-        level_number = 45;
-        break;
-
-default:
-        break;
-        }
-
-        switch (ch)
-        {
-        case ' ':
-        pCube->type = CubeIsInvisible;
-        return;
-
-        case 'x':
-        pCube->type = CubeIsVisibleAndObstacle;
-        return;
-
-        case '1':
-        level_number+=1;
-        break;
-
-        case '2':
-        level_number+=2;
-        break;
-
-        case '3':
-        level_number+=3;
-        break;
-
-        case '4':
-        level_number+=4;
-        break;
-
-        case '5':
-        level_number+=5;
-        break;
-
-        case '6':
-        level_number+=6;
-        break;
-
-        case '7':
-        level_number+=7;
-        break;
-
-        case '8':
-        level_number+=8;
-        break;
-
-        case '9':
-        level_number+=9;
-        break;
-
-        case 'A':
-        level_number+=10;
-        break;
-
-        case 'B':
-        level_number+=11;
-        break;
-
-        case 'C':
-        level_number+=12;
-        break;
-
-        case 'D':
-        level_number+=13;
-        break;
-
-        case 'E':
-        level_number+=14;
-        break;
-
-        case 'F':
-        level_number+=15;
-        break;
-
-default:
-        //printf("\nERROR: Unknown cube type on face.");
-        return;
-        } // switch
-
-        pCube->type = CubeIsInvisibleAndObstacle;
-        //printf("\nLevel Cube at: (%d,%d,%d)", pCube->x, pCube->y, pCube->z);
-        cCreator::AddLevelCube(level_number,  face_type, face_id, pCube->x, pCube->y, pCube->z);
-        }
-
-
-
-
-
-
-
-
-
-        void WarmCache();
-        void ResetHelp();
-
-
-        inline void SetCubeTypeInvisible(CubePos cube_pos)
-        {
+    public static void setCubeTypeInvisible(CubePos cube_pos) {
         //printf("\nSet Cube Type Invisible (%d, %d, %d)", cube_pos.x, cube_pos.y, cube_pos.z);
-        cubes[cube_pos.x][cube_pos.y][cube_pos.z].type = CubeIsInvisible;
+        cubes[cube_pos.x][cube_pos.y][cube_pos.z].type = CubeTypeEnum.CubeIsInvisible;
+    }
+
+    public static boolean isPlayerCube(CubePos cube_pos) {
+        CubePos cp = level.m_player_cube.getCubePos();
+        if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+            return true;
+        } else {
+            return false;
         }
+    }
 
-        inline bool IsPlayerCube(CubePos& cube_pos)
-        {
-        CubePos cp = m_level->m_player_cube->GetCubePos();
-
-        if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
-        return true;
-        else
-        return false;
+    public static boolean isKeyCube(CubePos cube_pos) {
+        CubePos cp = level.getKeyPos();
+        if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+            return true;
+        } else {
+            return false;
         }
+    }
 
-        inline bool IsKeyCube(CubePos& cube_pos)
-        {
-        CubePos cp = m_level->GetKeyPos();
-
-        if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z)
-        return true;
-        else
-        return false;
-        }
-
-        inline Color GetRandomColor()
-        {
-        return Color( rand()%255, rand()%255, rand()%255, rand()%255 );
-        }
-
-        #ifdef LITE_VERSION
-        void AskToBuyFullVersion();
-        #endif
-
-        void RenderToFBO(cScene* scene);
-
-        void BuyPackOfSolvers(int number_of_solvers);
-        void DrawFullScreenQuad(Color& color);
-
-        void UpdateDisplayedSolvers();
-
-
-        void SetSolverCount(int count);
-
-        void DecSolverCount();
-
-        bool IsCubeOnAList(cCube* pCube, list<cCube*>& lst)
-        {
-        assert(NULL != pCube);
-
-        cCube* p;
-        list<cCube*>::iterator it;
-        for (it = lst.begin(); it != lst.end(); ++it)
-        {
-        p = *it;
-
-        if (p == pCube)
-        return true;
-        }
-
-        return false;
-        }
-
-        int CountOnAList(cCube* pCube, list<cCube*>& lst)
-        {
-        assert(NULL != pCube);
-
-        int count = 0;
-
-        cCube* p;
-        list<cCube*>::iterator it;
-        for (it = lst.begin(); it != lst.end(); ++it)
-        {
-        p = *it;
-
-        if (p == pCube)
-        ++count;
-        }
-
-        return count;
-        }
-
-
-
-private:
-
-
-
-        void InitTextures();
-        void InitFontsBig();
-        void InitFonts();
-        void InitNumberFonts();
-        void InitSymbols();
-
-        void ScaleVector(float vVector[3], const GLfloat fScale);
-        GLfloat GetVectorLengthSqrd(const float vVector[3]);
-        GLfloat GetVectorLength(const float vVector[3]);
-        void CalcVectorCrossProduct(const float vU[3], const float vV[3], float vResult[3]);
-        void NormalizeVector(float vNormal[3]);
-        void SubtractVectors(const float vFirst[3], const float vSecond[3], float vResult[3]);
-        void GetNormalVector(const float vP1[3], const float vP2[3], const float vP3[3], float vNormal[3]);
-        void GetPlaneEquation(float vPoint1[3], float vPoint2[3], float vPoint3[3], float vPlane[3]);
-
-        GLuint m_framebuffer;
-        GLuint m_colorbuffer;
-        GLuint m_depthstencilbuffer;
-
-
-        cScene* m_scene;
-        };
-
-        extern cEngine* engine;
-
-
-
-
-
-
-
-
-
-
-
-
-    cEngine* engine = NULL;
-
-
-    #pragma mark - ctor
-
-    IEngine* CreateEngine()
-    {
-        return new cEngine();
+    public static Color getRandomColor() {
+        return new Color( Utils.rand.nextInt(255), Utils.rand.nextInt(255), Utils.rand.nextInt(255), Utils.rand.nextInt(255) );
     }
 
 
-    GLfloat cEngine::vertices[] =
-    {
-        // x-plus
-        HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+    public static boolean isCubeOnAList(Cube cube, ArrayList<Cube> lst) {
+        return lst.contains(cube);
+    }
 
-                HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+    public static int countOnAList(Cube theCube, ArrayList<Cube> lst) {
+        int count = 0;
+        int size = lst.size();
+        Cube cube;
+
+        for (int i = 0; i < size; ++i) {
+            cube = lst.get(i);
+
+            if (cube == theCube) {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    public static void cubeGLData() {
+
+        float vertices[] = {
+                // x-plus
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+
+                HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
                 HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
 
                 // x-minus
                 -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
 
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
                 -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
 
 
                 // y-plus
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
 
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
 
                 // y-minus
                 HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
 
-                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
                 -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
                 HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
 
 
                 // z-plus
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
 
-                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE, -HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE,  HALF_CUBE_SIZE,
+                -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, -HALF_CUBE_SIZE, HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
 
                 // z-minus
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
                 HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
                 -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
 
                 -HALF_CUBE_SIZE, -HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                -HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-                HALF_CUBE_SIZE,  HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
-    };
+                -HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+                HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
+        };
 
-    GLfloat cEngine::normals[] =
-    {
-        // x-plus
-        1.0f,  0.0f,  0.0f,
-                1.0f,  0.0f,  0.0f,
-                1.0f,  0.0f,  0.0f,
-                1.0f,  0.0f,  0.0f,
-                1.0f,  0.0f,  0.0f,
-                1.0f,  0.0f,  0.0f,
+        float normals[] = {
+                // x-plus
+                1.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f,
 
                 // x-minus
-                -1.0f,  0.0f,  0.0f,
-                -1.0f,  0.0f,  0.0f,
-                -1.0f,  0.0f,  0.0f,
-                -1.0f,  0.0f,  0.0f,
-                -1.0f,  0.0f,  0.0f,
-                -1.0f,  0.0f,  0.0f,
+                -1.0f, 0.0f, 0.0f,
+                -1.0f, 0.0f, 0.0f,
+                -1.0f, 0.0f, 0.0f,
+                -1.0f, 0.0f, 0.0f,
+                -1.0f, 0.0f, 0.0f,
+                -1.0f, 0.0f, 0.0f,
 
                 // y-plus
-                0.0f,  1.0f,  0.0f,
-                0.0f,  1.0f,  0.0f,
-                0.0f,  1.0f,  0.0f,
-                0.0f,  1.0f,  0.0f,
-                0.0f,  1.0f,  0.0f,
-                0.0f,  1.0f,  0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
 
                 // y-minus
-                0.0f, -1.0f,  0.0f,
-                0.0f, -1.0f,  0.0f,
-                0.0f, -1.0f,  0.0f,
-                0.0f, -1.0f,  0.0f,
-                0.0f, -1.0f,  0.0f,
-                0.0f, -1.0f,  0.0f,
+                0.0f, -1.0f, 0.0f,
+                0.0f, -1.0f, 0.0f,
+                0.0f, -1.0f, 0.0f,
+                0.0f, -1.0f, 0.0f,
+                0.0f, -1.0f, 0.0f,
+                0.0f, -1.0f, 0.0f,
 
 
                 // z-plus
-                0.0f,  0.0f,  1.0f,
-                0.0f,  0.0f,  1.0f,
-                0.0f,  0.0f,  1.0f,
-                0.0f,  0.0f,  1.0f,
-                0.0f,  0.0f,  1.0f,
-                0.0f,  0.0f,  1.0f,
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
 
                 // z-minus
-                0.0f,  0.0f, -1.0f,
-                0.0f,  0.0f, -1.0f,
-                0.0f,  0.0f, -1.0f,
-                0.0f,  0.0f, -1.0f,
-                0.0f,  0.0f, -1.0f,
-                0.0f,  0.0f, -1.0f,
-    };
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+        };
 
 
-    GLshort cEngine::texture_coordinates[] =
-    {
-        // x-plus
-        1, 0, // 0
+        short texture_coordinates[] = {
+                // x-plus
+                1, 0, // 0
                 0, 0, // 1
                 0, 1, // 2
 
@@ -1620,17 +1110,16 @@ private:
                 0, 1, // 2
                 0, 0, // 3
                 1, 0, // 0
-    };
+        };
 
-    #define R 255
-            #define G 255
-            #define B 255
-            #define A 255
+        final int R = 255;
+        final int G = 255;
+        final int B = 255;
+        final int A = 255;
 
-    GLubyte cEngine::colors[] =
-    {
-        // x-plus
-        R, G, B, A,
+        int colors[] = {
+                // x-plus
+                R, G, B, A,
                 R, G, B, A,
                 R, G, B, A,
                 R, G, B, A,
@@ -1676,16 +1165,12 @@ private:
                 R, G, B, A,
                 R, G, B, A,
                 R, G, B, A,
-    };
-
-    #undef R
-    #undef G
-    #undef B
-    #undef A
+        };
+    }
 
 
 //-------------------------------------------------------------------------------------
-    cEngine::cEngine()
+    cEngine()
     {
         #ifdef __APPLE__
         //printf("\ncEngine is on Apple...\n");
@@ -1707,7 +1192,7 @@ private:
         dirty_alpha = DIRTY_ALPHA;
     }
 
-    cEngine::~cEngine()
+    ~cEngine()
     {
         map<char, TexturedQuad*>::iterator it;
 
@@ -1718,7 +1203,7 @@ private:
     }
 
     // Scales a vector by a scalar
-    void cEngine::ScaleVector(float vVector[3], const GLfloat fScale)
+    void ScaleVector(float vVector[3], const GLfloat fScale)
     {
         vVector[0] *= fScale;
         vVector[1] *= fScale;
@@ -1726,40 +1211,40 @@ private:
     }
 
     // Gets the length of a vector squared
-    GLfloat cEngine::GetVectorLengthSqrd(const float vVector[3])
+    GLfloat GetVectorLengthSqrd(const float vVector[3])
     {
         return (vVector[0]*vVector[0]) + (vVector[1]*vVector[1]) + (vVector[2]*vVector[2]);
     }
 
     // Gets the length of a vector
-    GLfloat cEngine::GetVectorLength(const float vVector[3])
+    GLfloat GetVectorLength(const float vVector[3])
     {
         return (GLfloat)sqrt(GetVectorLengthSqrd(vVector));
     }
 
     // Calculate the cross product of two vectors
-    void cEngine::CalcVectorCrossProduct(const float vU[3], const float vV[3], float vResult[3])
+    void CalcVectorCrossProduct(const float vU[3], const float vV[3], float vResult[3])
     {
         vResult[0] =  vU[1] * vV[2] - vV[1] * vU[2];
         vResult[1] = -vU[0] * vV[2] + vV[0] * vU[2];
         vResult[2] =  vU[0] * vV[1] - vV[0] * vU[1];
     }
 
-    void cEngine::NormalizeVector(float vNormal[3])
+    void NormalizeVector(float vNormal[3])
     {
         GLfloat fLength = 1.0f / GetVectorLength(vNormal);
         ScaleVector(vNormal, fLength);
     }
 
     // Subtract one vector from another
-    void cEngine::SubtractVectors(const float vFirst[3], const float vSecond[3], float vResult[3])
+    void SubtractVectors(const float vFirst[3], const float vSecond[3], float vResult[3])
     {
         vResult[0] = vFirst[0] - vSecond[0];
         vResult[1] = vFirst[1] - vSecond[1];
         vResult[2] = vFirst[2] - vSecond[2];
     }
 
-    void cEngine::GetNormalVector(const float vP1[3], const float vP2[3], const float vP3[3], float vNormal[3])
+    void GetNormalVector(const float vP1[3], const float vP2[3], const float vP3[3], float vNormal[3])
     {
         float vV1[3];
         float vV2[3];
@@ -1772,7 +1257,7 @@ private:
     }
 
     // Gets the three coefficients of a plane equation given three points on the plane.
-    void cEngine::GetPlaneEquation(float vPoint1[3], float vPoint2[3], float vPoint3[3], float vPlane[3])
+    void GetPlaneEquation(float vPoint1[3], float vPoint2[3], float vPoint3[3], float vPlane[3])
     {
         // Get normal vector from three points. The normal vector is the first three coefficients
         // to the plane equation...
@@ -1782,7 +1267,7 @@ private:
         vPlane[3] = -(vPlane[0] * vPoint3[0] + vPlane[1] * vPoint3[1] + vPlane[2] * vPoint3[2]);
     }
 
-    void cEngine::MakeShadowMatrix(float vPointOnPlane0[3], float vPointOnPlane1[3], float vPointOnPlane2[3], float vLightPos[4], float destMat[16])
+    void MakeShadowMatrix(float vPointOnPlane0[3], float vPointOnPlane1[3], float vPointOnPlane2[3], float vLightPos[4], float destMat[16])
     {
         float vPlaneEquation[4];
         GLfloat dot;
@@ -1821,19 +1306,19 @@ private:
         destMat[15] =  dot - vLightPos[3] * vPlaneEquation[3];
     }
 
-    void cEngine::ShowFullScreenAd()
+    void ShowFullScreenAd()
     {
-        m_resourceManager->ShowFullScreenAd();
+        m_resourceManager.ShowFullScreenAd();
     }
 
-    bool cEngine::GetAdsFlag()
+    bool GetAdsFlag()
     {
-        return m_resourceManager->GetAdsFlag();
+        return m_resourceManager.GetAdsFlag();
     }
 
     #pragma mark - resize
 
-    void cEngine::ResizeGLView(int width, int height)
+    void ResizeGLView(int width, int height)
     {
         m_width = width;
         m_height = height;
@@ -1844,19 +1329,19 @@ private:
         m_aspectRatio = (float)m_width / (float)m_height;
         glViewport(0, 0, width, height);
 
-        m_menu->SetupCameras();
+        m_menu.SetupCameras();
     }
 
 
     #pragma mark - Init
 
-    void cEngine::Init(int width, int height, float scaleFactor, DeviceTypeEnum device_type, float banner_height)
+    void Init(int width, int height, float scaleFactor, DeviceTypeEnum device_type, float banner_height)
     {
         srand(time(NULL));
 
         m_banner_height = banner_height;
         m_scaleFactor = scaleFactor;
-        this->device_type = device_type;
+        this.device_type = device_type;
 
         // create packed depth & stencil buffer with same size as the color buffer
         glGenRenderbuffersOES(1, &m_depthstencilbuffer);
@@ -1988,7 +1473,7 @@ private:
         cCubetraz::Load();
     }
 
-    GLuint cEngine::LoadTexture(const char* name)
+    GLuint LoadTexture(const char* name)
     {
         if (0 != texture_id_tutor)
         {
@@ -1996,30 +1481,30 @@ private:
             texture_id_tutor = 0;
         }
 
-        m_resourceManager->CreateTexture(name, texture_id_tutor);
+        m_resourceManager.CreateTexture(name, texture_id_tutor);
         return texture_id_tutor;
     }
 
-    void cEngine::InitTextures()
+    void InitTextures()
     {
-        m_resourceManager->CreateTexture("grey_concrete128_stroke.png", texture_id_gray_concrete);
-        m_resourceManager->CreateTexture("key.png", texture_id_key);
-        m_resourceManager->CreateTexture("player.png", texture_id_player);
-        m_resourceManager->CreateTexture("level_cube.png", texture_id_level_cubes);
-        m_resourceManager->CreateTexture("level_cube_locked.png", texture_id_level_cubes_locked);
-        m_resourceManager->CreateTexture("fonts.png", texture_id_fonts);
-        m_resourceManager->CreateTexture("fonts_clear.png", texture_id_fonts_clear);
-        m_resourceManager->CreateTexture("level_numbers.png", texture_id_numbers);
-        m_resourceManager->CreateTexture("star.png", texture_id_star);
-        m_resourceManager->CreateTexture("symbols.png", texture_id_symbols);
-        m_resourceManager->CreateTexture("stat_background.png", texture_id_stat_background);
-        m_resourceManager->CreateTexture("credits.png", texture_id_credits);
-        m_resourceManager->CreateTexture("fonts_big.png", texture_id_fonts_big);
-        m_resourceManager->CreateTexture("dirty.png", texture_id_dirty);
-        m_resourceManager->CreateTexture("tutor_swipe", texture_id_tutor);
+        m_resourceManager.CreateTexture("grey_concrete128_stroke.png", texture_id_gray_concrete);
+        m_resourceManager.CreateTexture("key.png", texture_id_key);
+        m_resourceManager.CreateTexture("player.png", texture_id_player);
+        m_resourceManager.CreateTexture("level_cube.png", texture_id_level_cubes);
+        m_resourceManager.CreateTexture("level_cube_locked.png", texture_id_level_cubes_locked);
+        m_resourceManager.CreateTexture("fonts.png", texture_id_fonts);
+        m_resourceManager.CreateTexture("fonts_clear.png", texture_id_fonts_clear);
+        m_resourceManager.CreateTexture("level_numbers.png", texture_id_numbers);
+        m_resourceManager.CreateTexture("star.png", texture_id_star);
+        m_resourceManager.CreateTexture("symbols.png", texture_id_symbols);
+        m_resourceManager.CreateTexture("stat_background.png", texture_id_stat_background);
+        m_resourceManager.CreateTexture("credits.png", texture_id_credits);
+        m_resourceManager.CreateTexture("fonts_big.png", texture_id_fonts_big);
+        m_resourceManager.CreateTexture("dirty.png", texture_id_dirty);
+        m_resourceManager.CreateTexture("tutor_swipe", texture_id_tutor);
     }
 
-    void cEngine::InitFontsBig()
+    void InitFontsBig()
     {
         const int arr_size = 65;
 
@@ -2113,21 +1598,21 @@ private:
             h  = a[i].rc.h;
 
             pFont = new TexturedQuad();
-            pFont->ch = a[i].ch;
-            pFont->w = w;
-            pFont->h = h;
+            pFont.ch = a[i].ch;
+            pFont.w = w;
+            pFont.h = h;
 
             // x								// y
-            pFont->tx_lo_left.x  =     x / tw;	pFont->tx_lo_left.y  = (y+h) / th;	// 0
-            pFont->tx_lo_right.x = (x+w) / tw;  pFont->tx_lo_right.y = (y+h) / th;	// 1
-            pFont->tx_up_right.x = (x+w) / tw;  pFont->tx_up_right.y =     y / th;	// 2
-            pFont->tx_up_left.x  =     x / tw;	pFont->tx_up_left.y  =     y / th;	// 3
+            pFont.tx_lo_left.x  =     x / tw;	pFont.tx_lo_left.y  = (y+h) / th;	// 0
+            pFont.tx_lo_right.x = (x+w) / tw;  pFont.tx_lo_right.y = (y+h) / th;	// 1
+            pFont.tx_up_right.x = (x+w) / tw;  pFont.tx_up_right.y =     y / th;	// 2
+            pFont.tx_up_left.x  =     x / tw;	pFont.tx_up_left.y  =     y / th;	// 3
 
             m_fonts_big[ a[i].ch ] = pFont;
         }
     }
 
-    void cEngine::InitFonts()
+    void InitFonts()
     {
         const int arr_size = 65;
 
@@ -2221,21 +1706,21 @@ private:
             h  = a[i].rc.h;
 
             pFont = new TexturedQuad();
-            pFont->ch = a[i].ch;
-            pFont->w = w;
-            pFont->h = h;
+            pFont.ch = a[i].ch;
+            pFont.w = w;
+            pFont.h = h;
 
             // x								// y
-            pFont->tx_lo_left.x  =     x / tw;	pFont->tx_lo_left.y  = (y+h) / th;	// 0
-            pFont->tx_lo_right.x = (x+w) / tw;  pFont->tx_lo_right.y = (y+h) / th;	// 1
-            pFont->tx_up_right.x = (x+w) / tw;  pFont->tx_up_right.y =     y / th;	// 2
-            pFont->tx_up_left.x  =     x / tw;	pFont->tx_up_left.y  =     y / th;	// 3
+            pFont.tx_lo_left.x  =     x / tw;	pFont.tx_lo_left.y  = (y+h) / th;	// 0
+            pFont.tx_lo_right.x = (x+w) / tw;  pFont.tx_lo_right.y = (y+h) / th;	// 1
+            pFont.tx_up_right.x = (x+w) / tw;  pFont.tx_up_right.y =     y / th;	// 2
+            pFont.tx_up_left.x  =     x / tw;	pFont.tx_up_left.y  =     y / th;	// 3
 
             m_fonts[ a[i].ch ] = pFont;
         }
     }
 
-    void cEngine::InitNumberFonts()
+    void InitNumberFonts()
     {
         int a[] =
                 {
@@ -2324,282 +1809,258 @@ private:
             h  = a[i+3];
 
             TexturedQuad* pFont = new TexturedQuad();
-            pFont->number = index;
+            pFont.number = index;
 
             // x                                y
-            pFont->tx_lo_left.x  = x / tw;		pFont->tx_lo_left.y  = (y+h) / th;      // 0 lower left
-            pFont->tx_lo_right.x = (x+w) / tw;	pFont->tx_lo_right.y = (y+h) / th;      // 1 lower right
-            pFont->tx_up_right.x = (x+w) / tw;	pFont->tx_up_right.y = (y) / th;        // 2 upper righ
-            pFont->tx_up_left.x  = x / tw;		pFont->tx_up_left.y  = (y) / th;		// 3 upper left
+            pFont.tx_lo_left.x  = x / tw;		pFont.tx_lo_left.y  = (y+h) / th;      // 0 lower left
+            pFont.tx_lo_right.x = (x+w) / tw;	pFont.tx_lo_right.y = (y+h) / th;      // 1 lower right
+            pFont.tx_up_right.x = (x+w) / tw;	pFont.tx_up_right.y = (y) / th;        // 2 upper righ
+            pFont.tx_up_left.x  = x / tw;		pFont.tx_up_left.y  = (y) / th;		// 3 upper left
 
             m_numbers[index] = pFont;
         }
     }
 
-    void cEngine::InitSymbols()
-    {
-        const int max_symbols = 25;
+    public static void initSymbols() {
+        final int max_symbols = 25;
 
-        Rectangle a[max_symbols];
+        Rectangle[] a = new Rectangle[max_symbols];
 
-        a[SymbolMinus]          = Rectangle(  0,   0, 170, 170);
-        a[SymbolPlus]           = Rectangle(170,   0, 170, 170);
-        a[SymbolInfo]           = Rectangle(340,   0, 170, 170);
-        a[SymbolLock]           = Rectangle(  0, 170, 170, 170);
-        a[SymbolQuestionmark]   = Rectangle(170, 170, 170, 170);
-        a[SymbolGoLeft]         = Rectangle(340, 340, 170, 170);
-        a[SymbolGoRight]        = Rectangle(340, 170, 170, 170);
-        a[SymbolGoUp]           = Rectangle(  0, 340, 170, 170);
-        a[SymbolGoDown]         = Rectangle(170, 340, 170, 170);
-        a[SymbolUndo]           = Rectangle(510,   0, 170, 170);
-        a[SymbolSolver]         = Rectangle(510, 170, 170, 170);
-        a[SymbolPause]          = Rectangle(510, 340, 170, 170);
-        a[Symbol1Star]          = Rectangle(680, 340, 170, 170);
-        a[Symbol2Star]          = Rectangle(680, 170, 170, 170);
-        a[Symbol3Star]          = Rectangle(680,   0, 170, 170);
-        a[SymbolStar]           = Rectangle(850,   0, 170, 170);
-        a[SymbolTriangleUp]     = Rectangle(  0, 510, 170, 170);
-        a[SymbolTriangleDown]   = Rectangle(170, 510, 170, 170);
-        a[SymbolHilite]         = Rectangle(510, 510, 170, 170);
-        a[SymbolDeath]          = Rectangle(680, 510, 170, 170);
-        a[SymbolLightning]      = Rectangle(850, 510, 170, 170);
-        a[SymbolCracks]         = Rectangle(  0, 680, 170, 170);
-        a[SymbolTriangleLeft]   = Rectangle(170, 680, 170, 170);
-        a[SymbolTriangleRight]  = Rectangle(340, 680, 170, 170);
-        a[SymbolSolved]         = Rectangle(850, 170, 170, 170);
+        a[SymbolMinus]          = new Rectangle(  0,   0, 170, 170);
+        a[SymbolPlus]           = new Rectangle(170,   0, 170, 170);
+        a[SymbolInfo]           = new Rectangle(340,   0, 170, 170);
+        a[SymbolLock]           = new Rectangle(  0, 170, 170, 170);
+        a[SymbolQuestionmark]   = new Rectangle(170, 170, 170, 170);
+        a[SymbolGoLeft]         = new Rectangle(340, 340, 170, 170);
+        a[SymbolGoRight]        = new Rectangle(340, 170, 170, 170);
+        a[SymbolGoUp]           = new Rectangle(  0, 340, 170, 170);
+        a[SymbolGoDown]         = new Rectangle(170, 340, 170, 170);
+        a[SymbolUndo]           = new Rectangle(510,   0, 170, 170);
+        a[SymbolSolver]         = new Rectangle(510, 170, 170, 170);
+        a[SymbolPause]          = new Rectangle(510, 340, 170, 170);
+        a[Symbol1Star]          = new Rectangle(680, 340, 170, 170);
+        a[Symbol2Star]          = new Rectangle(680, 170, 170, 170);
+        a[Symbol3Star]          = new Rectangle(680,   0, 170, 170);
+        a[SymbolStar]           = new Rectangle(850,   0, 170, 170);
+        a[SymbolTriangleUp]     = new Rectangle(  0, 510, 170, 170);
+        a[SymbolTriangleDown]   = new Rectangle(170, 510, 170, 170);
+        a[SymbolHilite]         = new Rectangle(510, 510, 170, 170);
+        a[SymbolDeath]          = new Rectangle(680, 510, 170, 170);
+        a[SymbolLightning]      = new Rectangle(850, 510, 170, 170);
+        a[SymbolCracks]         = new Rectangle(  0, 680, 170, 170);
+        a[SymbolTriangleLeft]   = new Rectangle(170, 680, 170, 170);
+        a[SymbolTriangleRight]  = new Rectangle(340, 680, 170, 170);
+        a[SymbolSolved]         = new Rectangle(850, 170, 170, 170);
 
-        const float tw = 1024.0f;
-        const float th = 1024.0f;
+        final float tw = 1024.0f;
+        final float th = 1024.0f;
 
         float x, y, w, h;
 
-        for (int i = 0; i < max_symbols; ++i)
-        {
+        for (int i = 0; i < max_symbols; ++i) {
             x  = a[i].x;
             y  = a[i].y;
             w  = a[i].w;
             h  = a[i].h;
 
-            TexturedQuad* pFont = new TexturedQuad();
-            pFont->number = i;
-            pFont->w = w;
-            pFont->h = h;
+            TexturedQuad pFont = new TexturedQuad();
+            pFont.number = i;
+            pFont.w = w;
+            pFont.h = h;
 
             // x								y
-            pFont->tx_lo_left.x  = x     / tw;	pFont->tx_lo_left.y  = (y+h) / th;
-            pFont->tx_lo_right.x = (x+w) / tw;  pFont->tx_lo_right.y = (y+h) / th;
-            pFont->tx_up_right.x = (x+w) / tw;  pFont->tx_up_right.y = y     / th;
-            pFont->tx_up_left.x  = x     / tw;	pFont->tx_up_left.y  = y     / th;
+            pFont.tx_lo_left.x  = x     / tw;	pFont.tx_lo_left.y  = (y+h) / th;
+            pFont.tx_lo_right.x = (x+w) / tw;  pFont.tx_lo_right.y = (y+h) / th;
+            pFont.tx_up_right.x = (x+w) / tw;  pFont.tx_up_right.y = y     / th;
+            pFont.tx_up_left.x  = x     / tw;	pFont.tx_up_left.y  = y     / th;
 
-            m_symbols[i] = pFont;
+            m_symbols.put(i, pFont);
         }
     }
 
-    #pragma mark - SetProjection
-
-
-
-
-    #pragma mark - IAP
-
-    void cEngine::PurchaseRestore()
+    void HideProgressIndicator()
     {
-        m_resourceManager->PurchaseRestore();
+        m_resourceManager.HideProgressIndicator();
     }
 
-    void cEngine::PurchaseSolvers()
-    {
-        m_resourceManager->PurchaseSolvers();
-    }
-
-    void cEngine::PurchaseRemoveAds()
-    {
-        m_resourceManager->PurchaseRemoveAds();
-    }
-
-    void cEngine::HideProgressIndicator()
-    {
-        m_resourceManager->HideProgressIndicator();
-    }
-
-    void cEngine::UpdateDisplayedSolvers()
+    void UpdateDisplayedSolvers()
     {
         if (NULL != m_solvers)
-            m_solvers->UpdateSolversCount();
+            m_solvers.UpdateSolversCount();
 
         if (NULL != m_level)
-            m_level->SetSolversCount();
+            m_level.SetSolversCount();
     }
 
-    void cEngine::SetTextureID(GLuint id)
+    void SetTextureID(GLuint id)
     {
         m_texture_id = id;
     }
 
 
-    void cEngine::SetSolverCount(int count)
+    void SetSolverCount(int count)
     {
-        return m_resourceManager->SetSolvers(count);
+        return m_resourceManager.SetSolvers(count);
     }
 
-    void cEngine::DecSolverCount()
+    void DecSolverCount()
     {
-        m_resourceManager->SetSolvers(m_resourceManager->GetSolvers() - 1);
+        m_resourceManager.SetSolvers(m_resourceManager.GetSolvers() - 1);
     }
 
     #pragma mark - GameCenter
 
-    void cEngine::HideGameCenterInfo()
+    void HideGameCenterInfo()
     {
-        m_resourceManager->HideGameCenterInfo();
+        m_resourceManager.HideGameCenterInfo();
     }
 
-    void cEngine::ShowGameCenterInfo()
+    void ShowGameCenterInfo()
     {
-        m_resourceManager->ShowGameCenterInfo();
+        m_resourceManager.ShowGameCenterInfo();
     }
 
-    void cEngine::SubmitScore(int score)
+    void SubmitScore(int score)
     {
-        m_resourceManager->ReportScore(score);
+        m_resourceManager.ReportScore(score);
     }
 
-    void cEngine::ReportAchievement(const char* identifier, float percent)
+    void ReportAchievement(const char* identifier, float percent)
     {
-        m_resourceManager->ReportAchievement(identifier, percent);
+        m_resourceManager.ReportAchievement(identifier, percent);
     }
 
-    void cEngine::ShowLeaderboard()
+    void ShowLeaderboard()
     {
-        m_resourceManager->ShowLeaderboard();
+        m_resourceManager.ShowLeaderboard();
     }
 
-    void cEngine::ShowLocalScore()
+    void ShowLocalScore()
     {
-        m_resourceManager->ShowLocalScore();
+        m_resourceManager.ShowLocalScore();
     }
 
-    void cEngine::ShowSocialShare()
+    void ShowSocialShare()
     {
-        m_resourceManager->ShowSocialShare();
+        m_resourceManager.ShowSocialShare();
     }
 
     #pragma mark - Volume
 
-    void cEngine::MusicVolumeUp()
+    void MusicVolumeUp()
     {
-        float volume = m_resourceManager->GetMusicVolume();
+        float volume = m_resourceManager.GetMusicVolume();
 
         volume += 0.1f;
 
         if (volume > 1.0f)
             volume = 1.0f;
 
-        m_resourceManager->SetMusicVolume(volume);
+        m_resourceManager.SetMusicVolume(volume);
     }
 
-    void cEngine::MusicVolumeDown()
+    void MusicVolumeDown()
     {
-        float volume = m_resourceManager->GetMusicVolume();
+        float volume = m_resourceManager.GetMusicVolume();
 
         volume -= 0.1f;
 
         if (volume < 0.0f)
             volume = 0.0f;
 
-        m_resourceManager->SetMusicVolume(volume);
+        m_resourceManager.SetMusicVolume(volume);
     }
 
-    void cEngine::SoundVolumeUp()
+    void SoundVolumeUp()
     {
-        float volume = m_resourceManager->GetSoundVolume();
+        float volume = m_resourceManager.GetSoundVolume();
 
         volume += 0.1f;
 
         if (volume > 1.0f)
             volume = 1.0f;
 
-        m_resourceManager->SetSoundFXVolume(volume);
+        m_resourceManager.SetSoundFXVolume(volume);
     }
 
-    void cEngine::SoundVolumeDown()
+    void SoundVolumeDown()
     {
-        float volume = m_resourceManager->GetSoundVolume();
+        float volume = m_resourceManager.GetSoundVolume();
 
         volume -= 0.1f;
 
         if (volume < 0.0f)
             volume = 0.0f;
 
-        m_resourceManager->SetSoundFXVolume(volume);
+        m_resourceManager.SetSoundFXVolume(volume);
     }
 
-    float cEngine::GetMusicVolume()
+    float GetMusicVolume()
     {
-        return m_resourceManager->GetMusicVolume();
+        return m_resourceManager.GetMusicVolume();
     }
 
-    float cEngine::GetSoundVolume()
+    float GetSoundVolume()
     {
-        return m_resourceManager->GetSoundVolume();
+        return m_resourceManager.GetSoundVolume();
     }
 
-    void cEngine::SetMusicVolume(float volume)
+    void SetMusicVolume(float volume)
     {
-        m_resourceManager->SetMusicVolume(volume);
+        m_resourceManager.SetMusicVolume(volume);
     }
 
-    void cEngine::SetSoundVolume(float volume)
+    void SetSoundVolume(float volume)
     {
-        m_resourceManager->SetSoundFXVolume(volume);
+        m_resourceManager.SetSoundFXVolume(volume);
     }
 
 
     #pragma mark - Sound & Music Playback
 
 
-    void cEngine::PlaySound(const char* key)
+    void PlaySound(const char* key)
     {
-        m_resourceManager->PlaySound(key);
+        m_resourceManager.PlaySound(key);
     }
 
-    void cEngine::PlayMusic(const char* key)
+    void PlayMusic(const char* key)
     {
-        m_resourceManager->PlayMusic(key);
+        m_resourceManager.PlayMusic(key);
     }
 
-    void cEngine::PrepareMusicToPlay(const char* key)
+    void PrepareMusicToPlay(const char* key)
     {
-        m_resourceManager->PrepareMusicToPlay(key);
+        m_resourceManager.PrepareMusicToPlay(key);
     }
 
-    void cEngine::PlayPreparedMusic()
+    void PlayPreparedMusic()
     {
-        m_resourceManager->PlayPreparedMusic();
+        m_resourceManager.PlayPreparedMusic();
     }
 
-    void cEngine::StopMusic()
+    void StopMusic()
     {
-        m_resourceManager->StopMusic();
+        m_resourceManager.StopMusic();
     }
 
     #pragma mark - Entered
 
-    void cEngine::EnteredBackground()
+    void EnteredBackground()
     {
         if (m_scene)
-            m_scene->EnteredBackground();
+            m_scene.EnteredBackground();
     }
 
-    void cEngine::EnteredForeground()
+    void EnteredForeground()
     {
         if (m_scene)
-            m_scene->EnteredForeground();
+            m_scene.EnteredForeground();
     }
 
     #pragma mark - Draw
 
-    void cEngine::DrawCircleAt(float x, float y, float radius, Color& color)
+    void DrawCircleAt(float x, float y, float radius, Color& color)
     {
         GLfloat vertices[80];
         GLubyte colors[150];
@@ -2648,7 +2109,7 @@ private:
 
     #pragma mark - DrawCubeFace
 
-    void cEngine::DrawCubeNoFace(bool x_plus,
+    void DrawCubeNoFace(bool x_plus,
                                  bool x_minus,
                                  bool y_plus,
                                  bool y_minus,
@@ -2674,75 +2135,75 @@ private:
             DrawCubeFaceY_Plus();
     }
 
-    void cEngine::DrawQuad()
+    void DrawQuad()
     {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
     #pragma mark - Render
 
-    void cEngine::WarmCache()
+    void WarmCache()
     {
         glEnable(GL_TEXTURE_2D);
 
         cRenderer::Prepare();
         cRenderer::SetStreamSource();
         cRenderer::AddCube(0.0f, 0.0f, 0.0f);
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_player);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_player);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        glBindTexture(GL_TEXTURE_2D, engine->texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, engine.texture_id_gray_concrete);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glDisable(GL_TEXTURE_2D);
     }
 
-    void cEngine::Render()
+    void Render()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        m_scene->Render();
+        m_scene.Render();
     }
 
     #pragma mark - Update
 
-    void cEngine::Update(float dt)
+    void Update(float dt)
     {
-        m_scene->Update(dt);
+        m_scene.Update(dt);
     }
 
     #pragma mark - Input
 
-    void cEngine::OnFingerDown(float x, float y, int finger_count)
+    void OnFingerDown(float x, float y, int finger_count)
     {
-        m_scene->OnFingerDown(x * m_scaleFactor, y * m_scaleFactor, finger_count);
+        m_scene.OnFingerDown(x * m_scaleFactor, y * m_scaleFactor, finger_count);
     }
 
-    void cEngine::OnFingerUp(float x, float y, int finger_count)
+    void OnFingerUp(float x, float y, int finger_count)
     {
-        m_scene->OnFingerUp(x * m_scaleFactor, y * m_scaleFactor, finger_count);
+        m_scene.OnFingerUp(x * m_scaleFactor, y * m_scaleFactor, finger_count);
     }
 
-    void cEngine::OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count)
+    void OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count)
     {
-        m_scene->OnFingerMove(prev_x * m_scaleFactor, prev_y * m_scaleFactor, cur_x * m_scaleFactor, cur_y * m_scaleFactor, finger_count);
+        m_scene.OnFingerMove(prev_x * m_scaleFactor, prev_y * m_scaleFactor, cur_x * m_scaleFactor, cur_y * m_scaleFactor, finger_count);
     }
 
-    void cEngine::OnSwipe(SwipeDirEnums type)
+    void OnSwipe(SwipeDirEnums type)
     {
-        m_scene->OnSwipe(type);
+        m_scene.OnSwipe(type);
     }
 
     #pragma mark - Save / Load Options
 
-    void cEngine::SaveOptions()
+    void SaveOptions()
     {
-        FILE* fp = engine->m_resourceManager->GetFilePointerForWrite(SAVE_OPTIONS_FILE);
+        FILE* fp = engine.m_resourceManager.GetFilePointerForWrite(SAVE_OPTIONS_FILE);
 
         if (fp)
         {
-            float mv = engine->GetMusicVolume();
-            float sv = engine->GetSoundVolume();
+            float mv = engine.GetMusicVolume();
+            float sv = engine.GetSoundVolume();
 
             fwrite(&mv, 1, sizeof(float), fp);
             fwrite(&sv, 1, sizeof(float), fp);
@@ -2751,12 +2212,12 @@ private:
         }
     }
 
-    void cEngine::LoadOptions()
+    void LoadOptions()
     {
         float mv = 0.5f;
         float sv = 0.5f;
 
-        FILE* fp = engine->m_resourceManager->GetFilePointerForRead(SAVE_OPTIONS_FILE);
+        FILE* fp = engine.m_resourceManager.GetFilePointerForRead(SAVE_OPTIONS_FILE);
 
         if (fp)
         {
@@ -2772,51 +2233,14 @@ private:
 
     #pragma mark - misc
 
-    void cEngine::ResetHelp()
+    void ResetHelp()
     {
         //printf("\nReset Help Here...\n");
     }
 
-    void cEngine::SetupHollowCube()
-    {
-        int number_of_visible_cubes = 0;
-        int number_of_invisible_cubes = 0;
-
-        for(int x = 0; x < MAX_CUBE_COUNT; ++x)
-        {
-            for(int y = 0; y < MAX_CUBE_COUNT; ++y)
-            {
-                for(int z = 0; z < MAX_CUBE_COUNT; ++z)
-                {
-                    if ( x > 1 && x < MAX_CUBE_COUNT - 2 && y > 1 && y < MAX_CUBE_COUNT - 2 && z > 1 && z < MAX_CUBE_COUNT - 2 )
-                    {
-                        ++number_of_invisible_cubes;
-                        cubes[x][y][z].type = CubeIsInvisible;
-                    }
-                    else
-                    {
-                        if (x == 0 || x == MAX_CUBE_COUNT - 1 || y == 0 || y == MAX_CUBE_COUNT - 1 || z == 0 || z == MAX_CUBE_COUNT - 1)
-                        {
-                            ++number_of_invisible_cubes;
-                            cubes[x][y][z].type = CubeIsInvisible;
-                        }
-                        else
-                        {
-                            ++number_of_visible_cubes;
-                            cubes[x][y][z].type = CubeIsVisibleAndObstacle;
-                            cubes[x][y][z].SetColor( GetBaseColor() );
-                        }
-                    }
-                }
-            }
-        }
-
-        //printf("\nNumber of Visible Cubes: %d", number_of_visible_cubes);
-        //printf("\nNumber of Invisible Cubes: %d", number_of_invisible_cubes);
-    }
 
 
-    float cEngine::GetTextWidth(const char* text, float scale)
+    float GetTextWidth(const char* text, float scale)
     {
         float width = 0.0f;
 
@@ -2826,45 +2250,45 @@ private:
         for (int i = 0; i < len; ++i)
         {
             pFont = GetFont(text[i]);
-            width += (pFont->w * scale);
+            width += (pFont.w * scale);
         }
 
         return width;
     }
 
 
-    bool cEngine::GetCanSkipIntro()
+    bool GetCanSkipIntro()
     {
-        return m_resourceManager->GetCanSkipIntro();
+        return m_resourceManager.GetCanSkipIntro();
     }
 
-    void cEngine::SetCanSkipIntro()
+    void SetCanSkipIntro()
     {
-        m_resourceManager->SetCanSkipIntro();
+        m_resourceManager.SetCanSkipIntro();
     }
 
 
 
 
-    void cEngine::BuyPackOfSolvers(int number_of_solvers)
+    void BuyPackOfSolvers(int number_of_solvers)
     {
         #ifndef LITE_VERSION
         if (5 == number_of_solvers)
-            m_resourceManager->Purchase5Solvers();
+            m_resourceManager.Purchase5Solvers();
 
         if (15 == number_of_solvers)
-            m_resourceManager->Purchase15Solvers();
+            m_resourceManager.Purchase15Solvers();
         #endif
     }
 
     #ifdef LITE_VERSION
-    void cEngine::BuyFullVersion()
+    void BuyFullVersion()
     {
-        m_resourceManager->BuyFullVersion();
+        m_resourceManager.BuyFullVersion();
     }
     #endif
 
-    void cEngine::RenderToFBO(cScene* scene)
+    void RenderToFBO(cScene* scene)
     {
         GLint defaultFBO = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
@@ -2873,20 +2297,20 @@ private:
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene->RenderToFBO();
+        scene.RenderToFBO();
 
         glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
     }
 
 
-    void cEngine::DrawFullScreenQuad(Color& color)
+    void DrawFullScreenQuad(Color& color)
     {
         const GLfloat verts[] =
             {
-                    0.0f,               engine->m_height,
+                    0.0f,               engine.m_height,
                     0.0f,               0.0f,
-                    engine->m_width,    0.0f,
-                    engine->m_width,    engine->m_height
+                    engine.m_width,    0.0f,
+                    engine.m_width,    engine.m_height
             };
 
         const GLubyte colors[] =

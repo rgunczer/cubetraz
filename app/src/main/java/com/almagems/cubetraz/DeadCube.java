@@ -23,11 +23,11 @@ public final class DeadCube {
     }
     
     public void hiLite() { 
-        m_color_symbol_current = Color(255, 25, 25, 204); 
+        m_color_symbol_current.init(new Color(255, 25, 25, 204));
     }
     
     public void noHilite() { 
-        m_color_symbol_current = m_color_symbol; 
+        m_color_symbol_current.init(m_color_symbol);
     }
  
     // ctor
@@ -54,13 +54,13 @@ public final class DeadCube {
         m_ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolDeath);
         m_ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolDeath);
     
-        m_color_current.init( Game.getFaceColor() );
-        m_color.init( Game.getFaceColor() );
-        m_color_symbol_current = m_color_symbol = Color(50, 50, 50, 255);
-//        m_color_symbol = Color(50, 50, 50, 255);
+        m_color_current.init( Game.getFaceColor(1f) );
+        m_color.init( Game.getFaceColor(1f) );
+        m_color_symbol_current.init((new Color(50, 50, 50, 255)));
+        m_color_symbol.init(m_color_symbol_current);
     }
 
-    public void update(float dt) {    
+    public void update() {
     }
 
     public void renderCube() {
@@ -72,19 +72,19 @@ public final class DeadCube {
         TexturedQuad pTQ = m_ar_cube_textures[Face_X_Plus];
     
         if (pTQ != null) {
-            coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y);
-            coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y);
-            coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y);
-            coords.tx3 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y);
+            coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = m_ar_cube_textures[Face_Z_Plus];
         if (pTQ != null) {
-            coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y);
-            coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y);
-            coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y);
-            coords.tx3 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y);
+            coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     }

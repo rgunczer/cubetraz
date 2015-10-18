@@ -124,6 +124,14 @@ public final class Constants {
 
     public static final int MAX_TEXT_LINES = 4;
 
+    public static final int MoveDir_MoveNone = 0;
+    public static final int MoveDir_MoveY = 1;
+    public static final int MoveDir_MoveX = 2;
+    public static final int MoveDir_MoveZ = 3;
+
+
+
+
     public enum TextAlignEnum {
         LeftAlign,
         CenterAlign,

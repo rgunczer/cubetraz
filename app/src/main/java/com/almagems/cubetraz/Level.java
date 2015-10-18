@@ -53,7 +53,7 @@ public final class Level extends Scene {
     private float m_timeout_undo;
     private ArrayList<UndoData> m_lst_undo;
 
-    private LevelStateEnum m_state;
+    public LevelStateEnum m_state;
     private LevelStateEnum m_state_to_restore;
 
     private SubAppearStateEnum m_appear_state;
@@ -71,8 +71,8 @@ public final class Level extends Scene {
 
     private float m_hilite_timeout;
 
-    private float dead_size;
-    private int dead_alpha;
+    public float dead_size;
+    public int dead_alpha;
     private int dead_alpha_step;
 
     private int m_star_count;

@@ -89,6 +89,17 @@ public final class Utils {
         //Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
     }
 
+    public static float quadraticIn(float time)
+    {
+        return time * time;
+    }
+
+    public static float quadraticOut(float time)
+    {
+        return time * (2 - time);
+    }
+
+
     // ctor
     private Utils() {
     }
