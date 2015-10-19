@@ -31,7 +31,7 @@ public final class Intro extends Scene {
     private int m_build_to;
     private int m_counter;
     private boolean m_can_skip_intro;
-    private Vector m_pos_light_current;
+    private Vector m_pos_light_current = new Vector();
     private float m_offset_y;
     private float m_stars_alpha;
 
@@ -79,7 +79,7 @@ public final class Intro extends Scene {
         m_starfield.create();
 
         for (int i = 0; i < 400; ++i) {
-            m_starfield.update(1.0f / 30.0f);
+            m_starfield.update();
         }
 
         m_starfield.alpha = m_stars_alpha;
@@ -104,12 +104,12 @@ public final class Intro extends Scene {
 
     private Cube setCubeVisible(int x, int y, int z) {
         Cube cube = Game.cubes[x][y][z];
-        cube.type = Cube.CubeTypeEnum.CubeIsVisibleAndObstacle;
+        cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         return cube;
     }
 
     private void setCubeInvisible(int x, int y, int z) {
-        Game.cubes[x][y][z].type = Cube.CubeTypeEnum.CubeIsInvisible;
+        Game.cubes[x][y][z].type = CubeTypeEnum.CubeIsInvisible;
     }
 
     private void setCubeVisibleAndBuild(int x, int y, int z) {
@@ -130,13 +130,13 @@ public final class Intro extends Scene {
                     if ((x == 0 || x == MAX_CUBE_COUNT - 1) ||
                             (y == 0 || y == MAX_CUBE_COUNT - 1) ||
                             (z == 0 || z == MAX_CUBE_COUNT - 1)) {
-                        Game.cubes[x][y][z].type = Cube.CubeTypeEnum.CubeIsInvisible;
+                        Game.cubes[x][y][z].type = CubeTypeEnum.CubeIsInvisible;
                     }
 
                     if ((x == 1 || x == MAX_CUBE_COUNT - 2) ||
                             (y == 1 || y == MAX_CUBE_COUNT - 2) ||
                             (z == 1 || z == MAX_CUBE_COUNT - 2)) {
-                        Game.cubes[x][y][z].type = Cube.CubeTypeEnum.CubeIsInvisible;
+                        Game.cubes[x][y][z].type = CubeTypeEnum.CubeIsInvisible;
                     }
                 }
             }
@@ -635,7 +635,7 @@ public final class Intro extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
 
         Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
-        Graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty);
+        Graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
 
         glDepthMask(true); //GL_TRUE);
 
@@ -688,7 +688,7 @@ public final class Intro extends Scene {
         
         int count_base = Graphics._vertices_count - 36;
 
-        color = Game.getFaceColor();
+        color = Game.getFaceColor(1f);
         
         size = m_list_cubes_face.size(); 
         for (int i = 0; i < size; ++i) {

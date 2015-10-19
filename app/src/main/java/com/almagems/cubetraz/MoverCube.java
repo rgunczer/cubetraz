@@ -1,5 +1,10 @@
 package com.almagems.cubetraz;
 
+import java.util.ArrayList;
+
+import static android.opengl.GLES10.*;
+import static com.almagems.cubetraz.Constants.*;
+
 
 public final class MoverCube {
     
@@ -34,39 +39,38 @@ public final class MoverCube {
         pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
     }
 
-    public void setSymbols()
-    {
+    public void setSymbols() {
         m_ar_cube_symbols[Face_X_Plus] = null;
         m_ar_cube_symbols[Face_Y_Plus] = null;
         m_ar_cube_symbols[Face_Z_Plus] = null;
     
         switch (m_move_dir) {
-            case X_Plus:
+            case AxisMovement_X_Plus:
                 m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoLeft);
                 m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoLeft);
                 break;
             
-            case X_Minus:
+            case AxisMovement_X_Minus:
                 m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoRight);
                 m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoRight);
                 break;
             
-            case Y_Plus:
+            case AxisMovement_Y_Plus:
                 m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoUp);
                 m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoUp);
                 break;
             
-            case Y_Minus:
+            case AxisMovement_Y_Minus:
                 m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoDown);
                 m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoDown);
                 break;
             
-            case Z_Plus:
+            case AxisMovement_Z_Plus:
                 m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoRight);
                 m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoDown);
                 break;
             
-            case Z_Minus:
+            case AxisMovement_Z_Minus:
                 m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoLeft);
                 m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoUp);
                 break;
@@ -76,18 +80,18 @@ public final class MoverCube {
         }
     }
 
-    public void init(CubePos cube_pos, AxisMovementEnum move_dir) {
+    public void init(CubePos cube_pos, int move_dir) {
         m_move_dir = move_dir;
         setCubePos(cube_pos);
         m_cube_pos_starting = m_cube_pos;
         setSymbols();
     
-        m_color = m_color_current = Game.getFaceColor();
+        m_color = m_color_current = Game.getFaceColor(1f);
         m_color_symbol_current = new Color(50, 50, 50, 255);
         m_color_symbol = new Color(50, 50, 50, 255);
     }
 
-    public void update(float dt) {
+    public void update() {
     
     }
 
@@ -96,33 +100,33 @@ public final class MoverCube {
     }
 
     public void renderSymbols() {
-        TexCoordsQuad coords;
-        TexturedQuad* pTQ;
+        TexCoordsQuad coords = new TexCoordsQuad();
+        TexturedQuad pTQ;
         
         pTQ = m_ar_cube_symbols[Face_X_Plus];    
-        if (pTQ) {
-            coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y, 0f);
-            coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y, 0f);
-            coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y, 0f);
-            coords.tx3 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y, 0f);
+        if (pTQ != null) {
+            coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = m_ar_cube_symbols[Face_Z_Plus];    
-        if (pTQ) {
-            coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y, 0f);
-            coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y, 0f);
-            coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y, 0f);
-            coords.tx3 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y, 0f);
+        if (pTQ != null) {
+            coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = m_ar_cube_symbols[Face_Y_Plus];    
-        if (pTQ) {
-            coords.tx0 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y, 0f);
-            coords.tx1 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y, 0f);
-            coords.tx2 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y, 0f);
-            coords.tx3 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y, 0f);
+        if (pTQ != null) {
+            coords.tx0 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx2 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             Graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     }

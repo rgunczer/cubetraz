@@ -77,23 +77,23 @@ public final class Level extends Scene {
 
     private int m_star_count;
 
-    private ArrayList<Cube> m_list_cubes_level;
-    private ArrayList<Cube> m_list_cubes_wall_y_minus;
-    private ArrayList<Cube> m_list_cubes_wall_x_minus;
-    private ArrayList<Cube> m_list_cubes_wall_z_minus;
-    private ArrayList<Cube> m_list_cubes_edges;
-    private ArrayList<Cube> m_list_cubes_base;
-    private ArrayList<Cube> m_list_cubes_face;
-    private ArrayList<Cube> m_list_cubes_hint;
+    public ArrayList<Cube> m_list_cubes_level;
+    public ArrayList<Cube> m_list_cubes_wall_y_minus;
+    public ArrayList<Cube> m_list_cubes_wall_x_minus;
+    public ArrayList<Cube> m_list_cubes_wall_z_minus;
+    public ArrayList<Cube> m_list_cubes_edges;
+    public ArrayList<Cube> m_list_cubes_base;
+    public ArrayList<Cube> m_list_cubes_face;
+    public ArrayList<Cube> m_list_cubes_hint;
 
     private Cube[] m_ar_hint_cubes = new Cube[MAX_HINT_CUBES];
     private boolean m_show_hint_2nd;
     private int m_hint_index;
     private float m_hint_timeout;
 
-    private final AppearDisappearListData m_ad_level = new AppearDisappearListData();
-    private final AppearDisappearListData m_ad_base = new AppearDisappearListData();
-    private final AppearDisappearListData m_ad_face = new AppearDisappearListData();
+    public final AppearDisappearListData m_ad_level = new AppearDisappearListData();
+    public final AppearDisappearListData m_ad_base = new AppearDisappearListData();
+    public final AppearDisappearListData m_ad_face = new AppearDisappearListData();
 
     public final Camera m_camera_level = new Camera();
     public final Camera m_camera_level_completed = new Camera();
@@ -114,10 +114,10 @@ public final class Level extends Scene {
     private int m_level_number_begin;
 
     private int m_solution_pointer;
-    private int[] m_ar_solution = new int[MAX_SOLUTION_MOVES];
+    public int[] m_ar_solution = new int[MAX_SOLUTION_MOVES];
 
     private int m_moves_counter;
-    private int m_min_solution_steps;
+    public int m_min_solution_steps;
     private float m_timeout;
 
     private float m_timer_to_statistics;

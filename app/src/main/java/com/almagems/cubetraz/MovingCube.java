@@ -1,5 +1,8 @@
 package com.almagems.cubetraz;
 
+import static com.almagems.cubetraz.Constants.*;
+
+
 public final class MovingCube {
         
 	private boolean m_done;
@@ -55,9 +58,10 @@ public final class MovingCube {
 	    m_move_dir = move_dir;
 	
 	    updateSymbols();
-    
-        m_color_current = m_color = cEngine::GetFaceColor();
-        m_color_symbol_current = m_color_symbol = Color(40, 40, 40, 255);
+
+        m_color_current = m_color = Game.getFaceColor(1f);
+        m_color_symbol_current = new Color(40, 40, 40, 255);
+		m_color_symbol = new Color(40, 40, 40, 255);
     }
 
     public void updateSymbols() {
@@ -65,33 +69,33 @@ public final class MovingCube {
 	    ar_cube_textures[Face_Y_Plus] = null;
 	    ar_cube_textures[Face_Z_Plus] = null;
 	
-	    switch (m_move_dir) 
-		    case X_Plus:
+	    switch (m_move_dir) {
+		    case AxisMovement_X_Plus:
 			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleLeft);
 			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleLeft);
 			    break;
 			
-		    case X_Minus:
+		    case AxisMovement_X_Minus:
                 ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleRight);
 			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleRight);
 			    break;
 			
-		    case Y_Plus:
+		    case AxisMovement_Y_Plus:
 			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleUp);
 			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleUp);
 			    break;
 			
-		    case Y_Minus:
+		    case AxisMovement_Y_Minus:
 			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleDown);
 			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleDown);
 			    break;
 			
-		    case Z_Plus:
+		    case AxisMovement_Z_Plus:
 			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleDown);
 			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleRight);
 			    break;
 
-		    case Z_Minus:
+		    case AxisMovement_Z_Minus:
 			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleUp);
 			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleLeft);
 			    break;
@@ -101,7 +105,7 @@ public final class MovingCube {
 	    }
     }
 
-    public void update(float dt) {
+    public void update() {
         if (!m_done) {
 		    m_t += m_step_t;
         
@@ -110,23 +114,23 @@ public final class MovingCube {
 			    m_done = true;
                 m_color_symbol_current = m_color_symbol;
 			
-			    //engine->PlaySound(SOUND_CUBE_HIT);
+			    //engine.PlaySound(SOUND_CUBE_HIT);
 			
 			    setCubePos(m_cube_pos_destination);
 			
 			    switch (m_move_dir) {
-				    case X_Plus: m_move_dir = X_Minus; break;					
-				    case X_Minus: m_move_dir = X_Plus; break;					
-				    case Y_Plus: m_move_dir = Y_Minus; break;					
-				    case Y_Minus: m_move_dir = Y_Plus; break;					
-				    case Z_Plus: m_move_dir = Z_Minus; break;					
-				    case Z_Minus: m_move_dir = Z_Plus; break;					
-				    default: m_move_dir = X_Plus; break;
+				    case AxisMovement_X_Plus: m_move_dir = AxisMovement_X_Minus; break;
+				    case AxisMovement_X_Minus: m_move_dir = AxisMovement_X_Plus; break;
+				    case AxisMovement_Y_Plus: m_move_dir = AxisMovement_Y_Minus; break;
+				    case AxisMovement_Y_Minus: m_move_dir = AxisMovement_Y_Plus; break;
+				    case AxisMovement_Z_Plus: m_move_dir = AxisMovement_Z_Minus; break;
+				    case AxisMovement_Z_Minus: m_move_dir = AxisMovement_Z_Plus; break;
+				    default: m_move_dir = AxisMovement_X_Plus; break;
 			    }
 			
 			    updateSymbols();
 		    } else {
-                position = LERP(m_start_value, m_end_value, m_t); // pointer (java)
+                position = Utils.lerp(m_start_value, m_end_value, m_t);
             }
         }
     }
@@ -140,15 +144,15 @@ public final class MovingCube {
         boolean is_key;
 		
 	    switch(m_move_dir) {
-		    case X_Plus:			
+		    case AxisMovement_X_Plus:
 			    while (cube_pos.x <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(cube_pos);
                     is_player = Game.isPlayerCube(cube_pos);
-                    is_spec = Game.m_level->isSpecCubeObstacle(cube_pos, this, null, null);
+                    is_spec = Game.level.isSpecCubeObstacle(cube_pos, this, null, null);
                     is_key = Game.isKeyCube(cube_pos);
 
                     if (is_obstacle || is_player || is_spec || is_key) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
                     }
 				    prev.x = cube_pos.x;
@@ -157,15 +161,15 @@ public final class MovingCube {
 			    --cube_pos.x;
 			    break;
 				
-		    case X_Minus:			
+		    case AxisMovement_X_Minus:
 			    while (cube_pos.x >= 0) {
 				    is_obstacle = Game.isObstacle(cube_pos);
                     is_player = Game.isPlayerCube(cube_pos);
-                    is_spec = Game.m_level.isSpecCubeObstacle(cube_pos, this, null, null);
+                    is_spec = Game.level.isSpecCubeObstacle(cube_pos, this, null, null);
                     is_key = Game.isKeyCube(cube_pos);
                 
                     if (is_obstacle || is_player || is_spec || is_key) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				    prev.x = cube_pos.x;
@@ -174,15 +178,15 @@ public final class MovingCube {
 			    ++cube_pos.x;
 			    break;
 				
-		    case Y_Plus:			
+		    case AxisMovement_Y_Plus:
 			    while (cube_pos.y <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(cube_pos);
                     is_player = Game.isPlayerCube(cube_pos);
-                    is_spec = Game.m_level.isSpecCubeObstacle(cube_pos, this, null, null);
+                    is_spec = Game.level.isSpecCubeObstacle(cube_pos, this, null, null);
                     is_key = Game.isKeyCube(cube_pos);
                 
                     if (is_obstacle || is_player || is_spec || is_key) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				    prev.y = cube_pos.y;
@@ -191,15 +195,15 @@ public final class MovingCube {
 			    --cube_pos.y;
 			    break;
 				
-		    case Y_Minus:			
+		    case AxisMovement_Y_Minus:
 			    while (cube_pos.y >= 0) {
 				    is_obstacle = Game.isObstacle(cube_pos);
                     is_player = Game.isPlayerCube(cube_pos);
-                    is_spec = Game.m_level.isSpecCubeObstacle(cube_pos, this, null, null);
+                    is_spec = Game.level.isSpecCubeObstacle(cube_pos, this, null, null);
                     is_key = Game.isKeyCube(cube_pos);
                 
                     if (is_obstacle || is_player || is_spec || is_key) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				    prev.y = cube_pos.y;
@@ -208,15 +212,15 @@ public final class MovingCube {
 			    ++cube_pos.y;
 			    break;
 			
-		    case Z_Plus:
+		    case AxisMovement_Z_Plus:
 			    while (cube_pos.z <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(cube_pos);
                     is_player = Game.isPlayerCube(cube_pos);
-                    is_spec = Game.m_level.isSpecCubeObstacle(cube_pos, this, null, null);
+                    is_spec = Game.level.isSpecCubeObstacle(cube_pos, this, null, null);
                     is_key = Game.isKeyCube(cube_pos);
                 
                     if (is_obstacle || is_player || is_spec || is_key) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				    prev.z = cube_pos.z;
@@ -225,15 +229,15 @@ public final class MovingCube {
 			    --cube_pos.z;
 			    break;
 			
-		    case Z_Minus:			
+		    case AxisMovement_Z_Minus:
 			    while (cube_pos.z >= 0) {
 				    is_obstacle = Game.isObstacle(cube_pos);
                     is_player = Game.isPlayerCube(cube_pos);
-                    is_spec = Game.m_level.isSpecCubeObstacle(cube_pos, this, NULL, NULL);
+                    is_spec = Game.level.isSpecCubeObstacle(cube_pos, this, null, null);
                     is_key = Game.isKeyCube(cube_pos);
                 
                     if (is_obstacle || is_player || is_spec || is_key) {
-					    cube_pos = prev;
+					    cube_pos.init(prev);
 					    return;
 				    }
 				    prev.z = cube_pos.z;
@@ -248,8 +252,7 @@ public final class MovingCube {
     }
 
     public void move() {
-	    if (m_done)
-	    {		
+	    if (m_done) {
 		    CubePos cube_pos = m_cube_pos;		
 		    calcMovement(cube_pos);
 
@@ -259,32 +262,32 @@ public final class MovingCube {
 			    Vector pos_destination = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
             
 			    switch (m_move_dir) {
-				    case X_Plus:
-				    case X_Minus:
+				    case AxisMovement_X_Plus:
+				    case AxisMovement_X_Minus:
 					    m_start_value = pos.x;
 					    m_end_value = pos_destination.x;
-					    position = &pos.x;
+					    position = pos.x;
 					    break;
 					
-				    case Y_Plus:
-				    case Y_Minus:
+				    case AxisMovement_Y_Plus:
+				    case AxisMovement_Y_Minus:
 					    m_start_value = pos.y;
 					    m_end_value = pos_destination.y;
-					    position = &pos.y;
+					    position = pos.y;
 					    break;
 					
-				    case Z_Plus:
-				    case Z_Minus:
+				    case AxisMovement_Z_Plus:
+				    case AxisMovement_Z_Minus:
 					    m_start_value = pos.z;
 					    m_end_value = pos_destination.z;
-					    position = &pos.z;
+					    position = pos.z;
 					    break;
                     
                     default:
                         break;
 			    }
             
-			    const float speed = 0.5f;
+			    final float speed = 0.5f;
 			    float distance = Math.abs(m_start_value - m_end_value);
 			    float step = distance / speed;
 			    m_t = 0.0f;
@@ -300,33 +303,33 @@ public final class MovingCube {
     }
 
     public void renderSymbols() {
-        TexCoordsQuad coords;
+        TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         
         pTQ = ar_cube_textures[Face_X_Plus];    
-        if (pTQ) {
-            coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y, 0f);
-            coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y, 0f);
-            coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y, 0f);
-            coords.tx3 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y, 0f);
+        if (pTQ != null) {
+            coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = ar_cube_textures[Face_Z_Plus];    
-        if (pTQ) {
-            coords.tx0 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y);
-            coords.tx1 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y);
-            coords.tx2 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y);
-            coords.tx3 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y);
+        if (pTQ != null) {
+            coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = ar_cube_textures[Face_Y_Plus];    
-        if (pTQ) {
-            coords.tx0 = new Vector(pTQ->tx_up_left.x,  pTQ->tx_lo_left.y);
-            coords.tx1 = new Vector(pTQ->tx_lo_left.x,  pTQ->tx_up_left.y);
-            coords.tx2 = new Vector(pTQ->tx_lo_right.x, pTQ->tx_up_right.y);
-            coords.tx3 = new Vector(pTQ->tx_up_right.x, pTQ->tx_lo_right.y);
+        if (pTQ != null) {
+            coords.tx0 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
+            coords.tx1 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
+            coords.tx2 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
+            coords.tx3 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             Graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     }

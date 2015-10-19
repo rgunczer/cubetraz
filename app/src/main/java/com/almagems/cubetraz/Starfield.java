@@ -37,7 +37,7 @@ public class Starfield {
         }
     }
 
-    public void update(float dt) {
+    public void update() {
         for (int i = 0; i < m_star_count; ++i) {
             m_stars[i].z += speed;
             if (m_stars[i].z > 40.0f) {

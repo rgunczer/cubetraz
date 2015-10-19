@@ -7,7 +7,7 @@ import static android.opengl.GLES10.*;
 public final class FBO {
 
     // FBO vars
-    private int m_TextureId;
+    public int m_TextureId;
 
     // Buffers
     private int m_ColorBuffer;

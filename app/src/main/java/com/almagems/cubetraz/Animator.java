@@ -382,7 +382,7 @@ public final class Animator extends Scene {
 	
         //engine.IncT(m_t);
         m_t += 0.01f;
-        Utils.lerpVec3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
+        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
 	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
 		
         Cube cube;    
@@ -535,7 +535,7 @@ public final class Animator extends Scene {
         }
     
         Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
-        Utils.lerpVec3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
+        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
 
 	    m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();

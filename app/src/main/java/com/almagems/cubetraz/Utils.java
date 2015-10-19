@@ -4,6 +4,15 @@ public final class Utils {
 
     public static final RandomXS128 rand = new RandomXS128();
 
+    public static int randInt(int min, int max) {
+        // NOTE: Usually this should be a field rather than a method
+        // variable so that it is not re-seeded every call.
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        return rand.nextInt((max - min) + 1) + min;
+    }
+
     public static float getDistance2D(final Vector2 a, final Vector2 b) {
         float dx = a.x - b.x;
         float dy = a.y - b.y;
@@ -25,7 +34,7 @@ public final class Utils {
         c.target.z = lerp(a.target.z, b.target.z, t);
     }
 
-    public static void lerpVec3(Vector from, Vector to, float t, Vector result) {
+    public static void lerpVector3(Vector from, Vector to, float t, Vector result) {
         result.x = lerp(from.x, to.x, t);
         result.y = lerp(from.y, to.y, t);
         result.z = lerp(from.z, to.z, t);

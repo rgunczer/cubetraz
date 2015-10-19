@@ -1,14 +1,19 @@
 package com.almagems.cubetraz;
 
+import java.util.ArrayList;
 
-public final class Outro {
+import static android.opengl.GLES10.*;
+import static com.almagems.cubetraz.Constants.*;
+
+
+public final class Outro extends Scene {
 
     public enum OutroStateEnum {
         AnimToOutro,
         RotateFull,
         OutroExplosion,
         OutroDone
-    };
+    }
 
     private int m_cube_alpha;
 
@@ -17,11 +22,11 @@ public final class Outro {
 
     private OutroStateEnum m_state;
 
-    private Camera m_camera_menu;
-    private Camera m_camera_outro;
-    private Camera m_camera_current;
+    private Camera m_camera_menu = new Camera();
+    private Camera m_camera_outro = new Camera();
+    private Camera m_camera_current = new Camera();
 
-    private Starfield m_starfield;
+    private Starfield m_starfield = new Starfield();
 
     private float m_stars_alpha;
     private float m_t;
@@ -64,7 +69,8 @@ public final class Outro {
         m_ar_text_center[1].setVSPace(0.8f);
     }
 
-    public void nit() {
+    @Override
+    public void init() {
         m_ar_text_center[0].init("CONGRATULATIONS", true);
         m_ar_text_center[1].init("CUBETRAZ IS SOLVED", true);
 
@@ -75,7 +81,7 @@ public final class Outro {
         m_starfield.create();
 
         for (int i = 0; i < 30*10; ++i) {
-            m_starfield.update(1.0f / 30.0f);
+            m_starfield.update();
         }
 
         m_camera_outro = Game.level.m_camera_level;
@@ -95,7 +101,7 @@ public final class Outro {
 
         m_cube_rot_speed = 0.1f;
 
-        m_state = AnimToOutro;
+        m_state = OutroStateEnum.AnimToOutro;
 
         m_t = 0.0f;
 
@@ -140,7 +146,7 @@ public final class Outro {
         size = m_lst_cubes_base.size();
         for (int i = 0; i < size; ++i) {
             cube = m_lst_cubes_base.get(i);
-            if (cube) {
+            if (cube != null) {
                 if (8 == cube.x || 8 == cube.z) {
                     m_lst_cubes_base_disappear.add(cube);
                 }
@@ -148,8 +154,8 @@ public final class Outro {
         }
 
         m_lst_cubes_base_appear.clear();
-            
-        Game.createBaseCubesList(lst);
+
+        ArrayList<Cube> lst = Game.createBaseCubesList();
         size = lst.size();
         for (int i = 0; i < size; ++i) {
             cube = lst.get(i);
@@ -176,16 +182,16 @@ public final class Outro {
         for (int i = 0; i < size; ++i) {
             cube = m_lst_cubes_base.get(i);
 
-            cube.v = new Vector((-60 + Utils.rand.getNext()%120), (-60 + Utils.rand.getNext()%120), (-60 + Utils.rand.getNext()%120));
+            cube.v = new Vector((-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120));
 
-            if ( cube.v.x > 0.0f && cube.v.x <  30.0f ) cube.v.x = RANDOM_FLOAT(30.0f, 50.0f);
-            if ( cube.v.x < 0.0f && cube.v.x > -30.0f ) cube.v.x = RANDOM_FLOAT(30.0f, 50.0f) * -1.0f;
+            if ( cube.v.x > 0.0f && cube.v.x <  30.0f ) cube.v.x = Utils.randInt(30, 50);
+            if ( cube.v.x < 0.0f && cube.v.x > -30.0f ) cube.v.x = Utils.randInt(30, 50) * -1.0f;
 
-            if ( cube.v.y > 0.0f && cube.v.y <  30.0f ) cube.v.y = RANDOM_FLOAT(30.0f, 50.0f);
-            if ( cube.v.y < 0.0f && cube.v.y > -30.0f ) cube.v.y = RANDOM_FLOAT(30.0f, 50.0f) * -1.0f;
+            if ( cube.v.y > 0.0f && cube.v.y <  30.0f ) cube.v.y = Utils.randInt(30, 50);
+            if ( cube.v.y < 0.0f && cube.v.y > -30.0f ) cube.v.y = Utils.randInt(30, 50) * -1.0f;
 
-            if ( cube.v.z > 0.0f && cube.v.z <  30.0f ) cube.v.z = RANDOM_FLOAT(30.0f, 50.0f);
-            if ( cube.v.z < 0.0f && cube.v.z > -30.0f ) cube.v.z = RANDOM_FLOAT(30.0f, 50.0f) * -1.0f;
+            if ( cube.v.z > 0.0f && cube.v.z <  30.0f ) cube.v.z = Utils.randInt(30, 50);
+            if ( cube.v.z < 0.0f && cube.v.z > -30.0f ) cube.v.z = Utils.randInt(30, 50) * -1.0f;
 
             cube.v.x *= 0.001f;
             cube.v.y *= 0.001f;
@@ -193,6 +199,7 @@ public final class Outro {
         }
     }
 
+    @Override
     public void update() {
         switch (m_state) {
             case AnimToOutro:
@@ -206,7 +213,6 @@ public final class Outro {
                 if (Game.dirty_alpha < 0) {
                     Game.dirty_alpha = 0;
                 }
-
                 updateInRotateFull();
                 break;
 
@@ -223,10 +229,11 @@ public final class Outro {
 
     public void updateInAnimTo() {
         boolean done = true;
+        Cube cube;
 
         if (!m_lst_cubes_base_appear.isEmpty()) {
             done = false;
-            Cube cube = m_lst_cubes_base_appear.get(0);
+            cube = m_lst_cubes_base_appear.get(0);
             m_lst_cubes_base_appear.remove(cube);
 
             m_lst_cubes_base.add(cube);
@@ -234,7 +241,7 @@ public final class Outro {
 
         if (!m_lst_cubes_base_disappear.isEmpty()) {
             done = false;
-            Cube pCube = m_lst_cubes_base_disappear.get(0);
+            cube = m_lst_cubes_base_disappear.get(0);
             m_lst_cubes_base_disappear.remove(cube);
 
             m_lst_cubes_base.remove(cube);
@@ -260,20 +267,20 @@ public final class Outro {
         }
 
         if (done && Math.abs(1.0f - m_t) < EPSILON) {
-            m_state = RotateFull;
+            m_state = OutroStateEnum.RotateFull;
             m_draw_starfield = true;
             m_stars_alpha = 0.0f;
-            Games.stopMusic();
+            Game.stopMusic();
         }
     }
 
-    public void UpdateInRotateFull() {
+    public void updateInRotateFull() {
         m_cube_rotation.degree -= m_cube_rot_speed;
 
         m_stars_alpha += 0.02f;
 
         if (m_stars_alpha > 1.0f) {
-            m_state = OutroExplosion;
+            m_state = OutroStateEnum.OutroExplosion;
             m_stars_alpha = 1.0f;
             m_pos_cube_player = Game.getCubePosAt(4, 4, 4);
             m_degree = 0.0f;
@@ -285,7 +292,7 @@ public final class Outro {
         m_starfield.update();
     }
 
-    public void UpdateInOutroExplosion()) {
+    public void updateInOutroExplosion() {
         m_starfield.speed += 0.0003f;
         m_degree += 1.0f;
 
@@ -298,11 +305,11 @@ public final class Outro {
 //            (*it).v = vec3(0.0f, 0.0f, 0.0f);
         }
 
-        if ( int(m_cube_rotation.degree) % 360 != 0) {
+        if ( (m_cube_rotation.degree % 360) != 0) {
             m_cube_rotation.degree += 0.5f;
         } else {
             m_cube_rotation.degree = 0.0f;
-            m_state = OutroDone;
+            m_state = OutroStateEnum.OutroDone;
         }
 
         m_starfield.alpha = m_stars_alpha * 255;
@@ -366,7 +373,7 @@ public final class Outro {
         Graphics.setProjection2D();
         Graphics.setModelViewMatrix2D();
 
-        int a = m_center_alpha * 255;
+        int a = (int)m_center_alpha * 255;
 
         glDisable(GL_TEXTURE_2D);
         Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
@@ -419,16 +426,16 @@ public final class Outro {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        if (engine.dirty_alpha > 0) {
+        if (Game.dirty_alpha > 0) {
             Graphics.setProjection2D();
             Graphics.setModelViewMatrix2D();
 
             glDisable(GL_LIGHTING);
-            glDepthMask(GL_FALSE);
+            glDepthMask(false); //GL_FALSE);
             glEnable(GL_TEXTURE_2D);
 
-            Color color_dirty = new Color(255, 255, 255, engine.dirty_alpha);
-            Game.drawFBOTexture(Graphics.texture_id_dirty, color_dirty);
+            Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
+            Graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
 
             glDepthMask(true); //GL_TRUE);
             glEnable(GL_LIGHTING);
@@ -497,7 +504,7 @@ public final class Outro {
             if (true) { //#ifdef DRAW_AXES_CUBE
                 glDisable(GL_TEXTURE_2D);
                 glDisable(GL_LIGHTING);
-                engine.drawAxes();
+                Graphics.drawAxes();
                 glEnable(GL_LIGHTING);
                 glEnable(GL_TEXTURE_2D);
             } //#endif
@@ -509,7 +516,7 @@ public final class Outro {
     
     public void onFingerUp(float x, float y, int finger_count) {
         if (OutroStateEnum.OutroDone == m_state) {
-            Graphics.showScene(Scene_Menu);
+            Game.showScene(Scene_Menu);
         }
     }
 

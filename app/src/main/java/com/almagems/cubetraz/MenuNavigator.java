@@ -186,7 +186,7 @@ public final class MenuNavigator
                 break;
             
             case Hard4_To_Hard3:
-                m_interpolator.setup(-270.0f, -180.0, divisor);
+                m_interpolator.setup(-270.0f, -180.0f, divisor);
                 m_secondary_rotation = true;
                 m_cube_rotation_secondary.degree = -270.0f;
                 m_cube_rotation_secondary.axis = new Vector(0.0f, 0.0f, 1.0f);

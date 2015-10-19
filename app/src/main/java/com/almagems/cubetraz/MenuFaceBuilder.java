@@ -175,7 +175,7 @@ public final class MenuFaceBuilder {
 		}
 	}
 
-    public static void setupFaceX(final char a[], int face_type, CubeFaceNamesEnum face_id) {
+    public static void setupFaceX(final String a[], int face_type, CubeFaceNamesEnum face_id) {
 	    int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -192,7 +192,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFaceY(final char a[], int face_type, CubeFaceNamesEnum face_id) {
+    public static void setupFaceY(final String a[], int face_type, CubeFaceNamesEnum face_id) {
 	    int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -209,7 +209,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFaceZ(final char a[], int face_type, CubeFaceNamesEnum face_id) {
+    public static void setupFaceZ(final String a[], int face_type, CubeFaceNamesEnum face_id) {
 	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -226,7 +226,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceX(final char a[], int face_type, CubeFaceNamesEnum face_id, int x) {
+    public static void setupFontFaceX(final String a[], int face_type, CubeFaceNamesEnum face_id, int x) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -244,7 +244,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceY(final char a[], int face_type, CubeFaceNamesEnum face_id, int y) {
+    public static void setupFontFaceY(final String a[], int face_type, CubeFaceNamesEnum face_id, int y) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -262,7 +262,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceZ(final char a[], int face_type, CubeFaceNamesEnum face_id, int z) {
+    public static void setupFontFaceZ(final String a[], int face_type, CubeFaceNamesEnum face_id, int z) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -336,8 +336,8 @@ public final class MenuFaceBuilder {
 
 //void cMenuFaceBuilder::DumpFace(char* ar)
 //{
-//	const int face_width = MAX_CUBE_COUNT - 1;
-//	const int face_size = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
+//	final int face_width = MAX_CUBE_COUNT - 1;
+//	final int face_size = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
 //	
 //	printf("\n");
 //	
@@ -625,7 +625,7 @@ void cMenuFaceBuilder::GetFaceHelpText(CubeFaceNamesEnum face_id, char* a)
 	{
 		case Face_Tutorial:
             {
-                const char tutorial[] =
+                final String tutorial[] =
                 "xxxxxxxxx"
                 "x>>>>>>> "
                 "xNOW    x"
@@ -643,7 +643,7 @@ void cMenuFaceBuilder::GetFaceHelpText(CubeFaceNamesEnum face_id, char* a)
             
 		case Face_Menu:
             {
-                const char menu[] =
+                final String menu[] =
                 "xxxxxxx x"
                 "   xxxx x"
                 "xx      x"
@@ -666,7 +666,7 @@ void cMenuFaceBuilder::GetFaceHelpText(CubeFaceNamesEnum face_id, char* a)
 
 void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 {
-	const char empty[] =
+	final String empty[] =
 	"xxxxxxxxx"
 	"x       x"
 	"x       x"
@@ -677,7 +677,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"x       x"
 	"xxxxxxxxx";
 
-	const char tutorial[] =
+	final String tutorial[] =
 	"xxxxxxxxx"
 	"xTAP     "
 	"xON     x"
@@ -690,7 +690,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 
 #ifdef LITE_VERSION
     
-	const char menu[] =
+	final String menu[] =
 	"xxxxxxx x"
 	"         "
 	"xx      x"
@@ -701,7 +701,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xCREDITSx"
 	"xxxxxxx x";
     
-  	const char easy2[] =
+  	final String easy2[] =
 	"xx xxxxxx"
 	"xo oxo ox"
 	"x   x   x"
@@ -712,7 +712,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xoxo o  x"
 	"xxxxxxx x";
 	
-	const char easy3[] =
+	final String easy3[] =
 	"xxxxxxx x"
 	"xoxo ox x"
 	"xx      x"
@@ -723,7 +723,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xo oxo ox"
 	"xx xxxxxx";
 	
-	const char easy4[] =
+	final String easy4[] =
 	"xx xxxxxx"
 	"xo oxo ox"
 	"x       x"
@@ -737,7 +737,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
     
 #else
     
-	const char menu[] =
+	final String menu[] =
 	"xxxxxxx x"
 	"         "
 	"xx      x"
@@ -748,7 +748,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xSTORE  x"
 	"xxxxxxx x";
     
-   	const char easy2[] =
+   	final String easy2[] =
 	"xx xxxxxx"
 	"xoBoxo ox"
 	"x A x   x"
@@ -759,7 +759,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xoxo o Tx"
 	"xxxxxxx x";
 	
-	const char easy3[] =
+	final String easy3[] =
 	"xxxxxxx x"
 	"xoxo oxKx"
 	"xx   BACx"
@@ -770,7 +770,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xoNoxo ox"
 	"xx xxxxxx";
 	
-	const char easy4[] =
+	final String easy4[] =
 	"xx xxxxxx"
 	"xoBoxo ox"
 	"x ACK   x"
@@ -784,7 +784,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	
 #endif
     
-    const char options[] =
+    final String options[] =
 	"xxxxxxxxx"
 	"x       x"
 	"x MUSIC x"
@@ -795,7 +795,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"x       x"
 	"xxxxxxx x";
 	
-    const char store[] =
+    final String store[] =
 	"xxxxxxx x"
 	"xx      x"
 	"xNOADS  x"
@@ -807,7 +807,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xxxxxxxxx";
 	
 	
-	const char easy1[] =
+	final String easy1[] =
 	"xxxxxx xx"
 	"xo oxo ox"
 	"xxxTAP   "
@@ -820,7 +820,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	
 	
 	
-	const char normal1[] =
+	final String normal1[] =
 	"xxxxxx xx"
 	"xoxo oUox"
 	" BACK P x"
@@ -831,7 +831,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xoNoxoxox"
 	"xx xxxxxx";
 	
-	const char normal2[] =
+	final String normal2[] =
 	"xx xxxxxx"
 	"xo o o ox"
 	"x  x    x"
@@ -842,7 +842,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"x  o o ox"
 	"x xxxxxxx";
 	
-	const char normal3[] =
+	final String normal3[] =
 	"x xxxxxxx"
 	"x  o o ox"
 	"x  x    x"
@@ -853,7 +853,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xo o o ox"
 	"xx xxxxxx";
 	
-	const char normal4[] =
+	final String normal4[] =
 	"xx xxxxxx"
 	"xx o o ox"
 	"xx x    x"
@@ -865,7 +865,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xxxxxx xx";
 	
 	
-	const char hard1[] =
+	final String hard1[] =
 	"xxxx xxxx"
 	"xo oUoxM "
 	"x  xP NEx"
@@ -876,7 +876,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 	"xoxo oNox"
 	"xxxxxx xx";
 	
-	const char hard2[] =
+	final String hard2[] =
     "xxxxxx xx"
     "xo o o ox"
     "x    x  x"
@@ -887,7 +887,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
     "xo o o  x"
     "xxxxxxx x";
 	
-	const char hard3[] =
+	final String hard3[] =
     "xxxxxxx x"
     "xo o o  x"
     "x    x  x"
@@ -898,7 +898,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
     "xo o o ox"
     "xxxxxx xx";
 	
-	const char hard4[] =
+	final String hard4[] =
     "xxxxxx xx"
     "xo o o ox"
     "x    x  x"
@@ -941,7 +941,7 @@ void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
 
 void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 {
-	const char empty[] =
+	final String empty[] =
 	"xxxxxxxxx"
 	"x       x"
 	"x       x"
@@ -952,7 +952,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"x       x"
 	"xxxxxxxxx";
 
-	const char tutorial[] =
+	final String tutorial[] =
 	"BEGINNING"
 	"x        "
 	"xxxxxxx x"
@@ -963,7 +963,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"x       x"
 	"xxxxxxxxx";
 	
-	const char menu[] =
+	final String menu[] =
 	"CUBExxx x"
 	"   TRAZ x"
 	"xx      x"
@@ -974,7 +974,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"x       x"
 	"xxxxxxx x";
 	
-    const char options[] =
+    final String options[] =
 	"OPTIONSxx"
 	"x       x"
 	"x       x"
@@ -985,7 +985,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"x       x"
 	"xxxxxxx x";
 
-    const char store[] =
+    final String store[] =
 	"STORE   x"
 	"x       x"
 	"xx      x"
@@ -997,7 +997,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xxxxxxxxx";
 	
 	
-	const char easy1[] =
+	final String easy1[] =
 	"EASY#1 xx"
 	"xo oxo ox"
 	"xxx      "
@@ -1008,7 +1008,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xo oxoxox"
 	"xx xxxxxx";
 	
-	const char easy2[] =
+	final String easy2[] =
 	"Ex xxxxxx"
 	"Ao oxo ox"
 	"S   x   x"
@@ -1019,7 +1019,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xoxo o  x"
 	"xxxxxxx x";
 	
-	const char easy3[] =
+	final String easy3[] =
 	"Exxxxxx x"
 	"Aoxo o  x"
 	"Sx      x"
@@ -1030,7 +1030,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xo oxo ox"
 	"xx xxxxxx";
 	
-	const char easy4[] =
+	final String easy4[] =
 	"Ex xxxxxx"
 	"Ao oxo ox"
 	"S   x   x"
@@ -1042,7 +1042,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xxxxxx xx";
 
 	
-	const char normal1[] =
+	final String normal1[] =
 	"NORMAL #1"
 	"xoxo o ox"
 	"    x   x"
@@ -1053,7 +1053,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xo oxoxox"
 	"xx xxxxxx";
 	
-	const char normal2[] =
+	final String normal2[] =
 	"Nx xxxxxx"
 	"Oo o o ox"
 	"R  x    x"
@@ -1064,7 +1064,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"2  o o ox"
 	"x xxxxxxx";
 	
-	const char normal3[] =
+	final String normal3[] =
 	"N xxxxxxx"
 	"O  o o ox"
 	"R  x    x"
@@ -1075,7 +1075,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"3o o o ox"
 	"xx xxxxxx";
 	
-	const char normal4[] =
+	final String normal4[] =
 	"Nx xxxxxx"
 	"Ox o o ox"
 	"Rx x    x"
@@ -1087,7 +1087,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xxxxxx xx";
 
 	
-	const char hard1[] =
+	final String hard1[] =
 	"HARD #1xx"
 	"xo o ox  "
 	"x  x    x"
@@ -1098,7 +1098,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	"xoxo o ox"
 	"xxxxxx xx";
 	
-	const char hard2[] =
+	final String hard2[] =
     "Hxxxxx xx"
     "Ao o o ox"
     "R    x  x"
@@ -1109,7 +1109,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
     "xo o o  x"
     "xxxxxxx x";
 	
-	const char hard3[] =
+	final String hard3[] =
     "Hxxxxxx x"
     "Ao o o  x"
     "R    x  x"
@@ -1120,7 +1120,7 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
     "xo o o ox"
     "xxxxxx xx";
 	
-	const char hard4[] =
+	final String hard4[] =
     "Hxxxxx xx"
     "Ao o o ox"
     "R    x  x"
@@ -1161,206 +1161,119 @@ void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
 	}
 }
 
-void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
-{
-	const char empty[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
+	public static String getFace(CubeFaceNamesEnum face_id) {
+		final String empty =
+			"xxxxxxxxx" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"xxxxxxxxx";
 	
-	const char tutorial[] =
-	"xxxxxxxxx"
-	"x        "
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
+		final String tutorial =
+			"xxxxxxxxx" +
+			"x        " +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"xxxxxxxxx";
     
-    const char options[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"x       x"
-	"xxxxxxx x";
-	
-#ifndef LITE_VERSION
-    
-	const char menu[] =
-	"xxxxxxx x"
-	"   xxxx x"
-	"xx      x"
-	"x        "
-	"xxx     x"
-	"x       x"
-	"xxx    xx"
-	"x       x"
-	"xxxxxxx x";
-    
-    const char store[] =
-	"xxxxxxx x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"xxxxxxxxx";
-    
-    const char easy1[] =
-	"xxxxxx xx"
-	"x1x2x3 4x"
-	"xxx      "
-	"  5  6 7x"
-	"x    x xx"
-	"x8 9 A Bx"
-	"xx     xx"
-	"xC DxExFx"
-	"xx xxxxxx";
-    
-	const char easy2[] =
-	"xx xxxxxx"
-	"x1 2x3x4x"
-	"xx x   xx"
-	"x5 6 7 8x"
-	"xx x x xx"
-	"x9 AxB Cx"
-	"xx      x"
-	"xDxExFx x"
-	"xxxxxxx x";
-    
-	const char easy3[] =
-	"xxxxxxx x"
-	"x1x2x3x x"
-	"xx      x"
-	"x4 5x6x7x"
-	"xx     xx"
-	"x8x9xA Bx"
-	"xx     xx"
-	"xC DxExFx"
-	"xx xxxxxx";
-    
-	const char easy4[] =
-	"xx xxxxxx"
-	"x1 2x3x4x"
-	"xx     xx"
-	"x5x6x7 8x"
-	"xx     xx"
-	"x9 AxBxCx"
-	"xx     xx"
-	"xDxExF xx"
-	"xxxxxx xx";
-    
-	const char normal1[] =
-	"xxxxxx xx"
-	"x1x2x3 4x"
-	"     x xx"
-	"x5   6 7x"
-	"xx     xx"
-	"x8 9xA Bx"
-	"xx       "
-	"xC DxExFx"
-	"xx xxxxxx";
-    
-    
-#else
-    
-	const char menu[] =
-	"xxxxxxx x"
-	"   xxxx x"
-	"xx      x"
-	"x        "
-	"xxx     x"
-	"x       x"
-	"xx     xx"
-	"x       x"
-	"xxxxxxxxx";
-    
-    const char store[] =
-	"xxxxxxxxx"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"x    x  x"
-	"xxxxxxxxx";
-    
-    const char easy1[] =
-	"xxxxxxxxx"
-	"x1x2x3x4x"
-	"xxx    xx"
-	"  5  6 7x"
-	"x    x xx"
-	"x8 9 A Bx"
-	"xx     xx"
-	"xCxDxExFx"
-	"xxxxxxxxx";
- 
-    const char easy2[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
+		final String options =
+			"xxxxxxxxx" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"x       x" +
+			"xx      x" +
+			"x       x" +
+			"x       x" +
+			"xxxxxxx x";
 
-	const char easy3[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
+		final String menu =
+			"xxxxxxx x" +
+			"   xxxx x" +
+			"xx      x" +
+			"x        " +
+			"xxx     x" +
+			"x       x" +
+			"xxx    xx" +
+			"x       x" +
+			"xxxxxxx x";
     
-	const char easy4[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
+		final String store =
+			"xxxxxxx x" +
+			"xx      x" +
+			"x       x" +
+			"xx      x" +
+			"x       x" +
+			"xx      x" +
+			"x       x" +
+			"xx      x" +
+			"xxxxxxxxx";
     
+		final String easy1 =
+			"xxxxxx xx" +
+			"x1x2x3 4x" +
+			"xxx      " +
+			"  5  6 7x" +
+			"x    x xx" +
+			"x8 9 A Bx" +
+			"xx     xx" +
+			"xC DxExFx" +
+			"xx xxxxxx";
     
-    const char normal1[] =
-	"xxxxxx xx"
-	"x1x2x3 4x"
-	"x    x xx"
-	"x5   6 7x"
-	"xx     xx"
-	"x8 9xA Bx"
-	"xx       "
-	"xC DxExFx"
-	"xx xxxxxx";
+		final String easy2 =
+			"xx xxxxxx" +
+			"x1 2x3x4x" +
+			"xx x   xx" +
+			"x5 6 7 8x" +
+			"xx x x xx" +
+			"x9 AxB Cx" +
+			"xx      x" +
+			"xDxExFx x" +
+			"xxxxxxx x";
+    
+		final String easy3 =
+			"xxxxxxx x" +
+			"x1x2x3x x" +
+			"xx      x" +
+			"x4 5x6x7x" +
+			"xx     xx" +
+			"x8x9xA Bx" +
+			"xx     xx" +
+			"xC DxExFx" +
+			"xx xxxxxx";
+    
+		final String easy4 =
+			"xx xxxxxx" +
+			"x1 2x3x4x" +
+			"xx     xx" +
+			"x5x6x7 8x" +
+			"xx     xx" +
+			"x9 AxBxCx" +
+			"xx     xx" +
+			"xDxExF xx" +
+			"xxxxxx xx";
+    
+		final String normal1 =
+			"xxxxxx xx" +
+			"x1x2x3 4x" +
+			"     x xx" +
+			"x5   6 7x" +
+			"xx     xx" +
+			"x8 9xA Bx" +
+			"xx       " +
+			"xC DxExFx" +
+			"xx xxxxxx";
 
-    
-#endif
-			
 
-	const char normal2[] =
+	final String normal2[] =
 	"xx xxxxxx"
 	"x1 2x3x4x"
 	"xx     xx"
@@ -1371,7 +1284,7 @@ void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
 	"x  DxExFx"
 	"x xxxxxxx";
 
-	const char normal3[] =
+	final String normal3[] =
 	"x xxxxxxx"
 	"x  1x2x3x"
 	"x    xxxx"
@@ -1382,7 +1295,7 @@ void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
 	"xC DxExFx"
 	"xx xxxxxx";
 		
-	const char normal4[] =
+	final String normal4[] =
 	"xx xxxxxx"
 	"xx 1x2x3x"
 	"xx     xx"
@@ -1394,7 +1307,7 @@ void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
 	"xxxxxx xx";
 	
 	
-	const char hard1[] =
+	final String hard1[] =
 	"xxxx xxxx"
 	"x1x2 3x  "
 	"xxxx    x"
@@ -1405,7 +1318,7 @@ void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
 	"xCxDxE Fx"
 	"xxxxxx xx";
 
-	const char hard2[] =
+	final String hard2[] =
     "xxxxxx xx"
     "x1x2x3 4x"
     "xx     xx"
@@ -1416,7 +1329,7 @@ void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
     "xDxExFx x"
     "xxxxxxx x";
 
-	const char hard3[] =
+	final String hard3[] =
     "xxxxxxx x"
     "x1x2x3x x"
     "xx      x"
@@ -1427,7 +1340,7 @@ void cMenuFaceBuilder::GetFace(CubeFaceNamesEnum face_id, char* a)
     "xCxDxE Fx"
     "xxxxxx xx";
 
-	const char hard4[] =
+	final String hard4[] =
     "xxxxxx xx"
     "x1x2x3 4x"
     "xx     xx"
@@ -1506,7 +1419,7 @@ void cMenuFaceBuilder::GetFaceSymbol(CubeFaceNamesEnum face_id, int* a)
 		case Face_Menu:
             {
 #ifdef LITE_VERSION
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1518,7 +1431,7 @@ void cMenuFaceBuilder::GetFaceSymbol(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                 };
 #else
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1536,7 +1449,7 @@ void cMenuFaceBuilder::GetFaceSymbol(CubeFaceNamesEnum face_id, int* a)
 			
 		default:
             {
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1562,7 +1475,7 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
             {
                 
 #ifndef LITE_VERSION
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,      SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
@@ -1574,7 +1487,7 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                 };
 #else
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,      SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
@@ -1593,7 +1506,7 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
             
 		case Face_Options:
             {
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
@@ -1612,7 +1525,7 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
 		case Face_Easy01:
             {
 #ifndef LITE_VERSION
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,  SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoRight, SymbolEmpty,
@@ -1624,7 +1537,7 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                 };
 #else
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,  SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
@@ -1643,7 +1556,7 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
             
 		default:
             {
-                const int ar[] = {
+                final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,

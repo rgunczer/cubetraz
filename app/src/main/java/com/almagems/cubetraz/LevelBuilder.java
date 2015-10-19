@@ -2,6 +2,8 @@ package com.almagems.cubetraz;
 
 import java.util.ArrayList;
 
+import static com.almagems.cubetraz.Constants.*;
+
 
 public final class LevelBuilder {
         
@@ -19,7 +21,7 @@ public final class LevelBuilder {
 
 
     public static MovingCube getNewMovingCube() {
-        MovingCube p = null;
+        MovingCube p;
     
         if (lst_moving_cubes_pool.isEmpty()) {
             p = new MovingCube();
@@ -31,7 +33,7 @@ public final class LevelBuilder {
     }
 
     public static MoverCube getNewMoverCube() {
-        MoverCube* p = null;
+        MoverCube p;
     
         if (lst_mover_cubes_pool.isEmpty()) {
             p = new MoverCube();
@@ -43,9 +45,9 @@ public final class LevelBuilder {
     }
 
     public static DeadCube getNewDeadCube() {
-        DeadCube* p = null;
+        DeadCube p;
     
-        if (lst_dead_cubes_pool.empty()) { 
+        if (lst_dead_cubes_pool.isEmpty()) {
             p = new DeadCube();
         } else {
             p = lst_dead_cubes_pool.get( lst_dead_cubes_pool.size() - 1 );
@@ -60,7 +62,7 @@ public final class LevelBuilder {
         int len = lst_moving_cubes.size();            
         for (int i = 0; i < len; ++i)  {
             cube = lst_moving_cubes.get(i);
-            Game->setCubeTypeInvisible( cube.getCubePos() );
+            Game.setCubeTypeInvisible(cube.getCubePos());
             lst_moving_cubes_pool.add(cube);
         }
 
@@ -99,7 +101,7 @@ public final class LevelBuilder {
 	    level.m_list_cubes_hint.clear();
     }
 
-    public void setup(int arr[], int size) {
+    public static void setup(int arr[]) {
         player.x = arr[0];
         player.y = arr[1];
         player.z = arr[2];
@@ -110,10 +112,10 @@ public final class LevelBuilder {
     
         level.m_ad_level.clear();
     
-        Color color = Game.getFaceColor();
+        Color color = Game.getFaceColor(1f);
         Cube pCube;
 	    int x, y, z;
-    
+        int size = arr.length;
         for (int i = 6; i < size; i += 3) {
             x = arr[i];
             y = arr[i+1];
@@ -121,49 +123,50 @@ public final class LevelBuilder {
         
             pCube = Game.cubes[x][y][z];
         
-            pCube.type = CubeIsVisibleAndObstacleAndLevel;
+            pCube.type = CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel;
 		    pCube.setColor(color);
         
-            level.m_ad_level.AddAppear(pCube);
+            level.m_ad_level.addAppear(pCube);
         }
     }
 
-    public void setupSolution(int arr[], int size) {
+    public static void setupSolution(int arr[]) {
         int i;
+        int size = arr.length;
         for (i = 0; i < MAX_SOLUTION_MOVES; ++i) {
-            level.m_ar_solution[i] = No_Move;
+            level.m_ar_solution[i] = AxisMovement_No_Move;
         }
 	
         for (i = 0; i < size; ++i) {
-            level.m_ar_solution[i] = (AxisMovementEnum)arr[i];
+            level.m_ar_solution[i] = arr[i];
         }
 	
 	    level.m_min_solution_steps = size;
     }
 
-    public void setupMovingCubes(int arr[], int size) {
+    public static void setupMovingCubes(int arr[]) {
         MovingCube pMovingCube;
-	
+        int size = arr.length;
         for (int i = 0; i < size; i+=4) {
             pMovingCube = getNewMovingCube();
-            pMovingCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), (AxisMovementEnum)arr[i+3]);        
+            pMovingCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
             lst_moving_cubes.add(pMovingCube);
         }
     }
 
-    void setupMoverCubes(int arr[], int size) {
+    public static void setupMoverCubes(int arr[]) {
 	    MoverCube pMoverCube;
-	
+        int size = arr.length;
 	    for (int i = 0; i < size; i+=4) {	
 		    pMoverCube = getNewMoverCube();
-		    pMoverCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), (AxisMovementEnum)arr[i+3]);
+		    pMoverCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
             lst_mover_cubes.add(pMoverCube);
 	    }
     }
 
-    public void setupDeathCubes(int arr[], int size) {
+    public static void setupDeathCubes(int arr[]) {
 	    DeadCube pDeadCube;
-	
+        int size = arr.length;
 	    for (int i = 0; i < size; i+=3) {
 		    pDeadCube = getNewDeadCube();
 		    pDeadCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]));
@@ -171,9 +174,9 @@ public final class LevelBuilder {
 	    }
     }
 
-    public void setupHintCubes(int arr[], int size) {
+    public static void setupHintCubes(int arr[]) {
 	    Cube pCube;
-	
+        int size = arr.length;
 	    for (int i = 0; i < size; i+=3) {
 		    pCube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
 		    level.m_list_cubes_hint.add(pCube);

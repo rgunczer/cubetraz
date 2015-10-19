@@ -5,9 +5,9 @@ import static android.opengl.GLES10.*;
 
 public final class TextDisplay {
 
-    public GLfloat m_verts[3*2048];
-    public GLfloat m_coords[3*2048];
-    public GLubyte m_colors[6*2048];
+//    public float m_verts[3*2048];
+//    public float m_coords[3*2048];
+//    public byte m_colors[6*2048];
 
     int m_vertex_count;
     int m_vindex;
@@ -29,9 +29,9 @@ public final class TextDisplay {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        glVertexPointer(2, GL_FLOAT, 0, m_verts);
-        glTexCoordPointer(2, GL_FLOAT, 0, m_coords);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, m_colors);
+//        glVertexPointer(2, GL_FLOAT, 0, m_verts);
+//        glTexCoordPointer(2, GL_FLOAT, 0, m_coords);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, m_colors);
     }
 
     public void render() {
