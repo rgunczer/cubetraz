@@ -229,16 +229,16 @@ public final class Game {
 //
 //                if (m_intro) {
 //                    delete m_intro;
-//                    m_intro = NULL;
+//                    m_intro = null;
 //                }
 //
 //                if (m_outro) {
 //                    delete m_outro;
-//                    m_outro = NULL;
+//                    m_outro = null;
 //                    engine.menu_init_data.reappear = false;
 //                }
 //
-//                if (NULL == m_menu)
+//                if (null == m_menu)
 //                    m_menu = new cMenu();
 //
 //                m_menu.Init();
@@ -248,7 +248,7 @@ public final class Game {
 //
 //            case Scene_Anim:
 //
-//                if (NULL == m_animator)
+//                if (null == m_animator)
 //                    m_animator = new cAnimator();
 //
 //                m_animator.Init();
@@ -265,7 +265,7 @@ public final class Game {
 //
 //            case Scene_Stat:
 //
-//                if (NULL == m_statistics)
+//                if (null == m_statistics)
 //                    m_statistics = new cStatistics();
 //
 //                m_statistics.Init();
@@ -282,7 +282,7 @@ public final class Game {
 //
 //            case Scene_Outro:
 //
-//                if (NULL == m_outro)
+//                if (null == m_outro)
 //                    m_outro = new cOutro();
 //
 //                m_outro.Init();
@@ -295,7 +295,7 @@ public final class Game {
     }
 
 
-    public static final Level level = new Level();
+    public static Level level;
 
     public static final LevelInitData level_init_data = new LevelInitData();
     public static final AnimInitData anim_init_data = new AnimInitData();
@@ -432,6 +432,18 @@ public final class Game {
 
     public void init() {
         graphics = Engine.graphics;
+
+        intro = null;
+        menu = null;
+        animator = null;
+        level = null;
+        statistics = null;
+        outro = null;
+
+        m_scene = null;
+
+        dirty_alpha = DIRTY_ALPHA;
+
 
 //        StatSectionBase.graphics = graphics;
 //        SingleColoredQuad.graphics = graphics;
@@ -818,15 +830,15 @@ public final class Game {
                 for(int z = 0; z < MAX_CUBE_COUNT; ++z) {
                     if ( x > 1 && x < MAX_CUBE_COUNT - 2 && y > 1 && y < MAX_CUBE_COUNT - 2 && z > 1 && z < MAX_CUBE_COUNT - 2 ) {
                         ++number_of_invisible_cubes;
-                        cubes[x][y][z].type = Cube.CubeTypeEnum.CubeIsInvisible;
+                        cubes[x][y][z].type = CubeTypeEnum.CubeIsInvisible;
                     } else {
                         if (x == 0 || x == MAX_CUBE_COUNT - 1 || y == 0 || y == MAX_CUBE_COUNT - 1 || z == 0 || z == MAX_CUBE_COUNT - 1) {
                             ++number_of_invisible_cubes;
-                            cubes[x][y][z].type = Cube.CubeTypeEnum.CubeIsInvisible;
+                            cubes[x][y][z].type = CubeTypeEnum.CubeIsInvisible;
                         } else {
                             ++number_of_visible_cubes;
-                            cubes[x][y][z].type = Cube.CubeTypeEnum.CubeIsVisibleAndObstacle;
-                            cubes[x][y][z].SetColor(Color.WHITE);
+                            cubes[x][y][z].type = CubeTypeEnum.CubeIsVisibleAndObstacle;
+                            cubes[x][y][z].setColor(Color.WHITE);
                         }
                     }
                 }
@@ -923,7 +935,6 @@ public final class Game {
     public static Color getRandomColor() {
         return new Color( Utils.rand.nextInt(255), Utils.rand.nextInt(255), Utils.rand.nextInt(255), Utils.rand.nextInt(255) );
     }
-
 
     public static boolean isCubeOnAList(Cube cube, ArrayList<Cube> lst) {
         return lst.contains(cube);
@@ -1169,76 +1180,37 @@ public final class Game {
     }
 
 
-//-------------------------------------------------------------------------------------
-    cEngine()
-    {
-        #ifdef __APPLE__
-        //printf("\ncEngine is on Apple...\n");
-        #endif
-
-        glGenRenderbuffersOES(1, &m_colorbuffer);
-        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-
-// scenes
-        m_intro = NULL;
-        m_menu = NULL;
-        m_animator = NULL;
-        m_level = NULL;
-        m_statistics = NULL;
-        m_outro = NULL;
-
-        m_scene = NULL;
-
-        dirty_alpha = DIRTY_ALPHA;
-    }
-
-    ~cEngine()
-    {
-        map<char, TexturedQuad*>::iterator it;
-
-        for( it = m_fonts.begin(); it != m_fonts.end(); ++it)
-            delete (*it).second;
-
-        m_fonts.clear();
-    }
-
     // Scales a vector by a scalar
-    void ScaleVector(float vVector[3], const GLfloat fScale)
-    {
-        vVector[0] *= fScale;
-        vVector[1] *= fScale;
-        vVector[2] *= fScale;
+    public static void scaleVector(float[] vector, final float scale) {
+        vector[0] *= scale;
+        vector[1] *= scale;
+        vector[2] *= scale;
     }
 
     // Gets the length of a vector squared
-    GLfloat GetVectorLengthSqrd(const float vVector[3])
-    {
-        return (vVector[0]*vVector[0]) + (vVector[1]*vVector[1]) + (vVector[2]*vVector[2]);
+    public static float getVectorLengthSqrd(final float[] vector) {
+        return (vector[0]*vector[0]) + (vector[1]*vector[1]) + (vector[2]*vector[2]);
     }
 
     // Gets the length of a vector
-    GLfloat GetVectorLength(const float vVector[3])
-    {
-        return (GLfloat)sqrt(GetVectorLengthSqrd(vVector));
+    public static float getVectorLength(final float[] vVector) {
+        return (float)Math.sqrt(getVectorLengthSqrd(vVector));
     }
 
     // Calculate the cross product of two vectors
-    void CalcVectorCrossProduct(const float vU[3], const float vV[3], float vResult[3])
-    {
+    void calcVectorCrossProduct(final float[] vU, final float[] vV, float[] vResult) {
         vResult[0] =  vU[1] * vV[2] - vV[1] * vU[2];
         vResult[1] = -vU[0] * vV[2] + vV[0] * vU[2];
         vResult[2] =  vU[0] * vV[1] - vV[0] * vU[1];
     }
 
-    void NormalizeVector(float vNormal[3])
-    {
-        GLfloat fLength = 1.0f / GetVectorLength(vNormal);
-        ScaleVector(vNormal, fLength);
+    void NormalizeVector(float[] vNormal[3]) {
+        float fLength = 1.0f / getVectorLength(vNormal);
+        scaleVector(vNormal, fLength);
     }
 
     // Subtract one vector from another
-    void SubtractVectors(const float vFirst[3], const float vSecond[3], float vResult[3])
-    {
+    void SubtractVectors(const float vFirst[3], const float vSecond[3], float vResult[3]) {
         vResult[0] = vFirst[0] - vSecond[0];
         vResult[1] = vFirst[1] - vSecond[1];
         vResult[2] = vFirst[2] - vSecond[2];
@@ -1252,7 +1224,7 @@ public final class Game {
         SubtractVectors(vP2, vP1, vV1);
         SubtractVectors(vP3, vP1, vV2);
 
-        CalcVectorCrossProduct(vV1, vV2, vNormal);
+        calcVectorCrossProduct(vV1, vV2, vNormal);
         NormalizeVector(vNormal);
     }
 
@@ -1306,39 +1278,15 @@ public final class Game {
         destMat[15] =  dot - vLightPos[3] * vPlaneEquation[3];
     }
 
-    void ShowFullScreenAd()
-    {
-        m_resourceManager.ShowFullScreenAd();
+    public static void showFullScreenAd() {
+        //m_resourceManager.ShowFullScreenAd();
     }
 
-    bool GetAdsFlag()
-    {
-        return m_resourceManager.GetAdsFlag();
+    public static boolean getAdsFlag() {
+        return false;
     }
 
-    #pragma mark - resize
-
-    void ResizeGLView(int width, int height)
-    {
-        m_width = width;
-        m_height = height;
-
-        m_half_width = width / 2;
-        m_half_height = height / 2;
-
-        m_aspectRatio = (float)m_width / (float)m_height;
-        glViewport(0, 0, width, height);
-
-        m_menu.SetupCameras();
-    }
-
-
-    #pragma mark - Init
-
-    void Init(int width, int height, float scaleFactor, DeviceTypeEnum device_type, float banner_height)
-    {
-        srand(time(NULL));
-
+    public static void init(int width, int height, float scaleFactor, int device_type, float banner_height) {
         m_banner_height = banner_height;
         m_scaleFactor = scaleFactor;
         this.device_type = device_type;
@@ -1362,12 +1310,10 @@ public final class Game {
 
         GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
 
-        if (GL_FRAMEBUFFER_COMPLETE_OES != status)
-        {
+        if (GL_FRAMEBUFFER_COMPLETE_OES != status) {
 //        printf("\nFailure with framebuffer generation: %d", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
 
-            switch (status)
-            {
+            switch (status) {
                 case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
 //                printf("\nIncomplete!!!");
                     break;
@@ -1388,7 +1334,7 @@ public final class Game {
 //	m_aspectRatio = (float)m_width / (float)m_height;
         m_aspectRatio = (float)m_width / (float)h;
 
-        m_fbo.CreateWithColorAndDepthStencilBuffer(m_width, m_height);
+        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
 
 //    glViewport(0, 0, width, height);
         glViewport(0, 0, width, h);
@@ -1421,43 +1367,30 @@ public final class Game {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
 
-        switch (device_type)
-        {
-            case Device_iPad:
-                device_scale = 2.0f * m_scaleFactor;
-                break;
+        initTextures();
+        initFonts();
+        initFontsBig();
+        initNumberFonts();
+        initSymbols();
 
-            default:
-                device_scale = 1.0f * m_scaleFactor;
-                break;
-        }
 
-        InitTextures();
-        InitFonts();
-        InitFontsBig();
-        InitNumberFonts();
-        InitSymbols();
-
-        engine = this;
-
-        LoadOptions();
+        loadOptions();
 
         float size = (MAX_CUBE_COUNT * CUBE_SIZE) - CUBE_SIZE;
         cube_offset.x = cube_offset.y = cube_offset.z = size / -2.0f;
 
-        cCreator::CreateCubes();
+        Creator.createCubes();
 
-        m_level = new cLevel();
-        m_menu = new cMenu();
-        m_solvers = new cSolvers();
+        level = new Level();
+        menu = new Menu();
 
-        cLevelBuilder::level = m_level;
+        LevelBuilder.level = level;
 
 //	printf("\nsize of level:%lu", sizeof(cEngine));
 //	printf("\nsize of menu:%lu", sizeof(cMenu));
 //	printf("\nsize of level:%lu", sizeof(cLevel));
 
-        ShowScene(Scene_Intro);
+        showScene(Scene_Intro);
         //ShowScene(Scene_Menu);
         //ShowScene(Scene_Anim);
         //ShowScene(Scene_Level);
@@ -1465,18 +1398,14 @@ public final class Game {
         //ShowScene(Scene_Stat);
         //ShowScene(Scene_Outro);
 
-        WarmCache();
+        warmCache();
 
-        cCubetraz::Init();
-        //cCubetraz::CreateOldSaveGameFile();
-        cCubetraz::Convert();
-        cCubetraz::Load();
+        Cubetraz.init();
+        Cubetraz.load();
     }
 
-    GLuint LoadTexture(const char* name)
-    {
-        if (0 != texture_id_tutor)
-        {
+    GLuint loadTexture(const char* name) {
+        if (0 != texture_id_tutor) {
             glDeleteTextures(1, &texture_id_tutor);
             texture_id_tutor = 0;
         }
@@ -1485,8 +1414,7 @@ public final class Game {
         return texture_id_tutor;
     }
 
-    void InitTextures()
-    {
+    public static void initTextures() {
         m_resourceManager.CreateTexture("grey_concrete128_stroke.png", texture_id_gray_concrete);
         m_resourceManager.CreateTexture("key.png", texture_id_key);
         m_resourceManager.CreateTexture("player.png", texture_id_player);
@@ -1504,94 +1432,83 @@ public final class Game {
         m_resourceManager.CreateTexture("tutor_swipe", texture_id_tutor);
     }
 
-    void InitFontsBig()
-    {
-        const int arr_size = 65;
-
-        struct FontStruct
-        {
-            char ch;
-            Rectangle rc;
+    public static void initFontsBig() {
+        FontStruct[] a = new FontStruct[] {
+            { ' ', new Rectangle(1,      0, 30,  82) },
+            { '!', new Rectangle(31,     0, 49,  82) },
+            { '"', new Rectangle(80,     0, 61,  82) },
+            { '#', new Rectangle(141,    0, 76,  82) },
+            { '$', new Rectangle(217,    0, 72,  82) },
+            { '%', new Rectangle(289,    0, 84,  82) },
+            { '&', new Rectangle(373,    0, 76,  82) },
+            { '\'', new Rectangle(449,    0, 42,  82) },
+            { '(', new Rectangle(491,    0, 46,  82) },
+            { ')', new Rectangle(537,    0, 46,  82) },
+            { '*', new Rectangle(583,    0, 58,  82) },
+            { '+', new Rectangle(641,    0, 76,  82) },
+            { ',', new Rectangle(717,    0, 44,  82) },
+            { '-', new Rectangle(761,    0, 38,  82) },
+            { '.', new Rectangle(799,    0, 44,  82) },
+            { '/', new Rectangle(843,    0, 75,  82) },
+            { '0', new Rectangle(918,    0, 72,  82) },
+            { '1', new Rectangle(0,     83, 72,  82) },
+            { '2', new Rectangle(72,    83, 72,  82) },
+            { '3', new Rectangle(144,   83, 72,  82) },
+            { '4', new Rectangle(216,   83, 72,  82) },
+            { '5', new Rectangle(288,   83, 72,  82) },
+            { '6', new Rectangle(360,   83, 72,  82) },
+            { '7', new Rectangle(432,   83, 72,  82) },
+            { '8', new Rectangle(504,   83, 72,  82) },
+            { '9', new Rectangle(576,   83, 72,  82) },
+            { ':', new Rectangle(648,   83, 44,  82) },
+            { ';', new Rectangle(692,   83, 44,  82) },
+            { '<', new Rectangle(736,   83, 57,  82) },
+            { '=', new Rectangle(793,   83, 76,  82) },
+            { '>', new Rectangle(869,   83, 57,  82) },
+            { '?', new Rectangle(926,   83, 57,  82) },
+            { '@', new Rectangle(0,    166, 79,  82) },
+            { 'A', new Rectangle(79,   166, 79,  82) },
+            { 'B', new Rectangle(158,  166, 78,  82) },
+            { 'C', new Rectangle(236,  166, 81,  82) },
+            { 'D', new Rectangle(317,  166, 81,  82) },
+            { 'E', new Rectangle(398,  166, 75,  82) },
+            { 'F', new Rectangle(473,  166, 73,  82) },
+            { 'G', new Rectangle(546,  166, 82,  82) },
+            { 'H', new Rectangle(628,  166, 82,  82) },
+            { 'I', new Rectangle(710,  166, 46,  82) },
+            { 'J', new Rectangle(756,  166, 65,  82) },
+            { 'K', new Rectangle(821,  166, 78,  82) },
+            { 'L', new Rectangle(899,  166, 72,  82) },
+            { 'M', new Rectangle(0,    249, 89,  82) },
+            { 'N', new Rectangle(89,   249, 83,  82) },
+            { 'O', new Rectangle(172,  249, 82,  82) },
+            { 'P', new Rectangle(254,  249, 76,  82) },
+            { 'Q', new Rectangle(330,  249, 82,  82) },
+            { 'R', new Rectangle(412,  249, 79,  82) },
+            { 'S', new Rectangle(491,  249, 73,  82) },
+            { 'T', new Rectangle(564,  249, 69,  82) },
+            { 'U', new Rectangle(633,  249, 79,  82) },
+            { 'V', new Rectangle(712,  249, 76,  82) },
+            { 'W', new Rectangle(788,  249, 101, 82) },
+            { 'X', new Rectangle(889,  249, 75,  82) },
+            { 'Y', new Rectangle(0,    332, 72,  82) },
+            { 'Z', new Rectangle(72,   332, 72,  82) },
+            { '[', new Rectangle(144,  332, 46,  82) },
+            { '\\', new Rectangle(190, 332, 75,  82) },
+            { ']', new Rectangle(265,  332, 46,  82) },
+            { '^', new Rectangle(311,  332, 57,  82) },
+            { '_', new Rectangle(368,  332, 57,  82) },
+            { '`', new Rectangle(425,  332, 57,  82) }
         };
 
-        FontStruct a[arr_size] =
-        {
-            { ' ', Rectangle(1,      0, 30,  82) },
-            { '!', Rectangle(31,     0, 49,  82) },
-            { '"', Rectangle(80,     0, 61,  82) },
-            { '#', Rectangle(141,    0, 76,  82) },
-            { '$', Rectangle(217,    0, 72,  82) },
-            { '%', Rectangle(289,    0, 84,  82) },
-            { '&', Rectangle(373,    0, 76,  82) },
-            { '\'',Rectangle(449,    0, 42,  82) },
-            { '(', Rectangle(491,    0, 46,  82) },
-            { ')', Rectangle(537,    0, 46,  82) },
-            { '*', Rectangle(583,    0, 58,  82) },
-            { '+', Rectangle(641,    0, 76,  82) },
-            { ',', Rectangle(717,    0, 44,  82) },
-            { '-', Rectangle(761,    0, 38,  82) },
-            { '.', Rectangle(799,    0, 44,  82) },
-            { '/', Rectangle(843,    0, 75,  82) },
-            { '0', Rectangle(918,    0, 72,  82) },
-            { '1', Rectangle(0,     83, 72,  82) },
-            { '2', Rectangle(72,    83, 72,  82) },
-            { '3', Rectangle(144,   83, 72,  82) },
-            { '4', Rectangle(216,   83, 72,  82) },
-            { '5', Rectangle(288,   83, 72,  82) },
-            { '6', Rectangle(360,   83, 72,  82) },
-            { '7', Rectangle(432,   83, 72,  82) },
-            { '8', Rectangle(504,   83, 72,  82) },
-            { '9', Rectangle(576,   83, 72,  82) },
-            { ':', Rectangle(648,   83, 44,  82) },
-            { ';', Rectangle(692,   83, 44,  82) },
-            { '<', Rectangle(736,   83, 57,  82) },
-            { '=', Rectangle(793,   83, 76,  82) },
-            { '>', Rectangle(869,   83, 57,  82) },
-            { '?', Rectangle(926,   83, 57,  82) },
-            { '@', Rectangle(0,    166, 79,  82) },
-            { 'A', Rectangle(79,   166, 79,  82) },
-            { 'B', Rectangle(158,  166, 78,  82) },
-            { 'C', Rectangle(236,  166, 81,  82) },
-            { 'D', Rectangle(317,  166, 81,  82) },
-            { 'E', Rectangle(398,  166, 75,  82) },
-            { 'F', Rectangle(473,  166, 73,  82) },
-            { 'G', Rectangle(546,  166, 82,  82) },
-            { 'H', Rectangle(628,  166, 82,  82) },
-            { 'I', Rectangle(710,  166, 46,  82) },
-            { 'J', Rectangle(756,  166, 65,  82) },
-            { 'K', Rectangle(821,  166, 78,  82) },
-            { 'L', Rectangle(899,  166, 72,  82) },
-            { 'M', Rectangle(0,    249, 89,  82) },
-            { 'N', Rectangle(89,   249, 83,  82) },
-            { 'O', Rectangle(172,  249, 82,  82) },
-            { 'P', Rectangle(254,  249, 76,  82) },
-            { 'Q', Rectangle(330,  249, 82,  82) },
-            { 'R', Rectangle(412,  249, 79,  82) },
-            { 'S', Rectangle(491,  249, 73,  82) },
-            { 'T', Rectangle(564,  249, 69,  82) },
-            { 'U', Rectangle(633,  249, 79,  82) },
-            { 'V', Rectangle(712,  249, 76,  82) },
-            { 'W', Rectangle(788,  249, 101, 82) },
-            { 'X', Rectangle(889,  249, 75,  82) },
-            { 'Y', Rectangle(0,    332, 72,  82) },
-            { 'Z', Rectangle(72,   332, 72,  82) },
-            { '[', Rectangle(144,  332, 46,  82) },
-            { '\\', Rectangle(190, 332, 75,  82) },
-            { ']', Rectangle(265,  332, 46,  82) },
-            { '^', Rectangle(311,  332, 57,  82) },
-            { '_', Rectangle(368,  332, 57,  82) },
-            { '`', Rectangle(425,  332, 57,  82) }
-        };
+        final float tw = 1024.0f;   // texture width
+        final float th = 1024.0f;   // texture height
 
-        const float tw = 1024.0f;   // texture width
-        const float th = 1024.0f;   // texture height
-
-        TexturedQuad* pFont;
+        TexturedQuad pFont;
 
         float x, y, w, h;
 
-        for (int i = 0; i < arr_size; ++i)
-        {
+        for (int i = 0; i < a.length; ++i) {
             x  = a[i].rc.x;
             y  = a[i].rc.y;
             w  = a[i].rc.w;
@@ -1631,7 +1548,7 @@ public final class Game {
             { '$',  Rectangle(113,   0, 36, 41) },
             { '%',  Rectangle(149,   0, 42, 41) },
             { '&',  Rectangle(191,   0, 38, 41) },
-            { '\'', Rectangle(229,   0, 21, 41) },
+            { '\'', new Rectangle(229,   0, 21, 41) },
             { '(',  Rectangle(250,   0, 23, 41) },
             { ')',  Rectangle(273,   0, 23, 41) },
             { '*',  Rectangle(296,   0, 29, 41) },
@@ -1684,7 +1601,7 @@ public final class Game {
             { 'Y',  Rectangle(0,   168, 36, 41) },
             { 'Z',  Rectangle(36,  168, 36, 41) },
             { '[',  Rectangle(72,  168, 23, 41) },
-            { '\\', Rectangle(95,  168, 37, 41) },
+            { '\\', new Rectangle(95,  168, 37, 41) },
             { ']',  Rectangle(132, 168, 23, 41) },
             { '^',  Rectangle(155, 168, 28, 41) },
             { '_',  Rectangle(183, 168, 28, 41) },
@@ -1885,10 +1802,10 @@ public final class Game {
 
     void UpdateDisplayedSolvers()
     {
-        if (NULL != m_solvers)
+        if (null != m_solvers)
             m_solvers.UpdateSolversCount();
 
-        if (NULL != m_level)
+        if (null != m_level)
             m_level.SetSolversCount();
     }
 

@@ -67,16 +67,16 @@ public final class Menu extends Scene {
     private float m_hilite_alpha;
 
     // fonts on red cubes
-    private CubeFont m_cubefont_play;
-    private CubeFont m_cubefont_options;
-    private CubeFont m_cubefont_store;
-    private CubeFont m_cubefont_noads;
-    private CubeFont m_cubefont_solvers;
-    private CubeFont m_cubefont_restore;
+    public CubeFont m_cubefont_play;
+    public CubeFont m_cubefont_options;
+    public CubeFont m_cubefont_store;
+    public CubeFont m_cubefont_noads;
+    public CubeFont m_cubefont_solvers;
+    public CubeFont m_cubefont_restore;
 
     // Cubes
-    private final ArrayList<Cube> m_list_cubes_base = new ArrayList<Cube>();
-    private final ArrayList<Cube> m_list_cubes_face = new ArrayList<Cube>();
+    public final ArrayList<Cube> m_list_cubes_base = new ArrayList<Cube>();
+    public final ArrayList<Cube> m_list_cubes_face = new ArrayList<Cube>();
 
     private float m_target_rotation_degree;
 
@@ -87,19 +87,12 @@ public final class Menu extends Scene {
 
     private MenuCube getMovingCubeFromColor(int color) {
         switch (color) {
-            case 255:
-                return m_pMenuCubePlay;
-            case 200:
-                return m_pMenuCubeOptions;
-            case 100:
-                return m_pMenuCubeStore;
-
-            case 40:
-                return m_pStoreCubeNoAds;
-            case 50:
-                return m_pStoreCubeSolvers;
-            case 60:
-                return m_pStoreCubeRestore;
+            case 255: return m_pMenuCubePlay;
+            case 200: return m_pMenuCubeOptions;
+            case 100: return m_pMenuCubeStore;
+            case 40:  return m_pStoreCubeNoAds;
+            case 50:  return m_pStoreCubeSolvers;
+            case 60:  return m_pStoreCubeRestore;
         }
         return null;
     }
@@ -107,11 +100,9 @@ public final class Menu extends Scene {
     public void dontHiliteMenuCube() {
         m_menu_cube_hilite = null;
     }
-
     public Camera getCamera() {
         return m_camera_menu;
     }
-
     public Vector getLightPositon() {
         return m_pos_light_menu;
     }
@@ -1704,7 +1695,7 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.y == 7 && m_can_alter_text) {
                         m_can_alter_text = false;
                         MenuFaceBuilder.resetTransforms();
-                        MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert, 0);
+                        MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
                         releaseCubeTextsOnFace(Face_X_Minus);
                         MenuFaceBuilder.buildTexts(CubeFaceNamesEnum.Face_Tutorial, Face_X_Minus, true);
                     }
@@ -1712,7 +1703,7 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.y == 1 && m_can_alter_text) {
                         m_can_alter_text = false;
                         MenuFaceBuilder.resetTransforms();
-                        MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert, 0);
+                        MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
                         releaseCubeTextsOnFace(Face_X_Minus);
                         MenuFaceBuilder.buildTexts(CubeFaceNamesEnum.Face_Tutorial, Face_X_Minus, false);
                     }

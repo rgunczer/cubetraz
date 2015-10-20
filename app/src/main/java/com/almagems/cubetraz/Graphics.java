@@ -340,7 +340,24 @@ public final class Graphics {
         //fboBackground = new FBO();
 	}
 
+    public void resizeGLView(int width_, int height_) {
+        width = width_;
+        height = height_;
+
+        half_width = width / 2;
+        half_height = height / 2;
+
+        m_aspectRatio = (float)width / (float)height;
+        glViewport(0, 0, width, height);
+
+        //m_menu.SetupCameras(); TODO!
+    }
+
     public void initialSetup() {
+
+        glGenRenderbuffersOES(1, m_colorbuffer);
+        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         //glClearColor(1.0f, 0.3f, 0.3f, 0.0f);
         //glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
