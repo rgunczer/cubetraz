@@ -158,7 +158,7 @@ public final class MenuFaceBuilder {
         }
     }
 
-    public static void copyTransforms(FaceTransformsEnum trans[]) {
+    public static void copyTransforms(FaceTransformsEnum[] trans) {
 	    for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i) {
             transforms[i] = trans[i];
         }
@@ -175,7 +175,7 @@ public final class MenuFaceBuilder {
 		}
 	}
 
-    public static void setupFaceX(final String a[], int face_type, CubeFaceNamesEnum face_id) {
+    public static void setupFaceX(final String a, int face_type, CubeFaceNamesEnum face_id) {
 	    int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -192,7 +192,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFaceY(final String a[], int face_type, CubeFaceNamesEnum face_id) {
+    public static void setupFaceY(final String a, int face_type, CubeFaceNamesEnum face_id) {
 	    int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -209,7 +209,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFaceZ(final String a[], int face_type, CubeFaceNamesEnum face_id) {
+    public static void setupFaceZ(final String a, int face_type, CubeFaceNamesEnum face_id) {
 	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -226,7 +226,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceX(final String a[], int face_type, CubeFaceNamesEnum face_id, int x) {
+    public static void setupFontFaceX(final String a, int face_type, CubeFaceNamesEnum face_id, int x) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -244,7 +244,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceY(final String a[], int face_type, CubeFaceNamesEnum face_id, int y) {
+    public static void setupFontFaceY(final String a, int face_type, CubeFaceNamesEnum face_id, int y) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -262,7 +262,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceZ(final String a[], int face_type, CubeFaceNamesEnum face_id, int z) {
+    public static void setupFontFaceZ(final String a, int face_type, CubeFaceNamesEnum face_id, int z) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -280,7 +280,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceSymbolX(final int a[], int face_type, CubeFaceNamesEnum face_id, int x) {
+    public static void setupFontFaceSymbolX(final int[] a, int face_type, CubeFaceNamesEnum face_id, int x) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -298,7 +298,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceSymbolY(final int a[], int face_type, CubeFaceNamesEnum face_id, int y) {
+    public static void setupFontFaceSymbolY(final int[] a, int face_type, CubeFaceNamesEnum face_id, int y) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -316,7 +316,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void setupFontFaceSymbolZ(final int a[], int face_type, CubeFaceNamesEnum face_id, int z) {
+    public static void setupFontFaceSymbolZ(final int[] a, int face_type, CubeFaceNamesEnum face_id, int z) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -390,19 +390,17 @@ public final class MenuFaceBuilder {
 	    resetTransforms();
     }
 
-    public static void buildCubeFaces(CubeFaceNamesEnum face_id, int face_type) {
-	    char[] a = new char[FACE_SIZE];
-
-        getFace(face_id, a);
+    public static void buildCubeFaces(CubeFaceNamesEnum face_id, int face_type) {	    
+        String a = getFace(face_id);
 	    doTransforms(a);
 	
 	    switch (face_type) {
-		    case Face_X_Plus: setupFaceX(a, face_type, face_id); break;
-		    case Face_X_Minus: setupFaceX(a, face_type, face_id); break;
-		    case Face_Y_Plus: setupFaceY(a, face_type, face_id); break;
-		    case Face_Y_Minus: setupFaceY(a, face_type, face_id); break;
-		    case Face_Z_Plus: setupFaceZ(a, face_type, face_id); break;
-		    case Face_Z_Minus: setupFaceZ(a, face_type, face_id); break;
+		    case Face_X_Plus: 	setupFaceX(a, face_type, face_id); break;
+		    case Face_X_Minus: 	setupFaceX(a, face_type, face_id); break;
+		    case Face_Y_Plus: 	setupFaceY(a, face_type, face_id); break;
+		    case Face_Y_Minus: 	setupFaceY(a, face_type, face_id); break;
+		    case Face_Z_Plus: 	setupFaceZ(a, face_type, face_id); break;
+		    case Face_Z_Minus: 	setupFaceZ(a, face_type, face_id); break;
 	    }
     }
 
@@ -426,12 +424,12 @@ public final class MenuFaceBuilder {
     }
 
     public static void buildTexts(CubeFaceNamesEnum face_id, int face_type, boolean alt) {
-	    char[] a = new char[FACE_SIZE];
+	    String str;
 	
 	    if (false == alt) {
-            getFaceText(face_id, a);
+            str = getFaceText(face_id);
         } else {
-            getFaceHelpText(face_id, a);
+            str = getFaceHelpText(face_id);
         }
 		
 	    doTransforms(a);
@@ -441,190 +439,115 @@ public final class MenuFaceBuilder {
 	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	
 	    switch (face_type) {
-		    case Face_X_Plus: setupFontFaceX(a, face_type, face_id, x - 1); break;
-		    case Face_X_Minus: setupFontFaceX(a, face_type, face_id, x + 1); break;
-		    case Face_Y_Plus: setupFontFaceY(a, face_type, face_id, y - 1); break;
+		    case Face_X_Plus: 	setupFontFaceX(a, face_type, face_id, x - 1); break;
+		    case Face_X_Minus: 	setupFontFaceX(a, face_type, face_id, x + 1); break;
+		    case Face_Y_Plus: 	setupFontFaceY(a, face_type, face_id, y - 1); break;
 		    case Face_Y_Minus: {
 			    setupFontFaceY(a, face_type, face_id, y + 1);
             
                 if (Face_Store == face_id) {
                     CubePos cp;
-                    cp = CubePos(1, 0, 6);
-                    setFontFromCube(engine->m_menu->m_cubefont_noads, cp, CubePos(0, 1, 0), face_type);
-                    engine->m_menu->m_cubefont_noads->pos.y -= FONT_OVERLAY_OFFSET;
+                    cp = new CubePos(1, 0, 6);
+                    setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubePos(0, 1, 0), face_type);
+                    Game.menu.m_cubefont_noads.pos.y -= FONT_OVERLAY_OFFSET;
 
-                    cp = CubePos(1, 0, 4);
-                    setFontFromCube(engine->m_menu->m_cubefont_solvers, cp, CubePos(0, 1, 0), face_type);
-                    engine->m_menu->m_cubefont_solvers->pos.y -= FONT_OVERLAY_OFFSET;
+                    cp = new CubePos(1, 0, 4);
+                    setFontFromCube(Game.menu.m_cubefont_solvers, cp, new CubePos(0, 1, 0), face_type);
+                    Game.menu.m_cubefont_solvers.pos.y -= FONT_OVERLAY_OFFSET;
                 
-                    cp = CubePos(1, 0, 2);
-                    SetFontFromCube(engine->m_menu->m_cubefont_restore, cp, CubePos(0, 1, 0), face_type);
-                    engine->m_menu->m_cubefont_restore->pos.y -= FONT_OVERLAY_OFFSET;
+                    cp = new CubePos(1, 0, 2);
+                    SetFontFromCube(Game.menu.m_cubefont_restore, cp, new CubePos(0, 1, 0), face_type);
+                    Game.menu.m_cubefont_restore.pos.y -= FONT_OVERLAY_OFFSET;
                 }
             }
 			break;
 			
-		case Face_Z_Plus:
-        {
-			SetupFontFaceZ(a, face_type, face_id, z - 1);
+			case Face_Z_Plus: {
+				setupFontFaceZ(a, face_type, face_id, z - 1);
             
-            if (Face_Menu == face_id)
-            {
-                CubePos cp;
-                cp = CubePos(1, 5, 8);
-                SetFontFromCube(engine->m_menu->m_cubefont_play, cp, CubePos(0, 0, -1), face_type);
-                engine->m_menu->m_cubefont_play->pos.z += FONT_OVERLAY_OFFSET;
+            	if (Face_Menu == face_id) {
+                	CubePos cp;
+                	cp = new CubePos(1, 5, 8);
+                	setFontFromCube(Game.menu.m_cubefont_play, cp, CubePos(0, 0, -1), face_type);
+                	Game.menu.m_cubefont_play.pos.z += FONT_OVERLAY_OFFSET;
                 
-                cp = CubePos(1, 3, 8);
-                SetFontFromCube(engine->m_menu->m_cubefont_options, cp, CubePos(0, 0, -1), face_type);
-                engine->m_menu->m_cubefont_options->pos.z += FONT_OVERLAY_OFFSET;
+                	cp = new CubePos(1, 3, 8);
+                	setFontFromCube(Game.menu.m_cubefont_options, cp, CubePos(0, 0, -1), face_type);
+                	Game.menu.m_cubefont_options.pos.z += FONT_OVERLAY_OFFSET;
                 
-                cp = CubePos(1, 1, 8);
-                SetFontFromCube(engine->m_menu->m_cubefont_store, cp, CubePos(0, 0, -1), face_type);
-                engine->m_menu->m_cubefont_store->pos.z += FONT_OVERLAY_OFFSET;
-                
-                //void cCreator::AlterRedCubeFontsOnFaceMain(bool forHelp)
-                //{
-                //	cCubeFont* pCubeFont;
-                //
-                //    char a[3];
-                //
-                //	if (forHelp)
-                //	{
-                //		a[0] = 'S';
-                //		a[1] = 'R';
-                //		a[2] = 'C';
-                //	}
-                //	else
-                //	{
-                //		a[0] = 'P';
-                //		a[1] = 'O';
-                //		a[2] = 'S';
-                //	}
-                //
-                //    // [D]rag
-                //    pCubeFont = _pHost->m_cubefont_play;
-                //    pCubeFont->Init(a[0], CubePos(1, 5, 8));
-                //    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
-                //
-                //    // [R]ed
-                //    pCubeFont = _pHost->m_cubefont_options;
-                //    pCubeFont->Init(a[1], CubePos(1, 3, 8));
-                //    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
-                //	
-                //    // [C]ubes
-                //    pCubeFont = _pHost->m_cubefont_store;
-                //    pCubeFont->Init(a[2], CubePos(1, 1, 8));
-                //    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
-            }
-        }
+                	cp = new CubePos(1, 1, 8);
+                	setFontFromCube(Game.menu.m_cubefont_store, cp, CubePos(0, 0, -1), face_type);
+                	Game.menu.m_cubefont_store.pos.z += FONT_OVERLAY_OFFSET;                
+            	}
+        	}
 			break;
 			
-		case Face_Z_Minus:
-			SetupFontFaceZ(a, face_type, face_id, z + 1);
-			break;
+			case Face_Z_Minus:
+				setupFontFaceZ(a, face_type, face_id, z + 1);
+				break;
+		}        	
 	}
-    
-    delete [] a;
-}
 
-void cMenuFaceBuilder::BuildTitleTexts(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type)
-{
-	char* a = new char[FACE_SIZE];
-    GetFaceTitle(face_id, a);
+	public static void buildTitleTexts(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type) {		 
+    	String str = getFaceTitle(face_id);
 	
-	DoTransforms(a);
+		doTransforms(a);
 	
-	int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	
-	switch (face_type)
-	{
-		case Face_X_Plus:
-			SetupFontFaceX(a, face_type, face_id, x);
-			break;
-			
-		case Face_X_Minus:
-			SetupFontFaceX(a, face_type, face_id, x);
-			break;
-			
-		case Face_Y_Plus:
-			SetupFontFaceY(a, face_type, face_id, y);
-			break;
-			
-		case Face_Y_Minus:
-			SetupFontFaceY(a, face_type, face_id, y);
-			break;
-			
-		case Face_Z_Plus:
-			SetupFontFaceZ(a, face_type, face_id, z);
-			break;
-			
-		case Face_Z_Minus:
-			SetupFontFaceZ(a, face_type, face_id, z);
-			break;
+		switch (face_type) {
+			case Face_X_Plus: 	setupFontFaceX(a, face_type, face_id, x); break;			
+			case Face_X_Minus: 	setupFontFaceX(a, face_type, face_id, x); break;			
+			case Face_Y_Plus: 	setupFontFaceY(a, face_type, face_id, y); break;			
+			case Face_Y_Minus: 	setupFontFaceY(a, face_type, face_id, y); break;			
+			case Face_Z_Plus: 	setupFontFaceZ(a, face_type, face_id, z); break;			
+			case Face_Z_Minus: 	setupFontFaceZ(a, face_type, face_id, z); break;
+		}	    
 	}
-	
-    delete [] a;
-}
 
-void cMenuFaceBuilder::BuildSymbolsOnFace(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type)
-{
-    int a[FACE_SIZE];
-    //int* a = new int[FACE_SIZE];
-	GetFaceSymbol(face_id, a);
+	public static void buildSymbolsOnFace(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type) {    	
+		int[] a = getFaceSymbol(face_id);
 
-	DoTransforms(a);
+		doTransforms(a);
 	
-	int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	
-	switch (face_type)
-	{
-		case Face_X_Plus:	SetupFontFaceSymbolX(a, face_type, face_id, x); break;
-		case Face_X_Minus:	SetupFontFaceSymbolX(a, face_type, face_id, x);	break;
-		case Face_Y_Plus:	SetupFontFaceSymbolY(a, face_type, face_id, y);	break;
-		case Face_Y_Minus:	SetupFontFaceSymbolY(a, face_type, face_id, y);	break;
-		case Face_Z_Plus:	SetupFontFaceSymbolZ(a, face_type, face_id, z);	break;
-		case Face_Z_Minus:	SetupFontFaceSymbolZ(a, face_type, face_id, z);	break;
+		switch (face_type) {
+			case Face_X_Plus:	setupFontFaceSymbolX(a, face_type, face_id, x); break;
+			case Face_X_Minus:	setupFontFaceSymbolX(a, face_type, face_id, x);	break;
+			case Face_Y_Plus:	setupFontFaceSymbolY(a, face_type, face_id, y);	break;
+			case Face_Y_Minus:	setupFontFaceSymbolY(a, face_type, face_id, y);	break;
+			case Face_Z_Plus:	setupFontFaceSymbolZ(a, face_type, face_id, z);	break;
+			case Face_Z_Minus:	setupFontFaceSymbolZ(a, face_type, face_id, z);	break;
+		}    
 	}
-    //delete [] a;
-}
 
-void cMenuFaceBuilder::BuildSymbolsOnBase(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type)
-{
-    int a[FACE_SIZE];
-   	//int* a = new int[FACE_SIZE];
-	GetFaceSymbolOnBase(face_id, a);
-		
-	DoTransforms(a);
+	public static void buildSymbolsOnBase(CubeFaceNamesEnum face_id, CubeFaceTypesEnum face_type) {
+    	int[] a = getFaceSymbolOnBase(face_id, a);		
+
+		doTransforms(a);
 	
-	int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 2 : 1);
-	int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 2 : 1);
-	int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 2 : 1);
+		int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 2 : 1);
+		int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 2 : 1);
+		int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 2 : 1);
 	
-	switch (face_type)
-	{
-		case Face_X_Plus:   SetupFontFaceSymbolX(a, face_type, face_id, x);	break;
-		case Face_X_Minus:	SetupFontFaceSymbolX(a, face_type, face_id, x);	break;
-		case Face_Y_Plus:	SetupFontFaceSymbolY(a, face_type, face_id, y);	break;
-		case Face_Y_Minus:	SetupFontFaceSymbolY(a, face_type, face_id, y);	break;
-		case Face_Z_Plus:	SetupFontFaceSymbolZ(a, face_type, face_id, z);	break;
-		case Face_Z_Minus:	SetupFontFaceSymbolZ(a, face_type, face_id, z);	break;
+		switch (face_type) {
+			case Face_X_Plus:   setupFontFaceSymbolX(a, face_type, face_id, x);	break;
+			case Face_X_Minus:	setupFontFaceSymbolX(a, face_type, face_id, x);	break;
+			case Face_Y_Plus:	setupFontFaceSymbolY(a, face_type, face_id, y);	break;
+			case Face_Y_Minus:	setupFontFaceSymbolY(a, face_type, face_id, y);	break;
+			case Face_Z_Plus:	setupFontFaceSymbolZ(a, face_type, face_id, z);	break;
+			case Face_Z_Minus:	setupFontFaceSymbolZ(a, face_type, face_id, z);	break;
+		}    
 	}
-    //delete [] a;
-}
 
-#pragma mark - Faces
-
-void cMenuFaceBuilder::GetFaceHelpText(CubeFaceNamesEnum face_id, char* a)
-{
-	switch (face_id)
-	{
-		case Face_Tutorial:
-            {
+	public static String getFaceHelpText(CubeFaceNamesEnum face_id) {
+		switch (face_id) {
+			case Face_Tutorial: {
                 final String tutorial[] =
                 "xxxxxxxxx"
                 "x>>>>>>> "
@@ -634,15 +557,12 @@ void cMenuFaceBuilder::GetFaceHelpText(CubeFaceNamesEnum face_id, char* a)
                 "xTO     x"
                 "xSTART  x"
                 "xGAME   x"
-                "xxxxxxxxx";
-                
-//                a = new char[MAX_CUBE_COUNT * MAX_CUBE_COUNT];
-                memcpy(a, tutorial, MAX_CUBE_COUNT * MAX_CUBE_COUNT);
+                "xxxxxxxxx";                
+                return tutorial;
             }
             break;
             
-		case Face_Menu:
-            {
+		case Face_Menu: {
                 final String menu[] =
                 "xxxxxxx x"
                 "   xxxx x"
@@ -652,785 +572,674 @@ void cMenuFaceBuilder::GetFaceHelpText(CubeFaceNamesEnum face_id, char* a)
                 "xRED    x"
                 "xx     xx"
                 "xCUBE   x"
-                "xxxxxxx x";
-                
-//                char* a = new char[MAX_CUBE_COUNT * MAX_CUBE_COUNT];
-                memcpy(a, menu, MAX_CUBE_COUNT * MAX_CUBE_COUNT);
+                "xxxxxxx x";    
+                return menu;
             }
             break;
 			
-		default:
-			break;
+			default:
+				break;
+		}
+		return null;
 	}
-}
 
-void cMenuFaceBuilder::GetFaceText(CubeFaceNamesEnum face_id, char* a)
-{
-	final String empty[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
+	public String getFaceText(CubeFaceNamesEnum face_id) {
+		final String empty[] =
+		"xxxxxxxxx"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"xxxxxxxxx";
 
-	final String tutorial[] =
-	"xxxxxxxxx"
-	"xTAP     "
-	"xON     x"
-	"xRED    x"
-	"xCUBE   x"
-	"xAND    x"
-	"xSLIDE  x"
-	"xUP     x"
-	"xxxxxxxxx";
+		final String tutorial[] =
+		"xxxxxxxxx"
+		"xTAP     "
+		"xON     x"
+		"xRED    x"
+		"xCUBE   x"
+		"xAND    x"
+		"xSLIDE  x"
+		"xUP     x"
+		"xxxxxxxxx";
+	    
+		final String menu[] =
+		"xxxxxxx x"
+		"         "
+		"xx      x"
+		"xPLAY    "
+		"xxx     x"
+		"xOPTIONSx"
+		"xx     xx"
+		"xSTORE  x"
+		"xxxxxxx x";
+	    
+	   	final String easy2[] =
+		"xx xxxxxx"
+		"xoBoxo ox"
+		"x A x   x"
+		"xoCoxo ox"
+		"x K x   x"
+		"xo oxo ox"
+		"xx   NEXx"
+		"xoxo o Tx"
+		"xxxxxxx x";
+	
+		final String easy3[] =
+		"xxxxxxx x"
+		"xoxo oxKx"
+		"xx   BACx"
+		"xo oxo ox"
+		"x   x   x"
+		"xo oxo ox"
+		"xxEXT   x"
+		"xoNoxo ox"
+		"xx xxxxxx";
+		
+		final String easy4[] =
+		"xx xxxxxx"
+		"xoBoxo ox"
+		"x ACK   x"
+		"xo oxo ox"
+		"x   x   x"
+		"xo oxoxox"
+		"xx    #xx"
+		"xoxoxo1xx"
+		"xxxxxx xx";
+	    
+	    final String options[] =
+		"xxxxxxxxx"
+		"x       x"
+		"x MUSIC x"
+		"x       x"
+		"x       x"
+		"x SOUND x"
+		"x       x"
+		"x       x"
+		"xxxxxxx x";
+	
+	    final String store[] =
+		"xxxxxxx x"
+		"xx      x"
+		"xNOADS  x"
+		"xx      x"
+		"xSOLVERSx"
+		"xx      x"
+		"xRESTOREx"
+		"xx      x"
+		"xxxxxxxxx";
+			
+		final String easy1[] =
+		"xxxxxx xx"
+		"xo oxo ox"
+		"xxxTAP   "
+		"  oONoAox"
+		"xNUMBxR x"
+		"xoToOo ox"
+		"xxPLAY xx"
+		"xo oxoxox"
+		"xx xxxxxx";
+			
+		final String normal1[] =
+		"xxxxxx xx"
+		"xoxo oUox"
+		" BACK P x"
+		"xo  o  ox"
+		"xxD    xx"
+		"xoOo o ox"
+		"x WxNEXT "
+		"xoNoxoxox"
+		"xx xxxxxx";
+	
+		final String normal2[] =
+		"xx xxxxxx"
+		"xo o o ox"
+		"x  x    x"
+		"xo o o ox"
+		"x  x    x"
+		"xo o o ox"
+		"x  x    x"
+		"x  o o ox"
+		"x xxxxxxx";
+		
+		final String normal3[] =
+		"x xxxxxxx"
+		"x  o o ox"
+		"x  x    x"
+		"xo o o ox"
+		"x  x    x"
+		"xo o o ox"
+		"x  x    x"
+		"xo o o ox"
+		"xx xxxxxx";
+		
+		final String normal4[] =
+		"xx xxxxxx"
+		"xx o o ox"
+		"xx x    x"
+		"xo o o ox"
+		"x  x    x"
+		"xo oxoxox"
+		"xx     xx"
+		"xoxo o ox"
+		"xxxxxx xx";
+			
+		final String hard1[] =
+		"xxxx xxxx"
+		"xo oUoxM "
+		"x  xP NEx"
+		"xoxo oUox"
+		"xxB    xx"
+		"xoAoxo ox"
+		" KCxDOWxx"
+		"xoxo oNox"
+		"xxxxxx xx";
+	
+		final String hard2[] =
+	    "xxxxxx xx"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo o o  x"
+	    "xxxxxxx x";
+		
+		final String hard3[] =
+	    "xxxxxxx x"
+	    "xo o o  x"
+	    "x    x  x"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo o o ox"
+	    "xxxxxx xx";
+		
+		final String hard4[] =
+	    "xxxxxx xx"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo o o ox"
+	    "x    x  x"
+	    "xo oxo ox"
+	    "x  x   xx"
+	    "xo o ox x"
+	    "xxxx xxxx";
+	
+		switch (face_id) {
+			case Face_Empty:	return empty;		break;
+				
+			case Face_Tutorial: return tutorial;    break;
+				
+			case Face_Menu:		return menu;        break;
+			case Face_Options:	return options;		break;
+	        case Face_Store:	return store;		break;
+				
+			case Face_Easy01:	return easy1;		break;
+			case Face_Easy02:	return easy2;		break;
+			case Face_Easy03:	return easy3;		break;
+			case Face_Easy04:	return easy4;		break;
+	            
+			case Face_Normal01:	return normal1;		break;
+			case Face_Normal02:	return normal2;		break;
+			case Face_Normal03:	return normal3;		break;
+			case Face_Normal04:	return normal4;		break;
+				
+			case Face_Hard01:	return hard1;		break;
+			case Face_Hard02:	return hard2;		break;
+			case Face_Hard03:	return hard3;		break;
+			case Face_Hard04:	return hard4;		break;
+				
+			default:
+				break;
+		}
+		return null;
+	}
 
-#ifdef LITE_VERSION
-    
-	final String menu[] =
-	"xxxxxxx x"
-	"         "
-	"xx      x"
-	"xPLAY    "
-	"xxx     x"
-	"xOPTIONSx"
-	"xx     xx"
-	"xCREDITSx"
-	"xxxxxxx x";
-    
-  	final String easy2[] =
-	"xx xxxxxx"
-	"xo oxo ox"
-	"x   x   x"
-	"xo oxo ox"
-	"x   x   x"
-	"xo oxo ox"
-	"xx      x"
-	"xoxo o  x"
-	"xxxxxxx x";
+	public static String getFaceTitle(CubeFaceNamesEnum face_id) {
+		final String empty[] =
+		"xxxxxxxxx"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"xxxxxxxxx";
+
+		final String tutorial[] =
+		"BEGINNING"
+		"x        "
+		"xxxxxxx x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"xxxxxxxxx";
 	
-	final String easy3[] =
-	"xxxxxxx x"
-	"xoxo ox x"
-	"xx      x"
-	"xo oxo ox"
-	"x   x   x"
-	"xo oxo ox"
-	"xx      x"
-	"xo oxo ox"
-	"xx xxxxxx";
+		final String menu[] =
+		"CUBExxx x"
+		"   TRAZ x"
+		"xx      x"
+		"         "
+		"xxxx    x"
+		"x       x"
+		"xxx    xx"
+		"x       x"
+		"xxxxxxx x";
 	
-	final String easy4[] =
-	"xx xxxxxx"
-	"xo oxo ox"
-	"x       x"
-	"xo oxo ox"
-	"x   x   x"
-	"xo oxoxox"
-	"xx     xx"
-	"xoxoxo xx"
-	"xxxxxx xx";
-  
-    
-#else
-    
-	final String menu[] =
-	"xxxxxxx x"
-	"         "
-	"xx      x"
-	"xPLAY    "
-	"xxx     x"
-	"xOPTIONSx"
-	"xx     xx"
-	"xSTORE  x"
-	"xxxxxxx x";
-    
-   	final String easy2[] =
-	"xx xxxxxx"
-	"xoBoxo ox"
-	"x A x   x"
-	"xoCoxo ox"
-	"x K x   x"
-	"xo oxo ox"
-	"xx   NEXx"
-	"xoxo o Tx"
-	"xxxxxxx x";
+	    final String options[] =
+		"OPTIONSxx"
+		"x       x"
+		"x       x"
+		"x       x"
+		"x       x"
+		"xx      x"
+		"x       x"
+		"x       x"
+		"xxxxxxx x";
+
+	    final String store[] =
+		"STORE   x"
+		"x       x"
+		"xx      x"
+		"x       x"
+		"xx      x"
+		"x       x"
+		"xx      x"
+		"x    x  x"
+		"xxxxxxxxx";	
 	
-	final String easy3[] =
-	"xxxxxxx x"
-	"xoxo oxKx"
-	"xx   BACx"
-	"xo oxo ox"
-	"x   x   x"
-	"xo oxo ox"
-	"xxEXT   x"
-	"xoNoxo ox"
-	"xx xxxxxx";
+		final String easy1[] =
+		"EASY#1 xx"
+		"xo oxo ox"
+		"xxx      "
+		"  o  o ox"
+		"x    E  x"
+		"xo o o ox"
+		"xx     xx"
+		"xo oxoxox"
+		"xx xxxxxx";
 	
-	final String easy4[] =
-	"xx xxxxxx"
-	"xoBoxo ox"
-	"x ACK   x"
-	"xo oxo ox"
-	"x   x   x"
-	"xo oxoxox"
-	"xx    #xx"
-	"xoxoxo1xx"
-	"xxxxxx xx";
- 
+		final String easy2[] =
+		"Ex xxxxxx"
+		"Ao oxo ox"
+		"S   x   x"
+		"Yo oxo ox"
+		"#   x   x"
+		"2o oxo ox"
+		"xx      x"
+		"xoxo o  x"
+		"xxxxxxx x";
 	
-#endif
-    
-    final String options[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x MUSIC x"
-	"x       x"
-	"x       x"
-	"x SOUND x"
-	"x       x"
-	"x       x"
-	"xxxxxxx x";
+		final String easy3[] =
+		"Exxxxxx x"
+		"Aoxo o  x"
+		"Sx      x"
+		"Yo oxo ox"
+		"#   x   x"
+		"3o oxo ox"
+		"xx  x   x"
+		"xo oxo ox"
+		"xx xxxxxx";
 	
-    final String store[] =
-	"xxxxxxx x"
-	"xx      x"
-	"xNOADS  x"
-	"xx      x"
-	"xSOLVERSx"
-	"xx      x"
-	"xRESTOREx"
-	"xx      x"
-	"xxxxxxxxx";
+		final String easy4[] =
+		"Ex xxxxxx"
+		"Ao oxo ox"
+		"S   x   x"
+		"Yo oxo ox"
+		"#   x   x"
+		"4o oxoxox"
+		"xx     xx"
+		"xoxoxo xx"
+		"xxxxxx xx";
 	
+		final String normal1[] =
+		"NORMAL #1"
+		"xoxo o ox"
+		"    x   x"
+		"xo  o  ox"
+		"xx     xx"
+		"xo o o ox"
+		"x  x     "
+		"xo oxoxox"
+		"xx xxxxxx";
 	
-	final String easy1[] =
-	"xxxxxx xx"
-	"xo oxo ox"
-	"xxxTAP   "
-	"  oONoAox"
-	"xNUMBxR x"
-	"xoToOo ox"
-	"xxPLAY xx"
-	"xo oxoxox"
-	"xx xxxxxx";
+		final String normal2[] =
+		"Nx xxxxxx"
+		"Oo o o ox"
+		"R  x    x"
+		"Mo o o ox"
+		"A  x    x"
+		"Lo o o ox"
+		"#  x    x"
+		"2  o o ox"
+		"x xxxxxxx";
 	
+		final String normal3[] =
+		"N xxxxxxx"
+		"O  o o ox"
+		"R  x    x"
+		"Mo o o ox"
+		"A  x    x"
+		"Lo o o ox"
+		"#  x    x"
+		"3o o o ox"
+		"xx xxxxxx";
 	
+		final String normal4[] =
+		"Nx xxxxxx"
+		"Ox o o ox"
+		"Rx x    x"
+		"Mo o o ox"
+		"A  x    x"
+		"Lo oxoxox"
+		"#x     xx"
+		"4oxo o ox"
+		"xxxxxx xx";
 	
-	final String normal1[] =
-	"xxxxxx xx"
-	"xoxo oUox"
-	" BACK P x"
-	"xo  o  ox"
-	"xxD    xx"
-	"xoOo o ox"
-	"x WxNEXT "
-	"xoNoxoxox"
-	"xx xxxxxx";
+		final String hard1[] =
+		"HARD #1xx"
+		"xo o ox  "
+		"x  x    x"
+		"xoxo o ox"
+		"xx     xx"
+		"xo oxo ox"
+		"   x   xx"
+		"xoxo o ox"
+		"xxxxxx xx";
 	
-	final String normal2[] =
-	"xx xxxxxx"
-	"xo o o ox"
-	"x  x    x"
-	"xo o o ox"
-	"x  x    x"
-	"xo o o ox"
-	"x  x    x"
-	"x  o o ox"
-	"x xxxxxxx";
+		final String hard2[] =
+	    "Hxxxxx xx"
+	    "Ao o o ox"
+	    "R    x  x"
+	    "Do o o ox"
+	    "#    x  x"
+	    "2o o o ox"
+	    "x    x  x"
+	    "xo o o  x"
+	    "xxxxxxx x";
 	
-	final String normal3[] =
-	"x xxxxxxx"
-	"x  o o ox"
-	"x  x    x"
-	"xo o o ox"
-	"x  x    x"
-	"xo o o ox"
-	"x  x    x"
-	"xo o o ox"
-	"xx xxxxxx";
-	
-	final String normal4[] =
-	"xx xxxxxx"
-	"xx o o ox"
-	"xx x    x"
-	"xo o o ox"
-	"x  x    x"
-	"xo oxoxox"
-	"xx     xx"
-	"xoxo o ox"
-	"xxxxxx xx";
-	
-	
-	final String hard1[] =
-	"xxxx xxxx"
-	"xo oUoxM "
-	"x  xP NEx"
-	"xoxo oUox"
-	"xxB    xx"
-	"xoAoxo ox"
-	" KCxDOWxx"
-	"xoxo oNox"
-	"xxxxxx xx";
-	
-	final String hard2[] =
-    "xxxxxx xx"
-    "xo o o ox"
-    "x    x  x"
-    "xo o o ox"
-    "x    x  x"
-    "xo o o ox"
-    "x    x  x"
-    "xo o o  x"
-    "xxxxxxx x";
-	
-	final String hard3[] =
-    "xxxxxxx x"
-    "xo o o  x"
-    "x    x  x"
-    "xo o o ox"
-    "x    x  x"
-    "xo o o ox"
-    "x    x  x"
-    "xo o o ox"
-    "xxxxxx xx";
-	
-	final String hard4[] =
-    "xxxxxx xx"
-    "xo o o ox"
-    "x    x  x"
-    "xo o o ox"
-    "x    x  x"
-    "xo oxo ox"
-    "x  x   xx"
-    "xo o ox x"
-    "xxxx xxxx";
-	
-	switch (face_id)
-	{
-		case Face_Empty:	memcpy(a, empty, FACE_SIZE);		break;
+		final String hard3[] =
+	    "Hxxxxxx x"
+	    "Ao o o  x"
+	    "R    x  x"
+	    "Do o o ox"
+	    "#    x  x"
+	    "3o o o ox"
+	    "x    x  x"
+	    "xo o o ox"
+	    "xxxxxx xx";
+		
+		final String hard4[] =
+	    "Hxxxxx xx"
+	    "Ao o o ox"
+	    "R    x  x"
+	    "Do o o ox"
+	    "#    x  x"
+	    "4o oxo ox"
+	    "x  x   xx"
+	    "xo o ox x"
+	    "xxxx xxxx";
+
+		switch (face_id) {
+			case Face_Empty:	return empty;		break;
 			
-		case Face_Tutorial: memcpy(a, tutorial, FACE_SIZE);     break;
+			case Face_Tutorial: return tutorial;	break;
 			
-		case Face_Menu:		memcpy(a, menu, FACE_SIZE);         break;
-		case Face_Options:	memcpy(a, options, FACE_SIZE);		break;
-        case Face_Store:	memcpy(a, store, FACE_SIZE);		break;
+			case Face_Menu:		return menu;        break;
+			case Face_Options:	return options;     break;
+        	case Face_Store:	return store;		break;
 			
-		case Face_Easy01:	memcpy(a, easy1, FACE_SIZE);		break;
-		case Face_Easy02:	memcpy(a, easy2, FACE_SIZE);		break;
-		case Face_Easy03:	memcpy(a, easy3, FACE_SIZE);		break;
-		case Face_Easy04:	memcpy(a, easy4, FACE_SIZE);		break;
+			case Face_Easy01:	return easy1;		break;
+			case Face_Easy02:	return easy2;		break;
+			case Face_Easy03:	return easy3;		break;
+			case Face_Easy04:	return easy4;		break;
             
-		case Face_Normal01:	memcpy(a, normal1, FACE_SIZE);		break;
-		case Face_Normal02:	memcpy(a, normal2, FACE_SIZE);		break;
-		case Face_Normal03:	memcpy(a, normal3, FACE_SIZE);		break;
-		case Face_Normal04:	memcpy(a, normal4, FACE_SIZE);		break;
+			case Face_Normal01:	return normal1;      break;
+			case Face_Normal02:	return normal2;      break;
+			case Face_Normal03:	return normal3;      break;
+			case Face_Normal04:	return normal4;      break;
 			
-		case Face_Hard01:	memcpy(a, hard1, FACE_SIZE);		break;
-		case Face_Hard02:	memcpy(a, hard2, FACE_SIZE);		break;
-		case Face_Hard03:	memcpy(a, hard3, FACE_SIZE);		break;
-		case Face_Hard04:	memcpy(a, hard4, FACE_SIZE);		break;
+			case Face_Hard01:	return hard1;		break;
+			case Face_Hard02:	return hard2;		break;
+			case Face_Hard03:	return hard3;		break;
+			case Face_Hard04:	return hard4;		break;
 			
-		default:
-			break;
+			default:
+				break;
+		}
+		return null;
 	}
-}
-
-void cMenuFaceBuilder::GetFaceTitle(CubeFaceNamesEnum face_id, char* a)
-{
-	final String empty[] =
-	"xxxxxxxxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
-
-	final String tutorial[] =
-	"BEGINNING"
-	"x        "
-	"xxxxxxx x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xxxxxxxxx";
-	
-	final String menu[] =
-	"CUBExxx x"
-	"   TRAZ x"
-	"xx      x"
-	"         "
-	"xxxx    x"
-	"x       x"
-	"xxx    xx"
-	"x       x"
-	"xxxxxxx x";
-	
-    final String options[] =
-	"OPTIONSxx"
-	"x       x"
-	"x       x"
-	"x       x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"x       x"
-	"xxxxxxx x";
-
-    final String store[] =
-	"STORE   x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"x       x"
-	"xx      x"
-	"x    x  x"
-	"xxxxxxxxx";
-	
-	
-	final String easy1[] =
-	"EASY#1 xx"
-	"xo oxo ox"
-	"xxx      "
-	"  o  o ox"
-	"x    E  x"
-	"xo o o ox"
-	"xx     xx"
-	"xo oxoxox"
-	"xx xxxxxx";
-	
-	final String easy2[] =
-	"Ex xxxxxx"
-	"Ao oxo ox"
-	"S   x   x"
-	"Yo oxo ox"
-	"#   x   x"
-	"2o oxo ox"
-	"xx      x"
-	"xoxo o  x"
-	"xxxxxxx x";
-	
-	final String easy3[] =
-	"Exxxxxx x"
-	"Aoxo o  x"
-	"Sx      x"
-	"Yo oxo ox"
-	"#   x   x"
-	"3o oxo ox"
-	"xx  x   x"
-	"xo oxo ox"
-	"xx xxxxxx";
-	
-	final String easy4[] =
-	"Ex xxxxxx"
-	"Ao oxo ox"
-	"S   x   x"
-	"Yo oxo ox"
-	"#   x   x"
-	"4o oxoxox"
-	"xx     xx"
-	"xoxoxo xx"
-	"xxxxxx xx";
-
-	
-	final String normal1[] =
-	"NORMAL #1"
-	"xoxo o ox"
-	"    x   x"
-	"xo  o  ox"
-	"xx     xx"
-	"xo o o ox"
-	"x  x     "
-	"xo oxoxox"
-	"xx xxxxxx";
-	
-	final String normal2[] =
-	"Nx xxxxxx"
-	"Oo o o ox"
-	"R  x    x"
-	"Mo o o ox"
-	"A  x    x"
-	"Lo o o ox"
-	"#  x    x"
-	"2  o o ox"
-	"x xxxxxxx";
-	
-	final String normal3[] =
-	"N xxxxxxx"
-	"O  o o ox"
-	"R  x    x"
-	"Mo o o ox"
-	"A  x    x"
-	"Lo o o ox"
-	"#  x    x"
-	"3o o o ox"
-	"xx xxxxxx";
-	
-	final String normal4[] =
-	"Nx xxxxxx"
-	"Ox o o ox"
-	"Rx x    x"
-	"Mo o o ox"
-	"A  x    x"
-	"Lo oxoxox"
-	"#x     xx"
-	"4oxo o ox"
-	"xxxxxx xx";
-
-	
-	final String hard1[] =
-	"HARD #1xx"
-	"xo o ox  "
-	"x  x    x"
-	"xoxo o ox"
-	"xx     xx"
-	"xo oxo ox"
-	"   x   xx"
-	"xoxo o ox"
-	"xxxxxx xx";
-	
-	final String hard2[] =
-    "Hxxxxx xx"
-    "Ao o o ox"
-    "R    x  x"
-    "Do o o ox"
-    "#    x  x"
-    "2o o o ox"
-    "x    x  x"
-    "xo o o  x"
-    "xxxxxxx x";
-	
-	final String hard3[] =
-    "Hxxxxxx x"
-    "Ao o o  x"
-    "R    x  x"
-    "Do o o ox"
-    "#    x  x"
-    "3o o o ox"
-    "x    x  x"
-    "xo o o ox"
-    "xxxxxx xx";
-	
-	final String hard4[] =
-    "Hxxxxx xx"
-    "Ao o o ox"
-    "R    x  x"
-    "Do o o ox"
-    "#    x  x"
-    "4o oxo ox"
-    "x  x   xx"
-    "xo o ox x"
-    "xxxx xxxx";
-
-	switch (face_id)
-	{
-		case Face_Empty:	memcpy(a, empty, FACE_SIZE);		break;
-			
-		case Face_Tutorial: memcpy(a, tutorial, FACE_SIZE);     break;
-			
-		case Face_Menu:		memcpy(a, menu, FACE_SIZE);         break;
-		case Face_Options:	memcpy(a, options, FACE_SIZE);      break;
-        case Face_Store:	memcpy(a, store, FACE_SIZE);		break;
-			
-		case Face_Easy01:	memcpy(a, easy1, FACE_SIZE);		break;
-		case Face_Easy02:	memcpy(a, easy2, FACE_SIZE);		break;
-		case Face_Easy03:	memcpy(a, easy3, FACE_SIZE);		break;
-		case Face_Easy04:	memcpy(a, easy4, FACE_SIZE);		break;
-            
-		case Face_Normal01:	memcpy(a, normal1, FACE_SIZE);      break;
-		case Face_Normal02:	memcpy(a, normal2, FACE_SIZE);      break;
-		case Face_Normal03:	memcpy(a, normal3, FACE_SIZE);      break;
-		case Face_Normal04:	memcpy(a, normal4, FACE_SIZE);      break;
-			
-		case Face_Hard01:	memcpy(a, hard1, FACE_SIZE);		break;
-		case Face_Hard02:	memcpy(a, hard2, FACE_SIZE);		break;
-		case Face_Hard03:	memcpy(a, hard3, FACE_SIZE);		break;
-		case Face_Hard04:	memcpy(a, hard4, FACE_SIZE);		break;
-			
-		default:
-			break;
-	}
-}
 
 	public static String getFace(CubeFaceNamesEnum face_id) {
 		final String empty =
-			"xxxxxxxxx" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"xxxxxxxxx";
+		"xxxxxxxxx" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"xxxxxxxxx";
 	
 		final String tutorial =
-			"xxxxxxxxx" +
-			"x        " +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"xxxxxxxxx";
+		"xxxxxxxxx" +
+		"x        " +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"xxxxxxxxx";
     
 		final String options =
-			"xxxxxxxxx" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"x       x" +
-			"xx      x" +
-			"x       x" +
-			"x       x" +
-			"xxxxxxx x";
+		"xxxxxxxxx" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
+		"xx      x" +
+		"x       x" +
+		"x       x" +
+		"xxxxxxx x";
 
 		final String menu =
-			"xxxxxxx x" +
-			"   xxxx x" +
-			"xx      x" +
-			"x        " +
-			"xxx     x" +
-			"x       x" +
-			"xxx    xx" +
-			"x       x" +
-			"xxxxxxx x";
+		"xxxxxxx x" +
+		"   xxxx x" +
+		"xx      x" +
+		"x        " +
+		"xxx     x" +
+		"x       x" +
+		"xxx    xx" +
+		"x       x" +
+		"xxxxxxx x";
     
 		final String store =
-			"xxxxxxx x" +
-			"xx      x" +
-			"x       x" +
-			"xx      x" +
-			"x       x" +
-			"xx      x" +
-			"x       x" +
-			"xx      x" +
-			"xxxxxxxxx";
+		"xxxxxxx x" +
+		"xx      x" +
+		"x       x" +
+		"xx      x" +
+		"x       x" +
+		"xx      x" +
+		"x       x" +
+		"xx      x" +
+		"xxxxxxxxx";
     
 		final String easy1 =
-			"xxxxxx xx" +
-			"x1x2x3 4x" +
-			"xxx      " +
-			"  5  6 7x" +
-			"x    x xx" +
-			"x8 9 A Bx" +
-			"xx     xx" +
-			"xC DxExFx" +
-			"xx xxxxxx";
+		"xxxxxx xx" +
+		"x1x2x3 4x" +
+		"xxx      " +
+		"  5  6 7x" +
+		"x    x xx" +
+		"x8 9 A Bx" +
+		"xx     xx" +
+		"xC DxExFx" +
+		"xx xxxxxx";
     
 		final String easy2 =
-			"xx xxxxxx" +
-			"x1 2x3x4x" +
-			"xx x   xx" +
-			"x5 6 7 8x" +
-			"xx x x xx" +
-			"x9 AxB Cx" +
-			"xx      x" +
-			"xDxExFx x" +
-			"xxxxxxx x";
-    
+		"xx xxxxxx" +
+		"x1 2x3x4x" +
+		"xx x   xx" +
+		"x5 6 7 8x" +
+		"xx x x xx" +
+		"x9 AxB Cx" +
+		"xx      x" +
+		"xDxExFx x" +
+		"xxxxxxx x";
+
 		final String easy3 =
-			"xxxxxxx x" +
-			"x1x2x3x x" +
-			"xx      x" +
-			"x4 5x6x7x" +
-			"xx     xx" +
-			"x8x9xA Bx" +
-			"xx     xx" +
-			"xC DxExFx" +
-			"xx xxxxxx";
+		"xxxxxxx x" +
+		"x1x2x3x x" +
+		"xx      x" +
+		"x4 5x6x7x" +
+		"xx     xx" +
+		"x8x9xA Bx" +
+		"xx     xx" +
+		"xC DxExFx" +
+		"xx xxxxxx";
     
 		final String easy4 =
-			"xx xxxxxx" +
-			"x1 2x3x4x" +
-			"xx     xx" +
-			"x5x6x7 8x" +
-			"xx     xx" +
-			"x9 AxBxCx" +
-			"xx     xx" +
-			"xDxExF xx" +
-			"xxxxxx xx";
+		"xx xxxxxx" +
+		"x1 2x3x4x" +
+		"xx     xx" +
+		"x5x6x7 8x" +
+		"xx     xx" +
+		"x9 AxBxCx" +
+		"xx     xx" +
+		"xDxExF xx" +
+		"xxxxxx xx";
     
 		final String normal1 =
-			"xxxxxx xx" +
-			"x1x2x3 4x" +
-			"     x xx" +
-			"x5   6 7x" +
-			"xx     xx" +
-			"x8 9xA Bx" +
-			"xx       " +
-			"xC DxExFx" +
-			"xx xxxxxx";
+		"xxxxxx xx" +
+		"x1x2x3 4x" +
+		"     x xx" +
+		"x5   6 7x" +
+		"xx     xx" +
+		"x8 9xA Bx" +
+		"xx       " +
+		"xC DxExFx" +
+		"xx xxxxxx";
 
+		final String normal2[] =
+		"xx xxxxxx"
+		"x1 2x3x4x"
+		"xx     xx"
+		"x5 6x7 8x"
+		"xx     xx"
+		"x9xAxB Cx"
+		"x      xx"
+		"x  DxExFx"
+		"x xxxxxxx";
 
-	final String normal2[] =
-	"xx xxxxxx"
-	"x1 2x3x4x"
-	"xx     xx"
-	"x5 6x7 8x"
-	"xx     xx"
-	"x9xAxB Cx"
-	"x      xx"
-	"x  DxExFx"
-	"x xxxxxxx";
+		final String normal3[] =
+		"x xxxxxxx"
+		"x  1x2x3x"
+		"x    xxxx"
+		"x4 5 6x7x"
+		"xx     xx"
+		"x8 9 A Bx"
+		"xx x   xx"
+		"xC DxExFx"
+		"xx xxxxxx";
+	
+		final String normal4[] =
+		"xx xxxxxx"
+		"xx 1x2x3x"
+		"xx     xx"
+		"x4 5 6 7x"
+		"xx   x xx"
+		"x8x9xA Bx"
+		"xxxxxx xx"
+		"xCxDxE Fx"
+		"xxxxxx xx";
 
-	final String normal3[] =
-	"x xxxxxxx"
-	"x  1x2x3x"
-	"x    xxxx"
-	"x4 5 6x7x"
-	"xx     xx"
-	"x8 9 A Bx"
-	"xx x   xx"
-	"xC DxExFx"
-	"xx xxxxxx";
+		final String hard1[] =
+		"xxxx xxxx"
+		"x1x2 3x  "
+		"xxxx    x"
+		"x4x5 6 7x"
+		"xx     xx"
+		"x8 9xA Bx"
+		"   x   xx"
+		"xCxDxE Fx"
+		"xxxxxx xx";
+
+		final String hard2[] =
+	    "xxxxxx xx"
+	    "x1x2x3 4x"
+	    "xx     xx"
+	    "x5 6x7x8x"
+	    "xx x    x"
+	    "x9 AxBxCx"
+	    "xx      x"
+	    "xDxExFx x"
+	    "xxxxxxx x";
+
+		final String hard3[] =
+	    "xxxxxxx x"
+	    "x1x2x3x x"
+	    "xx      x"
+	    "x4 5 6 7x"
+	    "xx     xx"
+	    "x8 9 A Bx"
+	    "xx     xx"
+	    "xCxDxE Fx"
+	    "xxxxxx xx";
+
+		final String hard4[] =
+	    "xxxxxx xx"
+	    "x1x2x3 4x"
+	    "xx     xx"
+	    "x5 6 7x8x"
+	    "xx     xx"
+	    "x9xA B Cx"
+	    "xxxx    x"
+	    "xDxE Fxxx"
+	    "xxxx xxxx";
+	
+		switch (face_id) {
+			case Face_Empty:	return empty;		break;
 		
-	final String normal4[] =
-	"xx xxxxxx"
-	"xx 1x2x3x"
-	"xx     xx"
-	"x4 5 6 7x"
-	"xx   x xx"
-	"x8x9xA Bx"
-	"xxxxxx xx"
-	"xCxDxE Fx"
-	"xxxxxx xx";
-	
-	
-	final String hard1[] =
-	"xxxx xxxx"
-	"x1x2 3x  "
-	"xxxx    x"
-	"x4x5 6 7x"
-	"xx     xx"
-	"x8 9xA Bx"
-	"   x   xx"
-	"xCxDxE Fx"
-	"xxxxxx xx";
-
-	final String hard2[] =
-    "xxxxxx xx"
-    "x1x2x3 4x"
-    "xx     xx"
-    "x5 6x7x8x"
-    "xx x    x"
-    "x9 AxBxCx"
-    "xx      x"
-    "xDxExFx x"
-    "xxxxxxx x";
-
-	final String hard3[] =
-    "xxxxxxx x"
-    "x1x2x3x x"
-    "xx      x"
-    "x4 5 6 7x"
-    "xx     xx"
-    "x8 9 A Bx"
-    "xx     xx"
-    "xCxDxE Fx"
-    "xxxxxx xx";
-
-	final String hard4[] =
-    "xxxxxx xx"
-    "x1x2x3 4x"
-    "xx     xx"
-    "x5 6 7x8x"
-    "xx     xx"
-    "x9xA B Cx"
-    "xxxx    x"
-    "xDxE Fxxx"
-    "xxxx xxxx";    
-	
-	switch (face_id)
-	{
-		case Face_Empty:	memcpy(a, empty, FACE_SIZE);		break;
-			
-		case Face_Tutorial: memcpy(a, tutorial, FACE_SIZE);     break;
-			
-		case Face_Menu:		memcpy(a, menu, FACE_SIZE);         break;
-		case Face_Options:	memcpy(a, options, FACE_SIZE);		break;
-        case Face_Store:	memcpy(a, store, FACE_SIZE);		break;
+			case Face_Tutorial: return tutorial;    break;
 		
-		case Face_Easy01:	memcpy(a, easy1, FACE_SIZE);		break;
-		case Face_Easy02:	memcpy(a, easy2, FACE_SIZE);		break;
-		case Face_Easy03:	memcpy(a, easy3, FACE_SIZE);		break;
-		case Face_Easy04:	memcpy(a, easy4, FACE_SIZE);		break;
-            
-		case Face_Normal01:	memcpy(a, normal1, FACE_SIZE);		break;
-		case Face_Normal02:	memcpy(a, normal2, FACE_SIZE);		break;
-		case Face_Normal03:	memcpy(a, normal3, FACE_SIZE);		break;
-		case Face_Normal04:	memcpy(a, normal4, FACE_SIZE);		break;
-			
-		case Face_Hard01:	memcpy(a, hard1, FACE_SIZE);		break;
-		case Face_Hard02:	memcpy(a, hard2, FACE_SIZE);		break;
-		case Face_Hard03:	memcpy(a, hard3, FACE_SIZE);		break;
-		case Face_Hard04:	memcpy(a, hard4, FACE_SIZE);		break;
+			case Face_Menu:		return menu;        break;
+			case Face_Options:	return options;		break;
+			case Face_Store:	return store;		break;
+	
+			case Face_Easy01:	return easy1;		break;
+			case Face_Easy02:	return easy2;		break;
+			case Face_Easy03:	return easy3;		break;
+			case Face_Easy04:	return easy4;		break;
+        
+			case Face_Normal01:	return normal1;		break;
+			case Face_Normal02:	return normal2;		break;
+			case Face_Normal03:	return normal3;		break;
+			case Face_Normal04:	return normal4;		break;
+		
+			case Face_Hard01:	return hard1;		break;
+			case Face_Hard02:	return hard2;		break;
+			case Face_Hard03:	return hard3;		break;
+			case Face_Hard04:	return hard4;		break;
 
-		default:
-			break;
+			default:
+				break;
+		}
+		return null;
 	}
-}
 
-
-//enum SymbolEnum
-//{
-//    SymbolInfo = 0,
-//    SymbolLock = 1,
-//    SymbolPlus = 2,
-//    SymbolMinus = 3,
-//    SymbolQuestionmark = 4,
-//    SymbolGoLeft = 5,
-//    SymbolGoRight = 6,
-//    SymbolGoUp = 7,
-//    SymbolGoDown = 8,
-//    SymbolUndo = 9,
-//    SymbolSolver = 10,
-//    SymbolPause = 11,
-//    Symbol3Star = 12,
-//    Symbol2Star = 13,
-//    Symbol1Star = 14,
-//    SymbolStar = 15,
-//    SymbolEmpty = 16,
-//    SymbolTriangleUp = 17,
-//    SymbolTriangleDown = 18,
-//    SymbolHilite = 19,
-//    SymbolMagnet = 20,
-//    SymbolDeath = 21,
-//    SymbolLightning = 22,
-//    SymbolCracks = 23,
-//    SymbolTriangleLeft = 24,
-//    SymbolTriangleRight = 25
-//};
-
-void cMenuFaceBuilder::GetFaceSymbol(CubeFaceNamesEnum face_id, int* a)
-{
-	switch (face_id)
-	{
-		case Face_Menu:
-            {
-#ifdef LITE_VERSION
-                final int ar[] = {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                };
-#else
+	public int[] getFaceSymbol(CubeFaceNamesEnum face_id) {
+		switch (face_id) {
+			case Face_Menu: {
                 final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1441,14 +1250,12 @@ void cMenuFaceBuilder::GetFaceSymbol(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolInfo,
-                };
-#endif
-                memcpy(a, ar, FACE_SIZE * sizeof(int));
+                }
+                return ar;
             }
             break;
 			
-		default:
-            {
+			default: {            
                 final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1459,22 +1266,17 @@ void cMenuFaceBuilder::GetFaceSymbol(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                };
-                
-                memcpy(a, ar, FACE_SIZE * sizeof(int));
+                }                
+                return ar;
             }            
 			break;
+		}
+		return null;
 	}
-}
 
-void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
-{
-	switch (face_id)
-	{
-		case Face_Menu:
-            {
-                
-#ifndef LITE_VERSION
+	public int[] getFaceSymbolOnBase(CubeFaceNamesEnum face_id) {
+		switch (face_id) 
+			case Face_Menu: {                
                 final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,      SymbolEmpty,
@@ -1485,27 +1287,12 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoDown,    SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                };
-#else
-                final int ar[] = {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,      SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoRight,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                };
-#endif
-
-                memcpy(a, ar, FACE_SIZE * sizeof(int));
+                }
+                return ar;
             }
             break;
             
-		case Face_Options:
-            {
+			case Face_Options: {
                 final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
@@ -1516,27 +1303,12 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolMinus, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolPlus,      SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                };
-
-                memcpy(a, ar, FACE_SIZE * sizeof(int));
+                }
+				return ar;                
             }
             break;
             
-		case Face_Easy01:
-            {
-#ifndef LITE_VERSION
-                final int ar[] = {
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,  SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoRight, SymbolEmpty,
-                    SymbolEmpty, SymbolGoLeft, SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolGoDown, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                };
-#else
+			case Face_Easy01: {
                 final int ar[] = {
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,  SymbolEmpty,   SymbolEmpty,
@@ -1547,15 +1319,12 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolGoDown, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                };
-#endif
-                
-                memcpy(a, ar, FACE_SIZE * sizeof(int));
+                }
+                return ar;
             }
             break;
             
-		default:
-            {
+			default: {            
                 final int ar[] = {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1566,13 +1335,11 @@ void cMenuFaceBuilder::GetFaceSymbolOnBase(CubeFaceNamesEnum face_id, int* a)
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                };
-                
-                memcpy(a, ar, FACE_SIZE * sizeof(int));
+                }                
+                return ar;
             }
 			break;
+		}
 	}
-}
-
     
 }
