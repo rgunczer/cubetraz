@@ -1544,7 +1544,7 @@ public final class Level extends Scene {
         m_timeout -= 0.01f;
 
         if (m_timeout < 0.0f) {
-            m_moving_cube.update(0.01f);
+            m_moving_cube.update();
 
             if (m_moving_cube.isDone()) {
                 m_state = m_state_to_restore;

@@ -247,7 +247,8 @@ public final class Vector2 {
                 // Throw a GdxRuntimeException
             }
         }
-        throw new Exception("Malformed Vector2: " + v);
+        //throw new Exception("Malformed Vector2: " + v);
+        return null;
     }
 
     /** Left-multiplies this vector by the given matrix

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import static com.almagems.cubetraz.Constants.*;
 
 
-public static final class LevelBuilderEasy {
+public final class LevelBuilderEasy {
 
     public static void build(int level_number) {
     

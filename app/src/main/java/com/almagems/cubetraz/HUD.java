@@ -148,7 +148,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_swipe");
+            m_tutor_texture_id = Game.loadTexture("tutor_swipe");
             m_arr_tutor_displayed[Tutor_Swipe] = true;
         }
     }
@@ -158,7 +158,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_goal");
+            m_tutor_texture_id = Game.loadTexture("tutor_goal");
             m_arr_tutor_displayed[Tutor_Goal] = true;
         }
     }
@@ -169,7 +169,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_drag");
+            m_tutor_texture_id = Game.loadTexture("tutor_drag");
             m_arr_tutor_displayed[Tutor_Drag] = true;
         }
     }
@@ -180,7 +180,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_dead");
+            m_tutor_texture_id = Game.loadTexture("tutor_dead");
             m_arr_tutor_displayed[Tutor_Dead] = true;
         }
     }
@@ -191,7 +191,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_moving");
+            m_tutor_texture_id = Game.loadTexture("tutor_moving");
             m_arr_tutor_displayed[Tutor_Moving] = true;
         }
     }
@@ -202,7 +202,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_pusher");
+            m_tutor_texture_id = Game.loadTexture("tutor_pusher");
             m_arr_tutor_displayed[Tutor_Mover] = true;
         }
     }
@@ -213,7 +213,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_plain");
+            m_tutor_texture_id = Game.loadTexture("tutor_plain");
             m_arr_tutor_displayed[Tutor_Plain] = true;
         }
     }
@@ -225,7 +225,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_pause");
+            m_tutor_texture_id = Game.loadTexture("tutor_menu_pause");
             m_arr_tutor_displayed[Tutor_MenuPause] = true;
             //printf("\ntutors %lu", m_tutors.size());
         }
@@ -236,7 +236,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_undo");
+            m_tutor_texture_id = Game.loadTexture("tutor_menu_undo");
             m_arr_tutor_displayed[Tutor_MenuUndo] = true;
         }
     }
@@ -248,7 +248,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_hint");
+            m_tutor_texture_id = Game.loadTexture("tutor_menu_hint");
             m_arr_tutor_displayed[Tutor_MenuHint] = true;
         }
     }
@@ -258,7 +258,7 @@ public final class HUD {
             m_tutor_active = true;
             m_tutor_alpha = 0;
             m_tutor_state = TutorStateEnum.TutorAppear;
-            m_tutor_texture_id = Graphics.loadTexture("tutor_menu_solver");
+            m_tutor_texture_id = Game.loadTexture("tutor_menu_solver");
             m_arr_tutor_displayed[Tutor_MenuSolvers] = true;
         }
     }

@@ -16,6 +16,89 @@ import java.util.Map;
 
 public final class Graphics {
 
+    public static void updateViewProjMatrix() {
+//		multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+//		invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
+    }
+
+
+    public static void setProjectionMatrix3D() {
+        float eyeZ = 49.0f;
+        //float eyeZ = 90.0f;
+
+        //MatrixHelper.perspectiveM(projectionMatrix, 45, screenWidth / screenHeight, 1f, 100f);
+
+//		setLookAtM(viewMatrix, 0,
+//				// real
+//				0f,  12f, eyeZ,	// eye
+//				0f,  1.2f, 0f,    // at
+//				0f,  1f, 0f);   // up
+
+//				// debug railway upclose
+//				-13f, -19f, 3f, // eye
+//				0f, -22f, 0f, 	// at
+//				0f, 1f, 0f);	// up
+
+        // debug
+//				-20f, 5f,  1f, 	// eye
+//				  0f, 5f, -1f, 	// at
+//				  0f, 1f,   0f);	// up
+
+	/*
+        glViewport(0, 0, width, height);
+
+        MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width
+            / (float) height, 1f, 10f);
+
+        setIdentityM(viewMatrix, 0);
+        translateM(viewMatrix, 0, 0f, -1.5f, -5f);
+        multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0,
+            viewMatrix, 0);
+    */
+    }
+
+    public static void setProjectionMatrix2D() {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glOrthof(-1f, 1f, -1f, 1f, -1f, 1f);
+
+//		final float aspectRatio = width > height ? (float)width / (float)height : (float)height / (float)width;
+
+//		if (width > height) {
+//            // landscape
+//			orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
+//		} else {
+//		    // portrait
+//			orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
+//		}
+
+//        setIdentityM(viewMatrix, 0);
+
+//		orthoM(projectionMatrix, 0, 0f, width, 0f, height, 0f, 100f);
+        //setLookAtM(viewMatrix, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f);
+    }
+
+
+    public static void warmCache() {
+        glEnable(GL_TEXTURE_2D);
+
+        Graphics.prepare();
+        Graphics.setStreamSource();
+        Graphics.addCube(0.0f, 0.0f, 0.0f);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glDisable(GL_TEXTURE_2D);
+    }
+
+
+    public static void drawQuad() {
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
 
 
     public static void drawCube()
@@ -209,7 +292,7 @@ public final class Graphics {
     public static void setProjection2D() {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrthof(0.0f, m_width, 0.0f, m_height, -1.0f, 1.0f);
+        glOrthof(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     }
 
 
@@ -228,7 +311,7 @@ public final class Graphics {
         final float zNear = 1.0f;
         final float zFar = 1000.0f;
         final float fieldOfView = 30.0f;
-        final float size = zNear * Math.tan(( Math.toRadians(fieldOfView) / 2.0f );
+        final float size = zNear * (float)Math.tan(( Math.toRadians(fieldOfView) / 2.0f ));
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -245,8 +328,8 @@ public final class Graphics {
     private static float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
     private static float[] _normals = new float[BUF_SIZE * KILOBYTE];
     private static float[] _coords_float = new float[BUF_SIZE * KILOBYTE];
-    private static short[] _coords_byte = new short[BUF_SIZE * KILOBYTE];
-    private static byte[] _colors_ubyte = new byte[BUF_SIZE * KILOBYTE];
+    private static float[] _coords_byte = new float[BUF_SIZE * KILOBYTE];
+    private static float[] _colors_ubyte = new float[BUF_SIZE * KILOBYTE];
 
     public static boolean _blending_enabled = false;
 
@@ -257,11 +340,11 @@ public final class Graphics {
     }
 
 
-    private static boolean _blending_enabled;
 
 
 
-    public static int _vertices_count;
+
+
 
     public static void enableBlending() {
         if (!_blending_enabled) {
@@ -278,9 +361,6 @@ public final class Graphics {
     }
 
 
-    private static int _vindex;
-    private static int _cindex;
-    private static int _color_index;
 
 
     public static void renderPoints() {
@@ -300,10 +380,10 @@ public final class Graphics {
     }
 
     public static void setStreamSource() {
-        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-        glNormalPointer(GL_FLOAT, 0, _normals);
-        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+//        glNormalPointer(GL_FLOAT, 0, _normals);
+//        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -353,27 +433,110 @@ public final class Graphics {
         //m_menu.SetupCameras(); TODO!
     }
 
-    public void initialSetup() {
-
-        glGenRenderbuffersOES(1, m_colorbuffer);
-        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        //glClearColor(1.0f, 0.3f, 0.3f, 0.0f);
-        //glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
-
-        glEnable(GL_CULL_FACE);
-        //glDisable(GL_CULL_FACE);
-
-        glDepthFunc(GL_LESS);
-        //glDepthMask(true);
-        glDisable(GL_DITHER);
-
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //glBlendFunc(GL_ONE_MINUS_DST_ALPHA,GL_DST_ALPHA);
-        //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        glBlendFunc(GL_ONE, GL_ONE);
+    public static void initialSetup() {
+//        m_banner_height = banner_height;
+//        m_scaleFactor = scaleFactor;
+//        this.device_type = device_type;
+//
+//        // create packed depth & stencil buffer with same size as the color buffer
+//        glGenRenderbuffersOES(1, &m_depthstencilbuffer);
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_depthstencilbuffer);
+//        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH24_STENCIL8_OES, width, height);
+//
+//        // Create the framebuffer object and attach
+//        // - the color buffer
+//        // - the packed depth & stencil buffer
+//        glGenFramebuffersOES(1, &m_framebuffer);
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
+//
+//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, m_colorbuffer);         // color
+//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer);   // depth
+//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer); // stencil
+//
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+//
+//        GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
+//
+//        if (GL_FRAMEBUFFER_COMPLETE_OES != status) {
+////        printf("\nFailure with framebuffer generation: %d", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
+//
+//            switch (status) {
+//                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
+////                printf("\nIncomplete!!!");
+//                    break;
+//
+//                case GL_FRAMEBUFFER_UNSUPPORTED_OES:
+////                printf("\nUnsupported!!!");
+//                    break;
+//            }
+//        }
+//
+//        m_width = width;
+//        m_height = height;
+//
+//        m_half_width = m_width / 2;
+//        m_half_height = m_height / 2;
+//
+//        int h = m_height - banner_height;
+////	m_aspectRatio = (float)m_width / (float)m_height;
+//        m_aspectRatio = (float)m_width / (float)h;
+//
+//        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
+//
+////    glViewport(0, 0, width, height);
+//        glViewport(0, 0, width, h);
+//
+//        // make the OpenGL ModelView matrix the default
+//        glMatrixMode(GL_MODELVIEW);
+//
+////  glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+////  glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
+//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//        // setup material properties
+//        vec4 specular(1.0f, 1.0f, 1.0f, 1.0f);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
+//        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
+//
+//        glEnable(GL_COLOR_MATERIAL);
+//
+//        glEnable(GL_CULL_FACE);
+//        glCullFace(GL_BACK);
+//
+//        glEnable(GL_DEPTH_TEST);
+//        glDepthFunc(GL_LEQUAL);
+//
+//        // create frame buffer object
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+//
+//        glEnableClientState(GL_VERTEX_ARRAY);
+//        glEnableClientState(GL_COLOR_ARRAY);
+//
+//
+//        glGenRenderbuffersOES(1, m_colorbuffer);
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+//
+//
+//
+//
+//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+//        //glClearColor(1.0f, 0.3f, 0.3f, 0.0f);
+//        //glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+//
+//        glEnable(GL_CULL_FACE);
+//        //glDisable(GL_CULL_FACE);
+//
+//        glDepthFunc(GL_LESS);
+//        //glDepthMask(true);
+//        glDisable(GL_DITHER);
+//
+//        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        //glBlendFunc(GL_ONE_MINUS_DST_ALPHA,GL_DST_ALPHA);
+//        //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//        //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//        glBlendFunc(GL_ONE, GL_ONE);
     }
 
     public void loadStartupAssets() throws Exception {
@@ -390,6 +553,7 @@ public final class Graphics {
 
     public static int loadTexture(String fileName) {
         // todo
+        return 0;
     }
 
     private int loadTexture(int resourceId) {
@@ -451,71 +615,9 @@ public final class Graphics {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-    public void setProjectionMatrix2D() {
-        setProjectionMatrix2D((int) screenWidth, (int) screenHeight);
-    }
 
-	private void setProjectionMatrix2D(int width, int height) {
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
 
-        glOrthof(-1f, 1f, -1f, 1f, -1f, 1f);
 
-//		final float aspectRatio = width > height ? (float)width / (float)height : (float)height / (float)width;
-
-//		if (width > height) {
-//            // landscape
-//			orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
-//		} else {
-//		    // portrait
-//			orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
-//		}
-
-//        setIdentityM(viewMatrix, 0);
-
-//		orthoM(projectionMatrix, 0, 0f, width, 0f, height, 0f, 100f);
-		//setLookAtM(viewMatrix, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f);
-	}
-
-	public void setProjectionMatrix3D() {
-		float eyeZ = 49.0f;
-		//float eyeZ = 90.0f;
-
-		//MatrixHelper.perspectiveM(projectionMatrix, 45, screenWidth / screenHeight, 1f, 100f);
-		
-//		setLookAtM(viewMatrix, 0,
-//				// real
-//				0f,  12f, eyeZ,	// eye
-//				0f,  1.2f, 0f,    // at
-//				0f,  1f, 0f);   // up
-					
-//				// debug railway upclose
-//				-13f, -19f, 3f, // eye				
-//				0f, -22f, 0f, 	// at
-//				0f, 1f, 0f);	// up
-
-				// debug 
-//				-20f, 5f,  1f, 	// eye
-//				  0f, 5f, -1f, 	// at
-//				  0f, 1f,   0f);	// up
-
-	/*	
-        glViewport(0, 0, width, height);        
-
-        MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width
-            / (float) height, 1f, 10f);
-        
-        setIdentityM(viewMatrix, 0);
-        translateM(viewMatrix, 0, 0f, -1.5f, -5f);   
-        multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0,
-            viewMatrix, 0);
-    */
-	}
-	
-	public void updateViewProjMatrix() {
-//		multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-//		invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
-	}
 
 	public void calcMatricesForObject(PositionInfo op, float tx, float ty) {
 //        setIdentityM(modelMatrix, 0);
@@ -815,44 +917,44 @@ public final class Graphics {
 //	}
 
     public static void setStreamSourceOld() {
-        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-        glNormalPointer(GL_FLOAT, 0, _normals);
-        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
+//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+//        glNormalPointer(GL_FLOAT, 0, _normals);
+//        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
     }
 
     public static void setStreamSourceOnlyVerticeAndColor() {
-        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
     public static void setStreamSourceFloatAndColor() {
-        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-        glNormalPointer(GL_FLOAT, 0, _normals);
-        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+//        glNormalPointer(GL_FLOAT, 0, _normals);
+//        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
     }
 
     public static void setStreamSourceFloat() {
-        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-        glNormalPointer(GL_FLOAT, 0, _normals);
-        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
+//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+//        glNormalPointer(GL_FLOAT, 0, _normals);
+//        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
     }
 
     public static void setStreamSourceFloat2D() {
-        glVertexPointer(2, GL_FLOAT, 0, _vertices);
-        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glVertexPointer(2, GL_FLOAT, 0, _vertices);
+//        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
     public static void setStreamSourceFloat2DNoTexture() {
-        glVertexPointer(2, GL_FLOAT, 0, _vertices);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glVertexPointer(2, GL_FLOAT, 0, _vertices);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);

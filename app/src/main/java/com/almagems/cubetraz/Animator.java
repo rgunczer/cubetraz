@@ -154,7 +154,7 @@ public final class Animator extends Scene {
 	    
         MenuFaceBuilder.resetTransforms();
 	    MenuFaceBuilder.build(m_face_name_x_plus, Face_X_Plus);
-	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90, 0);
+	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
 	    MenuFaceBuilder.build(m_face_name_y_plus, Face_Y_Plus);
 	    MenuFaceBuilder.build(m_face_name_z_plus, Face_Z_Plus);
     }

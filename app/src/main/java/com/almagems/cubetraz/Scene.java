@@ -1,5 +1,7 @@
 package com.almagems.cubetraz;
 
+import static com.almagems.cubetraz.Constants.*;
+
 
 public abstract class Scene {
 
@@ -21,7 +23,7 @@ public abstract class Scene {
     public void onFingerUp(float x, float y, int finger_count) {}
     public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
 
-    public void onSwipe() {}
+    public void onSwipe(SwipeDirEnums swipeDir) {}
 
     public void EnteredBackground() {}
     public void EnteredForeground() {}

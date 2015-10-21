@@ -1,19 +1,16 @@
 package com.almagems.cubetraz;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.finalants.*;
+import static com.almagems.cubetraz.Constants.*;
 
 
 public final class Game {
 
-
-
     public static Vector getCubePosAt(CubePos cube_pos) {
-        Vector pos;
+        Vector pos = new Vector();
 
         pos.x = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tx;
         pos.y = cubes[cube_pos.x][cube_pos.y][cube_pos.z].ty;
@@ -99,10 +96,6 @@ public final class Game {
         }
     }
 
-    public static void playMusic(String string) {
-
-    }
-
     public static StatInitData stat_init_data = new StatInitData();
 
     public static TexturedQuad getNumberFont(int number) {
@@ -181,23 +174,6 @@ public final class Game {
             ar_cubefacedata[i].clear();
         }
         resetCubesFonts();
-    }
-
-
-    public static void musicVolumeUp() {
-
-    }
-
-    public static void musicVolumeDown() {
-
-    }
-
-    public static void soundVolumeUp() {
-
-    }
-
-    public static void soundVolumeDown() {
-
     }
 
     public static Color getFaceColor(float alpha) { return new Color(0.75f * 255, 0.8f * 255, 0.75f * 255, alpha * 255); }
@@ -298,33 +274,15 @@ public final class Game {
     public static final LevelInitData level_init_data = new LevelInitData();
     public static final AnimInitData anim_init_data = new AnimInitData();
 
-    public static void stopMusic() {
-
-    }
-
-    public static void playSound(String soundName) {
-
-    }
 
     public static boolean getCanPlayLockedLevels() {
         return true;
     }
 
-    public static void hideProgressIndicator() {
-
-    }
 
     public static float dirty_alpha;
 
     public static final Vector cube_offset = new Vector();
-
-    public static float getMusicVolume() {
-        return 0.5f;
-    }
-
-    public static float getSoundVolume() {
-        return 0.5f;
-    }
 
     public static Vector getCubePosAt(int x, int y, int z) {
         Vector pos = new Vector();
@@ -450,6 +408,45 @@ public final class Game {
 //
 //        background = new Quad();
 //        loading = new Loading();
+
+
+
+
+        initTextures();
+        initFonts();
+        initFontsBig();
+        initNumberFonts();
+        initSymbols();
+
+
+        loadOptions();
+
+        float size = (MAX_CUBE_COUNT * CUBE_SIZE) - CUBE_SIZE;
+        cube_offset.x = cube_offset.y = cube_offset.z = size / -2.0f;
+
+        Creator.createCubes();
+
+        level = new Level();
+        menu = new Menu();
+
+        LevelBuilder.level = level;
+
+//	printf("\nsize of level:%lu", sizeof(cEngine));
+//	printf("\nsize of menu:%lu", sizeof(cMenu));
+//	printf("\nsize of level:%lu", sizeof(cLevel));
+
+        showScene(Scene_Intro);
+        //ShowScene(Scene_Menu);
+        //ShowScene(Scene_Anim);
+        //ShowScene(Scene_Level);
+        //ShowScene(Scene_Solvers);
+        //ShowScene(Scene_Stat);
+        //ShowScene(Scene_Outro);
+
+        Graphics.warmCache();
+
+        Cubetraz.init();
+        Cubetraz.load();
     }
 
     public void createObjects() {
@@ -480,6 +477,21 @@ public final class Game {
 	}
 
     public static void renderToFBO(Scene scene) {
+
+
+//        int defaultFBO = 0;
+//        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
+//
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_fbo.m_FrameBuffer);
+//
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//        m_scene.renderToFBO();
+//
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
+
+
+
         //graphics.fboBackground.bind();
         //glViewport(0, 0, graphics.fboBackground.getWidth(), graphics.fboBackground.getHeight());
 
@@ -552,6 +564,11 @@ public final class Game {
     }
 
 	public void update() {
+
+
+//            m_scene.update();
+
+
         graphics.updateViewProjMatrix();
 
         if (gameState == GameState.Loading) {
@@ -604,8 +621,8 @@ public final class Game {
             //loading.draw();
         } else {
             // 2d drawing
-            graphics.setProjectionMatrix2D();
-            graphics.updateViewProjMatrix();
+            Graphics.setProjectionMatrix2D();
+            Graphics.updateViewProjMatrix();
 
             glDisable(GL_BLEND);
             glDepthMask(false);
@@ -613,8 +630,8 @@ public final class Game {
             glDepthMask(true);
 
             // 3d drawing
-            graphics.setProjectionMatrix3D();
-            graphics.updateViewProjMatrix();
+            Graphics.setProjectionMatrix3D();
+            Graphics.updateViewProjMatrix();
 
             glEnable(GL_DEPTH_TEST);
 
@@ -904,7 +921,7 @@ public final class Game {
 
         cube.type = CubeTypeEnum.CubeIsInvisibleAndObstacle;
         //printf("\nLevel Cube at: (%d,%d,%d)", pCube.x, pCube.y, pCube.z);
-        Creator.addLevelCube(level_number,  face_type, face_id, cube.x, cube.y, cube.z);
+        Creator.addLevelCube(level_number, face_type, face_id, cube.x, cube.y, cube.z);
     }
 
     public static void setCubeTypeInvisible(CubePos cube_pos) {
@@ -1202,7 +1219,7 @@ public final class Game {
         vResult[2] =  vU[0] * vV[1] - vV[0] * vU[1];
     }
 
-    void normalizeVector(float[] vNormal[3]) {
+    void normalizeVector(float[] vNormal) {
         float fLength = 1.0f / getVectorLength(vNormal);
         scaleVector(vNormal, fLength);
     }
@@ -1237,7 +1254,7 @@ public final class Game {
 
     void makeShadowMatrix(float[] vPointOnPlane0, float[] vPointOnPlane1, float[] vPointOnPlane2, float[] vLightPos, float[] destMat) {
         float[] vPlaneEquation = new float[4];
-        GLfloat dot;
+        float dot;
 
         getPlaneEquation(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vPlaneEquation);
 
@@ -1281,219 +1298,102 @@ public final class Game {
         return false;
     }
 
-    public static void init(int width, int height, float scaleFactor, int device_type, float banner_height) {
-        m_banner_height = banner_height;
-        m_scaleFactor = scaleFactor;
-        this.device_type = device_type;
-
-        // create packed depth & stencil buffer with same size as the color buffer
-        glGenRenderbuffersOES(1, &m_depthstencilbuffer);
-        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_depthstencilbuffer);
-        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH24_STENCIL8_OES, width, height);
-
-        // Create the framebuffer object and attach
-        // - the color buffer
-        // - the packed depth & stencil buffer
-        glGenFramebuffersOES(1, &m_framebuffer);
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
-
-        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, m_colorbuffer);         // color
-        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer);   // depth
-        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer); // stencil
-
-        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-
-        GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
-
-        if (GL_FRAMEBUFFER_COMPLETE_OES != status) {
-//        printf("\nFailure with framebuffer generation: %d", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
-
-            switch (status) {
-                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
-//                printf("\nIncomplete!!!");
-                    break;
-
-                case GL_FRAMEBUFFER_UNSUPPORTED_OES:
-//                printf("\nUnsupported!!!");
-                    break;
-            }
-        }
-
-        m_width = width;
-        m_height = height;
-
-        m_half_width = m_width / 2;
-        m_half_height = m_height / 2;
-
-        int h = m_height - banner_height;
-//	m_aspectRatio = (float)m_width / (float)m_height;
-        m_aspectRatio = (float)m_width / (float)h;
-
-        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
-
-//    glViewport(0, 0, width, height);
-        glViewport(0, 0, width, h);
-
-        // make the OpenGL ModelView matrix the default
-        glMatrixMode(GL_MODELVIEW);
-
-//  glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-//  glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // setup material properties
-        vec4 specular(1.0f, 1.0f, 1.0f, 1.0f);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
-        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
-
-        glEnable(GL_COLOR_MATERIAL);
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        // create frame buffer object
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
-        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-
-        initTextures();
-        initFonts();
-        initFontsBig();
-        initNumberFonts();
-        initSymbols();
-
-
-        loadOptions();
-
-        float size = (MAX_CUBE_COUNT * CUBE_SIZE) - CUBE_SIZE;
-        cube_offset.x = cube_offset.y = cube_offset.z = size / -2.0f;
-
-        Creator.createCubes();
-
-        level = new Level();
-        menu = new Menu();
-
-        LevelBuilder.level = level;
-
-//	printf("\nsize of level:%lu", sizeof(cEngine));
-//	printf("\nsize of menu:%lu", sizeof(cMenu));
-//	printf("\nsize of level:%lu", sizeof(cLevel));
-
-        showScene(Scene_Intro);
-        //ShowScene(Scene_Menu);
-        //ShowScene(Scene_Anim);
-        //ShowScene(Scene_Level);
-        //ShowScene(Scene_Solvers);
-        //ShowScene(Scene_Stat);
-        //ShowScene(Scene_Outro);
-
-        warmCache();
-
-        Cubetraz.init();
-        Cubetraz.load();
-    }
-
-    GLuint loadTexture(final char* name) {
-        if (0 != texture_id_tutor) {
-            glDeleteTextures(1, &texture_id_tutor);
-            texture_id_tutor = 0;
-        }
-
-        m_resourceManager.CreateTexture(name, texture_id_tutor);
-        return texture_id_tutor;
+    public static int loadTexture(final String name) {
+//        if (0 != texture_id_tutor) {
+//            glDeleteTextures(1, &texture_id_tutor);
+//            texture_id_tutor = 0;
+//        }
+//
+//        m_resourceManager.CreateTexture(name, texture_id_tutor);
+//        return texture_id_tutor;
+        return 0;
     }
 
     public static void initTextures() {
-        m_resourceManager.CreateTexture("grey_concrete128_stroke.png", texture_id_gray_concrete);
-        m_resourceManager.CreateTexture("key.png", texture_id_key);
-        m_resourceManager.CreateTexture("player.png", texture_id_player);
-        m_resourceManager.CreateTexture("level_cube.png", texture_id_level_cubes);
-        m_resourceManager.CreateTexture("level_cube_locked.png", texture_id_level_cubes_locked);
-        m_resourceManager.CreateTexture("fonts.png", texture_id_fonts);
-        m_resourceManager.CreateTexture("fonts_clear.png", texture_id_fonts_clear);
-        m_resourceManager.CreateTexture("level_numbers.png", texture_id_numbers);
-        m_resourceManager.CreateTexture("star.png", texture_id_star);
-        m_resourceManager.CreateTexture("symbols.png", texture_id_symbols);
-        m_resourceManager.CreateTexture("stat_background.png", texture_id_stat_background);
-        m_resourceManager.CreateTexture("credits.png", texture_id_credits);
-        m_resourceManager.CreateTexture("fonts_big.png", texture_id_fonts_big);
-        m_resourceManager.CreateTexture("dirty.png", texture_id_dirty);
-        m_resourceManager.CreateTexture("tutor_swipe", texture_id_tutor);
+//        m_resourceManager.CreateTexture("grey_concrete128_stroke.png", texture_id_gray_concrete);
+//        m_resourceManager.CreateTexture("key.png", texture_id_key);
+//        m_resourceManager.CreateTexture("player.png", texture_id_player);
+//        m_resourceManager.CreateTexture("level_cube.png", texture_id_level_cubes);
+//        m_resourceManager.CreateTexture("level_cube_locked.png", texture_id_level_cubes_locked);
+//        m_resourceManager.CreateTexture("fonts.png", texture_id_fonts);
+//        m_resourceManager.CreateTexture("fonts_clear.png", texture_id_fonts_clear);
+//        m_resourceManager.CreateTexture("level_numbers.png", texture_id_numbers);
+//        m_resourceManager.CreateTexture("star.png", texture_id_star);
+//        m_resourceManager.CreateTexture("symbols.png", texture_id_symbols);
+//        m_resourceManager.CreateTexture("stat_background.png", texture_id_stat_background);
+//        m_resourceManager.CreateTexture("credits.png", texture_id_credits);
+//        m_resourceManager.CreateTexture("fonts_big.png", texture_id_fonts_big);
+//        m_resourceManager.CreateTexture("dirty.png", texture_id_dirty);
+//        m_resourceManager.CreateTexture("tutor_swipe", texture_id_tutor);
     }
 
     public static void initFontsBig() {
-        FontStruct[] a = new FontStruct[] {
-            { ' ', new Rectangle(1,      0, 30,  82) },
-            { '!', new Rectangle(31,     0, 49,  82) },
-            { '"', new Rectangle(80,     0, 61,  82) },
-            { '#', new Rectangle(141,    0, 76,  82) },
-            { '$', new Rectangle(217,    0, 72,  82) },
-            { '%', new Rectangle(289,    0, 84,  82) },
-            { '&', new Rectangle(373,    0, 76,  82) },
-            { '\'', new Rectangle(449,    0, 42,  82) },
-            { '(', new Rectangle(491,    0, 46,  82) },
-            { ')', new Rectangle(537,    0, 46,  82) },
-            { '*', new Rectangle(583,    0, 58,  82) },
-            { '+', new Rectangle(641,    0, 76,  82) },
-            { ',', new Rectangle(717,    0, 44,  82) },
-            { '-', new Rectangle(761,    0, 38,  82) },
-            { '.', new Rectangle(799,    0, 44,  82) },
-            { '/', new Rectangle(843,    0, 75,  82) },
-            { '0', new Rectangle(918,    0, 72,  82) },
-            { '1', new Rectangle(0,     83, 72,  82) },
-            { '2', new Rectangle(72,    83, 72,  82) },
-            { '3', new Rectangle(144,   83, 72,  82) },
-            { '4', new Rectangle(216,   83, 72,  82) },
-            { '5', new Rectangle(288,   83, 72,  82) },
-            { '6', new Rectangle(360,   83, 72,  82) },
-            { '7', new Rectangle(432,   83, 72,  82) },
-            { '8', new Rectangle(504,   83, 72,  82) },
-            { '9', new Rectangle(576,   83, 72,  82) },
-            { ':', new Rectangle(648,   83, 44,  82) },
-            { ';', new Rectangle(692,   83, 44,  82) },
-            { '<', new Rectangle(736,   83, 57,  82) },
-            { '=', new Rectangle(793,   83, 76,  82) },
-            { '>', new Rectangle(869,   83, 57,  82) },
-            { '?', new Rectangle(926,   83, 57,  82) },
-            { '@', new Rectangle(0,    166, 79,  82) },
-            { 'A', new Rectangle(79,   166, 79,  82) },
-            { 'B', new Rectangle(158,  166, 78,  82) },
-            { 'C', new Rectangle(236,  166, 81,  82) },
-            { 'D', new Rectangle(317,  166, 81,  82) },
-            { 'E', new Rectangle(398,  166, 75,  82) },
-            { 'F', new Rectangle(473,  166, 73,  82) },
-            { 'G', new Rectangle(546,  166, 82,  82) },
-            { 'H', new Rectangle(628,  166, 82,  82) },
-            { 'I', new Rectangle(710,  166, 46,  82) },
-            { 'J', new Rectangle(756,  166, 65,  82) },
-            { 'K', new Rectangle(821,  166, 78,  82) },
-            { 'L', new Rectangle(899,  166, 72,  82) },
-            { 'M', new Rectangle(0,    249, 89,  82) },
-            { 'N', new Rectangle(89,   249, 83,  82) },
-            { 'O', new Rectangle(172,  249, 82,  82) },
-            { 'P', new Rectangle(254,  249, 76,  82) },
-            { 'Q', new Rectangle(330,  249, 82,  82) },
-            { 'R', new Rectangle(412,  249, 79,  82) },
-            { 'S', new Rectangle(491,  249, 73,  82) },
-            { 'T', new Rectangle(564,  249, 69,  82) },
-            { 'U', new Rectangle(633,  249, 79,  82) },
-            { 'V', new Rectangle(712,  249, 76,  82) },
-            { 'W', new Rectangle(788,  249, 101, 82) },
-            { 'X', new Rectangle(889,  249, 75,  82) },
-            { 'Y', new Rectangle(0,    332, 72,  82) },
-            { 'Z', new Rectangle(72,   332, 72,  82) },
-            { '[', new Rectangle(144,  332, 46,  82) },
-            { '\\', new Rectangle(190, 332, 75,  82) },
-            { ']', new Rectangle(265,  332, 46,  82) },
-            { '^', new Rectangle(311,  332, 57,  82) },
-            { '_', new Rectangle(368,  332, 57,  82) },
-            { '`', new Rectangle(425,  332, 57,  82) }
+        FontStruct[] a = {
+            new FontStruct(' ', new Rectangle(1,      0, 30,  82) ),
+            new FontStruct('!', new Rectangle(31,     0, 49,  82) ),
+            new FontStruct('"', new Rectangle(80,     0, 61,  82) ),
+            new FontStruct('#', new Rectangle(141,    0, 76,  82) ),
+            new FontStruct('$', new Rectangle(217,    0, 72,  82) ),
+            new FontStruct('%', new Rectangle(289,    0, 84,  82) ),
+            new FontStruct('&', new Rectangle(373,    0, 76,  82) ),
+            new FontStruct('\'', new Rectangle(449,    0, 42,  82) ),
+            new FontStruct('(', new Rectangle(491,    0, 46,  82) ),
+            new FontStruct(')', new Rectangle(537,    0, 46,  82) ),
+            new FontStruct('*', new Rectangle(583,    0, 58,  82) ),
+            new FontStruct('+', new Rectangle(641,    0, 76,  82) ),
+            new FontStruct(',', new Rectangle(717,    0, 44,  82) ),
+            new FontStruct('-', new Rectangle(761,    0, 38,  82) ),
+            new FontStruct('.', new Rectangle(799,    0, 44,  82) ),
+            new FontStruct('/', new Rectangle(843,    0, 75,  82) ),
+            new FontStruct('0', new Rectangle(918,    0, 72,  82) ),
+            new FontStruct('1', new Rectangle(0,     83, 72,  82) ),
+            new FontStruct('2', new Rectangle(72,    83, 72,  82) ),
+            new FontStruct('3', new Rectangle(144,   83, 72,  82) ),
+            new FontStruct('4', new Rectangle(216,   83, 72,  82) ),
+            new FontStruct('5', new Rectangle(288,   83, 72,  82) ),
+            new FontStruct('6', new Rectangle(360,   83, 72,  82) ),
+            new FontStruct('7', new Rectangle(432,   83, 72,  82) ),
+            new FontStruct('8', new Rectangle(504,   83, 72,  82) ),
+            new FontStruct('9', new Rectangle(576,   83, 72,  82) ),
+            new FontStruct(':', new Rectangle(648,   83, 44,  82) ),
+            new FontStruct(';', new Rectangle(692,   83, 44,  82) ),
+            new FontStruct('<', new Rectangle(736,   83, 57,  82) ),
+            new FontStruct('=', new Rectangle(793,   83, 76,  82) ),
+            new FontStruct('>', new Rectangle(869,   83, 57,  82) ),
+            new FontStruct('?', new Rectangle(926,   83, 57,  82) ),
+            new FontStruct('@', new Rectangle(0,    166, 79,  82) ),
+            new FontStruct('A', new Rectangle(79,   166, 79,  82) ),
+            new FontStruct('B', new Rectangle(158,  166, 78,  82) ),
+            new FontStruct('C', new Rectangle(236,  166, 81,  82) ),
+            new FontStruct('D', new Rectangle(317,  166, 81,  82) ),
+            new FontStruct('E', new Rectangle(398,  166, 75,  82) ),
+            new FontStruct('F', new Rectangle(473,  166, 73,  82) ),
+            new FontStruct('G', new Rectangle(546,  166, 82,  82) ),
+            new FontStruct('H', new Rectangle(628,  166, 82,  82) ),
+            new FontStruct('I', new Rectangle(710,  166, 46,  82) ),
+            new FontStruct('J', new Rectangle(756,  166, 65,  82) ),
+            new FontStruct('K', new Rectangle(821,  166, 78,  82) ),
+            new FontStruct('L', new Rectangle(899,  166, 72,  82) ),
+            new FontStruct('M', new Rectangle(0,    249, 89,  82) ),
+            new FontStruct('N', new Rectangle(89,   249, 83,  82) ),
+            new FontStruct('O', new Rectangle(172,  249, 82,  82) ),
+            new FontStruct('P', new Rectangle(254,  249, 76,  82) ),
+            new FontStruct('Q', new Rectangle(330,  249, 82,  82) ),
+            new FontStruct('R', new Rectangle(412,  249, 79,  82) ),
+            new FontStruct('S', new Rectangle(491,  249, 73,  82) ),
+            new FontStruct('T', new Rectangle(564,  249, 69,  82) ),
+            new FontStruct('U', new Rectangle(633,  249, 79,  82) ),
+            new FontStruct('V', new Rectangle(712,  249, 76,  82) ),
+            new FontStruct('W', new Rectangle(788,  249, 101, 82) ),
+            new FontStruct('X', new Rectangle(889,  249, 75,  82) ),
+            new FontStruct('Y', new Rectangle(0,    332, 72,  82) ),
+            new FontStruct('Z', new Rectangle(72,   332, 72,  82) ),
+            new FontStruct('[', new Rectangle(144,  332, 46,  82) ),
+            new FontStruct('\\', new Rectangle(190, 332, 75,  82) ),
+            new FontStruct(']', new Rectangle(265,  332, 46,  82) ),
+            new FontStruct('^', new Rectangle(311,  332, 57,  82) ),
+            new FontStruct('_', new Rectangle(368,  332, 57,  82) ),
+            new FontStruct('`', new Rectangle(425,  332, 57,  82) )
         };
 
         final float tw = 1024.0f;   // texture width
@@ -1516,83 +1416,83 @@ public final class Game {
 
             // x								// y
             pFont.tx_lo_left.x  =     x / tw;	pFont.tx_lo_left.y  = (y+h) / th;	// 0
-            pFont.tx_lo_right.x = (x+w) / tw;  pFont.tx_lo_right.y = (y+h) / th;	// 1
-            pFont.tx_up_right.x = (x+w) / tw;  pFont.tx_up_right.y =     y / th;	// 2
+            pFont.tx_lo_right.x = (x+w) / tw;   pFont.tx_lo_right.y = (y+h) / th;	// 1
+            pFont.tx_up_right.x = (x+w) / tw;   pFont.tx_up_right.y =     y / th;	// 2
             pFont.tx_up_left.x  =     x / tw;	pFont.tx_up_left.y  =     y / th;	// 3
 
-            m_fonts_big[ a[i].ch ] = pFont;
+            m_fonts_big.put("" + a[i].ch, pFont);
         }
     }
 
-    void initFonts() {
+    public static void initFonts() {
         final int arr_size = 65;
 
         FontStruct[] a = {
-            { ' ',  Rectangle(1,     0, 20, 41) },
-            { '!',  Rectangle(21,    0, 24, 41) },
-            { '"',  Rectangle(45,    0, 30, 41) },
-            { '#',  Rectangle(75,    0, 38, 41) },
-            { '$',  Rectangle(113,   0, 36, 41) },
-            { '%',  Rectangle(149,   0, 42, 41) },
-            { '&',  Rectangle(191,   0, 38, 41) },
-            { '\'', new Rectangle(229,   0, 21, 41) },
-            { '(',  Rectangle(250,   0, 23, 41) },
-            { ')',  Rectangle(273,   0, 23, 41) },
-            { '*',  Rectangle(296,   0, 29, 41) },
-            { '+',  Rectangle(325,   0, 38, 41) },
-            { ',',  Rectangle(363,   0, 22, 41) },
-            { '-',  Rectangle(385,   0, 19, 41) },
-            { '.',  Rectangle(404,   0, 22, 41) },
-            { '/',  Rectangle(426,   0, 37, 41) },
-            { '0',  Rectangle(463,   0, 36, 41) },
-            { '1',  Rectangle(0,    42, 36, 41) },
-            { '2',  Rectangle(36,   42, 36, 41) },
-            { '3',  Rectangle(72,   42, 36, 41) },
-            { '4',  Rectangle(108,  42, 36, 41) },
-            { '5',  Rectangle(144,  42, 36, 41) },
-            { '6',  Rectangle(180,  42, 36, 41) },
-            { '7',  Rectangle(216,  42, 36, 41) },
-            { '8',  Rectangle(252,  42, 36, 41) },
-            { '9',  Rectangle(288,  42, 36, 41) },
-            { ':',  Rectangle(324,  42, 22, 41) },
-            { ';',  Rectangle(346,  42, 22, 41) },
-            { '<',  Rectangle(368,  42, 28, 41) },
-            { '=',  Rectangle(396,  42, 38, 41) },
-            { '>',  Rectangle(434,  42, 28, 41) },
-            { '?',  Rectangle(462,  42, 28, 41) },
-            { '@',  Rectangle(0,    84, 39, 41) },
-            { 'A',  Rectangle(39,   84, 39, 41) },
-            { 'B',  Rectangle(78,   84, 39, 41) },
-            { 'C',  Rectangle(117,  84, 40, 41) },
-            { 'D',  Rectangle(157,  84, 40, 41) },
-            { 'E',  Rectangle(197,  84, 37, 41) },
-            { 'F',  Rectangle(234,  84, 36, 41) },
-            { 'G',  Rectangle(270,  84, 41, 41) },
-            { 'H',  Rectangle(311,  84, 41, 41) },
-            { 'I',  Rectangle(348,  84, 30, 41) },
-            { 'J',  Rectangle(375,  84, 32, 41) },
-            { 'K',  Rectangle(407,  84, 39, 41) },
-            { 'L',  Rectangle(446,  84, 36, 41) },
-            { 'M',  Rectangle(0,   126, 44, 41) },
-            { 'N',  Rectangle(44,  126, 41, 41) },
-            { 'O',  Rectangle(85,  126, 41, 41) },
-            { 'P',  Rectangle(126, 126, 38, 41) },
-            { 'Q',  Rectangle(164, 126, 41, 41) },
-            { 'R',  Rectangle(205, 126, 39, 41) },
-            { 'S',  Rectangle(244, 126, 36, 41) },
-            { 'T',  Rectangle(280, 126, 34, 41) },
-            { 'U',  Rectangle(314, 126, 39, 41) },
-            { 'V',  Rectangle(353, 126, 38, 41) },
-            { 'W',  Rectangle(391, 126, 50, 41) },
-            { 'X',  Rectangle(441, 126, 37, 41) },
-            { 'Y',  Rectangle(0,   168, 36, 41) },
-            { 'Z',  Rectangle(36,  168, 36, 41) },
-            { '[',  Rectangle(72,  168, 23, 41) },
-            { '\\', new Rectangle(95,  168, 37, 41) },
-            { ']',  Rectangle(132, 168, 23, 41) },
-            { '^',  Rectangle(155, 168, 28, 41) },
-            { '_',  Rectangle(183, 168, 28, 41) },
-            { '`',  Rectangle(211, 168, 28, 41) }
+            new FontStruct(' ', new Rectangle(1, 0, 20, 41)),
+            new FontStruct('!', new Rectangle(21, 0, 24, 41)),
+            new FontStruct('"', new  Rectangle(45,    0, 30, 41)),
+            new FontStruct( '#', new  Rectangle(75,    0, 38, 41)),
+            new FontStruct('$', new  Rectangle(113,   0, 36, 41)),
+            new FontStruct('%', new  Rectangle(149,   0, 42, 41)),
+            new FontStruct('&', new  Rectangle(191,   0, 38, 41)),
+            new FontStruct( '\'', new Rectangle(229,   0, 21, 41)),
+            new FontStruct('(', new  Rectangle(250,   0, 23, 41)),
+            new FontStruct(')', new  Rectangle(273,   0, 23, 41)),
+            new FontStruct('*', new  Rectangle(296,   0, 29, 41)),
+            new FontStruct('+', new  Rectangle(325,   0, 38, 41)),
+            new FontStruct( ',', new  Rectangle(363,   0, 22, 41)),
+            new FontStruct( '-', new  Rectangle(385,   0, 19, 41)),
+            new FontStruct( '.', new  Rectangle(404,   0, 22, 41)),
+            new FontStruct( '/', new  Rectangle(426,   0, 37, 41)),
+            new FontStruct( '0', new  Rectangle(463,   0, 36, 41)),
+            new FontStruct( '1', new  Rectangle(0,    42, 36, 41)),
+            new FontStruct( '2', new  Rectangle(36,   42, 36, 41)),
+            new FontStruct( '3', new  Rectangle(72,   42, 36, 41)),
+            new FontStruct( '4', new  Rectangle(108,  42, 36, 41)),
+            new FontStruct( '5', new  Rectangle(144,  42, 36, 41)),
+            new FontStruct( '6', new  Rectangle(180,  42, 36, 41)),
+            new FontStruct( '7', new  Rectangle(216,  42, 36, 41)),
+            new FontStruct( '8', new  Rectangle(252,  42, 36, 41)),
+            new FontStruct( '9', new  Rectangle(288,  42, 36, 41)),
+            new FontStruct( ':', new  Rectangle(324,  42, 22, 41)),
+            new FontStruct( ';', new  Rectangle(346,  42, 22, 41)),
+            new FontStruct( '<', new  Rectangle(368,  42, 28, 41)),
+            new FontStruct( '=', new  Rectangle(396,  42, 38, 41)),
+            new FontStruct( '>', new  Rectangle(434,  42, 28, 41)),
+            new FontStruct( '?', new  Rectangle(462,  42, 28, 41)),
+            new FontStruct( '@', new  Rectangle(0,    84, 39, 41)),
+            new FontStruct( 'A', new  Rectangle(39,   84, 39, 41)),
+            new FontStruct( 'B', new  Rectangle(78,   84, 39, 41)),
+            new FontStruct( 'C', new  Rectangle(117,  84, 40, 41)),
+            new FontStruct( 'D', new  Rectangle(157,  84, 40, 41)),
+            new FontStruct( 'E', new  Rectangle(197,  84, 37, 41)),
+            new FontStruct( 'F', new  Rectangle(234,  84, 36, 41)),
+            new FontStruct( 'G', new  Rectangle(270,  84, 41, 41)),
+            new FontStruct( 'H', new  Rectangle(311,  84, 41, 41)),
+            new FontStruct( 'I', new  Rectangle(348,  84, 30, 41)),
+            new FontStruct( 'J', new  Rectangle(375,  84, 32, 41)),
+            new FontStruct( 'K', new  Rectangle(407,  84, 39, 41)),
+            new FontStruct( 'L', new  Rectangle(446,  84, 36, 41)),
+            new FontStruct( 'M', new  Rectangle(0,   126, 44, 41)),
+            new FontStruct( 'N', new  Rectangle(44,  126, 41, 41)),
+            new FontStruct( 'O', new  Rectangle(85,  126, 41, 41)),
+            new FontStruct( 'P', new  Rectangle(126, 126, 38, 41)),
+            new FontStruct( 'Q', new  Rectangle(164, 126, 41, 41)),
+            new FontStruct( 'R', new  Rectangle(205, 126, 39, 41)),
+            new FontStruct( 'S', new  Rectangle(244, 126, 36, 41)),
+            new FontStruct( 'T', new  Rectangle(280, 126, 34, 41)),
+            new FontStruct( 'U', new  Rectangle(314, 126, 39, 41)),
+            new FontStruct( 'V', new  Rectangle(353, 126, 38, 41)),
+            new FontStruct( 'W', new  Rectangle(391, 126, 50, 41)),
+            new FontStruct( 'X', new  Rectangle(441, 126, 37, 41)),
+            new FontStruct( 'Y', new  Rectangle(0,   168, 36, 41)),
+            new FontStruct( 'Z', new  Rectangle(36,  168, 36, 41)),
+            new FontStruct( '[', new  Rectangle(72,  168, 23, 41)),
+            new FontStruct( '\\', new Rectangle(95,  168, 37, 41)),
+            new FontStruct( ']', new  Rectangle(132, 168, 23, 41)),
+            new FontStruct( '^', new  Rectangle(155, 168, 28, 41)),
+            new FontStruct( '_', new  Rectangle(183, 168, 28, 41)),
+            new FontStruct( '`', new  Rectangle(211, 168, 28, 41))
         };
 
         TexturedQuad pFont;
@@ -1619,12 +1519,12 @@ public final class Game {
             pFont.tx_up_right.x = (x+w) / tw;   pFont.tx_up_right.y =     y / th;	// 2
             pFont.tx_up_left.x  =     x / tw;	pFont.tx_up_left.y  =     y / th;	// 3
 
-            m_fonts[ a[i].ch ] = pFont;
+            m_fonts.put( a[i].ch + "", pFont );
         }
     }
 
-    void initNumberFonts() {
-        int[] a = {
+    private static void initNumberFonts() {
+        final int[] a = {
 //          x      y    w    h
             0,     0, 100, 100,
             100,   0, 100, 100,
@@ -1700,9 +1600,7 @@ public final class Game {
         final float tw = 1024.0f;    // texture width
         final float th = 1024.0f;    // texture height
 
-        int size = (sizeof(a) / sizeof(int));
-
-        for (int i = 4; i < size; i+=4, ++index) {
+        for (int i = 4; i < a.length; i+=4, ++index) {
             x  = a[i];
             y  = a[i+1];
             w  = a[i+2];
@@ -1712,12 +1610,12 @@ public final class Game {
             pFont.number = index;
 
             // x                                y
-            pFont.tx_lo_left.x  = x / tw;		pFont.tx_lo_left.y  = (y+h) / th;      // 0 lower left
-            pFont.tx_lo_right.x = (x+w) / tw;	pFont.tx_lo_right.y = (y+h) / th;      // 1 lower right
-            pFont.tx_up_right.x = (x+w) / tw;	pFont.tx_up_right.y = (y) / th;        // 2 upper righ
+            pFont.tx_lo_left.x  = x / tw;		pFont.tx_lo_left.y  = (y+h) / th;   // 0 lower left
+            pFont.tx_lo_right.x = (x+w) / tw;	pFont.tx_lo_right.y = (y+h) / th;   // 1 lower right
+            pFont.tx_up_right.x = (x+w) / tw;	pFont.tx_up_right.y = (y) / th;     // 2 upper righ
             pFont.tx_up_left.x  = x / tw;		pFont.tx_up_left.y  = (y) / th;		// 3 upper left
 
-            m_numbers[index] = pFont;
+            m_numbers.put(index, pFont);
         }
     }
 
@@ -1778,137 +1676,136 @@ public final class Game {
         }
     }
 
-    void hideProgressIndicator() {
+    public static void hideProgressIndicator() {
         //m_resourceManager.HideProgressIndicator();
     }
 
-    void updateDisplayedSolvers() {
-        if (null != m_solvers) {
-            //m_solvers.UpdateSolversCount();
-        }
-
-        if (null != m_level) {
-            level.setSolversCount();
-        }
+    public static void updateDisplayedSolvers() {
+//        if (null != m_solvers) {
+//            //m_solvers.UpdateSolversCount();
+//        }
+//
+//        if (null != m_level) {
+//            level.setSolversCount();
+//        }
     }
 
-    void setTextureID(int id) {
-        m_texture_id = id;
+    public static void setTextureID(int id) {
+        //m_texture_id = id;
     }
 
-    void setSolverCount(int count) {
+    public static void setSolverCount(int count) {
         //return m_resourceManager.SetSolvers(count);
     }
 
-    void decSolverCount() {
+    public static void decSolverCount() {
         //m_resourceManager.SetSolvers(m_resourceManager.GetSolvers() - 1);
     }
 
-    void musicVolumeUp() {
-        float volume = Engine.getMusicVolume();
-
-        volume += 0.1f;
-
-        if (volume > 1.0f) {
-            volume = 1.0f;
-        }
-
-        Engine.setMusicVolume(volume);
+    public static void musicVolumeUp() {
+//        float volume = Engine.getMusicVolume();
+//
+//        volume += 0.1f;
+//
+//        if (volume > 1.0f) {
+//            volume = 1.0f;
+//        }
+//
+//        Engine.setMusicVolume(volume);
     }
 
-    void musicVolumeDown() {
-        float volume = Engine.getMusicVolume();
-
-        volume -= 0.1f;
-
-        if (volume < 0.0f) {
-            volume = 0.0f;
-        }
-
-        Engine.setMusicVolume(volume);
+    public static void musicVolumeDown() {
+//        float volume = Engine.getMusicVolume();
+//
+//        volume -= 0.1f;
+//
+//        if (volume < 0.0f) {
+//            volume = 0.0f;
+//        }
+//
+//        Engine.setMusicVolume(volume);
     }
 
-    void SoundVolumeUp() {
-        float volume = Engine.getSoundVolume();
-
-        volume += 0.1f;
-
-        if (volume > 1.0f) {
-            volume = 1.0f;
-        }
-
-        Engine.setSoundFXVolume(volume);
+    public static void soundVolumeUp() {
+//        float volume = Engine.getSoundVolume();
+//
+//        volume += 0.1f;
+//
+//        if (volume > 1.0f) {
+//            volume = 1.0f;
+//        }
+//
+//        Engine.setSoundFXVolume(volume);
     }
 
-    void soundVolumeDown() {
-        float volume = Engine.getSoundVolume();
-
-        volume -= 0.1f;
-
-        if (volume < 0.0f) {
-            volume = 0.0f;
-        }
-
-        Engine.setSoundFXVolume(volume);
+    public static void soundVolumeDown() {
+//        float volume = Engine.getSoundVolume();
+//
+//        volume -= 0.1f;
+//
+//        if (volume < 0.0f) {
+//            volume = 0.0f;
+//        }
+//
+//        Engine.setSoundFXVolume(volume);
     }
 
-    float getMusicVolume() {
-        return Engine.getMusicVolume();
+    public static float getMusicVolume() {
+        return 0.5f; // Engine.getMusicVolume();
     }
 
-    float GetSoundVolume() {
-        return Engine.getSoundVolume();
+    public static float getSoundVolume() {
+        return 0.5f; // Engine.getSoundVolume();
     }
 
-    void setMusicVolume(float volume) {
-        Engine.setMusicVolume(volume);
+    public static void setMusicVolume(float volume) {
+        //Engine.setMusicVolume(volume);
     }
 
-    void setSoundVolume(float volume) {
-        Engine.SetSoundFXVolume(volume);
-    }    
-
-    void playSound(final String key) {
-        Engine.playSound(key);
+    public static void setSoundVolume(float volume) {
+        //Engine.SetSoundFXVolume(volume);
     }
 
-    void playMusic(final String key) {
-        Engine.playMusic(key);
+    public static void playSound(final String key) {
+        //Engine.playSound(key);
     }
 
-    void PrepareMusicToPlay(final String key) {
-        Engine.prepareMusicToPlay(key);
+    public static void playMusic(final String key) {
+        //Engine.playMusic(key);
     }
 
-    void playPreparedMusic() {
-        Engine.playPreparedMusic();
+    public static void PrepareMusicToPlay(final String key) {
+        //Engine.prepareMusicToPlay(key);
     }
 
-    void stopMusic()
-    {
-        Engine.stopMusic();
-    }    
+    public static void playPreparedMusic() {
+        //Engine.playPreparedMusic();
+    }
 
-    void EnteredBackground() {
+    public static void stopMusic() {
+        //Engine.stopMusic();
+    }
+
+    public static void enteredBackground() {
         if (m_scene != null) {
-            m_scene.enteredBackground();
+            //m_scene.enteredBackground();
         }
     }
 
-    void EnteredForeground() {
+    public static void enteredForeground() {
         if (m_scene != null) {
-            m_scene.enteredForeground();
+            //m_scene.enteredForeground();
         }
     }
 
-    void drawCircleAt(float x, float y, float radius, Color color) {
+    public static void drawCircleAt(float x, float y, float radius, Color color) {
         float[] vertices = new float[80];
-        short colors = new  short[150];
+        float[] colors = new float[150];
         int v_index = -1;
         int color_index = -1;
         float radian;
-        vec2 pos;
-        vec2 pt;
+        Vector2 pos = new Vector2();
+        Vector2 pt = new Vector2();
 
         pos.x = x;
         pos.y = y;
@@ -1922,10 +1819,10 @@ public final class Game {
         colors[++color_index] = color.a;
 
         for (float degree = 0.0f; degree <= 360.0f; degree += 36.0f) {
-            radian = Math.toRadians(degree);
+            radian = (float)Math.toRadians(degree);
 
-            pt.x = pos.x + Math.sin(radian) * radius;
-            pt.y = pos.y + Mathc.cos(radian) * radius;
+            pt.x = pos.x + (float)Math.sin(radian) * radius;
+            pt.y = pos.y + (float)Math.cos(radian) * radius;
 
             vertices[++v_index] = pt.x;
             vertices[++v_index] = pt.y;
@@ -1936,99 +1833,76 @@ public final class Game {
             colors[++color_index] = color.a;
         }
 
-        glVertexPointer(2, GL_FLOAT, 0, vertices);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+//        glVertexPointer(2, GL_FLOAT, 0, vertices);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, v_index/2+1);
     }
-    
-    void drawCubeNoFace(boolean x_plus,
-                        boolean x_minus,
-                        boolean y_plus,
-                        boolean y_minus,
-                        boolean z_plus,
-                        boolean z_minus) {
+
+    public static void drawCubeNoFace(  boolean x_plus,
+                                        boolean x_minus,
+                                        boolean y_plus,
+                                        boolean y_minus,
+                                        boolean z_plus,
+                                        boolean z_minus) {
         if (z_minus) {
-            drawCubeFaceZ_Minus();
+            Graphics.drawCubeFaceZ_Minus();
         }
 
         if (z_plus) {
-            drawCubeFaceZ_Plus();
+            Graphics.drawCubeFaceZ_Plus();
         }
 
         if (x_plus) {
-            drawCubeFaceX_Plus();
+            Graphics.drawCubeFaceX_Plus();
         }
 
         if (y_minus) {
-            drawCubeFaceY_Minus();
+            Graphics.drawCubeFaceY_Minus();
         }
 
         if (x_minus) {
-            drawCubeFaceX_Minus();
+            Graphics.drawCubeFaceX_Minus();
         }
 
         if (y_plus){
-            drawCubeFaceY_Plus();
+            Graphics.drawCubeFaceY_Plus();
         }
     }
 
-    void DrawQuad() {
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    }    
-
-    void warmCache() {
-        glEnable(GL_TEXTURE_2D);
-
-        Graphics.prepare();
-        Graphics.setStreamSource();
-        Graphics.addCube(0.0f, 0.0f, 0.0f);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glDisable(GL_TEXTURE_2D);
-    }
-
-    void Render() {
+    public static void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         m_scene.render();
     }
-    
-    void Update() {
-        m_scene.update();
-    }    
 
-    void onFingerDown(float x, float y, int finger_count) {
-        m_scene.onFingerDown(x * m_scaleFactor, y * m_scaleFactor, finger_count);
+    public static void onFingerDown(float x, float y, int finger_count) {
+        m_scene.onFingerDown(x * Graphics.scaleFactor, y * Graphics.scaleFactor, finger_count);
     }
 
-    void onFingerUp(float x, float y, int finger_count) {
-        m_scene.onFingerUp(x * m_scaleFactor, y * m_scaleFactor, finger_count);
+    public static void onFingerUp(float x, float y, int finger_count) {
+        m_scene.onFingerUp(x * Graphics.scaleFactor, y * Graphics.scaleFactor, finger_count);
     }
 
-    void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
-        m_scene.onFingerMove(prev_x * m_scaleFactor, prev_y * m_scaleFactor, cur_x * m_scaleFactor, cur_y * m_scaleFactor, finger_count);
+    public static void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
+        m_scene.onFingerMove(prev_x * Graphics.scaleFactor, prev_y * Graphics.scaleFactor, cur_x * Graphics.scaleFactor, cur_y * Graphics.scaleFactor, finger_count);
     }
 
-    void onSwipe(SwipeDirEnums type) {
+    public static void onSwipe(SwipeDirEnums type) {
         m_scene.onSwipe(type);
     }
 
-    void saveOptions() {    
-        float mv = engine.GetMusicVolume();
-        float sv = engine.GetSoundVolume();
+    public static void saveOptions() {
+        float mv = 0.5f; //Engine.getMusicVolume();
+        float sv = 0.5f; //Engine.getSoundVolume();
 
         // TODO save code goes here
     
     }
 
-    void loadOptions() {
+    public static void loadOptions() {
         float mv = 0.5f;
         float sv = 0.5f;
 
@@ -2036,61 +1910,47 @@ public final class Game {
         // TODO load code goes here
         
         
-        SetMusicVolume(mv);
-        SetSoundVolume(sv);
+        setMusicVolume(mv);
+        setSoundVolume(sv);
     }
 
-    #pragma mark - misc
-
-    void resetHelp() {
+    public static void resetHelp() {
         //printf("\nReset Help Here...\n");
     }
 
-    float getTextWidth(final String text, float scale) {
+    public static float getTextWidth(final String text, float scale) {
         float width = 0.0f;
 
-        int len = (int)strlen(text);
-        TexturedQuad* pFont;
+        int len = text.length();
+        TexturedQuad pFont;
 
-        for (int i = 0; i < len; ++i)
-        {
-            pFont = GetFont(text[i]);
+        for (int i = 0; i < len; ++i) {
+            pFont = getFont(text.charAt(i));
             width += (pFont.w * scale);
         }
 
         return width;
     }
 
-    public boolean getCanSkipIntro() {
+    public static boolean getCanSkipIntro() {
         //return m_resourceManager.getCanSkipIntro();
+        return true;
     }
 
-    public void setCanSkipIntro() {
+    public static void setCanSkipIntro() {
         //m_resourceManager.SetCanSkipIntro();
     }
 
-    public void RenderToFBO(Scene scene) {
-        GLint defaultFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
 
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_fbo.m_FrameBuffer);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        scene.RenderToFBO();
-
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
-    }
-
-    void drawFullScreenQuad(Color color) {
-        final GLfloat[] verts = {
+    public static void drawFullScreenQuad(Color color) {
+        final float[] verts = {
             0.0f,              Graphics.height,
             0.0f,              0.0f,
             Graphics.width,    0.0f,
             Graphics.width,    Graphics.height
         };
 
-        final short[] colors = {
+        final float[] colors = {
             color.r, color.g, color.b, color.a,
             color.r, color.g, color.b, color.a,
             color.r, color.g, color.b, color.a,
