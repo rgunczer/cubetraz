@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.Constants.*;
+import static com.almagems.cubetraz.finalants.*;
 
 
 public final class Game {
-
 
 
 
@@ -30,8 +29,7 @@ public final class Game {
         return new Vector2(c*a.x - s*a.y, s*a.x + c*a.y);
     }
 
-    public static TexturedQuad getNewLineFont()
-    {
+    public static TexturedQuad getNewLineFont() {
         return m_newlinefont;
     }
     public static TexturedQuad m_newlinefont;
@@ -216,15 +214,15 @@ public final class Game {
     public static void showScene(int scene_id) {
         Scene scene = null;
 
-//        switch (scene_id) {
-//            case Scene_Intro:
+        switch (scene_id) {
+            case Scene_Intro:
 //                m_intro = new cIntro();
 //                m_intro.init();
 //
 //                scene = m_intro;
-//                break;
-//
-//            case Scene_Menu:
+                break;
+
+            case Scene_Menu:
 //                //showFullScreenAd();
 //
 //                if (m_intro) {
@@ -244,9 +242,9 @@ public final class Game {
 //                m_menu.Init();
 //
 //                scene = m_menu;
-//                break;
-//
-//            case Scene_Anim:
+                break;
+
+            case Scene_Anim:
 //
 //                if (null == m_animator)
 //                    m_animator = new cAnimator();
@@ -254,43 +252,43 @@ public final class Game {
 //                m_animator.Init();
 //
 //                scene = m_animator;
-//                break;
-//
-//            case Scene_Level:
+                break;
+
+            case Scene_Level:
 //
 //                m_level.Init(&level_init_data);
 //
 //                scene = m_level;
-//                break;
-//
-//            case Scene_Stat:
-//
+                break;
+
+            case Scene_Stat:
+
 //                if (null == m_statistics)
 //                    m_statistics = new cStatistics();
 //
 //                m_statistics.Init();
 //
 //                scene = m_statistics;
-//                break;
-//
-//            case Scene_Solvers:
-//
+                break;
+
+            case Scene_Solvers:
+
 //                m_solvers.Init();
 //
 //                scene = m_solvers;
-//                break;
-//
-//            case Scene_Outro:
-//
+                break;
+
+            case Scene_Outro:
+
 //                if (null == m_outro)
 //                    m_outro = new cOutro();
 //
 //                m_outro.Init();
 //
 //                scene = m_outro;
-//                break;
-//        }
-//
+                break;
+        }
+
 //        m_scene = scene;
     }
 
@@ -1204,53 +1202,50 @@ public final class Game {
         vResult[2] =  vU[0] * vV[1] - vV[0] * vU[1];
     }
 
-    void NormalizeVector(float[] vNormal[3]) {
+    void normalizeVector(float[] vNormal[3]) {
         float fLength = 1.0f / getVectorLength(vNormal);
         scaleVector(vNormal, fLength);
     }
 
     // Subtract one vector from another
-    void SubtractVectors(const float vFirst[3], const float vSecond[3], float vResult[3]) {
+    void subtractVectors(final float[] vFirst, final float[] vSecond, float[] vResult) {
         vResult[0] = vFirst[0] - vSecond[0];
         vResult[1] = vFirst[1] - vSecond[1];
         vResult[2] = vFirst[2] - vSecond[2];
     }
 
-    void GetNormalVector(const float vP1[3], const float vP2[3], const float vP3[3], float vNormal[3])
-    {
-        float vV1[3];
-        float vV2[3];
+    void getNormalVector(final float[] vP1, final float[] vP2, final float[] vP3, float[] vNormal) {
+        float[] vV1 = new float[3];
+        float[] vV2 = new float[3];
 
-        SubtractVectors(vP2, vP1, vV1);
-        SubtractVectors(vP3, vP1, vV2);
+        subtractVectors(vP2, vP1, vV1);
+        subtractVectors(vP3, vP1, vV2);
 
         calcVectorCrossProduct(vV1, vV2, vNormal);
-        NormalizeVector(vNormal);
+        normalizeVector(vNormal);
     }
 
     // Gets the three coefficients of a plane equation given three points on the plane.
-    void GetPlaneEquation(float vPoint1[3], float vPoint2[3], float vPoint3[3], float vPlane[3])
-    {
+    void getPlaneEquation(float[] vPoint1, float[] vPoint2, float[] vPoint3, float[] vPlane) {
         // Get normal vector from three points. The normal vector is the first three coefficients
         // to the plane equation...
-        GetNormalVector(vPoint1, vPoint2, vPoint3, vPlane);
+        getNormalVector(vPoint1, vPoint2, vPoint3, vPlane);
 
         // Final coefficient found by back substitution
         vPlane[3] = -(vPlane[0] * vPoint3[0] + vPlane[1] * vPoint3[1] + vPlane[2] * vPoint3[2]);
     }
 
-    void MakeShadowMatrix(float vPointOnPlane0[3], float vPointOnPlane1[3], float vPointOnPlane2[3], float vLightPos[4], float destMat[16])
-    {
-        float vPlaneEquation[4];
+    void makeShadowMatrix(float[] vPointOnPlane0, float[] vPointOnPlane1, float[] vPointOnPlane2, float[] vLightPos, float[] destMat) {
+        float[] vPlaneEquation = new float[4];
         GLfloat dot;
 
-        GetPlaneEquation(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vPlaneEquation);
+        getPlaneEquation(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vPlaneEquation);
 
         // Dot product of plane and light position
         dot = vPlaneEquation[0]*vLightPos[0] +
-                vPlaneEquation[1]*vLightPos[1] +
-                vPlaneEquation[2]*vLightPos[2] +
-                vPlaneEquation[3]*vLightPos[3];
+              vPlaneEquation[1]*vLightPos[1] +
+              vPlaneEquation[2]*vLightPos[2] +
+              vPlaneEquation[3]*vLightPos[3];
 
         // Now do the projection
         // First column
@@ -1404,7 +1399,7 @@ public final class Game {
         Cubetraz.load();
     }
 
-    GLuint loadTexture(const char* name) {
+    GLuint loadTexture(final char* name) {
         if (0 != texture_id_tutor) {
             glDeleteTextures(1, &texture_id_tutor);
             texture_id_tutor = 0;
@@ -1529,18 +1524,10 @@ public final class Game {
         }
     }
 
-    void InitFonts()
-    {
-        const int arr_size = 65;
+    void initFonts() {
+        final int arr_size = 65;
 
-        struct FontStruct
-        {
-            char ch;
-            Rectangle rc;
-        };
-
-        FontStruct a[arr_size] =
-        {
+        FontStruct[] a = {
             { ' ',  Rectangle(1,     0, 20, 41) },
             { '!',  Rectangle(21,    0, 24, 41) },
             { '"',  Rectangle(45,    0, 30, 41) },
@@ -1608,15 +1595,14 @@ public final class Game {
             { '`',  Rectangle(211, 168, 28, 41) }
         };
 
-        TexturedQuad* pFont;
+        TexturedQuad pFont;
 
         float x, y, w, h;
 
-        const float tw = 512.0f;    // texture width
-        const float th = 512.0f;    // texture height
+        final float tw = 512.0f;    // texture width
+        final float th = 512.0f;    // texture height
 
-        for (int i = 0; i < arr_size; ++i)
-        {
+        for (int i = 0; i < arr_size; ++i) {
             x  = a[i].rc.x;
             y  = a[i].rc.y;
             w  = a[i].rc.w;
@@ -1629,103 +1615,100 @@ public final class Game {
 
             // x								// y
             pFont.tx_lo_left.x  =     x / tw;	pFont.tx_lo_left.y  = (y+h) / th;	// 0
-            pFont.tx_lo_right.x = (x+w) / tw;  pFont.tx_lo_right.y = (y+h) / th;	// 1
-            pFont.tx_up_right.x = (x+w) / tw;  pFont.tx_up_right.y =     y / th;	// 2
+            pFont.tx_lo_right.x = (x+w) / tw;   pFont.tx_lo_right.y = (y+h) / th;	// 1
+            pFont.tx_up_right.x = (x+w) / tw;   pFont.tx_up_right.y =     y / th;	// 2
             pFont.tx_up_left.x  =     x / tw;	pFont.tx_up_left.y  =     y / th;	// 3
 
             m_fonts[ a[i].ch ] = pFont;
         }
     }
 
-    void InitNumberFonts()
-    {
-        int a[] =
-                {
-//      x      y    w    h
-                        0,     0, 100, 100,
-                        100,   0, 100, 100,
-                        200,   0, 100, 100,
-                        300,   0, 100, 100,
-                        400,   0, 100, 100,
-                        500,   0, 100, 100,
-                        600,   0, 100, 100,
-                        700,   0, 100, 100,
-                        800,   0, 100, 100,
-                        900,   0, 100, 100,
+    void initNumberFonts() {
+        int[] a = {
+//          x      y    w    h
+            0,     0, 100, 100,
+            100,   0, 100, 100,
+            200,   0, 100, 100,
+            300,   0, 100, 100,
+            400,   0, 100, 100,
+            500,   0, 100, 100,
+            600,   0, 100, 100,
+            700,   0, 100, 100,
+            800,   0, 100, 100,
+            900,   0, 100, 100,
 
-                        0,   100, 100, 100,
-                        100, 100, 100, 100,
-                        200, 100, 100, 100,
-                        300, 100, 100, 100,
-                        400, 100, 100, 100,
-                        500, 100, 100, 100,
-                        600, 100, 100, 100,
-                        700, 100, 100, 100,
-                        800, 100, 100, 100,
-                        900, 100, 100, 100,
+            0,   100, 100, 100,
+            100, 100, 100, 100,
+            200, 100, 100, 100,
+            300, 100, 100, 100,
+            400, 100, 100, 100,
+            500, 100, 100, 100,
+            600, 100, 100, 100,
+            700, 100, 100, 100,
+            800, 100, 100, 100,
+            900, 100, 100, 100,
 
-                        0,   200, 100, 100,
-                        100, 200, 100, 100,
-                        200, 200, 100, 100,
-                        300, 200, 100, 100,
-                        400, 200, 100, 100,
-                        500, 200, 100, 100,
-                        600, 200, 100, 100,
-                        700, 200, 100, 100,
-                        800, 200, 100, 100,
-                        900, 200, 100, 100,
+            0,   200, 100, 100,
+            100, 200, 100, 100,
+            200, 200, 100, 100,
+            300, 200, 100, 100,
+            400, 200, 100, 100,
+            500, 200, 100, 100,
+            600, 200, 100, 100,
+            700, 200, 100, 100,
+            800, 200, 100, 100,
+            900, 200, 100, 100,
 
-                        0,   300, 100, 100,
-                        100, 300, 100, 100,
-                        200, 300, 100, 100,
-                        300, 300, 100, 100,
-                        400, 300, 100, 100,
-                        500, 300, 100, 100,
-                        600, 300, 100, 100,
-                        700, 300, 100, 100,
-                        800, 300, 100, 100,
-                        900, 300, 100, 100,
+            0,   300, 100, 100,
+            100, 300, 100, 100,
+            200, 300, 100, 100,
+            300, 300, 100, 100,
+            400, 300, 100, 100,
+            500, 300, 100, 100,
+            600, 300, 100, 100,
+            700, 300, 100, 100,
+            800, 300, 100, 100,
+            900, 300, 100, 100,
 
-                        0,   400, 100, 100,
-                        100, 400, 100, 100,
-                        200, 400, 100, 100,
-                        300, 400, 100, 100,
-                        400, 400, 100, 100,
-                        500, 400, 100, 100,
-                        600, 400, 100, 100,
-                        700, 400, 100, 100,
-                        800, 400, 100, 100,
-                        900, 400, 100, 100,
+            0,   400, 100, 100,
+            100, 400, 100, 100,
+            200, 400, 100, 100,
+            300, 400, 100, 100,
+            400, 400, 100, 100,
+            500, 400, 100, 100,
+            600, 400, 100, 100,
+            700, 400, 100, 100,
+            800, 400, 100, 100,
+            900, 400, 100, 100,
 
-                        0,   500, 100, 100,
-                        100, 500, 100, 100,
-                        200, 500, 100, 100,
-                        300, 500, 100, 100,
-                        400, 500, 100, 100,
-                        500, 500, 100, 100,
-                        600, 500, 100, 100,
-                        700, 500, 100, 100,
-                        800, 500, 100, 100,
-                        900, 500, 100, 100,
-                        0,   600, 100, 100
-                };
+            0,   500, 100, 100,
+            100, 500, 100, 100,
+            200, 500, 100, 100,
+            300, 500, 100, 100,
+            400, 500, 100, 100,
+            500, 500, 100, 100,
+            600, 500, 100, 100,
+            700, 500, 100, 100,
+            800, 500, 100, 100,
+            900, 500, 100, 100,
+            0,   600, 100, 100
+        };
 
         int index = 1;
         float x, y, w, h;
 
-        const float tw = 1024.0f;    // texture width
-        const float th = 1024.0f;    // texture height
+        final float tw = 1024.0f;    // texture width
+        final float th = 1024.0f;    // texture height
 
         int size = (sizeof(a) / sizeof(int));
 
-        for (int i = 4; i < size; i+=4, ++index)
-        {
+        for (int i = 4; i < size; i+=4, ++index) {
             x  = a[i];
             y  = a[i+1];
             w  = a[i+2];
             h  = a[i+3];
 
-            TexturedQuad* pFont = new TexturedQuad();
+            TexturedQuad pFont = new TexturedQuad();
             pFont.number = index;
 
             // x                                y
@@ -1795,192 +1778,132 @@ public final class Game {
         }
     }
 
-    void HideProgressIndicator()
-    {
-        m_resourceManager.HideProgressIndicator();
+    void hideProgressIndicator() {
+        //m_resourceManager.HideProgressIndicator();
     }
 
-    void UpdateDisplayedSolvers()
-    {
-        if (null != m_solvers)
-            m_solvers.UpdateSolversCount();
+    void updateDisplayedSolvers() {
+        if (null != m_solvers) {
+            //m_solvers.UpdateSolversCount();
+        }
 
-        if (null != m_level)
-            m_level.SetSolversCount();
+        if (null != m_level) {
+            level.setSolversCount();
+        }
     }
 
-    void SetTextureID(GLuint id)
-    {
+    void setTextureID(int id) {
         m_texture_id = id;
     }
 
-
-    void SetSolverCount(int count)
-    {
-        return m_resourceManager.SetSolvers(count);
+    void setSolverCount(int count) {
+        //return m_resourceManager.SetSolvers(count);
     }
 
-    void DecSolverCount()
-    {
-        m_resourceManager.SetSolvers(m_resourceManager.GetSolvers() - 1);
+    void decSolverCount() {
+        //m_resourceManager.SetSolvers(m_resourceManager.GetSolvers() - 1);
     }
 
-    #pragma mark - GameCenter
-
-    void HideGameCenterInfo()
-    {
-        m_resourceManager.HideGameCenterInfo();
-    }
-
-    void ShowGameCenterInfo()
-    {
-        m_resourceManager.ShowGameCenterInfo();
-    }
-
-    void SubmitScore(int score)
-    {
-        m_resourceManager.ReportScore(score);
-    }
-
-    void ReportAchievement(const char* identifier, float percent)
-    {
-        m_resourceManager.ReportAchievement(identifier, percent);
-    }
-
-    void ShowLeaderboard()
-    {
-        m_resourceManager.ShowLeaderboard();
-    }
-
-    void ShowLocalScore()
-    {
-        m_resourceManager.ShowLocalScore();
-    }
-
-    void ShowSocialShare()
-    {
-        m_resourceManager.ShowSocialShare();
-    }
-
-    #pragma mark - Volume
-
-    void MusicVolumeUp()
-    {
-        float volume = m_resourceManager.GetMusicVolume();
+    void musicVolumeUp() {
+        float volume = Engine.getMusicVolume();
 
         volume += 0.1f;
 
-        if (volume > 1.0f)
+        if (volume > 1.0f) {
             volume = 1.0f;
+        }
 
-        m_resourceManager.SetMusicVolume(volume);
+        Engine.setMusicVolume(volume);
     }
 
-    void MusicVolumeDown()
-    {
-        float volume = m_resourceManager.GetMusicVolume();
+    void musicVolumeDown() {
+        float volume = Engine.getMusicVolume();
 
         volume -= 0.1f;
 
-        if (volume < 0.0f)
+        if (volume < 0.0f) {
             volume = 0.0f;
+        }
 
-        m_resourceManager.SetMusicVolume(volume);
+        Engine.setMusicVolume(volume);
     }
 
-    void SoundVolumeUp()
-    {
-        float volume = m_resourceManager.GetSoundVolume();
+    void SoundVolumeUp() {
+        float volume = Engine.getSoundVolume();
 
         volume += 0.1f;
 
-        if (volume > 1.0f)
+        if (volume > 1.0f) {
             volume = 1.0f;
+        }
 
-        m_resourceManager.SetSoundFXVolume(volume);
+        Engine.setSoundFXVolume(volume);
     }
 
-    void SoundVolumeDown()
-    {
-        float volume = m_resourceManager.GetSoundVolume();
+    void soundVolumeDown() {
+        float volume = Engine.getSoundVolume();
 
         volume -= 0.1f;
 
-        if (volume < 0.0f)
+        if (volume < 0.0f) {
             volume = 0.0f;
+        }
 
-        m_resourceManager.SetSoundFXVolume(volume);
+        Engine.setSoundFXVolume(volume);
     }
 
-    float GetMusicVolume()
-    {
-        return m_resourceManager.GetMusicVolume();
+    float getMusicVolume() {
+        return Engine.getMusicVolume();
     }
 
-    float GetSoundVolume()
-    {
-        return m_resourceManager.GetSoundVolume();
+    float GetSoundVolume() {
+        return Engine.getSoundVolume();
     }
 
-    void SetMusicVolume(float volume)
-    {
-        m_resourceManager.SetMusicVolume(volume);
+    void setMusicVolume(float volume) {
+        Engine.setMusicVolume(volume);
     }
 
-    void SetSoundVolume(float volume)
-    {
-        m_resourceManager.SetSoundFXVolume(volume);
+    void setSoundVolume(float volume) {
+        Engine.SetSoundFXVolume(volume);
+    }    
+
+    void playSound(final String key) {
+        Engine.playSound(key);
     }
 
-
-    #pragma mark - Sound & Music Playback
-
-
-    void PlaySound(const char* key)
-    {
-        m_resourceManager.PlaySound(key);
+    void playMusic(final String key) {
+        Engine.playMusic(key);
     }
 
-    void PlayMusic(const char* key)
-    {
-        m_resourceManager.PlayMusic(key);
+    void PrepareMusicToPlay(final String key) {
+        Engine.prepareMusicToPlay(key);
     }
 
-    void PrepareMusicToPlay(const char* key)
-    {
-        m_resourceManager.PrepareMusicToPlay(key);
+    void playPreparedMusic() {
+        Engine.playPreparedMusic();
     }
 
-    void PlayPreparedMusic()
+    void stopMusic()
     {
-        m_resourceManager.PlayPreparedMusic();
+        Engine.stopMusic();
+    }    
+
+    void EnteredBackground() {
+        if (m_scene != null) {
+            m_scene.enteredBackground();
+        }
     }
 
-    void StopMusic()
-    {
-        m_resourceManager.StopMusic();
+    void EnteredForeground() {
+        if (m_scene != null) {
+            m_scene.enteredForeground();
+        }
     }
 
-    #pragma mark - Entered
-
-    void EnteredBackground()
-    {
-        if (m_scene)
-            m_scene.EnteredBackground();
-    }
-
-    void EnteredForeground()
-    {
-        if (m_scene)
-            m_scene.EnteredForeground();
-    }
-
-    #pragma mark - Draw
-
-    void DrawCircleAt(float x, float y, float radius, Color& color)
-    {
-        GLfloat vertices[80];
-        GLubyte colors[150];
+    void drawCircleAt(float x, float y, float radius, Color color) {
+        float[] vertices = new float[80];
+        short colors = new  short[150];
         int v_index = -1;
         int color_index = -1;
         float radian;
@@ -1998,12 +1921,11 @@ public final class Game {
         colors[++color_index] = color.b;
         colors[++color_index] = color.a;
 
-        for (float degree = 0.0f; degree <= 360.0f; degree += 36.0f)
-        {
-            radian = TO_RAD(degree);
+        for (float degree = 0.0f; degree <= 360.0f; degree += 36.0f) {
+            radian = Math.toRadians(degree);
 
-            pt.x = pos.x + sin(radian) * radius;
-            pt.y = pos.y + cos(radian) * radius;
+            pt.x = pos.x + Math.sin(radian) * radius;
+            pt.y = pos.y + Mathc.cos(radian) * radius;
 
             vertices[++v_index] = pt.x;
             vertices[++v_index] = pt.y;
@@ -2022,143 +1944,109 @@ public final class Game {
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, v_index/2+1);
     }
+    
+    void drawCubeNoFace(boolean x_plus,
+                        boolean x_minus,
+                        boolean y_plus,
+                        boolean y_minus,
+                        boolean z_plus,
+                        boolean z_minus) {
+        if (z_minus) {
+            drawCubeFaceZ_Minus();
+        }
 
+        if (z_plus) {
+            drawCubeFaceZ_Plus();
+        }
 
-    #pragma mark - DrawCubeFace
+        if (x_plus) {
+            drawCubeFaceX_Plus();
+        }
 
-    void DrawCubeNoFace(bool x_plus,
-                                 bool x_minus,
-                                 bool y_plus,
-                                 bool y_minus,
-                                 bool z_plus,
-                                 bool z_minus)
-    {
-        if (z_minus)
-            DrawCubeFaceZ_Minus();
+        if (y_minus) {
+            drawCubeFaceY_Minus();
+        }
 
-        if (z_plus)
-            DrawCubeFaceZ_Plus();
+        if (x_minus) {
+            drawCubeFaceX_Minus();
+        }
 
-        if (x_plus)
-            DrawCubeFaceX_Plus();
-
-        if (y_minus)
-            DrawCubeFaceY_Minus();
-
-        if (x_minus)
-            DrawCubeFaceX_Minus();
-
-        if (y_plus)
-            DrawCubeFaceY_Plus();
+        if (y_plus){
+            drawCubeFaceY_Plus();
+        }
     }
 
-    void DrawQuad()
-    {
+    void DrawQuad() {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    }
+    }    
 
-    #pragma mark - Render
-
-    void WarmCache()
-    {
+    void warmCache() {
         glEnable(GL_TEXTURE_2D);
 
-        cRenderer::Prepare();
-        cRenderer::SetStreamSource();
-        cRenderer::AddCube(0.0f, 0.0f, 0.0f);
-        glBindTexture(GL_TEXTURE_2D, engine.texture_id_player);
+        Graphics.prepare();
+        Graphics.setStreamSource();
+        Graphics.addCube(0.0f, 0.0f, 0.0f);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        glBindTexture(GL_TEXTURE_2D, engine.texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glDisable(GL_TEXTURE_2D);
     }
 
-    void Render()
-    {
+    void Render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        m_scene.render();
+    }
+    
+    void Update() {
+        m_scene.update();
+    }    
 
-        m_scene.Render();
+    void onFingerDown(float x, float y, int finger_count) {
+        m_scene.onFingerDown(x * m_scaleFactor, y * m_scaleFactor, finger_count);
     }
 
-    #pragma mark - Update
-
-    void Update(float dt)
-    {
-        m_scene.Update(dt);
+    void onFingerUp(float x, float y, int finger_count) {
+        m_scene.onFingerUp(x * m_scaleFactor, y * m_scaleFactor, finger_count);
     }
 
-    #pragma mark - Input
-
-    void OnFingerDown(float x, float y, int finger_count)
-    {
-        m_scene.OnFingerDown(x * m_scaleFactor, y * m_scaleFactor, finger_count);
+    void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
+        m_scene.onFingerMove(prev_x * m_scaleFactor, prev_y * m_scaleFactor, cur_x * m_scaleFactor, cur_y * m_scaleFactor, finger_count);
     }
 
-    void OnFingerUp(float x, float y, int finger_count)
-    {
-        m_scene.OnFingerUp(x * m_scaleFactor, y * m_scaleFactor, finger_count);
+    void onSwipe(SwipeDirEnums type) {
+        m_scene.onSwipe(type);
     }
 
-    void OnFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count)
-    {
-        m_scene.OnFingerMove(prev_x * m_scaleFactor, prev_y * m_scaleFactor, cur_x * m_scaleFactor, cur_y * m_scaleFactor, finger_count);
+    void saveOptions() {    
+        float mv = engine.GetMusicVolume();
+        float sv = engine.GetSoundVolume();
+
+        // TODO save code goes here
+    
     }
 
-    void OnSwipe(SwipeDirEnums type)
-    {
-        m_scene.OnSwipe(type);
-    }
-
-    #pragma mark - Save / Load Options
-
-    void SaveOptions()
-    {
-        FILE* fp = engine.m_resourceManager.GetFilePointerForWrite(SAVE_OPTIONS_FILE);
-
-        if (fp)
-        {
-            float mv = engine.GetMusicVolume();
-            float sv = engine.GetSoundVolume();
-
-            fwrite(&mv, 1, sizeof(float), fp);
-            fwrite(&sv, 1, sizeof(float), fp);
-
-            fclose(fp);
-        }
-    }
-
-    void LoadOptions()
-    {
+    void loadOptions() {
         float mv = 0.5f;
         float sv = 0.5f;
 
-        FILE* fp = engine.m_resourceManager.GetFilePointerForRead(SAVE_OPTIONS_FILE);
-
-        if (fp)
-        {
-            fread(&mv, sizeof(float), 1, fp);
-            fread(&sv, sizeof(float), 1, fp);
-
-            fclose(fp);
-        }
-
+        
+        // TODO load code goes here
+        
+        
         SetMusicVolume(mv);
         SetSoundVolume(sv);
     }
 
     #pragma mark - misc
 
-    void ResetHelp()
-    {
+    void resetHelp() {
         //printf("\nReset Help Here...\n");
     }
 
-
-
-    float GetTextWidth(const char* text, float scale)
-    {
+    float getTextWidth(final String text, float scale) {
         float width = 0.0f;
 
         int len = (int)strlen(text);
@@ -2173,40 +2061,15 @@ public final class Game {
         return width;
     }
 
-
-    bool GetCanSkipIntro()
-    {
-        return m_resourceManager.GetCanSkipIntro();
+    public boolean getCanSkipIntro() {
+        //return m_resourceManager.getCanSkipIntro();
     }
 
-    void SetCanSkipIntro()
-    {
-        m_resourceManager.SetCanSkipIntro();
+    public void setCanSkipIntro() {
+        //m_resourceManager.SetCanSkipIntro();
     }
 
-
-
-
-    void BuyPackOfSolvers(int number_of_solvers)
-    {
-        #ifndef LITE_VERSION
-        if (5 == number_of_solvers)
-            m_resourceManager.Purchase5Solvers();
-
-        if (15 == number_of_solvers)
-            m_resourceManager.Purchase15Solvers();
-        #endif
-    }
-
-    #ifdef LITE_VERSION
-    void BuyFullVersion()
-    {
-        m_resourceManager.BuyFullVersion();
-    }
-    #endif
-
-    void RenderToFBO(cScene* scene)
-    {
+    public void RenderToFBO(Scene scene) {
         GLint defaultFBO = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
 
@@ -2219,30 +2082,26 @@ public final class Game {
         glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
     }
 
+    void drawFullScreenQuad(Color color) {
+        final GLfloat[] verts = {
+            0.0f,              Graphics.height,
+            0.0f,              0.0f,
+            Graphics.width,    0.0f,
+            Graphics.width,    Graphics.height
+        };
 
-    void DrawFullScreenQuad(Color& color)
-    {
-        const GLfloat verts[] =
-            {
-                    0.0f,               engine.m_height,
-                    0.0f,               0.0f,
-                    engine.m_width,    0.0f,
-                    engine.m_width,    engine.m_height
-            };
-
-        const GLubyte colors[] =
-            {
-                    color.r, color.g, color.b, color.a,
-                    color.r, color.g, color.b, color.a,
-                    color.r, color.g, color.b, color.a,
-                    color.r, color.g, color.b, color.a
-            };
+        final short[] colors = {
+            color.r, color.g, color.b, color.a,
+            color.r, color.g, color.b, color.a,
+            color.r, color.g, color.b, color.a,
+            color.r, color.g, color.b, color.a
+        };
 
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        glVertexPointer(2, GL_FLOAT, 0, verts);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+        // glVertexPointer(2, GL_FLOAT, 0, verts);
+        // glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
