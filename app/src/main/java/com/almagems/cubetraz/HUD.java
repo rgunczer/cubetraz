@@ -7,7 +7,9 @@ import java.util.Stack;
 import static com.almagems.cubetraz.Constants.*;
 
 public final class HUD {
-        
+
+    public static Graphics graphics;
+
     private final boolean[] m_arr_tutor_displayed = new boolean[MAX_TUTOR_COUNT];
     
 	private HUDStateEnum m_state;
@@ -369,10 +371,10 @@ public final class HUD {
 	    m_hint_type = hint_type;
 	    m_hint_timeout = 2.0f;
         m_t = 0.0f;
-        m_radius = 10.0f * Graphics.device_scale;
+        m_radius = 10.0f * graphics.device_scale;
     
-        m_start = new Vector2(0.0f, -40.0f * Graphics.device_scale);
-        m_end = new Vector2(0.0f, 40.0f * Graphics.device_scale);
+        m_start = new Vector2(0.0f, -40.0f * graphics.device_scale);
+        m_end = new Vector2(0.0f, 40.0f * graphics.device_scale);
 
         switch (m_hint_type) {
             case AxisMovement_X_Plus:
@@ -424,7 +426,7 @@ public final class HUD {
     public void init() {
         m_tutor_active = false;
     
-        m_pos_center = new Vector2(Graphics.half_width, Graphics.half_height);
+        m_pos_center = new Vector2(graphics.half_width, graphics.half_height);
     
 	    m_hint_index = 1;
         m_show_prepare_solving = false;
@@ -443,7 +445,7 @@ public final class HUD {
         m_text_moves.init("MOVES\n0", true);
         m_text_motto.init("MOTTO\n0\n0", true);
     
-        float scale = 0.3f * Graphics.device_scale;
+        float scale = 0.3f * graphics.device_scale;
         m_text_level.setScale(scale, scale);
         m_text_stars.setScale(scale, scale);
         m_text_moves.setScale(scale, scale);
@@ -464,14 +466,14 @@ public final class HUD {
         m_symbol_star = Game.getSymbol(SymbolStar);
 	    m_symbol_death = Game.getSymbol(SymbolDeath);
     
-	    m_pos_x_text_left_start = -100.0f * Graphics.device_scale;
-	    m_pos_x_text_left_end = 5.0f * Graphics.device_scale;
+	    m_pos_x_text_left_start = -100.0f * graphics.device_scale;
+	    m_pos_x_text_left_end = 5.0f * graphics.device_scale;
 
-	    m_pos_y_motto_start = -10.0f * Graphics.device_scale;
-	    m_pos_y_motto_end = 30.0f * Graphics.device_scale;
+	    m_pos_y_motto_start = -10.0f * graphics.device_scale;
+	    m_pos_y_motto_end = 30.0f * graphics.device_scale;
 	
-        m_pos_x_text_right_start = Graphics.width + (75.0f * Graphics.device_scale);
-	    m_pos_x_text_right_end = Graphics.width - (6.0f * Graphics.device_scale);
+        m_pos_x_text_right_start = graphics.width + (75.0f * graphics.device_scale);
+	    m_pos_x_text_right_end = graphics.width - (6.0f * graphics.device_scale);
 
 	    m_state = HUDStateEnum.DoneHUD;
 	    m_show_hint = false;
@@ -524,8 +526,8 @@ public final class HUD {
     
 	    if (m_state == HUDStateEnum.DisappearHUD) {
 		    final int icon_alpha_speed = -40;
-		    final float text_anim_speed = -10.0f * Graphics.device_scale;
-            final float text_anim_speed_motto = -10.0f * Graphics.device_scale;
+		    final float text_anim_speed = -10.0f * graphics.device_scale;
+            final float text_anim_speed_motto = -10.0f * graphics.device_scale;
 		
 		    m_icons_alpha += icon_alpha_speed;
 
@@ -566,8 +568,8 @@ public final class HUD {
 		    int done_counter = 0;
 		
             final int icon_alpha_speed = 20;
-		    final float text_anim_speed = 8.0f * Graphics.device_scale;
-            final float text_anim_speed_motto = 3.0f * Graphics.device_scale;
+		    final float text_anim_speed = 8.0f * graphics.device_scale;
+            final float text_anim_speed_motto = 3.0f * graphics.device_scale;
 				
             m_icons_alpha += icon_alpha_speed;
 		
@@ -631,20 +633,20 @@ public final class HUD {
     }
 
     public void renderForPicking() {
-	    float solver_quad_y = Graphics.height * 0.09f;
-	    float hint_quad_y   = Graphics.height * 0.37f;
-        float undo_quad_y   = Graphics.height * 0.65f;
-	    float pause_quad_y  = Graphics.height * 0.93f;
+	    float solver_quad_y = graphics.height * 0.09f;
+	    float hint_quad_y   = graphics.height * 0.37f;
+        float undo_quad_y   = graphics.height * 0.65f;
+	    float pause_quad_y  = graphics.height * 0.93f;
 
-	    solver_quad_y -= 0.1f * Graphics.height;
-	    hint_quad_y   -= 0.1f * Graphics.height;
-        undo_quad_y   -= 0.1f * Graphics.height;
-	    pause_quad_y  -= 0.1f * Graphics.height;
+	    solver_quad_y -= 0.1f * graphics.height;
+	    hint_quad_y   -= 0.1f * graphics.height;
+        undo_quad_y   -= 0.1f * graphics.height;
+	    pause_quad_y  -= 0.1f * graphics.height;
     
-        Graphics.setProjection2D();
-        Graphics.setModelViewMatrix2D();
+        graphics.setProjection2D();
+        graphics.setModelViewMatrix2D();
 
-  	    Graphics.setStreamSourceFloat2D();
+  	    graphics.setStreamSourceFloat2D();
     
         TexCoordsQuad tcoords = new TexCoordsQuad();
         tcoords.tx0 = new Vector2(0.0f, 0.0f);
@@ -657,15 +659,15 @@ public final class HUD {
         Color color_hint = new Color(0, 0, 100, 255);
 	    Color color_solver = new Color(0, 0, 50, 255);
     
-        float x = 5.0f * Graphics.device_scale;
-        float size = 60.0f * Graphics.device_scale;
+        float x = 5.0f * graphics.device_scale;
+        float size = 60.0f * graphics.device_scale;
     
-        Graphics.prepare();
-        Graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
-        Graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
-        Graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
-        Graphics.addQuad(size, x, solver_quad_y, tcoords, color_solver);
-	    Graphics.renderTriangles();
+        graphics.prepare();
+        graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
+        graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
+        graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
+        graphics.addQuad(size, x, solver_quad_y, tcoords, color_solver);
+	    graphics.renderTriangles();
     }
 
     public void render() {
@@ -673,64 +675,64 @@ public final class HUD {
 //    return;
     
         float scale;
-	    float pause_quad_y  = Graphics.height * 0.91f;
-        float undo_quad_y   = Graphics.height * 0.67f;
-	    float hint_quad_y   = Graphics.height * 0.38f;
-	    float solver_quad_y = Graphics.height * 0.1f;
+	    float pause_quad_y  = graphics.height * 0.91f;
+        float undo_quad_y   = graphics.height * 0.67f;
+	    float hint_quad_y   = graphics.height * 0.38f;
+	    float solver_quad_y = graphics.height * 0.1f;
 
         Color color_icon = new Color(139, 0, 0, m_icons_alpha);
         Color color_text = new Color(225,10,50,200);//220, 20, 60, 240);
         Color color_hilite = new Color(255, 228, 225, m_icons_alpha);
         Color color_shadow = new Color(0, 0, 0, m_icons_alpha / 2);
     
-        float shadow_offset_x = 2.5f * Graphics.device_scale;
-        float shadow_offset_y = 2.5f * Graphics.device_scale;
+        float shadow_offset_x = 2.5f * graphics.device_scale;
+        float shadow_offset_y = 2.5f * graphics.device_scale;
     
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
 
-        Graphics.setProjection2D();
-        Graphics.setModelViewMatrix2D();
+        graphics.setProjection2D();
+        graphics.setModelViewMatrix2D();
     
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_clear);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_clear);
     
         m_text_display.init();
         
         if (m_text_level.isVisible()) {
-            m_text_level.emitt(m_pos_x_text_right - shadow_offset_x, (pause_quad_y + 9.0f * Graphics.device_scale) - shadow_offset_y, color_shadow);
+            m_text_level.emitt(m_pos_x_text_right - shadow_offset_x, (pause_quad_y + 9.0f * graphics.device_scale) - shadow_offset_y, color_shadow);
             m_text_display.m_vertex_count += m_text_level.getVertexCount();
         
-            m_text_level.emitt(m_pos_x_text_right, pause_quad_y + 9.0f * Graphics.device_scale, color_text);
+            m_text_level.emitt(m_pos_x_text_right, pause_quad_y + 9.0f * graphics.device_scale, color_text);
             m_text_display.m_vertex_count += m_text_level.getVertexCount();
         }
     
         if (m_text_stars.isVisible()) {
-            m_text_stars.emitt(m_pos_x_text_right - shadow_offset_x, (undo_quad_y - 12.5f * Graphics.device_scale) - shadow_offset_y, color_shadow);
+            m_text_stars.emitt(m_pos_x_text_right - shadow_offset_x, (undo_quad_y - 12.5f * graphics.device_scale) - shadow_offset_y, color_shadow);
             m_text_display.m_vertex_count += m_text_stars.getVertexCount();
         
-            m_text_stars.emitt(m_pos_x_text_right, undo_quad_y - 12.5f * Graphics.device_scale, color_text);
+            m_text_stars.emitt(m_pos_x_text_right, undo_quad_y - 12.5f * graphics.device_scale, color_text);
             m_text_display.m_vertex_count += m_text_stars.getVertexCount();
         }
     
         if (m_text_moves.isVisible()) {
-            m_text_moves.emitt(m_pos_x_text_right - shadow_offset_x, (hint_quad_y - 10.0f * Graphics.device_scale) + shadow_offset_y, color_shadow);
+            m_text_moves.emitt(m_pos_x_text_right - shadow_offset_x, (hint_quad_y - 10.0f * graphics.device_scale) + shadow_offset_y, color_shadow);
             m_text_display.m_vertex_count += m_text_moves.getVertexCount();
 
-            m_text_moves.emitt(m_pos_x_text_right, hint_quad_y - 10.0f * Graphics.device_scale, color_text);
+            m_text_moves.emitt(m_pos_x_text_right, hint_quad_y - 10.0f * graphics.device_scale, color_text);
             m_text_display.m_vertex_count += m_text_moves.getVertexCount();
         }
     
         if (m_text_motto.isVisible()) {
-            m_text_motto.emitt((Graphics.width - 5.0f * Graphics.device_scale) - shadow_offset_x, m_pos_y_motto + shadow_offset_y, color_shadow);
+            m_text_motto.emitt((graphics.width - 5.0f * graphics.device_scale) - shadow_offset_x, m_pos_y_motto + shadow_offset_y, color_shadow);
             m_text_display.m_vertex_count += m_text_motto.getVertexCount();
     
-            m_text_motto.emitt(Graphics.width - 5.0f * Graphics.device_scale, m_pos_y_motto, color_text);
+            m_text_motto.emitt(graphics.width - 5.0f * graphics.device_scale, m_pos_y_motto, color_text);
             m_text_display.m_vertex_count += m_text_motto.getVertexCount();
         }
     
-        float yOffset = 14.0f * Graphics.device_scale;
+        float yOffset = 14.0f * graphics.device_scale;
         
         if (m_text_pause.isVisible()) {
             m_text_pause.emitt(m_pos_x_text_left + shadow_offset_x, pause_quad_y - yOffset - shadow_offset_y,  color_shadow);
@@ -770,15 +772,15 @@ public final class HUD {
             glDisable(GL_TEXTURE_2D);
             Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
         
-            Graphics.setStreamSourceFloat2DNoTexture();
-            Graphics.prepare();
-            Graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
-            Graphics.renderTriangles();
+            graphics.setStreamSourceFloat2DNoTexture();
+            graphics.prepare();
+            graphics.addQuad(0.0f, graphics.half_height - 20.0f * graphics.device_scale, graphics.width, 75.0f * graphics.device_scale, color_bg);
+            graphics.renderTriangles();
         
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
+            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_big);
         
-            scale = 0.75f * Graphics.device_scale;
+            scale = 0.75f * graphics.device_scale;
             m_ar_text_center[0].setScale(scale, scale);
             m_ar_text_center[1].setScale(scale, scale);
         
@@ -787,73 +789,73 @@ public final class HUD {
 		    Color color = new Color(0, 0, 0, a);
         
             m_text_display.init();
-            m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
         
-            m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
             glPushMatrix();
-                glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
+                glTranslatef(graphics.device_scale, graphics.device_scale, 0.0f);
                 m_text_display.render();
             glPopMatrix();
     
 		    color = new Color(255, 255, 0, a);
             
             m_text_display.init();
-            m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
             
-            m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
         }
     
         m_text_display.render();
     
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_symbols);
 
-        final float ics = 25.0f * Graphics.device_scale;
+        final float ics = 25.0f * graphics.device_scale;
     
-        Graphics.prepare();
+        graphics.prepare();
 
         TexCoordsQuad tcoords = new TexCoordsQuad();
         tcoords.tx0 = m_symbol_pause.tx_lo_left;
         tcoords.tx1 = m_symbol_pause.tx_lo_right;
         tcoords.tx2 = m_symbol_pause.tx_up_right;
         tcoords.tx3 = m_symbol_pause.tx_up_left;
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, color_shadow);
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    pause_quad_y,                   tcoords, m_hilite_pause ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale,                    pause_quad_y,                   tcoords, m_hilite_pause ? color_hilite : color_icon);
     
         tcoords.tx0 = m_symbol_undo.tx_lo_left;
         tcoords.tx1 = m_symbol_undo.tx_lo_right;
         tcoords.tx2 = m_symbol_undo.tx_up_right;
         tcoords.tx3 = m_symbol_undo.tx_up_left;
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    undo_quad_y,                    tcoords, m_hilite_undo ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale,                    undo_quad_y,                    tcoords, m_hilite_undo ? color_hilite : color_icon);
 	
         tcoords.tx0 = m_symbol_hint.tx_lo_left;
         tcoords.tx1 = m_symbol_hint.tx_lo_right;
         tcoords.tx2 = m_symbol_hint.tx_up_right;
         tcoords.tx3 = m_symbol_hint.tx_up_left;
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
     
         tcoords.tx0 = m_symbol_solver.tx_lo_left;
         tcoords.tx1 = m_symbol_solver.tx_lo_right;
         tcoords.tx2 = m_symbol_solver.tx_up_right;
         tcoords.tx3 = m_symbol_solver.tx_up_left;
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
-        Graphics.addQuad(ics, 5.0f * Graphics.device_scale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * graphics.device_scale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
 
         tcoords.tx0 = m_symbol_star.tx_lo_left;
         tcoords.tx1 = m_symbol_star.tx_lo_right;
         tcoords.tx2 = m_symbol_star.tx_up_right;
         tcoords.tx3 = m_symbol_star.tx_up_left;
-        Graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.device_scale - shadow_offset_x, undo_quad_y - shadow_offset_y, tcoords, color_shadow);
-        Graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.device_scale, undo_quad_y, tcoords, color_icon);
+        graphics.addQuad(ics, graphics.width - 25.0f * graphics.device_scale - shadow_offset_x, undo_quad_y - shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, graphics.width - 25.0f * graphics.device_scale, undo_quad_y, tcoords, color_icon);
     
-	    Graphics.setStreamSourceFloat2D();
-	    Graphics.renderTriangles();
+	    graphics.setStreamSourceFloat2D();
+	    graphics.renderTriangles();
 
         if (m_tutor_active) {
             //if (1 == m_tutor_index)
@@ -866,18 +868,18 @@ public final class HUD {
                 tcoords.tx3 = new Vector2(0,0);
             
                 Color col = new Color(255, 255, 255, m_tutor_alpha);
-                float sz = 160.0f * Graphics.device_scale;
-                float x = Graphics.half_width - sz / 2.0f;
-                float y = Graphics.half_height - sz / 2.0f;
+                float sz = 160.0f * graphics.device_scale;
+                float x = graphics.half_width - sz / 2.0f;
+                float y = graphics.half_height - sz / 2.0f;
             
-                Graphics.prepare();
-                Graphics.addQuad(sz, x, y, tcoords, col);
-                Graphics.renderTriangles();
+                graphics.prepare();
+                graphics.addQuad(sz, x, y, tcoords, col);
+                graphics.renderTriangles();
             }
         }
     
         if (Level.LevelStateEnum.DeadAnim == Game.level.m_state) {
-            Graphics.prepare();
+            graphics.prepare();
         
 		    Color color = new Color(200, 0, 0, Game.level.dead_alpha);
 		
@@ -886,11 +888,11 @@ public final class HUD {
             tcoords.tx2 = m_symbol_death.tx_up_right;
             tcoords.tx3 = m_symbol_death.tx_up_left;
         
-            float size = Game.level.dead_size * Graphics.device_scale;
-            Graphics.addQuad(size, Graphics.half_width - (size / 2.0f), Graphics.half_height - (size / 2.0f), tcoords, color);
+            float size = Game.level.dead_size * graphics.device_scale;
+            graphics.addQuad(size, graphics.half_width - (size / 2.0f), graphics.half_height - (size / 2.0f), tcoords, color);
         
-            Graphics.setStreamSourceFloat2D();
-            Graphics.renderTriangles();
+            graphics.setStreamSourceFloat2D();
+            graphics.renderTriangles();
         }
 
         glDisable(GL_TEXTURE_2D);
@@ -910,24 +912,24 @@ public final class HUD {
 		
 //		    glVertexPointer(2, GL_FLOAT, 0, verts);
 //		    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-//		    glLineWidth(2.0f * Graphics.device_scale);
+//		    glLineWidth(2.0f * graphics.device_scale);
 //            glEnable(GL_LINE_SMOOTH);
 //		    glDrawArrays(GL_LINES, 0, 2);
 //            glDisable(GL_LINE_SMOOTH);
 //            glLineWidth(1.0f);
 //
 //            Color color_circle = new Color(255, 255, 0, 255);
-//            Graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.5f, color_circle);
+//            graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.5f, color_circle);
 //
 //            color_circle = new Color(255, 0, 0, 255);
-//            Graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.25f, color_circle);
+//            graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.25f, color_circle);
         }
         
         glDisable(GL_BLEND);
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
 
-        Graphics.setProjection3D();
+        graphics.setProjection3D();
     }
 
     public void setHilitePause(boolean hilite) {

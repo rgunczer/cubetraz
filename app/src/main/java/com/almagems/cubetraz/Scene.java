@@ -5,6 +5,8 @@ import static com.almagems.cubetraz.Constants.*;
 
 public abstract class Scene {
 
+    public static Graphics graphics;
+
     protected Vector2 mPosDown;
     protected Vector2 mPosMove;
     protected Vector2 mPosUp;

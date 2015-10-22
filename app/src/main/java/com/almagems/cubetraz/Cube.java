@@ -4,8 +4,8 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class Cube {
 
-    public Color color_current;
-    public Color color;
+    public Color color_current = new Color();
+    public Color color = new Color();
 
     public float tx;
     public float ty;

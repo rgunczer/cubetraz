@@ -82,12 +82,12 @@ public final class Engine {
 
     public static void createGraphicsObject(GL10 gl) {
         //System.out.println("Engine createGraphicsObject...");
-        graphics = new Graphics(activity);
+        graphics = new Graphics(activity, gl);
     }
 
-    public static void initGraphicsObject() {
+    public static void initGraphicsObject(int width, int height) {
         //System.out.println("Engine initGraphicsObject...");
-        graphics.initialSetup();
+        graphics.initialSetup(width, height);
     }
 
     public static void createGameObject() {        

@@ -4,7 +4,9 @@ import static com.almagems.cubetraz.Constants.*;
 
 
 public final class MovingCube {
-        
+
+	public static Graphics graphics;
+
 	private boolean m_done;
     private float m_t;
     private float m_step_t;
@@ -299,7 +301,7 @@ public final class MovingCube {
     }
 
     public void renderCube() {
-        Graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
@@ -312,7 +314,7 @@ public final class MovingCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-            Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = ar_cube_textures[Face_Z_Plus];    
@@ -321,7 +323,7 @@ public final class MovingCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-            Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = ar_cube_textures[Face_Y_Plus];    
@@ -330,7 +332,7 @@ public final class MovingCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
             coords.tx2 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
-            Graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     }
         

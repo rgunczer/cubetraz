@@ -53,6 +53,10 @@ public final class Cubetraz {
 
     public static void init() {
         for (int i = 0; i < MAX_LEVELS; ++i) {
+            ar_levels_easy[i] = new LevelData();
+            ar_levels_normal[i] = new LevelData();
+            ar_levels_hard[i] = new LevelData();
+
             ar_levels_easy[i].reset();
             ar_levels_normal[i].reset();
             ar_levels_hard[i].reset();

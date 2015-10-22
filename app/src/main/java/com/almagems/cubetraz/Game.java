@@ -9,6 +9,8 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class Game {
 
+    public static Graphics graphics;
+
     public static Vector getCubePosAt(CubePos cube_pos) {
         Vector pos = new Vector();
 
@@ -192,10 +194,10 @@ public final class Game {
 
         switch (scene_id) {
             case Scene_Intro:
-//                m_intro = new cIntro();
-//                m_intro.init();
-//
-//                scene = m_intro;
+                intro = new Intro();
+                intro.init();
+
+                scene = intro;
                 break;
 
             case Scene_Menu:
@@ -265,7 +267,7 @@ public final class Game {
                 break;
         }
 
-//        m_scene = scene;
+        m_scene = scene;
     }
 
 
@@ -359,7 +361,7 @@ public final class Game {
     private boolean initialized;
 
 
-    private Graphics graphics;
+
 
 
 	private float elapsedTimeSelMarkerAnim;
@@ -389,6 +391,13 @@ public final class Game {
     public void init() {
         graphics = Engine.graphics;
 
+        HUD.graphics = graphics;
+        Scene.graphics = graphics;
+        MovingCube.graphics = graphics;
+        MoverCube.graphics = graphics;
+        DeadCube.graphics = graphics;
+        Starfield.graphics = graphics;
+
         intro = null;
         menu = null;
         animator = null;
@@ -401,23 +410,13 @@ public final class Game {
         dirty_alpha = DIRTY_ALPHA;
 
 
-//        StatSectionBase.graphics = graphics;
-//        SingleColoredQuad.graphics = graphics;
-//        ColoredQuad.graphics = graphics;
-//
-//
-//        background = new Quad();
 //        loading = new Loading();
-
-
-
 
         initTextures();
         initFonts();
         initFontsBig();
         initNumberFonts();
         initSymbols();
-
 
         loadOptions();
 
@@ -443,7 +442,7 @@ public final class Game {
         //ShowScene(Scene_Stat);
         //ShowScene(Scene_Outro);
 
-        Graphics.warmCache();
+        graphics.warmCache();
 
         Cubetraz.init();
         Cubetraz.load();
@@ -542,7 +541,7 @@ public final class Game {
 //        graphics.fboBackground.unbind();
 //        background.initWithFBOTexture(graphics.fboBackground.getTextureId());
 
-        glViewport(0, 0, (int) Graphics.screenWidth, (int) Graphics.screenHeight);
+        glViewport(0, 0, (int) graphics.screenWidth, (int) graphics.screenHeight);
         glClearColor(0f, 0f, 0f, 1f);
     }
 
@@ -564,9 +563,7 @@ public final class Game {
     }
 
 	public void update() {
-
-
-//            m_scene.update();
+        m_scene.update();
 
 
         graphics.updateViewProjMatrix();
@@ -612,52 +609,49 @@ public final class Game {
         }
     }
 
-    private void updateInPlaying() {
-
-    }
-
 	public void draw() {
-        if (gameState == GameState.Loading) {
-            //loading.draw();
-        } else {
-            // 2d drawing
-            Graphics.setProjectionMatrix2D();
-            Graphics.updateViewProjMatrix();
-
-            glDisable(GL_BLEND);
-            glDepthMask(false);
-            //background.draw();
-            glDepthMask(true);
-
-            // 3d drawing
-            Graphics.setProjectionMatrix3D();
-            Graphics.updateViewProjMatrix();
-
-            glEnable(GL_DEPTH_TEST);
-
-
-
-            // particle system
-            glEnable(GL_BLEND);
-            glDisable(GL_DEPTH_TEST);
-            glBlendFunc(GL_ONE, GL_ONE);
-            //graphics.particleManager.draw();
-
-            // 2d drawing (HUD and Menu)
-            graphics.setProjectionMatrix2D();
-            graphics.updateViewProjMatrix();
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            //hud.draw();
-
-            if (gameState == GameState.Menu) {
-                //menu.draw();
-            } else if (gameState == GameState.Stats) {
-                //stats.draw();
-            } else {
-                graphics.setProjectionMatrix3D();
-                graphics.updateViewProjMatrix();
-            }
-        }
+        m_scene.render();
+//        if (gameState == GameState.Loading) {
+//            //loading.draw();
+//        } else {
+//            // 2d drawing
+//            graphics.setProjectionMatrix2D();
+//            graphics.updateViewProjMatrix();
+//
+//            glDisable(GL_BLEND);
+//            glDepthMask(false);
+//            //background.draw();
+//            glDepthMask(true);
+//
+//            // 3d drawing
+//            graphics.setProjectionMatrix3D();
+//            graphics.updateViewProjMatrix();
+//
+//            glEnable(GL_DEPTH_TEST);
+//
+//
+//
+//            // particle system
+//            glEnable(GL_BLEND);
+//            glDisable(GL_DEPTH_TEST);
+//            glBlendFunc(GL_ONE, GL_ONE);
+//            //graphics.particleManager.draw();
+//
+//            // 2d drawing (HUD and Menu)
+//            graphics.setProjectionMatrix2D();
+//            graphics.updateViewProjMatrix();
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//            //hud.draw();
+//
+//            if (gameState == GameState.Menu) {
+//                //menu.draw();
+//            } else if (gameState == GameState.Stats) {
+//                //stats.draw();
+//            } else {
+//                graphics.setProjectionMatrix3D();
+//                graphics.updateViewProjMatrix();
+//            }
+//        }
 	}
 
 	public void handleTouchPress(float normalizedX, float normalizedY) {
@@ -1496,11 +1490,9 @@ public final class Game {
         };
 
         TexturedQuad pFont;
-
         float x, y, w, h;
-
-        final float tw = 512.0f;    // texture width
-        final float th = 512.0f;    // texture height
+        final float tw = 512.0f; // texture width
+        final float th = 512.0f; // texture height
 
         for (int i = 0; i < arr_size; ++i) {
             x  = a[i].rc.x;
@@ -1849,27 +1841,27 @@ public final class Game {
                                         boolean z_plus,
                                         boolean z_minus) {
         if (z_minus) {
-            Graphics.drawCubeFaceZ_Minus();
+            graphics.drawCubeFaceZ_Minus();
         }
 
         if (z_plus) {
-            Graphics.drawCubeFaceZ_Plus();
+            graphics.drawCubeFaceZ_Plus();
         }
 
         if (x_plus) {
-            Graphics.drawCubeFaceX_Plus();
+            graphics.drawCubeFaceX_Plus();
         }
 
         if (y_minus) {
-            Graphics.drawCubeFaceY_Minus();
+            graphics.drawCubeFaceY_Minus();
         }
 
         if (x_minus) {
-            Graphics.drawCubeFaceX_Minus();
+            graphics.drawCubeFaceX_Minus();
         }
 
         if (y_plus){
-            Graphics.drawCubeFaceY_Plus();
+            graphics.drawCubeFaceY_Plus();
         }
     }
 
@@ -1879,15 +1871,15 @@ public final class Game {
     }
 
     public static void onFingerDown(float x, float y, int finger_count) {
-        m_scene.onFingerDown(x * Graphics.scaleFactor, y * Graphics.scaleFactor, finger_count);
+        m_scene.onFingerDown(x * graphics.scaleFactor, y * graphics.scaleFactor, finger_count);
     }
 
     public static void onFingerUp(float x, float y, int finger_count) {
-        m_scene.onFingerUp(x * Graphics.scaleFactor, y * Graphics.scaleFactor, finger_count);
+        m_scene.onFingerUp(x * graphics.scaleFactor, y * graphics.scaleFactor, finger_count);
     }
 
     public static void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
-        m_scene.onFingerMove(prev_x * Graphics.scaleFactor, prev_y * Graphics.scaleFactor, cur_x * Graphics.scaleFactor, cur_y * Graphics.scaleFactor, finger_count);
+        m_scene.onFingerMove(prev_x * graphics.scaleFactor, prev_y * graphics.scaleFactor, cur_x * graphics.scaleFactor, cur_y * graphics.scaleFactor, finger_count);
     }
 
     public static void onSwipe(SwipeDirEnums type) {
@@ -1944,10 +1936,10 @@ public final class Game {
 
     public static void drawFullScreenQuad(Color color) {
         final float[] verts = {
-            0.0f,              Graphics.height,
+            0.0f,              graphics.height,
             0.0f,              0.0f,
-            Graphics.width,    0.0f,
-            Graphics.width,    Graphics.height
+            graphics.width,    0.0f,
+            graphics.width,    graphics.height
         };
 
         final float[] colors = {

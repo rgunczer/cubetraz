@@ -342,26 +342,26 @@ public final class Outro extends Scene {
     }
 
     public void drawTheCube() {
-        Graphics.prepare();
-        Graphics.setStreamSource();
+        graphics.prepare();
+        graphics.setStreamSource();
 
         Cube cube;
         int size = m_lst_cubes_base.size();
         for (int i = 0; i < size; ++i) {
             cube = m_lst_cubes_base.get(i);
-            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.color_current);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.color_current);
         }
 
         size = m_lst_cubes_level.size();
         for (int i = 0; i < size; ++i) {
             cube = m_lst_cubes_level.get(i);
-            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.color_current);   
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.color_current);   
         }
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
-        Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
+        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
     public void drawText() {
@@ -370,23 +370,23 @@ public final class Outro extends Scene {
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
 
-        Graphics.setProjection2D();
-        Graphics.setModelViewMatrix2D();
+        graphics.setProjection2D();
+        graphics.setModelViewMatrix2D();
 
         int a = (int)m_center_alpha * 255;
 
         glDisable(GL_TEXTURE_2D);
         Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
 
-        Graphics.setStreamSourceFloat2DNoTexture();
-        Graphics.prepare();
-        Graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
-        Graphics.renderTriangles();
+        graphics.setStreamSourceFloat2DNoTexture();
+        graphics.prepare();
+        graphics.addQuad(0.0f, graphics.half_height - 20.0f * graphics.device_scale, graphics.width, 75.0f * graphics.device_scale, color_bg);
+        graphics.renderTriangles();
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_big);
 
-        float scale = 0.75f * Graphics.device_scale;
+        float scale = 0.75f * graphics.device_scale;
         m_ar_text_center[0].setScale(scale, scale);
         m_ar_text_center[1].setScale(scale, scale);
 
@@ -395,24 +395,24 @@ public final class Outro extends Scene {
         Color color = new Color(0, 0, 0, a);
 
         m_text_display.init();
-        m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+        m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
 
-        m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+        m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
         glPushMatrix();
-        glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
+        glTranslatef(graphics.device_scale, graphics.device_scale, 0.0f);
         m_text_display.render();
         glPopMatrix();
 
         color = new Color(255, 255, 0, a);
 
         m_text_display.init();
-        m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+        m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
 
-        m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+        m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
         m_text_display.render();
@@ -427,24 +427,24 @@ public final class Outro extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
 
         if (Game.dirty_alpha > 0) {
-            Graphics.setProjection2D();
-            Graphics.setModelViewMatrix2D();
+            graphics.setProjection2D();
+            graphics.setModelViewMatrix2D();
 
             glDisable(GL_LIGHTING);
             glDepthMask(false); //GL_FALSE);
             glEnable(GL_TEXTURE_2D);
 
             Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
-            Graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
+            graphics.drawFBOTexture(graphics.texture_id_dirty, color_dirty, true);
 
             glDepthMask(true); //GL_TRUE);
             glEnable(GL_LIGHTING);
         }
 
-        Graphics.setStreamSource();
+        graphics.setStreamSource();
 
-        Graphics.setProjection3D();
-        Graphics.setModelViewMatrix3D(m_camera_current);
+        graphics.setProjection3D();
+        graphics.setModelViewMatrix3D(m_camera_current);
 
         //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
         //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
@@ -470,7 +470,7 @@ public final class Outro extends Scene {
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
 
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_player);
 
         if (OutroStateEnum.OutroExplosion == m_state || OutroStateEnum.OutroDone == m_state) {
             glPushMatrix();
@@ -479,18 +479,18 @@ public final class Outro extends Scene {
             glRotatef(m_degree, 0.0f, 1.0f, 0.0f);
             glRotatef(m_degree, 0.0f, 0.0f, 1.0f);
 
-            Graphics.prepare();
-            Graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
-            Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+            graphics.prepare();
+            graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
+            graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glPopMatrix();
         } else {
             glPushMatrix();
             glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
 
-            Graphics.prepare();
-            Graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
-            Graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+            graphics.prepare();
+            graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
+            graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glPopMatrix();
         }
@@ -504,7 +504,7 @@ public final class Outro extends Scene {
             if (true) { //#ifdef DRAW_AXES_CUBE
                 glDisable(GL_TEXTURE_2D);
                 glDisable(GL_LIGHTING);
-                Graphics.drawAxes();
+                graphics.drawAxes();
                 glEnable(GL_LIGHTING);
                 glEnable(GL_TEXTURE_2D);
             } //#endif

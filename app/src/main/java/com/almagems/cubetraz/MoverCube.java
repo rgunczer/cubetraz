@@ -7,6 +7,8 @@ import static com.almagems.cubetraz.Constants.*;
 
 
 public final class MoverCube {
+
+    public static Graphics graphics;
     
     private CubePos m_cube_pos_starting;
     private CubePos m_cube_pos;
@@ -96,7 +98,7 @@ public final class MoverCube {
     }
 
     public void renderCube() {
-        Graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
@@ -109,7 +111,7 @@ public final class MoverCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-            Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = m_ar_cube_symbols[Face_Z_Plus];    
@@ -118,7 +120,7 @@ public final class MoverCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-            Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = m_ar_cube_symbols[Face_Y_Plus];    
@@ -127,7 +129,7 @@ public final class MoverCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
             coords.tx2 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
-            Graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     }
     

@@ -25,8 +25,8 @@ public final class MenuCube {
 	public Color color;
 	public boolean visible;
     
-    public CubePos m_cube_pos;
-    public CubePos m_cube_pos_destination;
+    public CubePos m_cube_pos = new CubePos();
+    public CubePos m_cube_pos_destination = new CubePos();
     
     // ctor    
     public MenuCube() {

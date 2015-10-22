@@ -3,12 +3,12 @@ package com.almagems.cubetraz;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.opengl.GLSurfaceView;
-//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-public final class MainActivity extends Activity { //AppCompatActivity {
+
+public final class MainActivity extends Activity {
 
     private GLSurfaceView glSurfaceView;
     private CubeTrazRenderer renderer;

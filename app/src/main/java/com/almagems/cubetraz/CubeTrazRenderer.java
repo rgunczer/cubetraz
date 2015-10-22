@@ -66,13 +66,13 @@ public final class CubeTrazRenderer implements Renderer {
 
     private void onCreate(GL10 gl, int width, int height, boolean contextLost) {
         Engine.createGraphicsObject(gl);
-        Engine.initGraphicsObject();
+        Engine.initGraphicsObject(width, height);
 
-        gl.glViewport(0, 0, width, height);
-        gl.glClearColor(0f, 0f, 1f, 1f);
+        //gl.glViewport(0, 0, width, height);
+        //gl.glClearColor(0f, 0f, 1f, 1f);
 
         try {
-            //Engine.graphics.loadStartupAssets();
+            Engine.graphics.loadStartupAssets();
         } catch (final Exception ex) {
             Activity activity = (Activity) context;
             activity.runOnUiThread(new Runnable() {
@@ -110,12 +110,12 @@ public final class CubeTrazRenderer implements Renderer {
 		Engine.onSurfaceChanged(width, height);
         surfaceCreated = false;
 
-        gl.glMatrixMode(GL10.GL_PROJECTION);
-        gl.glLoadIdentity();
-        gl.glOrthof(-1f, 1f, -1f, 1f, -1f, 1f);
-
-        gl.glMatrixMode(GL10.GL_MODELVIEW);
-        gl.glLoadIdentity();
+//        gl.glMatrixMode(GL10.GL_PROJECTION);
+//        gl.glLoadIdentity();
+//        gl.glOrthof(-1f, 1f, -1f, 1f, -1f, 1f);
+//
+//        gl.glMatrixMode(GL10.GL_MODELVIEW);
+//        gl.glLoadIdentity();
     }
 
 	@Override
@@ -134,15 +134,15 @@ public final class CubeTrazRenderer implements Renderer {
         }
         frameStartTimeMS = SystemClock.elapsedRealtime();
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glPushMatrix();
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glVertexPointer(3, GL_FLOAT, 0, floatBuffer);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-            glDisableClientState(GL_VERTEX_ARRAY);
-        glPopMatrix();
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//        glPushMatrix();
+//            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//            glEnableClientState(GL_VERTEX_ARRAY);
+//            glVertexPointer(3, GL_FLOAT, 0, floatBuffer);
+//            glDrawArrays(GL_TRIANGLES, 0, 3);
+//            glDisableClientState(GL_VERTEX_ARRAY);
+//        glPopMatrix();
     }
 
 	public void handleTouchPress(float normalizedX, float normalizedY) {

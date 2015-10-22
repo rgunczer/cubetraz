@@ -2,27 +2,218 @@ package com.almagems.cubetraz;
 
 
 import static android.opengl.GLES10.*;
+import static android.opengl.GLU.*;
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
+
 import static android.opengl.Matrix.*;
 import static com.almagems.cubetraz.Constants.*;
 
 import android.content.Context;
+import android.opengl.GLES11;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 
 public final class Graphics {
 
-    public static void updateViewProjMatrix() {
+    public GL10 gl;
+
+    public static int width;
+    public static int height;
+    public static int half_width;
+    public static int half_height;
+    public static float device_scale = 2f;
+
+    // textures
+    public static int texture_id_gray_concrete;
+    public static int texture_id_key;
+    public static int texture_id_fonts;
+    public static int texture_id_fonts_clear;
+    public static int texture_id_level_cubes;
+    public static int texture_id_fonts_big;
+    public static int texture_id_level_cubes_locked;
+    public static int texture_id_numbers;
+    public static int texture_id_player;
+    public static int texture_id_star;
+    public static int texture_id_symbols;
+    public static int texture_id_stat_background;
+    public static int texture_id_credits;
+    public static int texture_id_dirty;
+    public static int texture_id_tutor;
+    private ArrayList<Texture> textures = new ArrayList<Texture>(20);
+
+    public int _vertices_count = 0;
+    public int _vindex = -1;
+    public int _cindex = -1;
+    public int _color_index = -1;
+
+    private float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
+    private float[] _normals = new float[BUF_SIZE * KILOBYTE];
+    private float[] _coords_float = new float[BUF_SIZE * KILOBYTE];
+    private float[] _coords_byte = new float[BUF_SIZE * KILOBYTE];
+    private byte[] _colors = new byte[BUF_SIZE * KILOBYTE];
+
+    public  boolean _blending_enabled = false;
+
+    public float screenWidth;
+    public float screenHeight;
+    public float aspectRatio;
+    public final float referenceScreenWidth = 1080f;
+    public float scaleFactor;
+
+    public Context context;
+
+    private FloatBuffer _vertexBuffer;
+    private ByteBuffer _colorBuffer;
+
+
+    //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
+
+
+
+
+
+
+
+
+
+
+    // ctor
+    public Graphics(Context context, GL10 gl) {
+        System.out.println("Graphics ctor...");
+        this.context = context;
+        this.gl = gl;
+    }
+
+    public  void initialSetup(int width, int height) {
+        Graphics.width = width;
+        Graphics.height = height;
+
+        half_width = width / 2;
+        half_height = height / 2;
+
+        aspectRatio = (float)width / (float)height;
+
+        glViewport(0, 0, width, height);
+
+        //m_menu.SetupCameras(); TODO!
+
+
+//        m_banner_height = banner_height;
+//        m_scaleFactor = scaleFactor;
+//        this.device_type = device_type;
+//
+//        // create packed depth & stencil buffer with same size as the color buffer
+//        glGenRenderbuffersOES(1, &m_depthstencilbuffer);
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_depthstencilbuffer);
+//        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH24_STENCIL8_OES, width, height);
+//
+//        // Create the framebuffer object and attach
+//        // - the color buffer
+//        // - the packed depth & stencil buffer
+//        glGenFramebuffersOES(1, &m_framebuffer);
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
+//
+//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, m_colorbuffer);         // color
+//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer);   // depth
+//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer); // stencil
+//
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+//
+//        GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
+//
+//        if (GL_FRAMEBUFFER_COMPLETE_OES != status) {
+////        printf("\nFailure with framebuffer generation: %d", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
+//
+//            switch (status) {
+//                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
+////                printf("\nIncomplete!!!");
+//                    break;
+//
+//                case GL_FRAMEBUFFER_UNSUPPORTED_OES:
+////                printf("\nUnsupported!!!");
+//                    break;
+//            }
+//        }
+//
+//        int h = m_height - banner_height;
+
+//        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
+//
+//        // make the OpenGL ModelView matrix the default
+//        glMatrixMode(GL_MODELVIEW);
+//
+        //glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        //glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//        // setup material properties
+//        vec4 specular(1.0f, 1.0f, 1.0f, 1.0f);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
+//        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
+//
+//        glEnable(GL_COLOR_MATERIAL);
+
+//        glEnable(GL_CULL_FACE);
+//        glCullFace(GL_BACK);
+//
+//        glEnable(GL_DEPTH_TEST);
+//        glDepthFunc(GL_LEQUAL);
+
+//        // create frame buffer object
+//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+//
+//        glEnableClientState(GL_VERTEX_ARRAY);
+//        glEnableClientState(GL_COLOR_ARRAY);
+//
+//        glGenRenderbuffersOES(1, m_colorbuffer);
+//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
+//
+//        glEnable(GL_CULL_FACE);
+//        //glDisable(GL_CULL_FACE);
+//
+//        glDepthFunc(GL_LESS);
+//        //glDepthMask(true);
+//        glDisable(GL_DITHER);
+//
+//        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        //glBlendFunc(GL_ONE_MINUS_DST_ALPHA,GL_DST_ALPHA);
+//        //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//        //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//        glBlendFunc(GL_ONE, GL_ONE);
+
+        ByteBuffer vbb = ByteBuffer.allocateDirect(_vertices.length * 4);
+        vbb.order(ByteOrder.nativeOrder());
+        _vertexBuffer = vbb.asFloatBuffer();
+
+        _colorBuffer = ByteBuffer.allocateDirect(_colors.length);
+    }
+
+    public void updateBuffers() {
+        _vertexBuffer.put(_vertices);
+        _vertexBuffer.position(0);
+
+        _colorBuffer.put(_colors);
+        _colorBuffer.position(0);
+    }
+
+    public void updateViewProjMatrix() {
 //		multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 //		invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
     }
 
-
-    public static void setProjectionMatrix3D() {
+    public void setProjectionMatrix3D() {
         float eyeZ = 49.0f;
         //float eyeZ = 90.0f;
 
@@ -57,7 +248,7 @@ public final class Graphics {
     */
     }
 
-    public static void setProjectionMatrix2D() {
+    public void setProjectionMatrix2D() {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
@@ -80,12 +271,12 @@ public final class Graphics {
     }
 
 
-    public static void warmCache() {
+    public void warmCache() {
         glEnable(GL_TEXTURE_2D);
 
-        Graphics.prepare();
-        Graphics.setStreamSource();
-        Graphics.addCube(0.0f, 0.0f, 0.0f);
+        prepare();
+        setStreamSource();
+        addCube(0.0f, 0.0f, 0.0f);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -96,55 +287,22 @@ public final class Graphics {
     }
 
 
-    public static void drawQuad() {
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    }
-
-
-    public static void drawCube()
-    {
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
+    public void drawQuad() { glDrawArrays(GL_TRIANGLE_FAN, 0, 4); }
+    public void drawCube() { glDrawArrays(GL_TRIANGLES, 0, 36); }
 
 // draw cube face
-    public static void drawCubeFaceY_Plus()
-    {
+    public void drawCubeFaceY_Plus() {
         glDrawArrays(GL_TRIANGLES, 30, 6);
     }
-    public static void drawCubeFaceY_Minus()
-    {
+    public void drawCubeFaceY_Minus() {
         glDrawArrays(GL_TRIANGLES, 18, 6);
     }
-    public static void drawCubeFaceX_Plus()
-    {
+    public void drawCubeFaceX_Plus()  {
         glDrawArrays(GL_TRIANGLES, 12, 6);
     }
-    public static void drawCubeFaceX_Minus()
-    {
-        glDrawArrays(GL_TRIANGLES, 24, 6);
-    }
-    public static void drawCubeFaceZ_Plus()
-    {
-        glDrawArrays(GL_TRIANGLES, 6, 6);
-    }
-    public static void drawCubeFaceZ_Minus()
-    {
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-
-
-    static float vertices[];
-    static float normals[];
-    static short texture_coordinates[];
-    static byte colors[];
-
-
-    public static int width;
-    public static int height;
-    public static int half_width;
-    public static int half_height;
-
-    public static float device_scale = 1f;
+    public void drawCubeFaceX_Minus() { glDrawArrays(GL_TRIANGLES, 24, 6); }
+    public void drawCubeFaceZ_Plus()  { glDrawArrays(GL_TRIANGLES, 6, 6); }
+    public void drawCubeFaceZ_Minus() { glDrawArrays(GL_TRIANGLES, 0, 6); }
 
     public static Color getColorFromScreen(Vector2 pos) {
 //        int ix = pos.x;
@@ -165,85 +323,54 @@ public final class Graphics {
         return null;
     }
 
+    public  void drawAxes() {
+        final float axis[] = {
+                -100.0f,    0.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // x
+                0.0f, -100.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // y
+                0.0f,    0.0f, -100.0f,        0.0f,    0.0f,    0.0f,    // z
 
-    public static void drawAxes() {
+                0.0f,    0.0f,    0.0f,		100.0f,    0.0f,    0.0f,    // x
+                0.0f,    0.0f,    0.0f,		  0.0f,  100.0f,    0.0f,    // y
+                0.0f,    0.0f,    0.0f,	      0.0f,    0.0f,  100.0f,    // z
+        };
 
+        byte maxColor = (byte)255;
 
+        final byte colors[] = {
+                0, 0, maxColor, maxColor,				0, 0, maxColor, maxColor, // x
+                0, maxColor, 0, maxColor,				0, maxColor, 0, maxColor, // y
+                maxColor, 0, 0, maxColor,				maxColor, 0, 0, maxColor, // z
 
-//        EdgeDrawer edgeDrawer = new EdgeDrawer(2);
-//
-//        float x = 1f;
-//        float y = aspectRatio; // 1f
-//
-//        edgeDrawer.begin();
-//        edgeDrawer.addLine(-x, 0f, 0f, x, 0f, 0f);
-//
-//        edgeDrawer.addLine(0f, -y, 0f, 0f, y, 0f);
-//
-//        setIdentityM(modelMatrix, 0);
-//        multiplyMM(mvpMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0);
-//
-//        singleColorShader.useProgram();
-//        singleColorShader.setUniforms(mvpMatrix, Color.YELLOW);
-//        edgeDrawer.bindData(singleColorShader);
-//        edgeDrawer.draw();
+                0, 0, maxColor, maxColor,				0, 0, maxColor, maxColor, // x
+                0, maxColor, 0, maxColor,				0, maxColor, 0, maxColor, // y
+                maxColor, 0, 0, maxColor,				maxColor, 0, 0, maxColor, // z
+        };
 
+        prepare();
 
+        _vertexBuffer.put(axis);
+        _vertexBuffer.position(0);
 
-        final float axis[] =
-            {
-                    -100.0f,    0.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // x
-                    0.0f, -100.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // y
-                    0.0f,    0.0f, -100.0f,        0.0f,    0.0f,    0.0f,    // z
+        _colorBuffer.put(colors);
+        _colorBuffer.position(0);
 
-                    0.0f,    0.0f,    0.0f,		100.0f,    0.0f,    0.0f,    // x
-                    0.0f,    0.0f,    0.0f,		  0.0f,  100.0f,    0.0f,    // y
-                    0.0f,    0.0f,    0.0f,	      0.0f,    0.0f,  100.0f,    // z
-            };
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        final short colors[] =
-            {
-                    0, 0, 255, 255,				0, 0, 255, 255,	// x
-                    0, 255, 0, 255,				0, 255, 0, 255, // y
-                    255, 0, 0, 255,				255, 0, 0, 255, // z
+        glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+        glLineWidth(3.0f);
 
-                    0, 0, 255, 255,				0, 0, 255, 255, // x
-                    0, 255, 0, 255,				0, 255, 0, 255, // y
-                    255, 0, 0, 255,				255, 0, 0, 255, // z
-            };
+//        float[] model_matrix = new float[16];
+//        GLES11.glGetFloatv(GLES11.GL_MODELVIEW_MATRIX, model_matrix, 0);
 
-//        glDisableClientState(GL_NORMAL_ARRAY);
-//        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-//
-//        glVertexPointer(3, GL_FLOAT, 0, axis);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-//        glLineWidth(3.0f);
-//
-//        glDrawArrays(GL_LINES, 6, 6);
-//
-//        glLineWidth(1.0f);
-//        glDrawArrays(GL_LINES, 0, 6);
+        glDrawArrays(GL_LINES, 6, 6);
+
+        glLineWidth(1.0f);
+        glDrawArrays(GL_LINES, 0, 6);
     }
 
-    // textures
-    public static int texture_id_gray_concrete;
-    public static int texture_id_key;
-    public static int texture_id_fonts;
-    public static int texture_id_fonts_clear;
-    public static int texture_id_level_cubes;
-    public static int texture_id_fonts_big;
-    public static int texture_id_level_cubes_locked;
-    public static int texture_id_numbers;
-    public static int texture_id_player;
-    public static int texture_id_star;
-    public static int texture_id_symbols;
-    public static int texture_id_stat_background;
-    public static int texture_id_credits;
-    public static int texture_id_dirty;
-    public static int texture_id_tutor;
-
-
-    public static void drawFBOTexture(int texture_id, Color color, boolean magic) {
+    public  void drawFBOTexture(int texture_id, Color color, boolean magic) {
 //        const GLfloat verts[] =
 //            {
 //                    0.0f,               engine->m_height,
@@ -283,284 +410,120 @@ public final class Graphics {
 //        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-
-    public static void setModelViewMatrix2D() {
+    public  void setModelViewMatrix2D() {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
     }
 
-    public static void setProjection2D() {
+    public  void setProjection2D() {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrthof(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     }
 
-
-    public static float m_aspectRatio = 1.0f;
-
-
-    public static void setModelViewMatrix3D(final Camera camera) {
-        //mat4 matLookAt = mat4::LookAt(camera.eye, camera.target, vec3(0.0f, 1.0f, 0.0f));
-
+    public  void setModelViewMatrix3D(final Camera camera) {
         glMatrixMode(GL_MODELVIEW);
-        //glLoadMatrixf(matLookAt.Pointer());
+        glLoadIdentity();
+
+//        float[] model_matrix = new float[16];
+//        GLES11.glGetFloatv(GLES11.GL_MODELVIEW_MATRIX, model_matrix, 0);
+
+        gluLookAt(gl,
+                camera.eye.x, camera.eye.y, camera.eye.z,
+                camera.target.x, camera.target.y, camera.target.z,
+                0f, 1f, 0f);
+
+//        GLES11.glGetFloatv(GLES11.GL_MODELVIEW_MATRIX, model_matrix, 0);
     }
 
-
-    public static void setProjection3D() {
-        final float zNear = 1.0f;
+    public  void setProjection3D() {
+        final float zNear = 0.1f;
         final float zFar = 1000.0f;
         final float fieldOfView = 30.0f;
         final float size = zNear * (float)Math.tan(( Math.toRadians(fieldOfView) / 2.0f ));
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glFrustumf(-size, size, -size / m_aspectRatio, size / m_aspectRatio, zNear, zFar);
+        glFrustumf(-size, size, -size / aspectRatio, size / aspectRatio, zNear, zFar);
     }
 
-
-    public static int _vertices_count = 0;
-    public static int _vindex = -1;
-    public static int _cindex = -1;
-    public static int _color_index = -1;
-
-
-    private static float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
-    private static float[] _normals = new float[BUF_SIZE * KILOBYTE];
-    private static float[] _coords_float = new float[BUF_SIZE * KILOBYTE];
-    private static float[] _coords_byte = new float[BUF_SIZE * KILOBYTE];
-    private static float[] _colors_ubyte = new float[BUF_SIZE * KILOBYTE];
-
-    public static boolean _blending_enabled = false;
-
-
-
-    public static void addCubeWithColor(float tx, float ty, float tz, Color color) {
+    public  void addCubeWithColor(float tx, float ty, float tz, Color color) {
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
     }
 
-
-
-
-
-
-
-
-    public static void enableBlending() {
+    public  void enableBlending() {
         if (!_blending_enabled) {
             glEnable(GL_BLEND);
             _blending_enabled = true;
         }
     }
 
-    public static void disableBlending() {
+    public  void disableBlending() {
         if (_blending_enabled) {
             glDisable(GL_BLEND);
             _blending_enabled = false;
         }
     }
 
-
-
-
-    public static void renderPoints() {
+    public  void renderPoints() {
         glDrawArrays(GL_POINTS, 0, _vertices_count);
     }
 
-    public static void addCube(float tx, float ty, float tz) {
-        //const Color color(255, 255, 255, 255);
-        //AddCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
+    public  void addCube(float tx, float ty, float tz) {
+        final Color color = new Color(255, 255, 255, 255);
+        addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
     }
 
-    public static void prepare() {
+    public  void prepare() {
         _vertices_count = 0;
         _vindex = -1;
         _cindex = -1;
         _color_index = -1;
     }
 
-    public static void setStreamSource() {
-//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
+    public  void setStreamSource() {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+
+        glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
 //        glNormalPointer(GL_FLOAT, 0, _normals);
 //        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
 
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
-
-
-
-
-
-
-    public static float screenWidth;
-    public static float screenHeight;
-    public static float aspectRatio;
-    public static final float referenceScreenWidth = 1080f;
-    public static float scaleFactor;
-
-	public static Context context;
-
-    //public final FBO fboBackground;
-
-    //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
-    private ArrayList<Texture> textures = new ArrayList<Texture>(20);
-	
-	// matrices
-
-		
-	// textures
-
-
-    // ctor
-	public Graphics(Context context) {
-        //System.out.println("Visuals ctor...");
-		Graphics.context = context;
-        //fboBackground = new FBO();
-	}
-
-    public void resizeGLView(int width_, int height_) {
-        width = width_;
-        height = height_;
-
-        half_width = width / 2;
-        half_height = height / 2;
-
-        m_aspectRatio = (float)width / (float)height;
-        glViewport(0, 0, width, height);
-
-        //m_menu.SetupCameras(); TODO!
-    }
-
-    public static void initialSetup() {
-//        m_banner_height = banner_height;
-//        m_scaleFactor = scaleFactor;
-//        this.device_type = device_type;
-//
-//        // create packed depth & stencil buffer with same size as the color buffer
-//        glGenRenderbuffersOES(1, &m_depthstencilbuffer);
-//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_depthstencilbuffer);
-//        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH24_STENCIL8_OES, width, height);
-//
-//        // Create the framebuffer object and attach
-//        // - the color buffer
-//        // - the packed depth & stencil buffer
-//        glGenFramebuffersOES(1, &m_framebuffer);
-//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
-//
-//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, m_colorbuffer);         // color
-//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer);   // depth
-//        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, m_depthstencilbuffer); // stencil
-//
-//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-//
-//        GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
-//
-//        if (GL_FRAMEBUFFER_COMPLETE_OES != status) {
-////        printf("\nFailure with framebuffer generation: %d", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
-//
-//            switch (status) {
-//                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
-////                printf("\nIncomplete!!!");
-//                    break;
-//
-//                case GL_FRAMEBUFFER_UNSUPPORTED_OES:
-////                printf("\nUnsupported!!!");
-//                    break;
-//            }
-//        }
-//
-//        m_width = width;
-//        m_height = height;
-//
-//        m_half_width = m_width / 2;
-//        m_half_height = m_height / 2;
-//
-//        int h = m_height - banner_height;
-////	m_aspectRatio = (float)m_width / (float)m_height;
-//        m_aspectRatio = (float)m_width / (float)h;
-//
-//        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
-//
-////    glViewport(0, 0, width, height);
-//        glViewport(0, 0, width, h);
-//
-//        // make the OpenGL ModelView matrix the default
-//        glMatrixMode(GL_MODELVIEW);
-//
-////  glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-////  glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//        // setup material properties
-//        vec4 specular(1.0f, 1.0f, 1.0f, 1.0f);
-//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
-//        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
-//
-//        glEnable(GL_COLOR_MATERIAL);
-//
-//        glEnable(GL_CULL_FACE);
-//        glCullFace(GL_BACK);
-//
-//        glEnable(GL_DEPTH_TEST);
-//        glDepthFunc(GL_LEQUAL);
-//
-//        // create frame buffer object
-//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
-//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-//
-//        glEnableClientState(GL_VERTEX_ARRAY);
-//        glEnableClientState(GL_COLOR_ARRAY);
-//
-//
-//        glGenRenderbuffersOES(1, m_colorbuffer);
-//        glBindRenderbufferOES(GL_RENDERBUFFER_OES, m_colorbuffer);
-//
-//
-//
-//
-//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-//        //glClearColor(1.0f, 0.3f, 0.3f, 0.0f);
-//        //glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
-//
-//        glEnable(GL_CULL_FACE);
-//        //glDisable(GL_CULL_FACE);
-//
-//        glDepthFunc(GL_LESS);
-//        //glDepthMask(true);
-//        glDisable(GL_DITHER);
-//
-//        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//        //glBlendFunc(GL_ONE_MINUS_DST_ALPHA,GL_DST_ALPHA);
-//        //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-//        //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//        glBlendFunc(GL_ONE, GL_ONE);
+        //glEnableClientState(GL_NORMAL_ARRAY);
+        //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
     public void loadStartupAssets() throws Exception {
-        //System.out.println("Load startup Assets...");
+        System.out.println("Load startup Assets...");
 
-        // shader
-        //BaseShader.graphics = this;
-        //textureShader = new TextureShader();
-        //singleColorShader = new SingleColorShader();
-
-        // texture
-        //textureLoading = loadTexture(R.drawable.almagems_android_loading);
+        // textures
+        texture_id_gray_concrete = loadTexture(R.drawable.grey_concrete128_stroke);
+        texture_id_key = loadTexture(R.drawable.key);
+        texture_id_fonts = loadTexture(R.drawable.fonts);
+        texture_id_fonts_clear = loadTexture(R.drawable.fonts_clear);
+        texture_id_level_cubes = loadTexture(R.drawable.level_cube);
+        texture_id_fonts_big = loadTexture(R.drawable.fonts_big);
+        texture_id_level_cubes_locked = loadTexture(R.drawable.level_cube_locked);
+        texture_id_numbers = loadTexture(R.drawable.level_numbers);
+        texture_id_player = loadTexture(R.drawable.player);
+        texture_id_star = loadTexture(R.drawable.star);
+        texture_id_symbols = loadTexture(R.drawable.symbols);
+        texture_id_stat_background = loadTexture(R.drawable.stat_background);
+        texture_id_credits = loadTexture(R.drawable.credits);
+        texture_id_dirty = loadTexture(R.drawable.dirty);
+        texture_id_tutor = loadTexture(R.drawable.tutor_swipe);
     }
 
-    public static int loadTexture(String fileName) {
+    public  int loadTexture(String fileName) {
         // todo
         return 0;
     }
 
     private int loadTexture(int resourceId) {
-        //Texture texture = TextureHelper.loadTexture(context, resourceId);
-        //textures.add(texture);
-        //return texture.id;
-        return 0;
+        Texture texture = TextureHelper.loadTexture(context, resourceId);
+        textures.add(texture);
+        return texture.id;
     }
 
     private int loadTextureAndJson(int textureResourceId, int jsonResourceId) {
@@ -767,7 +730,7 @@ public final class Graphics {
     public void loadFonts() {
     }
 
-    public static int createTexture(int w, int h) {
+    public  int createTexture(int w, int h) {
         int[] temp = new int[1];
         glGenTextures(1, temp, 0);
 
@@ -785,17 +748,17 @@ public final class Graphics {
     }
 
 
-    public static void prepareFrame() {
+    public  void prepareFrame() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     public void onSurfaceChanged(int width, int height) {
-        glViewport(0, 0, width, height);
+        //glViewport(0, 0, width, height);
 
-        Graphics.screenWidth = width;
-        Graphics.screenHeight = height;
-        Graphics.aspectRatio = width > height ? (float)width / (float)height : (float)height / (float)width;
-        Graphics.scaleFactor = Graphics.screenWidth / Graphics.referenceScreenWidth;
+//        screenWidth = width;
+//        screenHeight = height;
+//        aspectRatio = width > height ? (float)width / (float)height : (float)height / (float)width;
+//        scaleFactor = screenWidth / referenceScreenWidth;
 
 //        ParticleShader.pointSize = (float)width * 0.12f;
 //
@@ -866,7 +829,7 @@ public final class Graphics {
 
 
 
-//    static inline void DumpVerticesBuffer(int count)
+//     inline void DumpVerticesBuffer(int count)
 //    {
 //		printf("\nDumpVerticesBuffer: %d", count);
 //
@@ -876,7 +839,7 @@ public final class Graphics {
 //        }
 //    }
 //
-//    static inline void DumpNormalsBuffer(int count)
+//     inline void DumpNormalsBuffer(int count)
 //    {
 //		printf("\nDumpNormalsBuffer: %d", count);
 //
@@ -886,7 +849,7 @@ public final class Graphics {
 //        }
 //    }
 //
-//	static inline void DumpCoordsFloatBuffer(int count)
+//	 inline void DumpCoordsFloatBuffer(int count)
 //	{
 //		printf("\nDumpCoordsFloatBuffer: %d", count);
 //
@@ -896,7 +859,7 @@ public final class Graphics {
 //        }
 //	}
 //
-//	static inline void DumpCoordsByteBuffer(int count)
+//	 inline void DumpCoordsByteBuffer(int count)
 //	{
 //		printf("\nDumpCoordsByteBuffer: %d", count);
 //
@@ -906,72 +869,72 @@ public final class Graphics {
 //        }
 //	}
 //
-//	static inline void DumpColorsBuffer(int count)
+//	 inline void DumpColorsBuffer(int count)
 //	{
 //		printf("\nDumpColorsBuffer: %d", count);
 //
 //        for (int i = 0; i < count*4; i+=4)
 //        {
-//            printf("\nr:%d, g:%d, b:%d, a:%d", _colors_ubyte[i], _colors_ubyte[i+1], _colors_ubyte[i+2], _colors_ubyte[i+3]);
+//            printf("\nr:%d, g:%d, b:%d, a:%d", _colors[i], _colors[i+1], _colors[i+2], _colors[i+3]);
 //        }
 //	}
 
-    public static void setStreamSourceOld() {
+    public  void setStreamSourceOld() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
 //        glNormalPointer(GL_FLOAT, 0, _normals);
 //        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
     }
 
-    public static void setStreamSourceOnlyVerticeAndColor() {
+    public  void setStreamSourceOnlyVerticeAndColor() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    public static void setStreamSourceFloatAndColor() {
+    public  void setStreamSourceFloatAndColor() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
 //        glNormalPointer(GL_FLOAT, 0, _normals);
 //        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
     }
 
-    public static void setStreamSourceFloat() {
+    public  void setStreamSourceFloat() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
 //        glNormalPointer(GL_FLOAT, 0, _normals);
 //        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
     }
 
-    public static void setStreamSourceFloat2D() {
+    public  void setStreamSourceFloat2D() {
 //        glVertexPointer(2, GL_FLOAT, 0, _vertices);
 //        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    public static void setStreamSourceFloat2DNoTexture() {
+    public  void setStreamSourceFloat2DNoTexture() {
 //        glVertexPointer(2, GL_FLOAT, 0, _vertices);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors_ubyte);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    public static void renderTriangles() {
+    public  void renderTriangles() {
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
     }
 
-    public static void renderTriangles(float tx, float ty, float tz) {
+    public  void renderTriangles(float tx, float ty, float tz) {
         glPushMatrix();
         glTranslatef(tx, ty, tz);
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
         glPopMatrix();
     }
 
-    public static void addCubeSize(float tx, float ty, float tz, float size, Color color) {
+    public  void addCubeSize(float tx, float ty, float tz, float size, Color color) {
         //printf("\nColor: %d %d %d %d", color.r, color.g, color.b, color.a);
 
         float xp = size + tx;
@@ -1160,60 +1123,60 @@ public final class Graphics {
         int c = _color_index;
 
         // x-plus
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
         // x-minus
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
 
         // y-plus
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
         // y-minus
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
 
         // z-plus
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
         // z-minus
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
         _color_index = c;
 
@@ -1226,7 +1189,7 @@ public final class Graphics {
     }
 
 
-    public static void addQuad(float x, float y, float w, float h, Color color) {
+    public  void addQuad(float x, float y, float w, float h, Color color) {
         int i = _vindex;
 
         // vertices
@@ -1242,20 +1205,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
         _color_index = c;
 
         _vertices_count += 6;
     }
 
 
-    public static void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
+    public  void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
         int i = _vindex;
 
         _vertices[++i] = tx;			_vertices[++i] = ty;
@@ -1284,7 +1247,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
+    public  void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
         int i = _vindex;
 
         // vertices
@@ -1312,19 +1275,19 @@ public final class Graphics {
         _cindex = k;
 
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; _colors_ubyte[++c] = color.g; _colors_ubyte[++c] = color.b; _colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addPoint(float x, float y, float z) {
+    public  void addPoint(float x, float y, float z) {
         int i = _vindex;
 
         // z-minus
@@ -1337,7 +1300,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public static void addPoint(Vector pos, Color color) {
+    public  void addPoint(Vector pos, Color color) {
         int i = _vindex;
 
         _vertices[++i] = pos.x;
@@ -1348,17 +1311,17 @@ public final class Graphics {
 
         int c = _color_index;
 
-        _colors_ubyte[++c] = color.r;
-        _colors_ubyte[++c] = color.g;
-        _colors_ubyte[++c] = color.b;
-        _colors_ubyte[++c] = color.a;
+        _colors[++c] = (byte)color.R;
+        _colors[++c] = (byte)color.G;
+        _colors[++c] = (byte)color.B;
+        _colors[++c] = (byte)color.A;
 
         _color_index = c;
 
         ++_vertices_count;
     }
 
-    public static void addPoint2D(float x, float y) {
+    public  void addPoint2D(float x, float y) {
         int i = _vindex;
 
         // z-minus
@@ -1370,7 +1333,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public static void addCubeFace_X_Plus(float tx, float ty, float tz) {
+    public  void addCubeFace_X_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1410,7 +1373,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Minus(float tx, float ty, float tz) {
+    public  void addCubeFace_X_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1450,7 +1413,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Plus(float tx, float ty, float tz) {
+    public  void addCubeFace_Y_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1498,7 +1461,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Minus(float tx, float ty, float tz) {
+    public  void addCubeFace_Y_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1537,7 +1500,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Plus(float tx, float ty, float tz) {
+    public  void addCubeFace_Z_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1576,7 +1539,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Minus(float tx, float ty, float tz) {
+    public  void addCubeFace_Z_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1615,7 +1578,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public  void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1666,7 +1629,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public  void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1716,7 +1679,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public  void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1766,7 +1729,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public  void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1816,7 +1779,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public  void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1867,7 +1830,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public  void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1914,7 +1877,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public  void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1952,20 +1915,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public  void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2004,20 +1967,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public  void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2057,20 +2020,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public  void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2109,20 +2072,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public  void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2161,20 +2124,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public  void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2211,20 +2174,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
+    public  void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2263,20 +2226,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
+    public  void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2315,20 +2278,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
+    public  void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2374,20 +2337,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
+    public  void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2425,20 +2388,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
+    public  void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2476,20 +2439,20 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
+    public  void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2527,13 +2490,13 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
-        _colors_ubyte[++c] = color.r; 	_colors_ubyte[++c] = color.g; 	_colors_ubyte[++c] = color.b; 	_colors_ubyte[++c] = color.a;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
 
         _color_index = c;
 

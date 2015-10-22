@@ -174,12 +174,12 @@ public final class Statistics extends Scene {
         m_text_tap.init("TAP TO CONTINUE", true);
 
         // pre calc y positions
-        m_stars_y = Graphics.height * 0.75f;
-        m_rating_y = Graphics.height * 0.5f;
+        m_stars_y = graphics.height * 0.75f;
+        m_rating_y = graphics.height * 0.5f;
 
-        m_title_y = Graphics.height * 0.33f;
-        m_moves_y = Graphics.height * 0.2f;
-        m_tap_y = Graphics.height * 0.017f;
+        m_title_y = graphics.height * 0.33f;
+        m_moves_y = graphics.height * 0.2f;
+        m_tap_y = graphics.height * 0.017f;
     }
 
     public void updateFallingCubes() {
@@ -208,7 +208,7 @@ public final class Statistics extends Scene {
 
                 if (StatisticsStateEnum.StatNone != m_state_next) {
                     m_pulse += 0.3f;
-                    m_text_scale = (float)( Math.sin(m_pulse) / 5.0f) * Graphics.device_scale;
+                    m_text_scale = (float)( Math.sin(m_pulse) / 5.0f) * graphics.device_scale;
 
                     //printf("\nPulse: %f, sinf(m_pulse): %f, text_scale: %f", m_pulse, sinf(m_pulse), m_text_scale);
 
@@ -327,15 +327,15 @@ public final class Statistics extends Scene {
     }
 
     public void drawFallingCubes() {
-        Graphics.setProjection3D();
-        Graphics.setModelViewMatrix3D(m_camera);
+        graphics.setProjection3D();
+        graphics.setModelViewMatrix3D(m_camera);
         //const vec4 lightPosition(-100.0f, 300.0f, 900.0f, 1.0f);
         //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
 
-//        glNormalPointer(GL_FLOAT, 0, Graphics.normals);
-//        glVertexPointer(3, GL_FLOAT, 0, Graphics.vertices);
-//        glTexCoordPointer(2, GL_SHORT, 0, Graphics.texture_coordinates);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, Graphics.colors);
+//        glNormalPointer(GL_FLOAT, 0, graphics.normals);
+//        glVertexPointer(3, GL_FLOAT, 0, graphics.vertices);
+//        glTexCoordPointer(2, GL_SHORT, 0, graphics.texture_coordinates);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, graphics.colors);
 
         glPushMatrix();
         glTranslatef(0.0f, 0.0f, 10.0f);
@@ -360,7 +360,7 @@ public final class Statistics extends Scene {
     }
 
     public void drawBackground() {
-        float dim = Math.max(Graphics.width, Graphics.height) * 1.25f;
+        float dim = Math.max(graphics.width, graphics.height) * 1.25f;
         float q = dim / 2.0f;
 
         float vertices[] =
@@ -394,7 +394,7 @@ public final class Statistics extends Scene {
 //        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
 
         glPushMatrix();
-        glTranslatef(Graphics.half_width, Graphics.half_height, 0.0f);
+        glTranslatef(graphics.half_width, graphics.half_height, 0.0f);
         glRotatef(m_background_rot_degree, 0.0f, 0.0f, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         glPopMatrix();
@@ -408,10 +408,10 @@ public final class Statistics extends Scene {
         m_text_display.init();
 
         if (m_DrawTitle) {
-            scale = Graphics.device_scale + m_text_scales[0];
-            m_text_title.setScale(scale + (0.3f * Graphics.device_scale), scale + (0.6f * Graphics.device_scale));
+            scale = graphics.device_scale + m_text_scales[0];
+            m_text_title.setScale(scale + (0.3f * graphics.device_scale), scale + (0.6f * graphics.device_scale));
 
-            x = Graphics.half_width - m_text_title.getHalfWidth();
+            x = graphics.half_width - m_text_title.getHalfWidth();
             y = m_rating_y - m_text_title.getHalfHeight();
 
             m_text_title.emitt(x, y, color);
@@ -421,20 +421,20 @@ public final class Statistics extends Scene {
 
         if (m_DrawMoves) {
             // middle
-            scale = Graphics.device_scale * 0.9f;
-            m_text_middle.setScale(scale, scale + (0.2f * Graphics.device_scale));
+            scale = graphics.device_scale * 0.9f;
+            m_text_middle.setScale(scale, scale + (0.2f * graphics.device_scale));
 
-            x = Graphics.half_width - m_text_middle.getHalfWidth();
+            x = graphics.half_width - m_text_middle.getHalfWidth();
             y = m_title_y - m_text_middle.getHalfHeight();
 
             m_text_middle.emitt(x, y, color);
             m_text_display.m_vertex_count += m_text_middle.getVertexCount();
 
             // moves
-            scale = Graphics.device_scale + m_text_scales[2] - (0.25f * Graphics.device_scale);
-            m_text_moves.setScale(scale + (0.1f * Graphics.device_scale), scale + (0.1f * Graphics.device_scale));
+            scale = graphics.device_scale + m_text_scales[2] - (0.25f * graphics.device_scale);
+            m_text_moves.setScale(scale + (0.1f * graphics.device_scale), scale + (0.1f * graphics.device_scale));
 
-            x = Graphics.half_width - m_text_moves.getHalfWidth();
+            x = graphics.half_width - m_text_moves.getHalfWidth();
             y = m_moves_y - m_text_moves.getHalfHeight();
 
             m_text_moves.emitt(x, y, color);
@@ -442,10 +442,10 @@ public final class Statistics extends Scene {
         }
 
         if (m_DrawTap) {
-            scale = Graphics.device_scale * 0.25f;
-            m_text_tap.setScale(scale + (0.3f * Graphics.device_scale), scale + (0.3f * Graphics.device_scale));
+            scale = graphics.device_scale * 0.25f;
+            m_text_tap.setScale(scale + (0.3f * graphics.device_scale), scale + (0.3f * graphics.device_scale));
 
-            x = Graphics.half_width - m_text_tap.getHalfWidth();
+            x = graphics.half_width - m_text_tap.getHalfWidth();
             y = m_tap_y;
 
             m_text_tap.emitt(x, y, color);
@@ -497,12 +497,12 @@ public final class Statistics extends Scene {
 //        glTexCoordPointer(2, GL_SHORT, 0, coords);
 //        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors_red);
 
-        float s = Graphics.width * 0.14f;
-        float w = Graphics.width * 0.2f;
+        float s = graphics.width * 0.14f;
+        float w = graphics.width * 0.2f;
         float half_w = w / 2.0f;
-        float x = Graphics.half_width - ((w * m_star_count) / 2.0f);
+        float x = graphics.half_width - ((w * m_star_count) / 2.0f);
         float y = m_stars_y;
-        float raise = 3.0f * Graphics.device_scale;
+        float raise = 3.0f * graphics.device_scale;
 
         for (int i = 0; i < m_star_count; ++i) {
             glPushMatrix();
@@ -539,16 +539,16 @@ public final class Statistics extends Scene {
         glDisable(GL_LIGHT0);
         glDisable(GL_BLEND);
 
-        Graphics.setProjection2D();
-        Graphics.setModelViewMatrix2D();
+        graphics.setProjection2D();
+        graphics.setModelViewMatrix2D();
 
         Color color = new Color(255,255,255,255);
-        Graphics.drawFBOTexture(Game.m_fbo.m_TextureId, color, true);
+        graphics.drawFBOTexture(Game.m_fbo.m_TextureId, color, true);
 
         glEnable(GL_LIGHTING);
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnable(GL_LIGHT0);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
         drawFallingCubes();
         glDisable(GL_LIGHTING);
         glDisable(GL_LIGHT0);
@@ -557,20 +557,20 @@ public final class Statistics extends Scene {
 
         glEnable(GL_BLEND);
 
-        Graphics.setProjection2D();
-        Graphics.setModelViewMatrix2D();
+        graphics.setProjection2D();
+        graphics.setModelViewMatrix2D();
 
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_stat_background);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_stat_background);
         drawBackground();
 
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
+        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_big);
 
         color = new Color(0, 0, 0, 225);
         drawText(color);
 
         if (m_text_display.m_vertex_count > 0) {
             glPushMatrix();
-            glTranslatef(-2.0f * Graphics.device_scale, -2.0f * Graphics.device_scale, 0.0f);
+            glTranslatef(-2.0f * graphics.device_scale, -2.0f * graphics.device_scale, 0.0f);
             glDrawArrays(GL_TRIANGLES, 0, m_text_display.m_vertex_count);
             glPopMatrix();
         }
@@ -585,7 +585,7 @@ public final class Statistics extends Scene {
         }
 
         if (m_DrawStars) {
-            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_star);
+            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_star);
             drawStars();
         }
     }

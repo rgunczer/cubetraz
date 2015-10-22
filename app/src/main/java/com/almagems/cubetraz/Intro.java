@@ -18,11 +18,11 @@ public final class Intro extends Scene {
     }
 
     private IntroState m_state;
-    private Starfield m_starfield;
+    private Starfield m_starfield = new Starfield();
 
-    private Camera m_camera_begin;
-    private Camera m_camera_end;
-    private Camera m_camera_current;
+    private Camera m_camera_begin = new Camera();
+    private Camera m_camera_end = new Camera();
+    private Camera m_camera_current = new Camera();
 
     private float m_t_camera;
 
@@ -35,8 +35,8 @@ public final class Intro extends Scene {
     private float m_offset_y;
     private float m_stars_alpha;
 
-    private ArrayList<Cube> m_list_cubes_base;
-    private ArrayList<Cube> m_list_cubes_face;
+    private ArrayList<Cube> m_list_cubes_base = new ArrayList<>();
+    private ArrayList<Cube> m_list_cubes_face = new ArrayList<>();
 
     private int m_dirty_alpha;
     private int m_dirty_alpha_step;
@@ -59,11 +59,11 @@ public final class Intro extends Scene {
         m_camera_end.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
         m_camera_end.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        m_camera_begin.eye = m_camera_begin.eye.scale(Graphics.aspectRatio);
-        m_camera_end.eye = m_camera_end.eye.scale(Graphics.aspectRatio);
+        m_camera_begin.eye = m_camera_begin.eye.scale(graphics.aspectRatio);
+        m_camera_end.eye = m_camera_end.eye.scale(graphics.aspectRatio);
 
-        m_camera_current.eye = m_camera_begin.eye;
-        m_camera_current.target = m_camera_begin.target;
+        m_camera_current.eye.init(m_camera_begin.eye);
+        m_camera_current.target.init(m_camera_begin.target);
     }
 
     public void init() {
@@ -291,6 +291,8 @@ public final class Intro extends Scene {
 
     @Override
     public void update() {
+        //System.out.println("Intro.update...");
+
         if (m_state != IntroState.AppearStarfield) {
             ++m_counter;
         }
@@ -623,24 +625,30 @@ public final class Intro extends Scene {
 
     @Override
     public void render() {
-        Graphics.setProjection2D();
-        Graphics.setModelViewMatrix2D();
+        //System.out.println("Intro.render...");
 
-        glEnable(GL_BLEND);
-        glDisable(GL_LIGHTING);
-        glDepthMask(false); //GL_FALSE);
-        glEnable(GL_TEXTURE_2D);
-
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-
-        Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
-        Graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
+//        graphics.setProjection2D();
+//        graphics.setModelViewMatrix2D();
+//
+//        glEnable(GL_BLEND);
+//        glDisable(GL_LIGHTING);
+//        glDepthMask(false); //GL_FALSE);
+//        glEnable(GL_TEXTURE_2D);
+//
+//        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+//        glDisableClientState(GL_NORMAL_ARRAY);
+//
+//        Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
+//        graphics.drawFBOTexture(graphics.texture_id_dirty, color_dirty, true);
 
         glDepthMask(true); //GL_TRUE);
 
-        Graphics.setProjection3D();
-        Graphics.setModelViewMatrix3D(m_camera_current);
+//        graphics.setProjection2D();
+//        glMatrixMode(GL_MODELVIEW);
+//        glLoadIdentity();
+        graphics.setProjection3D();
+        graphics.setModelViewMatrix3D(m_camera_current);
+
 
         //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
         //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
@@ -653,73 +661,78 @@ public final class Intro extends Scene {
 
         glDepthMask(false); //GL_FALSE);
 
-        Graphics.setStreamSource();
 
-        Graphics.enableBlending();
-        glEnable(GL_POINT_SMOOTH);
+        graphics.prepare();
+        graphics.setStreamSource();
+
+        //graphics.enableBlending();
+        //glEnable(GL_POINT_SMOOTH);
         m_starfield.render();
-        glDisable(GL_POINT_SMOOTH);
+        //glDisable(GL_POINT_SMOOTH);
 
-        Graphics.disableBlending();
+        //graphics.disableBlending();
 
-        glEnable(GL_LIGHTING);
+        //graphics.drawAxes();
 
-        glDepthMask(true); //GL_TRUE);
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
-
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        Color color = Game.getBaseColor();
-
-        Graphics.prepare();
-        Graphics.addCube(0.0f, 0.0f, 0.0f);
-    
-        int size;
-        Cube cube;
-        
-        size = m_list_cubes_base.size();
-        for (int i = 0; i < size; ++i) {
-            cube = m_list_cubes_base.get(i);
-            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
-        }
-        
-        int count_base = Graphics._vertices_count - 36;
-
-        color = Game.getFaceColor(1f);
-        
-        size = m_list_cubes_face.size(); 
-        for (int i = 0; i < size; ++i) {
-            cube = m_list_cubes_face.get(i);
-            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
-        }
-        
-        int count_face = Graphics._vertices_count - count_base - 36;
-
-        glPushMatrix();
-        glTranslatef(0.0f, m_offset_y, 0.0f);
-        glRotatef(m_degree, 1.0f, 0.0f, 0.0f);
-        glRotatef(m_degree, 0.0f, 1.0f, 0.0f);
-        glRotatef(m_degree, 0.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        if (count_base > 0 || count_face > 0) {
-            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
-
-            glPushMatrix();
-            glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
-
-            glDrawArrays(GL_TRIANGLES, 36, count_base);
-
-            if (count_face > 0) {
-                glDrawArrays(GL_TRIANGLES, count_base + 36, count_face);
-            }
-
-            glPopMatrix();
-        }
-        glPopMatrix();
+//        glEnable(GL_LIGHTING);
+//
+//        glDepthMask(true); //GL_TRUE);
+//
+//        glEnable(GL_TEXTURE_2D);
+//        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_player);
+//
+//        glEnableClientState(GL_NORMAL_ARRAY);
+//        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+//
+//        Color color = Game.getBaseColor();
+//
+//        graphics.prepare();
+//        graphics.addCube(0.0f, 0.0f, 0.0f);
+//
+//        int size;
+//        Cube cube;
+//
+//        size = m_list_cubes_base.size();
+//        for (int i = 0; i < size; ++i) {
+//            cube = m_list_cubes_base.get(i);
+//            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+//        }
+//
+//        int count_base = graphics._vertices_count - 36;
+//
+//        color = Game.getFaceColor(1f);
+//
+//        size = m_list_cubes_face.size();
+//        for (int i = 0; i < size; ++i) {
+//            cube = m_list_cubes_face.get(i);
+//            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+//        }
+//
+//        int count_face = graphics._vertices_count - count_base - 36;
+//
+//        glPushMatrix();
+//        glTranslatef(0.0f, m_offset_y, 0.0f);
+//        glRotatef(m_degree, 1.0f, 0.0f, 0.0f);
+//        glRotatef(m_degree, 0.0f, 1.0f, 0.0f);
+//        glRotatef(m_degree, 0.0f, 0.0f, 1.0f);
+//        glDrawArrays(GL_TRIANGLES, 0, 36);
+//
+//        if (count_base > 0 || count_face > 0) {
+//            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
+//
+//            glPushMatrix();
+//            glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+//
+//            glDrawArrays(GL_TRIANGLES, 36, count_base);
+//
+//            if (count_face > 0) {
+//                glDrawArrays(GL_TRIANGLES, count_base + 36, count_face);
+//            }
+//
+//            glPopMatrix();
+//        }
+//        glPopMatrix();
     }
 
     @Override
