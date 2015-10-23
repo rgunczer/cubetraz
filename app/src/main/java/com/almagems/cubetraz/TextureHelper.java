@@ -53,8 +53,8 @@ public final class TextureHelper {
 		}
 		
 		glBindTexture(GL_TEXTURE_2D, textureObjectIds[0]);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
 		texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
 		
@@ -63,8 +63,7 @@ public final class TextureHelper {
 		glBindTexture(GL_TEXTURE_2D, 0);
 
         texture.id = textureObjectIds[0];
-		
-		//return textureObjectIds[0];
+
         return texture;
 	}
 	

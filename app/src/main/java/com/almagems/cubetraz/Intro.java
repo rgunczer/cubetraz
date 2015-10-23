@@ -286,7 +286,7 @@ public final class Intro extends Scene {
             break;
         } // switch
 
-        //engine->BuildVisibleCubesList(m_list_cubes_base);
+        Game.buildVisibleCubesList(m_list_cubes_base);
     }
 
     @Override
@@ -326,7 +326,7 @@ public final class Intro extends Scene {
                 break;
 
             case BuildCubetraz: {
-                //m_starfield.speed += 0.0003f;
+                m_starfield.speed += 0.0003f;
 
                 switch (m_counter) {
                     // build four corner cubes
@@ -479,20 +479,24 @@ public final class Intro extends Scene {
                 break;
 
             case BuildCubetrazFace:
-//                engine->dirty_alpha+=2;
-//
-//                if (engine->dirty_alpha > DIRTY_ALPHA)
-//                    engine->dirty_alpha = DIRTY_ALPHA;
+                Game.dirty_alpha += 2f;
+
+                if (Game.dirty_alpha > DIRTY_ALPHA) {
+                    Game.dirty_alpha = DIRTY_ALPHA;
+                }
 
                 m_stars_alpha -= 0.012f;
-                if (m_stars_alpha < 0.0f) m_stars_alpha = 0.0f;
+                if (m_stars_alpha < 0.0f) {
+                    m_stars_alpha = 0.0f;
+                }
 
                 m_t_camera += 0.03f;
 
-                if (m_t_camera > 1.0f)
+                if (m_t_camera > 1.0f) {
                     m_t_camera = 1.0f;
+                }
 
-//                Utils.LerpCamera(m_camera_begin, m_camera_end, m_t_camera, m_camera_current);
+                Utils.lerpCamera(m_camera_begin, m_camera_end, m_t_camera, m_camera_current);
 
                 switch (m_counter) {
                     case 90:
@@ -612,8 +616,8 @@ public final class Intro extends Scene {
                         break;
 
                     case 150:
-                        //engine->SetCanSkipIntro();
-                        //engine->ShowScene(Scene_Menu);
+                        Game.setCanSkipIntro();
+                        Game.showScene(Scene_Menu);
                         break;
                 } // switch
                 break;
@@ -625,114 +629,108 @@ public final class Intro extends Scene {
 
     @Override
     public void render() {
-        //System.out.println("Intro.render...");
+        graphics.setProjection2D();
+        graphics.setModelViewMatrix2D();
 
-//        graphics.setProjection2D();
-//        graphics.setModelViewMatrix2D();
-//
-//        glEnable(GL_BLEND);
-//        glDisable(GL_LIGHTING);
-//        glDepthMask(false); //GL_FALSE);
-//        glEnable(GL_TEXTURE_2D);
-//
-//        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//        glDisableClientState(GL_NORMAL_ARRAY);
-//
-//        Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
-//        graphics.drawFBOTexture(graphics.texture_id_dirty, color_dirty, true);
+        graphics.enableBlending();
 
-        glDepthMask(true); //GL_TRUE);
+        glEnable(GL_TEXTURE_2D);
 
-//        graphics.setProjection2D();
-//        glMatrixMode(GL_MODELVIEW);
-//        glLoadIdentity();
+        Color color_dirty = new Color(255, 255, 255, (int)Game.dirty_alpha);
+        graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
+
+
+
+        glDisable(GL_TEXTURE_2D);
+        //graphics.drawAxes();
+
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
 
+        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
 
-        //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
-
-        glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        glDepthMask(false); //GL_FALSE);
-
-
         graphics.prepare();
         graphics.setStreamSource();
 
-        //graphics.enableBlending();
-        //glEnable(GL_POINT_SMOOTH);
-        m_starfield.render();
-        //glDisable(GL_POINT_SMOOTH);
 
-        //graphics.disableBlending();
+        glEnable(GL_POINT_SMOOTH);
+        m_starfield.render();
+        glDisable(GL_POINT_SMOOTH);
+
+        graphics.disableBlending();
 
         //graphics.drawAxes();
 
+//        if (true) {
+//            return;
+//        }
 
-//        glEnable(GL_LIGHTING);
-//
-//        glDepthMask(true); //GL_TRUE);
-//
-//        glEnable(GL_TEXTURE_2D);
-//        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_player);
-//
-//        glEnableClientState(GL_NORMAL_ARRAY);
-//        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//
-//        Color color = Game.getBaseColor();
-//
-//        graphics.prepare();
-//        graphics.addCube(0.0f, 0.0f, 0.0f);
-//
-//        int size;
-//        Cube cube;
-//
-//        size = m_list_cubes_base.size();
-//        for (int i = 0; i < size; ++i) {
-//            cube = m_list_cubes_base.get(i);
-//            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
-//        }
-//
-//        int count_base = graphics._vertices_count - 36;
-//
-//        color = Game.getFaceColor(1f);
-//
-//        size = m_list_cubes_face.size();
-//        for (int i = 0; i < size; ++i) {
-//            cube = m_list_cubes_face.get(i);
-//            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
-//        }
-//
-//        int count_face = graphics._vertices_count - count_base - 36;
-//
-//        glPushMatrix();
-//        glTranslatef(0.0f, m_offset_y, 0.0f);
-//        glRotatef(m_degree, 1.0f, 0.0f, 0.0f);
-//        glRotatef(m_degree, 0.0f, 1.0f, 0.0f);
-//        glRotatef(m_degree, 0.0f, 0.0f, 1.0f);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
-//
-//        if (count_base > 0 || count_face > 0) {
-//            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
-//
-//            glPushMatrix();
-//            glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
-//
-//            glDrawArrays(GL_TRIANGLES, 36, count_base);
-//
-//            if (count_face > 0) {
-//                glDrawArrays(GL_TRIANGLES, count_base + 36, count_face);
-//            }
-//
-//            glPopMatrix();
-//        }
-//        glPopMatrix();
+
+        glEnable(GL_LIGHTING);
+
+        glDepthMask(true); //GL_TRUE);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        Color color = Game.getBaseColor();
+
+        graphics.prepare();
+        graphics.addCube(0.0f, 0.0f, 0.0f);
+
+        int size;
+        Cube cube;
+
+        size = m_list_cubes_base.size();
+        for (int i = 0; i < size; ++i) {
+            cube = m_list_cubes_base.get(i);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+        }
+
+        int count_base = graphics._vertices_count - 36;
+
+        color = Game.getFaceColor(1f);
+
+        size = m_list_cubes_face.size();
+        for (int i = 0; i < size; ++i) {
+            cube = m_list_cubes_face.get(i);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+        }
+
+        int count_face = graphics._vertices_count - count_base - 36;
+
+        graphics.updateBuffersAll();
+
+        glPushMatrix();
+            glTranslatef(0.0f, m_offset_y, 0.0f);
+            glRotatef(m_degree, 1.0f, 0.0f, 0.0f);
+            glRotatef(m_degree, 0.0f, 1.0f, 0.0f);
+            glRotatef(m_degree, 0.0f, 0.0f, 1.0f);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            if (count_base > 0 || count_face > 0) {
+                glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+                glPushMatrix();
+                glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+                glDrawArrays(GL_TRIANGLES, 36, count_base);
+
+                    if (count_face > 0) {
+                        glDrawArrays(GL_TRIANGLES, count_base + 36, count_face);
+                    }
+                glPopMatrix();
+            }
+        glPopMatrix();
+
+        glDisable(GL_LIGHTING);
     }
 
     @Override
@@ -745,15 +743,3 @@ public final class Intro extends Scene {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-

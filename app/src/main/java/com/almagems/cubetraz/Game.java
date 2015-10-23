@@ -11,6 +11,19 @@ public final class Game {
 
     public static Graphics graphics;
 
+    // scenes
+    public static Scene m_scene;
+    public static Intro intro;
+    public static Menu menu;
+    public static Animator animator;
+    public static Level level;
+    public static Statistics statistics;
+    public static Outro outro;
+
+
+
+    public static float dirty_alpha;
+
     public static Vector getCubePosAt(CubePos cube_pos) {
         Vector pos = new Vector();
 
@@ -44,11 +57,6 @@ public final class Game {
         return m_scene == level;
     }
 
-    public static Scene m_scene;
-    public static Intro intro;
-    public static Animator animator;
-    public static Statistics statistics;
-    public static Outro outro;
 
     private static int m_framebuffer;
     private static int m_colorbuffer;
@@ -91,7 +99,9 @@ public final class Game {
     public static boolean isObstacle(CubePos cube_pos) {
         Cube cube = cubes[cube_pos.x][cube_pos.y][cube_pos.z];
 
-        if (cube.type == CubeTypeEnum.CubeIsVisibleAndObstacle || cube.type == CubeTypeEnum.CubeIsInvisibleAndObstacle || cube.type == CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel) {
+        if (cube.type == CubeTypeEnum.CubeIsVisibleAndObstacle ||
+            cube.type == CubeTypeEnum.CubeIsInvisibleAndObstacle ||
+            cube.type == CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel) {
             return true;
         } else {
             return false;
@@ -117,9 +127,6 @@ public final class Game {
         //printf("\nNumber of Fonts:%lu", m_fonts.size());
         return m_fonts.get("" + ch);
     }
-
-
-    public static Menu menu;
 
     public static boolean isOnAList(Cube theCube, ArrayList<Cube> lst) {
         int size = lst.size();
@@ -178,7 +185,7 @@ public final class Game {
         resetCubesFonts();
     }
 
-    public static Color getFaceColor(float alpha) { return new Color(0.75f * 255, 0.8f * 255, 0.75f * 255, alpha * 255); }
+    public static Color getFaceColor(float alpha) { return new Color( (int)(0.75f * 255), (int)(0.8f * 255), (int)(0.75f * 255), (int)(alpha * 255)); }
     public static Color getBaseColor() { return new Color(255, 255, 255, 255); }
     public static Color getTitleColor() { return new Color(139, 0, 0, 200); }
     public static Color getTextColor() { return new Color(80, 0, 0, 130);  }
@@ -201,25 +208,17 @@ public final class Game {
                 break;
 
             case Scene_Menu:
-//                //showFullScreenAd();
-//
-//                if (m_intro) {
-//                    delete m_intro;
-//                    m_intro = null;
-//                }
-//
-//                if (m_outro) {
-//                    delete m_outro;
-//                    m_outro = null;
-//                    engine.menu_init_data.reappear = false;
-//                }
-//
-//                if (null == m_menu)
-//                    m_menu = new cMenu();
-//
-//                m_menu.Init();
-//
-//                scene = m_menu;
+                //showFullScreenAd();
+                intro = null;
+                outro = null;
+                menu_init_data.reappear = false;
+
+                if (menu == null) {
+                    menu = new Menu();
+                }
+
+                menu.init();
+                scene = menu;
                 break;
 
             case Scene_Anim:
@@ -271,7 +270,7 @@ public final class Game {
     }
 
 
-    public static Level level;
+
 
     public static final LevelInitData level_init_data = new LevelInitData();
     public static final AnimInitData anim_init_data = new AnimInitData();
@@ -282,7 +281,7 @@ public final class Game {
     }
 
 
-    public static float dirty_alpha;
+
 
     public static final Vector cube_offset = new Vector();
 
@@ -377,6 +376,11 @@ public final class Game {
                     cubes[i][j][k] = new Cube();
             }
         }
+
+        for (int i = 0; i < 6; ++i) {
+            ar_cubefacedata[i] = new CubeFaceData();
+        }
+
     }
 
     // ctor
@@ -389,6 +393,9 @@ public final class Game {
     }
 
     public void init() {
+        Cubetraz.init();
+        Cubetraz.load();
+
         graphics = Engine.graphics;
 
         HUD.graphics = graphics;
@@ -407,12 +414,11 @@ public final class Game {
 
         m_scene = null;
 
-        dirty_alpha = DIRTY_ALPHA;
+        dirty_alpha = 0f;
 
 
 //        loading = new Loading();
 
-        initTextures();
         initFonts();
         initFontsBig();
         initNumberFonts();
@@ -426,7 +432,7 @@ public final class Game {
         Creator.createCubes();
 
         level = new Level();
-        menu = new Menu();
+        //menu = new Menu();
 
         LevelBuilder.level = level;
 
@@ -435,45 +441,15 @@ public final class Game {
 //	printf("\nsize of level:%lu", sizeof(cLevel));
 
         showScene(Scene_Intro);
-        //ShowScene(Scene_Menu);
-        //ShowScene(Scene_Anim);
-        //ShowScene(Scene_Level);
-        //ShowScene(Scene_Solvers);
-        //ShowScene(Scene_Stat);
-        //ShowScene(Scene_Outro);
+        //showScene(Scene_Menu);
+        //showScene(Scene_Anim);
+        //showScene(Scene_Level);
+        //showScene(Scene_Solvers);
+        //showScene(Scene_Stat);
+        //showScene(Scene_Outro);
 
         graphics.warmCache();
-
-        Cubetraz.init();
-        Cubetraz.load();
     }
-
-    public void createObjects() {
-        if (initialized) {
-            return;
-        }
-
-        initialized = true;
-
-//        scoreCounter = new ScoreCounter();
-//		animManager = new AnimationManager();
-
-
-
-
-
-//        menu = new Menu();
-//        stats = new Stats();
-//
-//        hud = new HUD();
-//        hud.init();
-//        hud.reset();
-//        hud.updateScore(scoreCounter.score);
-
-
-//        loading.init();
-//        menu.init();
-	}
 
     public static void renderToFBO(Scene scene) {
 
@@ -564,271 +540,23 @@ public final class Game {
 
 	public void update() {
         m_scene.update();
-
-
-        graphics.updateViewProjMatrix();
-
-        if (gameState == GameState.Loading) {
-//            loading.update();
-//            if (loading.done) {
-//                showMenu();
-//                update();
-//            }
-        } else {
-//            hud.update();
-//            hud.updateScore(scoreCounter.score);
-
-//            switch (gameState) {
-//                case Menu:
-//                    menu.update();
-//                    switch (menu.getSelectedMenuOption()) {
-//                        case Play:
-//                            gameState = GameState.Playing;
-//                            break;
-//
-//                        case Stats:
-//                            gameState = GameState.Stats;
-//                            menu.resetSelectedMenuOption();
-//                            stats.init();
-//                            stats.update();
-//                            break;
-//                    }
-//                    break;
-//
-//                case Stats:
-//                    stats.update();
-//                    if (stats.done) {
-//                        menu.resetBackground();
-//                        gameState = GameState.Menu;
-//                    }
-//                    break;
-//
-//                case Playing:
-//                    updateInPlaying();
-//            }
-        }
     }
 
 	public void draw() {
         m_scene.render();
-//        if (gameState == GameState.Loading) {
-//            //loading.draw();
-//        } else {
-//            // 2d drawing
-//            graphics.setProjectionMatrix2D();
-//            graphics.updateViewProjMatrix();
-//
-//            glDisable(GL_BLEND);
-//            glDepthMask(false);
-//            //background.draw();
-//            glDepthMask(true);
-//
-//            // 3d drawing
-//            graphics.setProjectionMatrix3D();
-//            graphics.updateViewProjMatrix();
-//
-//            glEnable(GL_DEPTH_TEST);
-//
-//
-//
-//            // particle system
-//            glEnable(GL_BLEND);
-//            glDisable(GL_DEPTH_TEST);
-//            glBlendFunc(GL_ONE, GL_ONE);
-//            //graphics.particleManager.draw();
-//
-//            // 2d drawing (HUD and Menu)
-//            graphics.setProjectionMatrix2D();
-//            graphics.updateViewProjMatrix();
-//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//            //hud.draw();
-//
-//            if (gameState == GameState.Menu) {
-//                //menu.draw();
-//            } else if (gameState == GameState.Stats) {
-//                //stats.draw();
-//            } else {
-//                graphics.setProjectionMatrix3D();
-//                graphics.updateViewProjMatrix();
-//            }
-//        }
 	}
 
 	public void handleTouchPress(float normalizedX, float normalizedY) {
-        switch (gameState) {
-            case Playing:
-                handleTouchPressOnPlaying(normalizedX, normalizedY);
-                break;
-
-            case Menu:
-                //menu.handleTouchPress(normalizedX, normalizedY);
-                break;
-
-            case Stats:
-                //stats.handleTouchPress(normalizedX, normalizedY);
-                break;
-
-            case Loading:
-                // do nothing
-                break;
-        }
+        m_scene.onFingerDown(normalizedX, normalizedY, 1);
     }
-
-    private void handleTouchPressOnPlaying(float normalizedX, float normalizedY) {
-        if (normalizedY < -0.86f ) {
-            if (normalizedX > 0.86f) {
-                gameState = GameState.Menu;
-                //menu.reset();
-                Engine.showInterstitialAd();
-            } else if (normalizedX < -0.65f) {
-                //gameState = GameState.Stats;
-                //menu.reset();
-            }
-        } else {
-            //touchDownX = normalizedX;
-            //touchDownY = normalizedY;
-
-//            if (!match3.isAnimating) {
-//                Ray ray = Geometry.convertNormalized2DPointToRay(touchDownX, touchDownY, graphics.invertedViewProjectionMatrix);
-//                GemPosition selectedGem = getSelectedGemFromRay(ray);
-//
-//                if (selectedGem != null) {
-//                    if (match3.firstSelected == null) {
-//                        match3.firstSelected = selectedGem;
-//                    } else {
-//                        match3.secondSelected = selectedGem;
-//                        if (match3.firstSelected == match3.secondSelected) { // Same Gems are selected
-//                            match3.firstSelected = null;
-//                            match3.secondSelected = null;
-//                        } else {
-//                            match3.handle();
-//                        }
-//                    }
-//                }
-//            }
-        }
-	}
 
 	public void handleTouchDrag(float normalizedX, float normalizedY) {
-        switch (gameState) {
-            case Menu:
-                handleTouchDragOnMenu(normalizedX, normalizedY);
-                break;
-
-            case Playing:
-                handleTouchDragOnPlaying(normalizedX, normalizedY);
-                break;
-
-            case Stats:
-                //stats.handleTouchDrag(normalizedX, normalizedY);
-                break;
-        }
+        m_scene.onFingerMove(0f, 0f, normalizedX, normalizedY, 1);
     }
-
-    private void handleTouchDragOnMenu(float normalizedX, float normalizedY) {
-        //menu.handleTouchDrag(normalizedX, normalizedY);
-    }
-
-    private void handleTouchDragOnPlaying(float normalizedX, float normalizedY) {
-//		if (match3.firstSelected != null) {
-//			final float minDiff = 0.15f;
-//
-//			float diffX = Math.abs(touchDownX - normalizedX);
-//			float diffY = Math.abs(touchDownY - normalizedY);
-//
-//			//System.out.println("DiffX: " + diffX);
-//			//System.out.println("DiffY: " + diffY);
-//
-//			if (diffX > diffY) { // move on X axis
-//				if (diffX > minDiff) {
-//					if (touchDownX > normalizedX) {
-//						//System.out.println("Swipe left");
-//						swipeDir = SwipeDir.SwipeLeft;
-//					} else {
-//						//System.out.println("Swipe right");
-//						swipeDir = SwipeDir.SwipeRight;
-//					}
-//				}
-//			} else { // move on Y axis
-//				if (diffY > minDiff) {
-//					if (touchDownY > normalizedY) {
-//						//System.out.println("Swipe down");
-//						swipeDir = SwipeDir.SwipeDown;
-//					} else {
-//						//System.out.println("Swipe up");
-//						swipeDir = SwipeDir.SwipeUp;
-//					}
-//				}
-//			}
-//		}
-	}
 
 	public void handleTouchRelease(float normalizedX, float normalizedY) {
-        switch (gameState) {
-            case Playing:
-                handleTouchReleseOnPlaying(normalizedX, normalizedY);
-                break;
-
-            case Stats:
-//                stats.handleTouchRelease(normalizedX, normalizedY);
-                break;
-        }
+        m_scene.onFingerUp(normalizedX, normalizedY, 1);
     }
-
-    private void handleTouchReleseOnPlaying(float normalizedX, float normalizedY) {
-//		if (!match3.isAnimating) {
-//			if (match3.firstSelected != null && swipeDir != SwipeDir.SwipeNone) {
-//				int x = match3.firstSelected.boardX;
-//				int y = match3.firstSelected.boardY;
-//
-//				switch(swipeDir) {
-//				case SwipeDown:
-//					if ( (y - 1) >= 0 ) {
-//						match3.secondSelected = match3.board[x][y-1];
-//					}
-//					break;
-//
-//				case SwipeUp:
-//					if ( (y + 1) < match3.boardSize) {
-//						match3.secondSelected = match3.board[x][y+1];
-//					}
-//					break;
-//
-//				case SwipeLeft:
-//					if ( (x - 1) >= 0 ) {
-//						match3.secondSelected = match3.board[x-1][y];
-//					}
-//					break;
-//
-//				case SwipeRight:
-//					if ( (x + 1) < match3.boardSize) {
-//						match3.secondSelected = match3.board[x+1][y];
-//					}
-//					break;
-//
-//				default:
-//					//System.out.println("No swipe!");
-//					break;
-//				}
-//
-//				if (match3.secondSelected != null) {
-//					match3.handle();
-//				}
-//			}
-//		}
-	}
-
-//	private GemPosition getSelectedGemFromRay(Ray ray) {
-//		for(int y = 0; y < match3.boardSize; ++y) {
-//			for (int x = 0; x < match3.boardSize; ++x) {
-//				GemPosition gp = match3.board[x][y];
-//				if ( Geometry.intersects(gp.boundingSphere, ray) ) {
-//					return gp;
-//				}
-//			}
-//		}
-//		return null;
-//	}
 
     public static void setupHollowCube() {
         int number_of_visible_cubes = 0;
@@ -1301,24 +1029,6 @@ public final class Game {
 //        m_resourceManager.CreateTexture(name, texture_id_tutor);
 //        return texture_id_tutor;
         return 0;
-    }
-
-    public static void initTextures() {
-//        m_resourceManager.CreateTexture("grey_concrete128_stroke.png", texture_id_gray_concrete);
-//        m_resourceManager.CreateTexture("key.png", texture_id_key);
-//        m_resourceManager.CreateTexture("player.png", texture_id_player);
-//        m_resourceManager.CreateTexture("level_cube.png", texture_id_level_cubes);
-//        m_resourceManager.CreateTexture("level_cube_locked.png", texture_id_level_cubes_locked);
-//        m_resourceManager.CreateTexture("fonts.png", texture_id_fonts);
-//        m_resourceManager.CreateTexture("fonts_clear.png", texture_id_fonts_clear);
-//        m_resourceManager.CreateTexture("level_numbers.png", texture_id_numbers);
-//        m_resourceManager.CreateTexture("star.png", texture_id_star);
-//        m_resourceManager.CreateTexture("symbols.png", texture_id_symbols);
-//        m_resourceManager.CreateTexture("stat_background.png", texture_id_stat_background);
-//        m_resourceManager.CreateTexture("credits.png", texture_id_credits);
-//        m_resourceManager.CreateTexture("fonts_big.png", texture_id_fonts_big);
-//        m_resourceManager.CreateTexture("dirty.png", texture_id_dirty);
-//        m_resourceManager.CreateTexture("tutor_swipe", texture_id_tutor);
     }
 
     public static void initFontsBig() {

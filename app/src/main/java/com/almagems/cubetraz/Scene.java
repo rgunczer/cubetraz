@@ -7,9 +7,9 @@ public abstract class Scene {
 
     public static Graphics graphics;
 
-    protected Vector2 mPosDown;
-    protected Vector2 mPosMove;
-    protected Vector2 mPosUp;
+    protected Vector2 mPosDown = new Vector2();
+    protected Vector2 mPosMove = new Vector2();
+    protected Vector2 mPosUp = new Vector2();
 
     protected boolean mIsFingerDown;
     protected boolean mIsSwipe;

@@ -6,9 +6,9 @@ import static com.almagems.cubetraz.Constants.*;
 
 public final class CubeFont {
     
-    private TexturedQuad m_pFont;
-    private CubePos m_cube_pos;
-    private MenuCube m_pTriggerCube;
+    private TexturedQuad m_pFont = new TexturedQuad();
+    private CubePos m_cube_pos = new CubePos();
+    private MenuCube m_pTriggerCube = new MenuCube();
     private AxisEnum m_trigger_axis;
     private AxisEnum m_align_axis;
     private int m_align_axis_value;
@@ -16,9 +16,9 @@ public final class CubeFont {
         
     private Vector pos_origin = new Vector();
             
-    public Vector pos;
-    public Color color_current;
-    public Color color;
+    public Vector pos = new Vector();
+    public Color color_current = new Color();
+    public Color color = new Color();
 
 
     // ctor
@@ -97,28 +97,26 @@ public final class CubeFont {
         color_current.init(col);
     }
     
-    public void setAxis(AxisEnum trigger_axis, AxisEnum align_axis) { 
-    /*
-        m_trigger_axis = trigger_axis; 
-        m_align_axis = align_axis; 
-        
-        switch (m_align_axis) {
-            case X_Axis:
-                m_align_axis_value = &m_pTriggerCube->m_cube_pos.x;
-                m_align_value = &m_cube_pos.x;
-                break;
-                
-            case Y_Axis:
-                m_align_axis_value = &m_pTriggerCube->m_cube_pos.y;
-                m_align_value = &m_cube_pos.y;
-                break;
-                
-            case Z_Axis:
-                m_align_axis_value = &m_pTriggerCube->m_cube_pos.z;
-                m_align_value = &m_cube_pos.z;
-                break;
-        }
-    */
+    public void setAxis(AxisEnum trigger_axis, AxisEnum align_axis) {
+//        m_trigger_axis = trigger_axis;
+//        m_align_axis = align_axis;
+//
+//        switch (m_align_axis) {
+//            case X_Axis:
+//                m_align_axis_value = &m_pTriggerCube->m_cube_pos.x;
+//                m_align_value = &m_cube_pos.x;
+//                break;
+//
+//            case Y_Axis:
+//                m_align_axis_value = &m_pTriggerCube->m_cube_pos.y;
+//                m_align_value = &m_cube_pos.y;
+//                break;
+//
+//            case Z_Axis:
+//                m_align_axis_value = &m_pTriggerCube->m_cube_pos.z;
+//                m_align_value = &m_cube_pos.z;
+//                break;
+//        }
     }
     
     public void setTriggerCube(MenuCube cube) { 
@@ -128,7 +126,6 @@ public final class CubeFont {
     public TexturedQuad getFont() {
         return m_pFont; 
     }
-    
 
     public void init(CubePos cube_pos) {    
         m_trigger_axis = AxisEnum.X_Axis;

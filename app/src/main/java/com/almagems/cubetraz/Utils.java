@@ -14,6 +14,7 @@ public final class Utils {
     }
 
     public static float getDistance2D(final Vector2 a, final Vector2 b) {
+//        System.out.println("getDistance2D x1:" + a.x + ", y1:" + a.y + ", x2:" + b.x + ", y2:" + b.y);
         float dx = a.x - b.x;
         float dy = a.y - b.y;
 

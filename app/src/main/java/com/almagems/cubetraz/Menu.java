@@ -1,9 +1,7 @@
 package com.almagems.cubetraz;
 
 import java.util.ArrayList;
-
 import static android.opengl.GLES10.*;
-
 import static com.almagems.cubetraz.Constants.*;
 
 
@@ -27,7 +25,7 @@ public final class Menu extends Scene {
 
     private float m_hilite_timeout;
 
-    private MenuNavigator m_navigator;
+    private MenuNavigator m_navigator = new MenuNavigator();
 
     private boolean m_can_alter_text;
 
@@ -39,15 +37,15 @@ public final class Menu extends Scene {
     private boolean m_showing_help;
     private float m_show_help_timeout;
 
-    public Camera m_camera_menu;
-    private Camera m_camera_credits;
-    private Camera m_camera_current;
+    public Camera m_camera_menu = new Camera();
+    private Camera m_camera_credits = new Camera();
+    private Camera m_camera_current = new Camera();
 
     private CubeFaceNamesEnum m_prev_face;
     private float m_menu_rotation;
 
-    private Vector m_pos_light_menu;
-    public Vector m_pos_light_current;
+    private Vector m_pos_light_menu = new Vector();
+    public Vector m_pos_light_current = new Vector();
 
     public MenuCube m_pMenuCubePlay;
     public MenuCube m_pMenuCubeOptions;
@@ -63,16 +61,16 @@ public final class Menu extends Scene {
     public MenuCube m_cubeCredits;
 
     private MenuCube m_menu_cube_hilite;
-    private CubeFont m_font_hilite;
+    private CubeFont m_font_hilite = new CubeFont();
     private float m_hilite_alpha;
 
     // fonts on red cubes
-    public CubeFont m_cubefont_play;
-    public CubeFont m_cubefont_options;
-    public CubeFont m_cubefont_store;
-    public CubeFont m_cubefont_noads;
-    public CubeFont m_cubefont_solvers;
-    public CubeFont m_cubefont_restore;
+    public CubeFont m_cubefont_play = new CubeFont();
+    public CubeFont m_cubefont_options = new CubeFont();
+    public CubeFont m_cubefont_store = new CubeFont();
+    public CubeFont m_cubefont_noads = new CubeFont();
+    public CubeFont m_cubefont_solvers = new CubeFont();
+    public CubeFont m_cubefont_restore = new CubeFont();
 
     // Cubes
     public final ArrayList<Cube> m_list_cubes_base = new ArrayList<Cube>();
@@ -85,8 +83,9 @@ public final class Menu extends Scene {
     private CubeFaceNamesEnum m_current_cube_face;
     private int m_current_cube_face_type;
 
-    private MenuCube getMovingCubeFromColor(int color) {
-        switch (color) {
+    private MenuCube getMovingCubeFromColor(float color) {
+        int realColor = (int)(color * 255f);
+        switch (realColor) {
             case 255: return m_pMenuCubePlay;
             case 200: return m_pMenuCubeOptions;
             case 100: return m_pMenuCubeStore;
@@ -119,6 +118,38 @@ public final class Menu extends Scene {
         m_cubefont_noads = new CubeFont();
         m_cubefont_solvers = new CubeFont();
         m_cubefont_restore = new CubeFont();
+
+
+        ArrayList<CubeFont> lst;
+        for (int i = 0; i < 6; ++i) {
+            m_lst_titles.add(new ArrayList<CubeFont>());
+            m_lst_texts.add(new ArrayList<CubeFont>());
+            m_lst_symbols.add(new ArrayList<CubeFont>());
+
+            lst = m_lst_titles.get(i);
+            for (int j = 0; j < 6; j++) {
+                lst.add(new CubeFont());
+            }
+
+            lst = m_lst_texts.get(i);
+            for (int j = 0; j < 6; j++) {
+                lst.add(new CubeFont());
+            }
+
+            lst = m_lst_symbols.get(i);
+            for (int j = 0; j < 6; j++) {
+                lst.add(new CubeFont());
+            }
+        }
+
+//            ArrayList<CubeFont> lst = m_lst_titles.get(0);
+//            lst.add(new CubeFont());
+
+//        for (int i = 0; i < 6; ++i) {
+//            m_lst_titles.get(i)
+//            //m_lst_texts.get(i).clear();
+//            //m_lst_symbols.get(i).clear();
+//        }
     }
 
     public void setupCameras() {
@@ -145,7 +176,7 @@ public final class Menu extends Scene {
         setupCameras();
         //printf("\ncCube size: %lu byte, all cubes size: %lu kbyte\n", sizeof(cCube), (sizeof(cCube)*9*9*9) / 1024);
         //cMenuFaceBuilder::Custom();
-        //Game.dirty_alpha = DIRTY_ALPHA;
+        Game.dirty_alpha = DIRTY_ALPHA;
         //Game.playMusic(MUSIC_CPU);
 
         m_hilite_timeout = 0.0f;
@@ -156,12 +187,12 @@ public final class Menu extends Scene {
         m_prev_face = CubeFaceNamesEnum.Face_Empty;
         mIsFingerDown = false;
         mIsSwipe = false;
-        m_pos_light_current = m_pos_light_menu;
-        m_camera_current = m_camera_menu;
+        m_pos_light_current.init(m_pos_light_menu);
+        m_camera_current.init(m_camera_menu);
 
         Game.resetCubes();
         Game.setupHollowCube();
-        Game.buildVisibleCubesList(m_list_cubes_base);  // could be put in a VBO
+        Game.buildVisibleCubesList(m_list_cubes_base);
 
         if (Game.menu_init_data.reappear) {
             switch (m_current_cube_face) {
@@ -336,6 +367,7 @@ public final class Menu extends Scene {
             graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
         }
 
+        graphics.updateBuffersAll();
         graphics.renderTriangles();
     }
 
@@ -352,6 +384,7 @@ public final class Menu extends Scene {
                 graphics.addCube(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z);
             }
         }
+        graphics.updateBuffersAll();
         graphics.renderTriangles();
     }
 
@@ -1017,6 +1050,7 @@ public final class Menu extends Scene {
                     graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, colr);
                 }
             }
+            graphics.updateBuffersAll();
             graphics.renderTriangles();
         }
     }
@@ -1582,6 +1616,7 @@ public final class Menu extends Scene {
             cube = m_list_cubes_base.get(i);
             graphics.addCubeWithColor(cube.tx, cube.ty, cube.tz, cube.color_current);
         }
+        graphics.updateBuffersAll();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
         graphics.prepare();
@@ -1590,7 +1625,7 @@ public final class Menu extends Scene {
             cube = m_list_cubes_face.get(i);
             graphics.addCubeWithColor(cube.tx, cube.ty, cube.tz, cube.color_current);
         }
-
+        graphics.updateBuffersAll();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
@@ -1780,14 +1815,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.x == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Easy01;
                         setCurrentCubeFaceType(Face_X_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Easy4_To_Easy1);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.x == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Easy03;
                         setCurrentCubeFaceType(Face_X_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Easy4_To_Easy3);
                     }
                     break;
@@ -1796,28 +1831,28 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.x == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Easy01;
                         setCurrentCubeFaceType(Face_X_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Z_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Z_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal1_To_Easy1);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.x == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard01;
                         setCurrentCubeFaceType(Face_X_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Z_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Z_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal1_To_Hard1);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.y == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal02;
                         setCurrentCubeFaceType(Face_Y_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Z_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Z_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal1_To_Normal2);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.y == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal04;
                         setCurrentCubeFaceType(Face_Y_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Z_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Z_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal1_To_Normal4);
                     }
                     break;
@@ -1826,14 +1861,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.z == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal01;
                         setCurrentCubeFaceType(Face_Z_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal2_To_Normal1);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.z == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal03;
                         setCurrentCubeFaceType(Face_Z_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal2_To_Normal3);
                     }
                     break;
@@ -1842,14 +1877,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.y == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal02;
                         setCurrentCubeFaceType(Face_Y_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Z_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Z_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal3_To_Normal2);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.y == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal04;
                         setCurrentCubeFaceType(Face_Y_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Z_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Z_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal3_To_Normal4);
                     }
                     break;
@@ -1858,14 +1893,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.z == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal03;
                         setCurrentCubeFaceType(Face_Z_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal4_To_Normal3);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.z == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal01;
                         setCurrentCubeFaceType(Face_Z_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Normal4_To_Normal1);
                     }
                     break;
@@ -1874,28 +1909,28 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.z == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Normal01;
                         setCurrentCubeFaceType(Face_Z_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_X_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_X_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard1_To_Normal1);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.z == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Menu;
                         setCurrentCubeFaceType(Face_Z_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_X_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_X_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard1_To_Menu);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.y == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard02;
                         setCurrentCubeFaceType(Face_Y_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_X_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_X_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard1_To_Hard2);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.y == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard04;
                         setCurrentCubeFaceType(Face_Y_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_X_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_X_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard1_To_Hard4);
                     }
                     break;
@@ -1904,14 +1939,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.x == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard01;
                         setCurrentCubeFaceType(Face_X_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard2_To_Hard1);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.x == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard03;
                         setCurrentCubeFaceType(Face_X_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Plus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Plus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard2_To_Hard3);
                     }
                     break;
@@ -1920,14 +1955,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.y == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard04;
                         setCurrentCubeFaceType(Face_Y_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_X_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_X_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard3_To_Hard4);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.y == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard02;
                         setCurrentCubeFaceType(Face_Y_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_X_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_X_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard3_To_Hard2);
                     }
                     break;
@@ -1936,14 +1971,14 @@ public final class Menu extends Scene {
                     if (m_pMenuCubePlay.m_cube_pos.x == 8) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard03;
                         setCurrentCubeFaceType(Face_X_Plus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard4_To_Hard3);
                     }
 
                     if (m_pMenuCubePlay.m_cube_pos.x == 0) {
                         m_current_cube_face = CubeFaceNamesEnum.Face_Hard01;
                         setCurrentCubeFaceType(Face_X_Minus);
-                        m_pMenuCubePlay.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubePlay.moveOnAxis(AxisMovement_Y_Minus);
                         m_navigator.setup(CubeFaceNavigationEnum.Hard4_To_Hard1);
                     }
                     break;
@@ -1965,7 +2000,7 @@ public final class Menu extends Scene {
                         m_prev_face = CubeFaceNamesEnum.Face_Menu;
                         m_current_cube_face = CubeFaceNamesEnum.Face_Options;
                         setCurrentCubeFaceType(Face_Y_Plus);
-                        m_pMenuCubeOptions.moveOnAxis(Face_Z_Minus);
+                        m_pMenuCubeOptions.moveOnAxis(AxisMovement_Z_Minus);
 
                         m_navigator.setup(CubeFaceNavigationEnum.Menu_To_Options);
                     }
@@ -1973,7 +2008,7 @@ public final class Menu extends Scene {
                     if (m_pMenuCubeOptions.m_cube_pos.x == 7) {
                         if (CubeFaceNamesEnum.Face_Options == m_prev_face) {
                             m_prev_face = CubeFaceNamesEnum.Face_Empty;
-                            m_pMenuCubeOptions.moveOnAxis(Face_X_Minus);
+                            m_pMenuCubeOptions.moveOnAxis(AxisMovement_X_Minus);
                         }
                     }
                     break;
@@ -1983,7 +2018,7 @@ public final class Menu extends Scene {
                         m_prev_face = CubeFaceNamesEnum.Face_Options;
                         m_current_cube_face = CubeFaceNamesEnum.Face_Menu;
                         setCurrentCubeFaceType(Face_Z_Plus);
-                        m_pMenuCubeOptions.moveOnAxis(Face_Y_Minus);
+                        m_pMenuCubeOptions.moveOnAxis(AxisMovement_Y_Minus);
 
                         m_navigator.setup(CubeFaceNavigationEnum.Options_To_Menu);
                     }
@@ -2013,7 +2048,7 @@ public final class Menu extends Scene {
                         m_prev_face = CubeFaceNamesEnum.Face_Menu;
                         m_current_cube_face = CubeFaceNamesEnum.Face_Store;
                         setCurrentCubeFaceType(Face_Y_Minus);
-                        m_pMenuCubeStore.moveOnAxis(Face_Z_Minus);
+                        m_pMenuCubeStore.moveOnAxis(AxisMovement_Z_Minus);
 
                         m_navigator.setup(CubeFaceNavigationEnum.Menu_To_Store);
                     }
@@ -2024,7 +2059,7 @@ public final class Menu extends Scene {
                                 m_prev_face = CubeFaceNamesEnum.Face_Empty;
                             }
 
-                            m_pMenuCubeStore.moveOnAxis(Face_X_Minus);
+                            m_pMenuCubeStore.moveOnAxis(AxisMovement_X_Minus);
                         }
                     }
                     break;
@@ -2034,7 +2069,7 @@ public final class Menu extends Scene {
                         m_prev_face = CubeFaceNamesEnum.Face_Store;
                         m_current_cube_face = CubeFaceNamesEnum.Face_Menu;
                         setCurrentCubeFaceType(Face_Z_Plus);
-                        m_pMenuCubeStore.moveOnAxis(Face_Y_Plus);
+                        m_pMenuCubeStore.moveOnAxis(AxisMovement_Y_Plus);
 
                         Game.hideProgressIndicator();
                         m_navigator.setup(CubeFaceNavigationEnum.Store_To_Menu);
@@ -2225,17 +2260,17 @@ public final class Menu extends Scene {
 
                 if (m_pStoreCubeNoAds.isDone() && m_pStoreCubeNoAds.m_cube_pos.x == 7) {
                     //Game.purchaseRemoveAds();
-                    m_pStoreCubeNoAds.moveOnAxis(Face_X_Minus);
+                    m_pStoreCubeNoAds.moveOnAxis(AxisMovement_X_Minus);
                 }
 
                 if (m_pStoreCubeSolvers.isDone() && m_pStoreCubeSolvers.m_cube_pos.x == 7) {
                     //Game.purchaseSolvers();
-                    m_pStoreCubeSolvers.moveOnAxis(Face_X_Minus);
+                    m_pStoreCubeSolvers.moveOnAxis(AxisMovement_X_Minus);
                 }
 
                 if (m_pStoreCubeRestore.isDone() && m_pStoreCubeRestore.m_cube_pos.x == 7) {
                     //Game.purchaseRestore();
-                    m_pStoreCubeRestore.moveOnAxis(Face_X_Minus);
+                    m_pStoreCubeRestore.moveOnAxis(AxisMovement_X_Minus);
                 }
                 break;
 
@@ -2312,18 +2347,10 @@ public final class Menu extends Scene {
             m_navigator.update();
         } else {
             switch (m_state) {
-                case InMenu:
-                    updateInMenu();
-                    break;
-                case InCredits:
-                    updateInCredits();
-                    break;
-                case AnimToCredits:
-                    updateAnimToCredits();
-                    break;
-                case AnimFromCredits:
-                    updateAnimFromCredits();
-                    break;
+                case InMenu: updateInMenu(); break;
+                case InCredits: updateInCredits(); break;
+                case AnimToCredits: updateAnimToCredits(); break;
+                case AnimFromCredits: updateAnimFromCredits(); break;
             }
             updateHilite();
         }
@@ -2548,19 +2575,23 @@ public final class Menu extends Scene {
         }
 
         graphics.setStreamSourceOnlyVerticeAndColor();
+        graphics.updateBuffersAll();
         graphics.renderTriangles();
 
         glPopMatrix();
     }
 
+    @Override
     public void render() {
         //printf("\nAspect ratio: %f", engine.m_aspectRatio);
 
         //printf("\nm_camera_current %f, %f, %f", m_camera_current.eye.x, m_camera_current.eye.y, m_camera_current.eye.z);
 
-
-//    if (render)
-//        return RenderForPicking(RenderOnlyLevelCubes);
+        if (false) {
+            //renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubePlay);
+            renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
+            return;
+        }
 
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
@@ -2573,17 +2604,16 @@ public final class Menu extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color = new Color(255, 255, 255, Game.dirty_alpha);
-        graphics.drawFBOTexture(graphics.texture_id_dirty, color, false);
+        Color color = new Color(255, 255, 255, (int)Game.dirty_alpha);
+        graphics.drawFBOTexture(Graphics.texture_id_dirty, color, false);
 
-        glDepthMask(true);//GL_TRUE);
-
+        glDepthMask(true);
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
 
-        //final vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
+        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
@@ -2592,7 +2622,7 @@ public final class Menu extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         if (MenuStateEnum.InCredits == m_state) {
-            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_credits);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_credits);
             drawCredits();
         }
 
@@ -2606,7 +2636,7 @@ public final class Menu extends Scene {
 
         m_navigator.applyRotations();
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
         drawTheCube();
 
         if (false) { //#ifdef DRAW_AXES_CUBE
@@ -2618,20 +2648,23 @@ public final class Menu extends Scene {
         }
 
         glPushMatrix();
-
         glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_level_cubes);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_level_cubes);
         drawLevelCubes();
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_player);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
         drawMenuCubes();
 
         glPopMatrix();
 
-        glDisable(GL_LIGHTING);
-        graphics.enableBlending();
+        if (true) {
+            return;
+        }
 
+        glDisable(GL_LIGHTING);
+
+        graphics.enableBlending();
         graphics.setStreamSourceFloatAndColor();
 
         glPushMatrix();
@@ -2639,27 +2672,26 @@ public final class Menu extends Scene {
 
         color = Game.getTextColor();
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts);
         drawTexts(color);
 
+
         color = Game.getTitleColor();
-        drawTextsTitles(color);
+//        drawTextsTitles(color);
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_numbers);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_numbers);
+//        drawLevelNumbers();
 
-        drawLevelNumbers();
-
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_symbols);
-
-        drawLevelCubeSymbols();
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
+//        drawLevelCubeSymbols();
 
         color = Game.getSymbolColor();
-        drawSymbols(color);
+//        drawSymbols(color);
 
         if (m_menu_cube_hilite != null) {
             color = new Color(255, 255, 255, m_hilite_alpha * 255);
             glDisable(GL_DEPTH_TEST);
-            drawCubeHiLite(color);
+//            drawCubeHiLite(color);
             glEnable(GL_DEPTH_TEST);
         }
 
@@ -2694,14 +2726,13 @@ public final class Menu extends Scene {
         engine.SetProjection3D();
     }
 */
-
     }
 
     public void onFingerDown(float x, float y, int finger_count) {
-        //render = !render;
-//    printf("\ncMenu::OnFingerDown");
+        System.out.println("Menu::OnFingerDown " + x + ", y:" + y);
 
-        if (m_navigator.isCurrentNavigation(CubeFaceNavigationEnum.NoNavigation) &&
+        if (m_navigator.isCurrentNavigation(
+                CubeFaceNavigationEnum.NoNavigation) &&
                 m_pMenuCubePlay.isDone() &&
                 m_pMenuCubeOptions.isDone() &&
                 m_pMenuCubeStore.isDone() &&
@@ -2714,8 +2745,8 @@ public final class Menu extends Scene {
 
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
-            m_color_down = graphics.getColorFromScreen(mPosDown);
-            MenuCube menuCube = getMovingCubeFromColor((int) m_color_down.r);
+            m_color_down = Graphics.getColorFromScreen(mPosDown);
+            MenuCube menuCube = getMovingCubeFromColor(m_color_down.r);
 
             if (menuCube != null) {
                 m_hilite_alpha = 0.0f;
@@ -2728,14 +2759,14 @@ public final class Menu extends Scene {
 
     public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
         if (mIsFingerDown) {
-            //printf("\ncMenu::OnFingerMove");
+            //System.out.println("Menu::OnFingerMove " + cur_x + ", " + cur_y);
             mPosMove.x = cur_x;
             mPosMove.y = cur_y;
 
             float dist = Utils.getDistance2D(mPosDown, mPosMove);
-            //printf("\nOnFingerMove: %.2f", dist);
+            //System.out.println("OnFingerMove: distance " + dist);
 
-            if (dist > 20.0f * graphics.device_scale) {
+            if (dist > 20.0f * Graphics.device_scale) {
                 mIsSwipe = true;
             }
         }
@@ -2907,32 +2938,30 @@ public final class Menu extends Scene {
     }
 
     public void handleSwipe() {
-        SwipeDirEnums swipeDir = SwipeDirEnums.SwipeDown;
-        float length = 1f;
-        //Engine.getSwipeDirAndLength(mPosDown, mPosUp, swipeDir, length);
+        SwipeInfo swipeInfo = Engine.getSwipeDirAndLength(mPosDown, mPosUp);
 
-        if (length > (30.0f * graphics.scaleFactor)) {
+        if (swipeInfo.length > (30.0f * graphics.scaleFactor)) {
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = graphics.getColorFromScreen(mPosDown);
+            Color down_color = Graphics.getColorFromScreen(mPosDown);
             //printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", m_down_color.r, m_down_color.g, m_down_color.b, m_down_color.a);
 
-            MenuCube menuCube = getMovingCubeFromColor((int) down_color.r);
+            MenuCube menuCube = getMovingCubeFromColor(down_color.r);
 
             if (menuCube != null) {
-                switch (swipeDir) {
+                switch (swipeInfo.swipeDir) {
                     case SwipeLeft:
                         switch (m_current_cube_face) {
                             case Face_Menu:
                             case Face_Options:
                             case Face_Store:
-                                menuCube.moveOnAxis(Face_X_Minus);
+                                menuCube.moveOnAxis(AxisMovement_X_Minus);
                                 break;
 
                             case Face_Normal01:
                             case Face_Normal02:
                             case Face_Normal03:
                             case Face_Normal04:
-                                menuCube.moveOnAxis(Face_X_Plus);
+                                menuCube.moveOnAxis(AxisMovement_X_Plus);
                                 break;
 
                             case Face_Hard01:
@@ -2940,14 +2969,14 @@ public final class Menu extends Scene {
                             case Face_Hard03:
                             case Face_Hard04:
                             case Face_Tutorial:
-                                menuCube.moveOnAxis(Face_Z_Minus);
+                                menuCube.moveOnAxis(AxisMovement_Z_Minus);
                                 break;
 
                             case Face_Easy01:
                             case Face_Easy02:
                             case Face_Easy03:
                             case Face_Easy04:
-                                menuCube.moveOnAxis(Face_Z_Plus);
+                                menuCube.moveOnAxis(AxisMovement_Z_Plus);
                                 break;
 
                             default:
@@ -2960,11 +2989,11 @@ public final class Menu extends Scene {
                             case Face_Menu:
                             case Face_Options:
                             case Face_Store:
-                                menuCube.moveOnAxis(Face_X_Plus);
+                                menuCube.moveOnAxis(AxisMovement_X_Plus);
                                 if (CubeFaceNamesEnum.Face_Menu == m_current_cube_face) {
                                     if (menuCube != m_pMenuCubeOptions) {
                                         if (7 == m_pMenuCubeOptions.m_cube_pos.x) {
-                                            m_pMenuCubeOptions.moveOnAxis(Face_X_Minus);
+                                            m_pMenuCubeOptions.moveOnAxis(AxisMovement_X_Minus);
                                         }
                                     }
                                 }
@@ -2974,7 +3003,7 @@ public final class Menu extends Scene {
                             case Face_Normal02:
                             case Face_Normal03:
                             case Face_Normal04:
-                                menuCube.moveOnAxis(Face_X_Minus);
+                                menuCube.moveOnAxis(AxisMovement_X_Minus);
                                 break;
 
                             case Face_Hard01:
@@ -2982,14 +3011,14 @@ public final class Menu extends Scene {
                             case Face_Hard03:
                             case Face_Hard04:
                             case Face_Tutorial:
-                                menuCube.moveOnAxis(Face_Z_Plus);
+                                menuCube.moveOnAxis(AxisMovement_Z_Plus);
                                 break;
 
                             case Face_Easy01:
                             case Face_Easy02:
                             case Face_Easy03:
                             case Face_Easy04:
-                                menuCube.moveOnAxis(Face_Z_Minus);
+                                menuCube.moveOnAxis(AxisMovement_Z_Minus);
                                 break;
 
                             default:
@@ -2999,35 +3028,35 @@ public final class Menu extends Scene {
 
                     case SwipeUp:
                         switch (m_current_cube_face) {
-                            case Face_Store: menuCube.moveOnAxis(Face_Z_Plus); break;
-                            case Face_Options: menuCube.moveOnAxis(Face_Z_Minus); break;
-                            case Face_Easy02: menuCube.moveOnAxis(Face_X_Plus); break;
-                            case Face_Easy03: menuCube.moveOnAxis(Face_Y_Minus); break;
-                            case Face_Easy04: menuCube.moveOnAxis(Face_X_Minus); break;
-                            case Face_Normal02: menuCube.moveOnAxis(Face_Z_Minus); break;
-                            case Face_Normal03: menuCube.moveOnAxis(Face_Y_Minus); break;
-                            case Face_Normal04: menuCube.moveOnAxis(Face_Z_Plus); break;
-                            case Face_Hard02: menuCube.moveOnAxis(Face_X_Minus); break;
-                            case Face_Hard03: menuCube.moveOnAxis(Face_Y_Minus); break;
-                            case Face_Hard04: menuCube.moveOnAxis(Face_X_Plus); break;
-                            default: menuCube.moveOnAxis(Face_Y_Plus); break;
+                            case Face_Store: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
+                            case Face_Options: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
+                            case Face_Easy02: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
+                            case Face_Easy03: menuCube.moveOnAxis(AxisMovement_Y_Minus); break;
+                            case Face_Easy04: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
+                            case Face_Normal02: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
+                            case Face_Normal03: menuCube.moveOnAxis(AxisMovement_Y_Minus); break;
+                            case Face_Normal04: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
+                            case Face_Hard02: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
+                            case Face_Hard03: menuCube.moveOnAxis(AxisMovement_Y_Minus); break;
+                            case Face_Hard04: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
+                            default: menuCube.moveOnAxis(AxisMovement_Y_Plus); break;
                         }
                         break;
 
                     case SwipeDown:
                         switch (m_current_cube_face) {
-                            case Face_Store: menuCube.moveOnAxis(Face_Z_Minus); break;
-                            case Face_Options: menuCube.moveOnAxis(Face_Z_Plus); break;
-                            case Face_Easy02: menuCube.moveOnAxis(Face_X_Minus); break;
-                            case Face_Easy03: menuCube.moveOnAxis(Face_Y_Plus); break;
-                            case Face_Easy04: menuCube.moveOnAxis(Face_X_Plus); break;
-                            case Face_Normal02: menuCube.moveOnAxis(Face_Z_Plus); break;
-                            case Face_Normal03: menuCube.moveOnAxis(Face_Y_Plus); break;
-                            case Face_Normal04: menuCube.moveOnAxis(Face_Z_Minus); break;
-                            case Face_Hard02: menuCube.moveOnAxis(Face_X_Plus); break;
-                            case Face_Hard03: menuCube.moveOnAxis(Face_Y_Plus); break;
-                            case Face_Hard04: menuCube.moveOnAxis(Face_X_Minus); break;
-                            default: menuCube.moveOnAxis(Face_Y_Minus); break;
+                            case Face_Store: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
+                            case Face_Options: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
+                            case Face_Easy02: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
+                            case Face_Easy03: menuCube.moveOnAxis(AxisMovement_Y_Plus); break;
+                            case Face_Easy04: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
+                            case Face_Normal02: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
+                            case Face_Normal03: menuCube.moveOnAxis(AxisMovement_Y_Plus); break;
+                            case Face_Normal04: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
+                            case Face_Hard02: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
+                            case Face_Hard03: menuCube.moveOnAxis(AxisMovement_Y_Plus); break;
+                            case Face_Hard04: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
+                            default: menuCube.moveOnAxis(AxisMovement_Y_Minus); break;
                         }
                         break;
 

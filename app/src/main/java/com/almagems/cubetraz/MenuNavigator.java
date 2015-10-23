@@ -10,8 +10,8 @@ public final class MenuNavigator
     private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
     private boolean m_secondary_rotation;
     
-    public CubeRotation m_cube_rotation;
-    public CubeRotation m_cube_rotation_secondary;
+    public CubeRotation m_cube_rotation = new CubeRotation();
+    public CubeRotation m_cube_rotation_secondary = new CubeRotation();
    
     private CubeFaceNavigationEnum m_navigation;
     

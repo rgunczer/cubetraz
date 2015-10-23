@@ -14,8 +14,10 @@ public final class MenuCube {
     private float m_step_t;
     private float m_start_value;
     private float m_end_value;
-    
-    private float position; // pointer!
+
+    private int m_moveType;
+
+    private Vector position;
     
     public float speed;
     
@@ -60,16 +62,33 @@ public final class MenuCube {
 		    if (m_t >= 1.0f) {
 			    m_t = 1.0f;
 			    m_done = true;                
-			    //engine->PlaySound(SOUND_CUBE_HIT);			
+			    Game.playSound(SOUND_CUBE_HIT);
 			    setCubePos(m_cube_pos_destination);
 		    } else {
-                //*position = LERP(m_start_value, m_end_value, m_t);
+                float value = Utils.lerp(m_start_value, m_end_value, m_t);
+                switch (m_moveType) {
+                    case AxisMovement_X_Plus:
+                    case AxisMovement_X_Minus:
+                        position.x = value;
+                        break;
+
+                    case AxisMovement_Y_Plus:
+                    case AxisMovement_Y_Minus:
+                        position.y = value;
+                        break;
+
+                    case AxisMovement_Z_Plus:
+                    case AxisMovement_Z_Minus:
+                        position.z = value;
+                        break;
+                }
             }
         }
 	}
 
     public void calcMove(CubePos cube_pos, int type) {
-        CubePos prev = cube_pos;
+        CubePos prev = new CubePos();
+        prev.init(cube_pos);
 	
         switch(type) {
             case AxisMovement_X_Plus:
@@ -151,34 +170,38 @@ public final class MenuCube {
 
     public void moveOnAxis(int type) {
         if (m_done) {
-            CubePos cube_pos = m_cube_pos;
+            CubePos cube_pos = new CubePos();
+            cube_pos.init(m_cube_pos);
             calcMove(cube_pos, type);
 
-            if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {
+            if (m_cube_pos.x != cube_pos.x ||
+                m_cube_pos.y != cube_pos.y ||
+                m_cube_pos.z != cube_pos.z) {
                 Game.menu.dontHiliteMenuCube();
                 m_cube_pos_destination = cube_pos;
                 Vector pos_destination = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
+                m_moveType = type;
 
-                switch (type) {
+                switch (m_moveType) {
                     case AxisMovement_X_Plus:
                     case AxisMovement_X_Minus:
                         m_start_value = pos.x;
                         m_end_value = pos_destination.x;
-                        position = pos.x; // pointer! (java)
+                        position = pos; //.x; // pointer! (java)
                         break;
 
                     case AxisMovement_Y_Plus:
                     case AxisMovement_Y_Minus:
                         m_start_value = pos.y;
                         m_end_value = pos_destination.y;
-                        position = pos.y; // pointer! (java)
+                        position = pos; //.y; // pointer! (java)
                         break;
 
                     case AxisMovement_Z_Plus:
                     case AxisMovement_Z_Minus:
                         m_start_value = pos.z;
                         m_end_value = pos_destination.z;
-                        position = pos.z; // pointer! (java)
+                        position = pos; //.z; // pointer! (java)
                         break;
 
                     default:

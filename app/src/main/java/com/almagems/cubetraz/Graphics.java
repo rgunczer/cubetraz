@@ -3,6 +3,7 @@ package com.almagems.cubetraz;
 
 import static android.opengl.GLES10.*;
 import static android.opengl.GLU.*;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.opengl.GLES11;
 import android.support.annotation.Nullable;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,11 +60,10 @@ public final class Graphics {
 
     private float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
     private float[] _normals = new float[BUF_SIZE * KILOBYTE];
-    private float[] _coords_float = new float[BUF_SIZE * KILOBYTE];
-    private float[] _coords_byte = new float[BUF_SIZE * KILOBYTE];
+    private float[] _coords = new float[BUF_SIZE * KILOBYTE];
     private byte[] _colors = new byte[BUF_SIZE * KILOBYTE];
 
-    public  boolean _blending_enabled = false;
+    public boolean _blending_enabled = false;
 
     public float screenWidth;
     public float screenHeight;
@@ -73,18 +74,12 @@ public final class Graphics {
     public Context context;
 
     private FloatBuffer _vertexBuffer;
+    private FloatBuffer _normalBuffer;
+    private FloatBuffer _coordsBuffer;
     private ByteBuffer _colorBuffer;
 
 
     //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
-
-
-
-
-
-
-
-
 
 
     // ctor
@@ -94,14 +89,14 @@ public final class Graphics {
         this.gl = gl;
     }
 
-    public  void initialSetup(int width, int height) {
+    public void initialSetup(int width, int height) {
         Graphics.width = width;
         Graphics.height = height;
 
         half_width = width / 2;
         half_height = height / 2;
 
-        aspectRatio = (float)width / (float)height;
+        aspectRatio = (float) width / (float) height;
 
         glViewport(0, 0, width, height);
 
@@ -162,13 +157,13 @@ public final class Graphics {
 //        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
 //        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
 //
-//        glEnable(GL_COLOR_MATERIAL);
+        glEnable(GL_COLOR_MATERIAL);
 
-//        glEnable(GL_CULL_FACE);
-//        glCullFace(GL_BACK);
-//
-//        glEnable(GL_DEPTH_TEST);
-//        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
 
 //        // create frame buffer object
 //        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
@@ -193,9 +188,19 @@ public final class Graphics {
 //        //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 //        glBlendFunc(GL_ONE, GL_ONE);
 
-        ByteBuffer vbb = ByteBuffer.allocateDirect(_vertices.length * 4);
+        ByteBuffer vbb;
+
+        vbb = ByteBuffer.allocateDirect(_vertices.length * 4);
         vbb.order(ByteOrder.nativeOrder());
         _vertexBuffer = vbb.asFloatBuffer();
+
+        vbb = ByteBuffer.allocateDirect(_normals.length * 4);
+        vbb.order(ByteOrder.nativeOrder());
+        _normalBuffer = vbb.asFloatBuffer();
+
+        vbb = ByteBuffer.allocateDirect(_coords.length * 4);
+        vbb.order(ByteOrder.nativeOrder());
+        _coordsBuffer = vbb.asFloatBuffer();
 
         _colorBuffer = ByteBuffer.allocateDirect(_colors.length);
     }
@@ -203,6 +208,20 @@ public final class Graphics {
     public void updateBuffers() {
         _vertexBuffer.put(_vertices);
         _vertexBuffer.position(0);
+
+        _colorBuffer.put(_colors);
+        _colorBuffer.position(0);
+    }
+
+    public void updateBuffersAll() {
+        _vertexBuffer.put(_vertices);
+        _vertexBuffer.position(0);
+
+        _normalBuffer.put(_normals);
+        _normalBuffer.position(0);
+
+        _coordsBuffer.put(_coords);
+        _coordsBuffer.position(0);
 
         _colorBuffer.put(_colors);
         _colorBuffer.position(0);
@@ -286,64 +305,89 @@ public final class Graphics {
         glDisable(GL_TEXTURE_2D);
     }
 
+    public void drawQuad() {
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
 
-    public void drawQuad() { glDrawArrays(GL_TRIANGLE_FAN, 0, 4); }
-    public void drawCube() { glDrawArrays(GL_TRIANGLES, 0, 36); }
+    public void drawCube() {
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
-// draw cube face
+    // draw cube face
     public void drawCubeFaceY_Plus() {
         glDrawArrays(GL_TRIANGLES, 30, 6);
     }
+
     public void drawCubeFaceY_Minus() {
         glDrawArrays(GL_TRIANGLES, 18, 6);
     }
-    public void drawCubeFaceX_Plus()  {
+
+    public void drawCubeFaceX_Plus() {
         glDrawArrays(GL_TRIANGLES, 12, 6);
     }
-    public void drawCubeFaceX_Minus() { glDrawArrays(GL_TRIANGLES, 24, 6); }
-    public void drawCubeFaceZ_Plus()  { glDrawArrays(GL_TRIANGLES, 6, 6); }
-    public void drawCubeFaceZ_Minus() { glDrawArrays(GL_TRIANGLES, 0, 6); }
+
+    public void drawCubeFaceX_Minus() {
+        glDrawArrays(GL_TRIANGLES, 24, 6);
+    }
+
+    public void drawCubeFaceZ_Plus() {
+        glDrawArrays(GL_TRIANGLES, 6, 6);
+    }
+
+    public void drawCubeFaceZ_Minus() {
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
 
     public static Color getColorFromScreen(Vector2 pos) {
-//        int ix = pos.x;
-//        int iy = m_height - pos.y;
-//
-//        GLuint argb;
-//        glReadPixels(ix, iy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &argb);
-//
-//        Color color;
+        int ix = (int) pos.x; //(int)Engine.rawX; //(int)pos.x * width/2;
+        int iy = height - (int) pos.y; //(int)Engine.rawY; //(int)pos.y * height/2;
+
+        ByteBuffer pixelBuf = ByteBuffer.allocateDirect(1 * 4);
+        pixelBuf.order(ByteOrder.LITTLE_ENDIAN);
+        glReadPixels(ix, iy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuf);
+
+        byte R = pixelBuf.get(0);
+        byte G = pixelBuf.get(1);
+        byte B = pixelBuf.get(2);
+        byte A = pixelBuf.get(3);
+
+        int r = R & 0xFF;
+        int g = G & 0xFF;
+        int b = B & 0xFF;
+        int a = A & 0xFF;
+
+        Color color = new Color(r, g, b, a);
 //        color.r = (argb)       & 0xFF;
 //        color.g = (argb >> 8)  & 0xFF;
 //        color.b = (argb >> 16) & 0xFF;
 //        color.a = (argb >> 24) & 0xFF;
-//
-//        //printf("\nx:%d, y:%d, red:%d, green:%d, blue:%d, alpha:%d", ix, iy, color.r, color.g, color.b, color.a);
-//
-//        return color;
-        return null;
+
+        System.out.println("\nx:" + ix + ", y:" + iy + ", red:" + color.r + ", green:" + color.g + ", blue:" + color.b + ", alpha: " + color.a);
+        return color;
     }
 
-    public  void drawAxes() {
+    public void drawAxes() {
+        final float length = width;
         final float axis[] = {
-                -100.0f,    0.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // x
-                0.0f, -100.0f,    0.0f,		  0.0f,    0.0f,    0.0f,    // y
-                0.0f,    0.0f, -100.0f,        0.0f,    0.0f,    0.0f,    // z
+                -length, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,    // x
+                0.0f, -length, 0.0f, 0.0f, 0.0f, 0.0f,    // y
+                0.0f, 0.0f, -length, 0.0f, 0.0f, 0.0f,    // z
 
-                0.0f,    0.0f,    0.0f,		100.0f,    0.0f,    0.0f,    // x
-                0.0f,    0.0f,    0.0f,		  0.0f,  100.0f,    0.0f,    // y
-                0.0f,    0.0f,    0.0f,	      0.0f,    0.0f,  100.0f,    // z
+                0.0f, 0.0f, 0.0f, length, 0.0f, 0.0f,    // x
+                0.0f, 0.0f, 0.0f, 0.0f, length, 0.0f,    // y
+                0.0f, 0.0f, 0.0f, 0.0f, 0.0f, length,    // z
         };
 
-        byte maxColor = (byte)255;
+        byte maxColor = (byte) 255;
 
         final byte colors[] = {
-                0, 0, maxColor, maxColor,				0, 0, maxColor, maxColor, // x
-                0, maxColor, 0, maxColor,				0, maxColor, 0, maxColor, // y
-                maxColor, 0, 0, maxColor,				maxColor, 0, 0, maxColor, // z
+                0, 0, maxColor, maxColor, 0, 0, maxColor, maxColor, // x
+                0, maxColor, 0, maxColor, 0, maxColor, 0, maxColor, // y
+                maxColor, 0, 0, maxColor, maxColor, 0, 0, maxColor, // z
 
-                0, 0, maxColor, maxColor,				0, 0, maxColor, maxColor, // x
-                0, maxColor, 0, maxColor,				0, maxColor, 0, maxColor, // y
-                maxColor, 0, 0, maxColor,				maxColor, 0, 0, maxColor, // z
+                0, 0, maxColor, maxColor, 0, 0, maxColor, maxColor, // x
+                0, maxColor, 0, maxColor, 0, maxColor, 0, maxColor, // y
+                maxColor, 0, 0, maxColor, maxColor, 0, 0, maxColor, // z
         };
 
         prepare();
@@ -359,69 +403,78 @@ public final class Graphics {
 
         glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
-        glLineWidth(3.0f);
+        glLineWidth(3f);
 
 //        float[] model_matrix = new float[16];
 //        GLES11.glGetFloatv(GLES11.GL_MODELVIEW_MATRIX, model_matrix, 0);
 
         glDrawArrays(GL_LINES, 6, 6);
 
-        glLineWidth(1.0f);
+        glLineWidth(1f);
         glDrawArrays(GL_LINES, 0, 6);
     }
 
-    public  void drawFBOTexture(int texture_id, Color color, boolean magic) {
-//        const GLfloat verts[] =
-//            {
-//                    0.0f,               engine->m_height,
-//                    0.0f,               0.0f,
-//                    engine->m_width,    0.0f,
-//                    engine->m_width,    engine->m_height
-//            };
-//
-//        GLfloat coords[] =
-//                {
-//                        0, 1,
-//                        0, 0,
-//                        1, 0,
-//                        1, 1
-//                };
-//
-//        if (magic)
-//        {
+    public void drawFBOTexture(int texture_id, Color color, boolean magic) {
+        final float verts[] = {
+                0f, height,
+                0f, 0f,
+                width, 0f,
+                width, height
+        };
+
+        final float coords[] = {
+                0f, 1f,
+                0f, 0f,
+                1f, 0f,
+                1f, 1f
+        };
+
+//        if (magic) {
 //            coords[1] = 1.0f - (m_banner_height / m_height);
 //            coords[7] = coords[1];
 //        }
-//
-//        const GLubyte colors[] =
-//            {
-//                    color.r, color.g, color.b, color.a,
-//                    color.r, color.g, color.b, color.a,
-//                    color.r, color.g, color.b, color.a,
-//                    color.r, color.g, color.b, color.a
-//            };
-//
-//        glBindTexture(GL_TEXTURE_2D, texture_id);
-//
-//        glVertexPointer(2, GL_FLOAT, 0, verts);
-//        glTexCoordPointer(2, GL_FLOAT, 0, coords);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-//
-//        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        final byte colors[] = {
+                color.R, color.G, color.B, color.A,
+                color.R, color.G, color.B, color.A,
+                color.R, color.G, color.B, color.A,
+                color.R, color.G, color.B, color.A
+        };
+
+        _vertexBuffer.put(verts);
+        _vertexBuffer.position(0);
+
+        _coordsBuffer.put(coords);
+        _coordsBuffer.position(0);
+
+        _colorBuffer.put(colors);
+        _colorBuffer.position(0);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+
+        glVertexPointer(2, GL_FLOAT, 0, _vertexBuffer);
+        glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+
+        glBindTexture(GL_TEXTURE_2D, texture_id);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-    public  void setModelViewMatrix2D() {
+    public void setModelViewMatrix2D() {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
     }
 
-    public  void setProjection2D() {
+    public void setProjection2D() {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrthof(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     }
 
-    public  void setModelViewMatrix3D(final Camera camera) {
+    public void setModelViewMatrix3D(final Camera camera) {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
@@ -436,58 +489,60 @@ public final class Graphics {
 //        GLES11.glGetFloatv(GLES11.GL_MODELVIEW_MATRIX, model_matrix, 0);
     }
 
-    public  void setProjection3D() {
-        final float zNear = 0.1f;
+    public void setProjection3D() {
+        final float zNear = 0.01f;
         final float zFar = 1000.0f;
         final float fieldOfView = 30.0f;
-        final float size = zNear * (float)Math.tan(( Math.toRadians(fieldOfView) / 2.0f ));
+        final float size = zNear * (float) Math.tan((Math.toRadians(fieldOfView) / 2.0f));
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glFrustumf(-size, size, -size / aspectRatio, size / aspectRatio, zNear, zFar);
     }
 
-    public  void addCubeWithColor(float tx, float ty, float tz, Color color) {
+    public void addCubeWithColor(float tx, float ty, float tz, Color color) {
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
     }
 
-    public  void enableBlending() {
+    public void enableBlending() {
         if (!_blending_enabled) {
             glEnable(GL_BLEND);
+            glDisable(GL_DEPTH_TEST);
             _blending_enabled = true;
         }
     }
 
-    public  void disableBlending() {
+    public void disableBlending() {
         if (_blending_enabled) {
             glDisable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
             _blending_enabled = false;
         }
     }
 
-    public  void renderPoints() {
+    public void renderPoints() {
         glDrawArrays(GL_POINTS, 0, _vertices_count);
     }
 
-    public  void addCube(float tx, float ty, float tz) {
+    public void addCube(float tx, float ty, float tz) {
         final Color color = new Color(255, 255, 255, 255);
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
     }
 
-    public  void prepare() {
+    public void prepare() {
         _vertices_count = 0;
         _vindex = -1;
         _cindex = -1;
         _color_index = -1;
     }
 
-    public  void setStreamSource() {
+    public void setStreamSource() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
 
         glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
-//        glNormalPointer(GL_FLOAT, 0, _normals);
-//        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
+        glNormalPointer(GL_FLOAT, 0, _normalBuffer);
+        glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
 
         //glEnableClientState(GL_NORMAL_ARRAY);
@@ -495,7 +550,7 @@ public final class Graphics {
     }
 
     public void loadStartupAssets() throws Exception {
-        System.out.println("Load startup Assets...");
+        //System.out.println("Load startup Assets...");
 
         // textures
         texture_id_gray_concrete = loadTexture(R.drawable.grey_concrete128_stroke);
@@ -515,11 +570,6 @@ public final class Graphics {
         texture_id_tutor = loadTexture(R.drawable.tutor_swipe);
     }
 
-    public  int loadTexture(String fileName) {
-        // todo
-        return 0;
-    }
-
     private int loadTexture(int resourceId) {
         Texture texture = TextureHelper.loadTexture(context, resourceId);
         textures.add(texture);
@@ -527,19 +577,18 @@ public final class Graphics {
     }
 
     private int loadTextureAndJson(int textureResourceId, int jsonResourceId) {
-        //Texture texture = TextureHelper.loadTexture(context, textureResourceId);
-        //String jsonText = TextResourceReader.readTextFileFromResource(context, jsonResourceId);
-        //texture.loadFrames(jsonText);
-        //textures.add(texture);
-        //return texture.id;
-        return 0;
+        Texture texture = TextureHelper.loadTexture(context, textureResourceId);
+        String jsonText = TextResourceReader.readTextFileFromResource(context, jsonResourceId);
+        texture.loadFrames(jsonText);
+        textures.add(texture);
+        return texture.id;
     }
 
     @Nullable
     public Texture getTextureObj(int textureId) {
         Texture texture;
         int size = textures.size();
-        for(int i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i) {
             texture = textures.get(i);
             if (texture.id == textureId) {
                 return texture;
@@ -548,41 +597,7 @@ public final class Graphics {
         return null;
     }
 
-	public void loadTexturesPart01() {
-//        textureGems = loadTexture(R.drawable.gems_textures);
-//        textureCart = loadTexture(R.drawable.cart_texture);
-//        textureRailRoad = loadTexture(R.drawable.railroad_texture);
-//        textureParticle = loadTexture(R.drawable.smokeparticle);
-//        textureFloor = loadTexture(R.drawable.floor_texture);
-//        textureWall = loadTexture(R.drawable.wall_texture);
-    }
-
-    public void loadTexturesPart02() {
-//        texturePillar = loadTexture(R.drawable.pillar_texture);
-//        textureCrate = loadTexture(R.drawable.crate_texture);
-//        textureSoil = loadTexture(R.drawable.soil_texture);
-//        textureWheel = loadTexture(R.drawable.wheel_texture);
-//        textureBeam = loadTexture(R.drawable.beam_texture);
-//        textureCliff142 = loadTexture(R.drawable.cliffs0142);
-    }
-
-    public void loadTexturesPart03() {
-//		texturePickAxe = loadTexture(R.drawable.pickaxe_texture);
-//        textureFonts = loadTexture(R.drawable.fontsandroid);
-//        textureEditorButtons = loadTexture(R.drawable.editor_buttons);
-//        textureHudPauseButton = loadTexture(R.drawable.hud_pause_button);
-//		textureMenuItems = loadTextureAndJson(R.drawable.menu_items, R.raw.data);
-	}
-
-	public void bindNoTexture() {
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-
-
-
-
-	public void calcMatricesForObject(PositionInfo op, float tx, float ty) {
+    public void calcMatricesForObject(PositionInfo op, float tx, float ty) {
 //        setIdentityM(modelMatrix, 0);
 //
 //        translateM(modelMatrix, 0, 0f, ty, 0f);
@@ -690,7 +705,7 @@ public final class Graphics {
 //		// calc matrix to transform normal based on the model matrix
 //		invertM(normalMatrix, 0, modelMatrix, 0);
 //		transposeM(normalMatrix, 0, normalMatrix, 0);
-	}
+    }
 
 //    public VertexBuffer createFullScreenVertexBuffer(Rectangle rc, Texture texture) {
 //        float width = screenWidth;
@@ -726,11 +741,7 @@ public final class Graphics {
 //        return vb;
 //    }
 
-
-    public void loadFonts() {
-    }
-
-    public  int createTexture(int w, int h) {
+    public int createTexture(int w, int h) {
         int[] temp = new int[1];
         glGenTextures(1, temp, 0);
 
@@ -748,7 +759,7 @@ public final class Graphics {
     }
 
 
-    public  void prepareFrame() {
+    public void prepareFrame() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
@@ -768,65 +779,6 @@ public final class Graphics {
 //            fboBackground.create(width, height);
 //        }
     }
-
-    public void releaseUnusedAssets() {
-//        int[] arr = new int[]{
-//                textureRailRoad,
-//                textureFloor,
-//                textureWall,
-//                texturePillar,
-//                textureCrate,
-//                textureSoil,
-//                textureBeam,
-//                textureCliff142,
-//                texturePickAxe,
-//                textureEditorButtons
-//        };
-//
-//        for (int i = 0; i < arr.length; ++i) {
-//            Texture texture = getTextureObj( arr[i] );
-//            if (texture != null) {
-//                textures.remove(texture);
-//            }
-//        }
-//
-//        glDeleteTextures(arr.length, arr, 0);
-//
-//        railroad = null;
-//        floor = null;
-//        wall = null;
-//        pillar = null;
-//        crate = null;
-//        soil = null;
-//        beam = null;
-//        rock0 = null;
-//        rock1 = null;
-//        rock2 = null;
-//        rock3 = null;
-//        rock4 = null;
-//        rock5 = null;
-//        rock6 = null;
-//        rock7 = null;
-//        rock8 = null;
-//        pickAxe = null;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //     inline void DumpVerticesBuffer(int count)
@@ -855,7 +807,7 @@ public final class Graphics {
 //
 //        for (int i = 0; i < count*2; i+=2)
 //        {
-//            printf("\nx:%.2f, y:%.2f", _coords_float[i], _coords_float[i+1]);
+//            printf("\nx:%.2f, y:%.2f", _coords[i], _coords[i+1]);
 //        }
 //	}
 //
@@ -879,13 +831,13 @@ public final class Graphics {
 //        }
 //	}
 
-    public  void setStreamSourceOld() {
+    public void setStreamSourceOld() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
 //        glNormalPointer(GL_FLOAT, 0, _normals);
 //        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
     }
 
-    public  void setStreamSourceOnlyVerticeAndColor() {
+    public void setStreamSourceOnlyVerticeAndColor() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
 //        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
 
@@ -893,20 +845,20 @@ public final class Graphics {
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    public  void setStreamSourceFloatAndColor() {
+    public void setStreamSourceFloatAndColor() {
+        glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
+        glNormalPointer(GL_FLOAT, 0, _normalBuffer);
+        glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+    }
+
+    public void setStreamSourceFloat() {
 //        glVertexPointer(3, GL_FLOAT, 0, _vertices);
 //        glNormalPointer(GL_FLOAT, 0, _normals);
 //        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
     }
 
-    public  void setStreamSourceFloat() {
-//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-//        glNormalPointer(GL_FLOAT, 0, _normals);
-//        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-    }
-
-    public  void setStreamSourceFloat2D() {
+    public void setStreamSourceFloat2D() {
 //        glVertexPointer(2, GL_FLOAT, 0, _vertices);
 //        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
 //        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
@@ -915,7 +867,7 @@ public final class Graphics {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    public  void setStreamSourceFloat2DNoTexture() {
+    public void setStreamSourceFloat2DNoTexture() {
 //        glVertexPointer(2, GL_FLOAT, 0, _vertices);
 //        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
 
@@ -923,18 +875,18 @@ public final class Graphics {
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    public  void renderTriangles() {
+    public void renderTriangles() {
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
     }
 
-    public  void renderTriangles(float tx, float ty, float tz) {
+    public void renderTriangles(float tx, float ty, float tz) {
         glPushMatrix();
         glTranslatef(tx, ty, tz);
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
         glPopMatrix();
     }
 
-    public  void addCubeSize(float tx, float ty, float tz, float size, Color color) {
+    public void addCubeSize(float tx, float ty, float tz, float size, Color color) {
         //printf("\nColor: %d %d %d %d", color.r, color.g, color.b, color.a);
 
         float xp = size + tx;
@@ -949,173 +901,353 @@ public final class Graphics {
         int i = _vindex;
 
         // x-plus
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zn;
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zp;
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
 
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zp;
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zn;
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
 
         // x-minus
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zp;
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zn;
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
 
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zn;
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zp;
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
 
 
         // y-plus
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zp;
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zn;
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
 
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zn;
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zp;
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
 
         // y-minus
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zn;
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zp;
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
 
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zp;
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zn;
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
 
 
         // z-plus
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zp;
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zp;
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
 
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zp;
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zp;
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zp;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zp;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zp;
 
         // z-minus
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zn;
-        _vertices[++i] = xp; _vertices[++i] = yn; _vertices[++i] = zn;
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
 
-        _vertices[++i] = xn; _vertices[++i] = yn; _vertices[++i] = zn;
-        _vertices[++i] = xn; _vertices[++i] = yp; _vertices[++i] = zn;
-        _vertices[++i] = xp; _vertices[++i] = yp; _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yn;
+        _vertices[++i] = zn;
+        _vertices[++i] = xn;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
+        _vertices[++i] = xp;
+        _vertices[++i] = yp;
+        _vertices[++i] = zn;
 
 //------------------------------------
         int j = _vindex;
 
         // x-plus
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         // x-minus
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
 
         // y-plus
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
 
         // y-minus
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
 
 
         // z-plus
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
 
         // z-minus
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
 
         _vindex = i;
 //------------------------------------
         int k = _cindex;
 
         // x-plus
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
 
         // x-minus
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
 
 
         // y-plus
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
 
         // y-minus
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 0
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 2
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 2
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 0
 
 
         // z-plus
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
 
         // z-minus
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
 
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
 
         _cindex = k;
 
@@ -1123,60 +1255,168 @@ public final class Graphics {
         int c = _color_index;
 
         // x-plus
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         // x-minus
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
 
         // y-plus
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         // y-minus
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
 
         // z-plus
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         // z-minus
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
@@ -1188,106 +1428,171 @@ public final class Graphics {
         _vertices_count += 36;
     }
 
-
-    public  void addQuad(float x, float y, float w, float h, Color color) {
+    public void addQuad(float x, float y, float w, float h, Color color) {
         int i = _vindex;
 
         // vertices
-        _vertices[++i] = x;         _vertices[++i] = y;
-        _vertices[++i] = x + w;		_vertices[++i] = y;
-        _vertices[++i] = x + w;		_vertices[++i] = y + h;
+        _vertices[++i] = x;
+        _vertices[++i] = y;
+        _vertices[++i] = x + w;
+        _vertices[++i] = y;
+        _vertices[++i] = x + w;
+        _vertices[++i] = y + h;
 
-        _vertices[++i] = x + w;		_vertices[++i] = y + h;
-        _vertices[++i] = x;         _vertices[++i] = y + h;
-        _vertices[++i] = x;         _vertices[++i] = y;
+        _vertices[++i] = x + w;
+        _vertices[++i] = y + h;
+        _vertices[++i] = x;
+        _vertices[++i] = y + h;
+        _vertices[++i] = x;
+        _vertices[++i] = y;
 
         _vindex = i;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
         _color_index = c;
 
         _vertices_count += 6;
     }
 
 
-    public  void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
+    public void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
         int i = _vindex;
 
-        _vertices[++i] = tx;			_vertices[++i] = ty;
-        _vertices[++i] = tx + size;		_vertices[++i] = ty;
-        _vertices[++i] = tx + size;		_vertices[++i] = ty + size;
+        _vertices[++i] = tx;
+        _vertices[++i] = ty;
+        _vertices[++i] = tx + size;
+        _vertices[++i] = ty;
+        _vertices[++i] = tx + size;
+        _vertices[++i] = ty + size;
 
-        _vertices[++i] = tx + size;		_vertices[++i] = ty + size;
-        _vertices[++i] = tx;			_vertices[++i] = ty + size;
-        _vertices[++i] = tx;			_vertices[++i] = ty;
+        _vertices[++i] = tx + size;
+        _vertices[++i] = ty + size;
+        _vertices[++i] = tx;
+        _vertices[++i] = ty + size;
+        _vertices[++i] = tx;
+        _vertices[++i] = ty;
 
         _vindex = i;
 
         int k = _cindex;
 
         // coordinates
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
+    public void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
         int i = _vindex;
 
         // vertices
-        _vertices[++i] = tx;			_vertices[++i] = ty;
-        _vertices[++i] = tx + size;		_vertices[++i] = ty;
-        _vertices[++i] = tx + size;		_vertices[++i] = ty + size;
+        _vertices[++i] = tx;
+        _vertices[++i] = ty;
+        _vertices[++i] = tx + size;
+        _vertices[++i] = ty;
+        _vertices[++i] = tx + size;
+        _vertices[++i] = ty + size;
 
-        _vertices[++i] = tx + size;		_vertices[++i] = ty + size;
-        _vertices[++i] = tx;			_vertices[++i] = ty + size;
-        _vertices[++i] = tx;			_vertices[++i] = ty;
+        _vertices[++i] = tx + size;
+        _vertices[++i] = ty + size;
+        _vertices[++i] = tx;
+        _vertices[++i] = ty + size;
+        _vertices[++i] = tx;
+        _vertices[++i] = ty;
 
         _vindex = i;
 
         int k = _cindex;
 
         // coordinates
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         int c = _color_index;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addPoint(float x, float y, float z) {
+    public void addPoint(float x, float y, float z) {
         int i = _vindex;
 
         // z-minus
@@ -1300,7 +1605,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public  void addPoint(Vector pos, Color color) {
+    public void addPoint(Vector pos, Color color) {
         int i = _vindex;
 
         _vertices[++i] = pos.x;
@@ -1311,17 +1616,17 @@ public final class Graphics {
 
         int c = _color_index;
 
-        _colors[++c] = (byte)color.R;
-        _colors[++c] = (byte)color.G;
-        _colors[++c] = (byte)color.B;
-        _colors[++c] = (byte)color.A;
+        _colors[++c] = (byte) color.R;
+        _colors[++c] = (byte) color.G;
+        _colors[++c] = (byte) color.B;
+        _colors[++c] = (byte) color.A;
 
         _color_index = c;
 
         ++_vertices_count;
     }
 
-    public  void addPoint2D(float x, float y) {
+    public void addPoint2D(float x, float y) {
         int i = _vindex;
 
         // z-minus
@@ -1333,108 +1638,192 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public  void addCubeFace_X_Plus(float tx, float ty, float tz) {
+    public void addCubeFace_X_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
 // vertices
         // x                                   y                                      z
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 13
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 14
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 13
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 14
 
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 15
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 15
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
 
         _vindex = i;
 
 // normals
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
 // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Minus(float tx, float ty, float tz) {
+    public void addCubeFace_X_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
 // vertices
         // x                                   y                                      z
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 25
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 26
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 25
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 26
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 27
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 28
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 29
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 27
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 28
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 29
 
         _vindex = i;
 
 // normals
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
 // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Plus(float tx, float ty, float tz) {
+    public void addCubeFace_Y_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
 // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 30
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 30
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 3 - 34
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 0 - 35
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 3 - 34
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 0 - 35
 
         _vindex = i;
 
 // normals
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
@@ -1447,13 +1836,19 @@ public final class Graphics {
 //	_coords_byte[++k] = 1; _coords_byte[++k] = 1; // 3
 //    _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
 
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
 
 
         _cindex = k;
@@ -1461,147 +1856,261 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Minus(float tx, float ty, float tz) {
+    public void addCubeFace_Y_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
 // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 19
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 20
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 19
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 20
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 21
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 21
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
 
         _vindex = i;
 
 // normals
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
 // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Plus(float tx, float ty, float tz) {
+    public void addCubeFace_Z_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
 // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 6
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 7
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 8
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 6
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 7
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 8
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 9
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 3 - 10
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 11
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 9
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 3 - 10
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 11
 
         _vindex = i;
 
 // normals
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
 
         int k = _cindex;
 
 // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Minus(float tx, float ty, float tz) {
+    public void addCubeFace_Z_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
 // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
 
         _vindex = i;
 
 // normals
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
 
         int k = _cindex;
 
 // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 0
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 2
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 2
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // x-plus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 13
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 14
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 13
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 14
 
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 15
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 15
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
 
         _vindex = i;
 
         // normals
         // left
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
@@ -1616,43 +2125,73 @@ public final class Graphics {
 //  _coords[++k] = 1; _coords[++k] = 1; // 3
 //  _coords[++k] = 1; _coords[++k] = 0; // 0
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // x-minus
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 25
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 26
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 25
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 26
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 2 - 27
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 3 - 28
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 0 - 29
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 2 - 27
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 3 - 28
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 0 - 29
 
         _vindex = i;
 
         // normals
         // right
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
@@ -1666,43 +2205,73 @@ public final class Graphics {
 //	_coords[++k] = 1; _coords[++k] = 0; // 3
 //    _coords[++k] = 1; _coords[++k] = 1; // 0
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // y-plus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 30
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 30
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 3 - 34
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 0 - 35
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 3 - 34
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 0 - 35
 
         _vindex = i;
 
         // normals
         // top
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
@@ -1716,43 +2285,73 @@ public final class Graphics {
 //	_coords[++k] = 1; _coords[++k] = 1; // 3
 //    _coords[++k] = 1; _coords[++k] = 0; // 0
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // y-minus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 19
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 20
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 19
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 20
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 21
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 21
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
 
         _vindex = i;
 
         // normals
         // bottom
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
@@ -1766,553 +2365,1027 @@ public final class Graphics {
 //		_coords[++k] = 1; _coords[++k] = 0; // 3
 //		_coords[++k] = 1; _coords[++k] = 1; // 0
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // z-plus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 6
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 7
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 8
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 6
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 7
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 8
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 9
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 3 - 10
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 11
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 9
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 3 - 10
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 11
 
         _vindex = i;
 
         // normals
         // front
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
 
         int k = _cindex;
 
         // coordinates
         // front
-//    _coords_float[++k] = 1; _coords_float[++k] = 1; // 0
-//    _coords_float[++k] = 0; _coords_float[++k] = 1; // 1
-//    _coords_float[++k] = 0; _coords_float[++k] = 0; // 2
+//    _coords[++k] = 1; _coords[++k] = 1; // 0
+//    _coords[++k] = 0; _coords[++k] = 1; // 1
+//    _coords[++k] = 0; _coords[++k] = 0; // 2
 //
-//	_coords_float[++k] = 0; _coords_float[++k] = 0; // 2
-//    _coords_float[++k] = 1; _coords_float[++k] = 0; // 3
-//    _coords_float[++k] = 1; _coords_float[++k] = 1; // 0
+//	_coords[++k] = 0; _coords[++k] = 0; // 2
+//    _coords[++k] = 1; _coords[++k] = 0; // 3
+//    _coords[++k] = 1; _coords[++k] = 1; // 0
 
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
         // z-minus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
 
         _vindex = i;
 
         // back
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
 
         int k = _cindex;
 
         // back
-//	_coords_float[++k] = 1; _coords_float[++k] = 0; // 0
-//	_coords_float[++k] = 1; _coords_float[++k] = 1; // 1
-//	_coords_float[++k] = 0; _coords_float[++k] = 1; // 2
+//	_coords[++k] = 1; _coords[++k] = 0; // 0
+//	_coords[++k] = 1; _coords[++k] = 1; // 1
+//	_coords[++k] = 0; _coords[++k] = 1; // 2
 //
-//	_coords_float[++k] = 0; _coords_float[++k] = 1; // 2
-//	_coords_float[++k] = 0; _coords_float[++k] = 0; // 3
-//	_coords_float[++k] = 1; _coords_float[++k] = 0; // 0
+//	_coords[++k] = 0; _coords[++k] = 1; // 2
+//	_coords[++k] = 0; _coords[++k] = 0; // 3
+//	_coords[++k] = 1; _coords[++k] = 0; // 0
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 13
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 14
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 13
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 14
 
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 15
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 15
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
 
         _vindex = i;
 
         // normals
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         // textures
         int k = _cindex;
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // x-minus
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 25
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 26
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 25
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 26
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 2 - 27
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 3 - 28
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 0 - 29
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 2 - 27
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 3 - 28
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 0 - 29
 
         _vindex = i;
 
         // normals
         // right
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // y-plus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 30
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 30
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 3 - 34
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 0 - 35
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 3 - 34
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 0 - 35
 
         _vindex = i;
 
         // normals
         // top
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
         // coordinates
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // y-minus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 19
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 20
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 19
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 20
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 21
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 21
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
 
         _vindex = i;
 
         // normals
         // bottom
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // z-plus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 6
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 7
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 8
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 6
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 7
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 8
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 9
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 3 - 10
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 11
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 9
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 3 - 10
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 11
 
         _vindex = i;
 
         // normals
         // front
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
 
         int k = _cindex;
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // z-minus
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
 
         _vindex = i;
 
         // back
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
 
         int k = _cindex;
 
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
-        _coords_float[++k] = coords.tx1.x; _coords_float[++k] = coords.tx1.y; // 1
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx1.x;
+        _coords[++k] = coords.tx1.y; // 1
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
 
-        _coords_float[++k] = coords.tx2.x; _coords_float[++k] = coords.tx2.y; // 2
-        _coords_float[++k] = coords.tx3.x; _coords_float[++k] = coords.tx3.y; // 3
-        _coords_float[++k] = coords.tx0.x; _coords_float[++k] = coords.tx0.y; // 0
+        _coords[++k] = coords.tx2.x;
+        _coords[++k] = coords.tx2.y; // 2
+        _coords[++k] = coords.tx3.x;
+        _coords[++k] = coords.tx3.y; // 3
+        _coords[++k] = coords.tx0.x;
+        _coords[++k] = coords.tx0.y; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
+    public void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // x                                   y                                      z
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 13
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 14
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 12
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 13
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 14
 
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 15
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 15
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 16
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 17
 
         _vindex = i;
 
         // normals
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
         // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
+    public void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
         // x                                   y                                      z
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 25
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 26
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 24
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 25
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 26
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 27
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 28
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 29
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 27
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 28
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 29
 
         _vindex = i;
 
         // normals
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
-        _normals[++j] = -1.0f; _normals[++j] = 0.0f; _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
         // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
+    public void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 30
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 30
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 31
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 32
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 3 - 34
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz;  // 0 - 35
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz;  // 2 - 33
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 3 - 34
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz;  // 0 - 35
 
         _vindex = i;
 
         // normals
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
@@ -2325,178 +3398,346 @@ public final class Graphics {
         //	_coords_byte[++k] = 1; _coords_byte[++k] = 1; // 3
         //    _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
 
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1;
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0;
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
+        _coords[++k] = 0f;
+        _coords[++k] = 1f;
+        _coords[++k] = 0f;
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
+    public void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 19
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 20
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 18
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 19
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 20
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 21
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 21
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 22
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 23
 
         _vindex = i;
 
         // normals
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
-        _normals[++j] = 0.0f; _normals[++j] = -1.0f; _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
 
         int k = _cindex;
 
         // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
+    public void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 6
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 1 - 7
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 8
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 6
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 1 - 7
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 8
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 2 - 9
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 3 - 10
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] =  HALF_CUBE_SIZE + tz; // 0 - 11
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 2 - 9
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 3 - 10
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = HALF_CUBE_SIZE + tz; // 0 - 11
 
         _vindex = i;
 
         // normals
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 1.0f;
 
         int k = _cindex;
 
         // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 2
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 
         _vertices_count += 6;
     }
 
-    public  void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
+    public void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
         // vertices
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 0
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 1 - 1
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 2
 
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] = -HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
-        _vertices[++i] = -HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
-        _vertices[++i] =  HALF_CUBE_SIZE + tx; _vertices[++i] =  HALF_CUBE_SIZE + ty; _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = -HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 2 - 3
+        _vertices[++i] = -HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 3 - 4
+        _vertices[++i] = HALF_CUBE_SIZE + tx;
+        _vertices[++i] = HALF_CUBE_SIZE + ty;
+        _vertices[++i] = -HALF_CUBE_SIZE + tz; // 0 - 5
 
         _vindex = i;
 
         // normals
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
-        _normals[++j] = 0.0f; _normals[++j] = 0.0f; _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = 0.0f;
+        _normals[++j] = -1.0f;
 
         int k = _cindex;
 
         // coordinates
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
-        _coords_byte[++k] = 1; _coords_byte[++k] = 1; // 1
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 2
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 0
+        _coords[++k] = 1f;
+        _coords[++k] = 1f; // 1
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 2
 
-        _coords_byte[++k] = 0; _coords_byte[++k] = 1; // 2
-        _coords_byte[++k] = 0; _coords_byte[++k] = 0; // 3
-        _coords_byte[++k] = 1; _coords_byte[++k] = 0; // 0
+        _coords[++k] = 0f;
+        _coords[++k] = 1f; // 2
+        _coords[++k] = 0f;
+        _coords[++k] = 0f; // 3
+        _coords[++k] = 1f;
+        _coords[++k] = 0f; // 0
 
         _cindex = k;
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
-        _colors[++c] = color.R; 	_colors[++c] = color.G; 	_colors[++c] = color.B; 	_colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
+        _colors[++c] = color.R;
+        _colors[++c] = color.G;
+        _colors[++c] = color.B;
+        _colors[++c] = color.A;
 
         _color_index = c;
 

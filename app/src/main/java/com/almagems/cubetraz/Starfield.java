@@ -18,13 +18,13 @@ public class Starfield {
     }
 
     private void initStarPosition(Vector v) {
-        v.x = Utils.randInt(-10, 20);
-        v.y = Utils.randInt(-75, 150) / 10f;
+        v.x = Utils.randInt(-10, 20) + Utils.rand.nextFloat();
+        v.y = Utils.randInt(-75, 150) / 10f + Utils.rand.nextFloat();
         v.z = Utils.randInt(-30, 30);
     }
 
     public void create() {
-        m_star_count = (int)(256f * Graphics.device_scale);
+        m_star_count = (int)(384f * Graphics.device_scale);
 
         for (int i = 0; i < MAX_STARS; ++i) {
             m_stars[i] = new Vector();
@@ -49,9 +49,6 @@ public class Starfield {
     }
 
     public void render() {
-        alpha = 255;
-        graphics.prepareFrame();
-
         int big_points = 0;
         Color color = new Color(224, 255, 255, (int)alpha);
 

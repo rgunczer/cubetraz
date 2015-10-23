@@ -356,7 +356,7 @@ public final class MenuFaceBuilder {
     private static int[] convertToIntArray(String str) {
         int[] arr = new int[str.length()];
         for(int i = 0; i < str.length(); ++i) {
-            arr[i] = (str.charAt(i) - '0');
+            arr[i] = str.charAt(i); //(str.charAt(i) - '0');
         }
         return arr;
     }

@@ -2932,15 +2932,15 @@ public final class Level extends Scene {
             mIsSwipe = false;
 
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = graphics.getColorFromScreen(mPosDown);
+            Color down_color = Graphics.getColorFromScreen(mPosDown);
 
 //		printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", down_color.r, down_color.g, down_color.b, down_color.a);
 
             SwipeDirEnums swipeDir = SwipeDirEnums.SwipeDown;
             float length = 1f;
-            Engine.getSwipeDirAndLength(mPosDown, mPosUp, swipeDir, length);
+            SwipeInfo swipeInfo = Engine.getSwipeDirAndLength(mPosDown, mPosUp);
 
-            if (length > 30.0f * graphics.scaleFactor) {
+            if (swipeInfo.length > 30.0f * graphics.scaleFactor) {
                 MenuCube menuCube = null;
 
                 switch ((int)down_color.b) {
@@ -2950,7 +2950,7 @@ public final class Level extends Scene {
                 }
 
                 if (menuCube != null) {
-                    switch (swipeDir) {
+                    switch (swipeInfo.swipeDir) {
                         case SwipeLeft: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
                         case SwipeRight: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
                         default:
