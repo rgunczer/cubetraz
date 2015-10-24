@@ -33,7 +33,7 @@ public final class LevelCube {
         this.cube_pos = cube_pos;
         this.level_number = level_number;
     
-        pos = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
+        pos = Game.getCubePosAt(cube_pos);
     
         pNumber = Game.getNumberFont(level_number);
         pStars = Game.getSymbol(SymbolLock);

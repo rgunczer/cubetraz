@@ -44,6 +44,10 @@ public final class Text {
         m_align = TextAlignEnum.LeftAlign;
         m_sx = 1.0f;
         m_sy = 1.0f;
+
+        for(int i = 0; i < MAX_TEXT_LINES; ++i) {
+            m_ar_lines.add(new ArrayList<TexturedQuad>());
+        }
     }
 
     public void cleanUp() {

@@ -61,6 +61,12 @@ public final class Vector {
 						  y * f,
 						  z * f);
 	}
+
+	public void scaled(float f) {
+		x*=f;
+		y*=f;
+		z*=f;
+	}
 	
 	public float getMagnitude() {
 		return (float)Math.sqrt(x*x + y*y + z*z);

@@ -399,13 +399,13 @@ public final class MenuFaceBuilder {
     public static void buildTexts(CubeFaceNamesEnum face_id, int face_type, boolean alt) {
         String str;
 	
-	    if (false == alt) {
+	    if (!alt) {
             str = getFaceText(face_id);
         } else {
             str = getFaceHelpText(face_id);
         }
 
-        int[] arr = new int[str.length()];
+        int[] arr = convertToIntArray(str);
 
 	    doTransforms(arr);
 	

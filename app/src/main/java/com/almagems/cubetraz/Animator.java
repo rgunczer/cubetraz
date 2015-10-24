@@ -78,6 +78,7 @@ public final class Animator extends Scene {
 	    m_face_name_z_plus = CubeFaceNamesEnum.Face_Empty;
     }
 
+    @Override
     public void init() {
         m_level_cube_hilite = null;
     
@@ -609,6 +610,7 @@ public final class Animator extends Scene {
 	    }
     }
 
+    @Override
     public void update() {
         switch (m_type) {
             case AnimToLevel:
@@ -631,8 +633,8 @@ public final class Animator extends Scene {
 	    glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
 	
-        graphics.prepare();
-        graphics.setStreamSource();
+        graphics.resetBufferIndices();
+        graphics.setStreamSourcesFull3D();
 
 	    Color color = Game.getBaseColor();
         int size;
@@ -645,7 +647,7 @@ public final class Animator extends Scene {
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 	
 	    color = Game.getFaceColor(1f);
-	    graphics.prepare();
+	    graphics.resetBufferIndices();
         size = m_list_cubes_face.size();
         for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_face.get(i);
@@ -655,8 +657,8 @@ public final class Animator extends Scene {
     }
 
     public void drawLevelCubes() {
-	    graphics.prepare();
-	    graphics.setStreamSource();
+	    graphics.resetBufferIndices();
+	    graphics.setStreamSourcesFull3D();
 	
 	    LevelCube cube;
         int len = Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.size();
@@ -684,7 +686,7 @@ public final class Animator extends Scene {
     }
 
     public void drawLevelCubeDecals(LevelCubeDecalTypeEnum decal_type) {
-	    graphics.prepare();
+	    graphics.resetBufferIndices();
 	
 	    TexCoordsQuad coords = new TexCoordsQuad();
         LevelCube levelCube;
@@ -800,7 +802,7 @@ public final class Animator extends Scene {
 	    TexturedQuad font;
 	    TexCoordsQuad coords = new TexCoordsQuad();
 	
-	    graphics.prepare();
+	    graphics.resetBufferIndices();
 
         size = lst_face_x_plus.size();
 	    for (int i = 0; i < size; ++i) {
@@ -844,6 +846,7 @@ public final class Animator extends Scene {
 	    graphics.renderTriangles();
     }
 
+    @Override
     public void render() {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
@@ -891,7 +894,7 @@ public final class Animator extends Scene {
 	    graphics.enableBlending();
 	    glDisableClientState(GL_NORMAL_ARRAY);
 	
-	    graphics.setStreamSourceFloatAndColor();
+	    graphics.setStreamSourcesFull3D();
 	
         color = Game.getTextColor();
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts);
@@ -915,13 +918,13 @@ public final class Animator extends Scene {
 	    glPopMatrix();
     }    
 
-    public void onFingerDown(float x, float y, int finger_count) {
-    }
-    
-    public void onFingerUp(float x, float y, int finger_count) {
-    }
-    
-    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
-    }
+	@Override
+    public void onFingerDown(float x, float y, int finger_count) {}
+
+    @Override
+    public void onFingerUp(float x, float y, int finger_count) {}
+
+    @Override
+    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
 
 }

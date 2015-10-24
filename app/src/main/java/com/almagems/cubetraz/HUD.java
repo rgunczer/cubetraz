@@ -34,7 +34,7 @@ public final class HUD {
     
     private Text[] m_ar_text_center = new Text[2];
     
-    private TextDisplay m_text_display;
+    private TextDisplay m_text_display = new TextDisplay();
 	
 	private float m_pos_x_text_left;
 	private float m_pos_x_text_left_start;
@@ -92,6 +92,9 @@ public final class HUD {
         m_text_level.setDisplay(m_text_display);
         m_text_moves.setDisplay(m_text_display);
         m_text_stars.setDisplay(m_text_display);
+
+        m_ar_text_center[0] = new Text();
+        m_ar_text_center[1] = new Text();
 
         m_ar_text_center[0].setDisplay(m_text_display);
         m_ar_text_center[1].setDisplay(m_text_display);
@@ -659,10 +662,10 @@ public final class HUD {
         Color color_hint = new Color(0, 0, 100, 255);
 	    Color color_solver = new Color(0, 0, 50, 255);
     
-        float x = 5.0f * graphics.device_scale;
-        float size = 60.0f * graphics.device_scale;
+        float x = 5.0f * Graphics.device_scale;
+        float size = 60.0f * Graphics.device_scale;
     
-        graphics.prepare();
+        graphics.resetBufferIndices();
         graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
         graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
         graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
@@ -675,18 +678,18 @@ public final class HUD {
 //    return;
     
         float scale;
-	    float pause_quad_y  = graphics.height * 0.91f;
-        float undo_quad_y   = graphics.height * 0.67f;
-	    float hint_quad_y   = graphics.height * 0.38f;
-	    float solver_quad_y = graphics.height * 0.1f;
+	    float pause_quad_y  = Graphics.height * 0.91f;
+        float undo_quad_y   = Graphics.height * 0.67f;
+	    float hint_quad_y   = Graphics.height * 0.38f;
+	    float solver_quad_y = Graphics.height * 0.1f;
 
         Color color_icon = new Color(139, 0, 0, m_icons_alpha);
         Color color_text = new Color(225,10,50,200);//220, 20, 60, 240);
         Color color_hilite = new Color(255, 228, 225, m_icons_alpha);
         Color color_shadow = new Color(0, 0, 0, m_icons_alpha / 2);
     
-        float shadow_offset_x = 2.5f * graphics.device_scale;
-        float shadow_offset_y = 2.5f * graphics.device_scale;
+        float shadow_offset_x = 2.5f * Graphics.device_scale;
+        float shadow_offset_y = 2.5f * Graphics.device_scale;
     
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -696,7 +699,7 @@ public final class HUD {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
     
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_clear);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_clear);
     
         m_text_display.init();
         
@@ -773,14 +776,14 @@ public final class HUD {
             Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
         
             graphics.setStreamSourceFloat2DNoTexture();
-            graphics.prepare();
-            graphics.addQuad(0.0f, graphics.half_height - 20.0f * graphics.device_scale, graphics.width, 75.0f * graphics.device_scale, color_bg);
+            graphics.resetBufferIndices();
+            graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
             graphics.renderTriangles();
         
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_big);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
         
-            scale = 0.75f * graphics.device_scale;
+            scale = 0.75f * Graphics.device_scale;
             m_ar_text_center[0].setScale(scale, scale);
             m_ar_text_center[1].setScale(scale, scale);
         
@@ -789,70 +792,70 @@ public final class HUD {
 		    Color color = new Color(0, 0, 0, a);
         
             m_text_display.init();
-            m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
         
-            m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
             glPushMatrix();
-                glTranslatef(graphics.device_scale, graphics.device_scale, 0.0f);
+                glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
                 m_text_display.render();
             glPopMatrix();
     
 		    color = new Color(255, 255, 0, a);
             
             m_text_display.init();
-            m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+            m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
             
-            m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+            m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
             m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
         }
     
         m_text_display.render();
     
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_symbols);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
 
-        final float ics = 25.0f * graphics.device_scale;
+        final float ics = 25.0f * Graphics.device_scale;
     
-        graphics.prepare();
+        graphics.resetBufferIndices();
 
         TexCoordsQuad tcoords = new TexCoordsQuad();
         tcoords.tx0 = m_symbol_pause.tx_lo_left;
         tcoords.tx1 = m_symbol_pause.tx_lo_right;
         tcoords.tx2 = m_symbol_pause.tx_up_right;
         tcoords.tx3 = m_symbol_pause.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, color_shadow);
-        graphics.addQuad(ics, 5.0f * graphics.device_scale,                    pause_quad_y,                   tcoords, m_hilite_pause ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    pause_quad_y,                   tcoords, m_hilite_pause ? color_hilite : color_icon);
     
         tcoords.tx0 = m_symbol_undo.tx_lo_left;
         tcoords.tx1 = m_symbol_undo.tx_lo_right;
         tcoords.tx2 = m_symbol_undo.tx_up_right;
         tcoords.tx3 = m_symbol_undo.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
-        graphics.addQuad(ics, 5.0f * graphics.device_scale,                    undo_quad_y,                    tcoords, m_hilite_undo ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale,                    undo_quad_y,                    tcoords, m_hilite_undo ? color_hilite : color_icon);
 	
         tcoords.tx0 = m_symbol_hint.tx_lo_left;
         tcoords.tx1 = m_symbol_hint.tx_lo_right;
         tcoords.tx2 = m_symbol_hint.tx_up_right;
         tcoords.tx3 = m_symbol_hint.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
-        graphics.addQuad(ics, 5.0f * graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
     
         tcoords.tx0 = m_symbol_solver.tx_lo_left;
         tcoords.tx1 = m_symbol_solver.tx_lo_right;
         tcoords.tx2 = m_symbol_solver.tx_up_right;
         tcoords.tx3 = m_symbol_solver.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
-        graphics.addQuad(ics, 5.0f * graphics.device_scale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * Graphics.device_scale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
 
         tcoords.tx0 = m_symbol_star.tx_lo_left;
         tcoords.tx1 = m_symbol_star.tx_lo_right;
         tcoords.tx2 = m_symbol_star.tx_up_right;
         tcoords.tx3 = m_symbol_star.tx_up_left;
-        graphics.addQuad(ics, graphics.width - 25.0f * graphics.device_scale - shadow_offset_x, undo_quad_y - shadow_offset_y, tcoords, color_shadow);
-        graphics.addQuad(ics, graphics.width - 25.0f * graphics.device_scale, undo_quad_y, tcoords, color_icon);
+        graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.device_scale - shadow_offset_x, undo_quad_y - shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.device_scale, undo_quad_y, tcoords, color_icon);
     
 	    graphics.setStreamSourceFloat2D();
 	    graphics.renderTriangles();
@@ -868,18 +871,18 @@ public final class HUD {
                 tcoords.tx3 = new Vector2(0,0);
             
                 Color col = new Color(255, 255, 255, m_tutor_alpha);
-                float sz = 160.0f * graphics.device_scale;
-                float x = graphics.half_width - sz / 2.0f;
-                float y = graphics.half_height - sz / 2.0f;
+                float sz = 160.0f * Graphics.device_scale;
+                float x = Graphics.half_width - sz / 2.0f;
+                float y = Graphics.half_height - sz / 2.0f;
             
-                graphics.prepare();
+                graphics.resetBufferIndices();
                 graphics.addQuad(sz, x, y, tcoords, col);
                 graphics.renderTriangles();
             }
         }
     
         if (Level.LevelStateEnum.DeadAnim == Game.level.m_state) {
-            graphics.prepare();
+            graphics.resetBufferIndices();
         
 		    Color color = new Color(200, 0, 0, Game.level.dead_alpha);
 		
@@ -888,8 +891,8 @@ public final class HUD {
             tcoords.tx2 = m_symbol_death.tx_up_right;
             tcoords.tx3 = m_symbol_death.tx_up_left;
         
-            float size = Game.level.dead_size * graphics.device_scale;
-            graphics.addQuad(size, graphics.half_width - (size / 2.0f), graphics.half_height - (size / 2.0f), tcoords, color);
+            float size = Game.level.dead_size * Graphics.device_scale;
+            graphics.addQuad(size, Graphics.half_width - (size / 2.0f), Graphics.half_height - (size / 2.0f), tcoords, color);
         
             graphics.setStreamSourceFloat2D();
             graphics.renderTriangles();

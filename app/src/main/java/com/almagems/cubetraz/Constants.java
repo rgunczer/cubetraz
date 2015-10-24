@@ -130,6 +130,12 @@ public final class Constants {
     public static final int MoveDir_MoveZ = 3;
 
 
+    public static final int X_Plus = 3;
+    public static final int X_Minus = 4;
+    public static final int Y_Plus = 1;
+    public static final int Y_Minus = 2;
+    public static final int Z_Plus = 5;
+    public static final int Z_Minus = 6;
 
 
     public enum TextAlignEnum {

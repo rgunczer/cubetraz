@@ -40,7 +40,7 @@ public final class TextureHelper {
         texture.height = h;
 
 		Matrix flip = new Matrix();
-		flip.postScale(1f, -1f);
+		//flip.postScale(1f, -1f);
 		
 		Bitmap bitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), flip, true);
 		

@@ -2,14 +2,11 @@ package com.almagems.cubetraz;
 
 
 import java.util.ArrayList;
-
 import static com.almagems.cubetraz.Constants.*;
 
 
-public final class Creator
-{	
-    public static Menu _pHost;
-		
+public final class Creator {
+
 	private static final ArrayList<CubeFont> m_list_cubefonts_used = new ArrayList<CubeFont>();
 	private static final ArrayList<LevelCube> m_list_levelcubes_used = new ArrayList<LevelCube>();
 	
@@ -487,59 +484,60 @@ public final class Creator
     }
 
     public static void createMovingCubesForMenu() {
+        Menu menu = Game.menu;
         MenuCube menuCube;
     
         menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 5, 8), new Color(255, 0, 0, 255));
-        _pHost.m_pMenuCubePlay = menuCube;
+        menu.m_pMenuCubePlay = menuCube;
     
         menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 3, 8), new Color(200, 0, 0, 255));
-        _pHost.m_pMenuCubeOptions = menuCube;
+        menu.m_pMenuCubeOptions = menuCube;
    
         menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 1, 8), new Color(100, 0, 0, 255));
-        _pHost.m_pMenuCubeStore = menuCube;
+        menu.m_pMenuCubeStore = menuCube;
 
     
         // option cubes    
 	    menuCube = new MenuCube();
 	    menuCube.init(new CubePos(7,8,3), new Color(255, 255, 255, 255));
-        _pHost.m_arOptionsCubes[0] = menuCube;
+        menu.m_arOptionsCubes[0] = menuCube;
     
         menuCube = new MenuCube();
 	    menuCube.init(new CubePos(1,8,3), new Color(254, 255, 255, 255));
-        _pHost.m_arOptionsCubes[1] = menuCube;
+        menu.m_arOptionsCubes[1] = menuCube;
     
         menuCube = new MenuCube();
 	    menuCube.init(new CubePos(7,8,6), new Color(253, 255, 255, 255));
-        _pHost.m_arOptionsCubes[2] = menuCube;
+        menu.m_arOptionsCubes[2] = menuCube;
     
         menuCube = new MenuCube();
 	    menuCube.init(new CubePos(1, 8, 6), new Color(252, 255, 255, 255));
-        _pHost.m_arOptionsCubes[3] = menuCube;
+        menu.m_arOptionsCubes[3] = menuCube;
     
     
         // store cubes
         menuCube = new MenuCube();
         menuCube.init(new CubePos(1,0,6), new Color(40, 255, 255, 255));
         menuCube.setHiliteOffset(new CubePos(0,1,0));
-        _pHost.m_pStoreCubeNoAds = menuCube;
+        menu.m_pStoreCubeNoAds = menuCube;
     
         menuCube = new MenuCube();
         menuCube.init(new CubePos(1,0,4), new Color(50, 255, 255, 255));
         menuCube.setHiliteOffset(new CubePos(0,1,0));
-        _pHost.m_pStoreCubeSolvers = menuCube;
+        menu.m_pStoreCubeSolvers = menuCube;
     
         menuCube = new MenuCube();
         menuCube.init(new CubePos(1,0,2), new Color(60, 255, 255, 255));
         menuCube.setHiliteOffset(new CubePos(0,1,0));
-        _pHost.m_pStoreCubeRestore = menuCube;
+        menu.m_pStoreCubeRestore = menuCube;
 
         // credits
         menuCube = new MenuCube();
         menuCube.init(new CubePos(8,0,8), new Color(1,100,100,255));
-        _pHost.m_cubeCredits = menuCube;
+        menu.m_cubeCredits = menuCube;
     }
 
     public static void addLevelCube(int level_number, int face_type, CubeFaceNamesEnum face_id, int x, int y, int z) {

@@ -635,11 +635,10 @@ public final class Intro extends Scene {
         graphics.enableBlending();
 
         glEnable(GL_TEXTURE_2D);
+        glDepthMask(false);
 
         Color color_dirty = new Color(255, 255, 255, (int)Game.dirty_alpha);
         graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
-
-
 
         glDisable(GL_TEXTURE_2D);
         //graphics.drawAxes();
@@ -652,25 +651,27 @@ public final class Intro extends Scene {
 
         glDisable(GL_LIGHTING);
 
+
+        graphics.zeroBufferPositions();
+        graphics.resetBufferIndices();
+        graphics.setStreamSourcesFull3D();
+
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        graphics.prepare();
-        graphics.setStreamSource();
 
 
         glEnable(GL_POINT_SMOOTH);
         m_starfield.render();
         glDisable(GL_POINT_SMOOTH);
 
+        glDepthMask(true);
         graphics.disableBlending();
+
+        //graphics.setStreamSourcesFull3D();
 
         //graphics.drawAxes();
 
-//        if (true) {
-//            return;
-//        }
-
+        graphics.setStreamSourcesFull3D();
 
         glEnable(GL_LIGHTING);
 
@@ -684,7 +685,8 @@ public final class Intro extends Scene {
 
         Color color = Game.getBaseColor();
 
-        graphics.prepare();
+        graphics.resetBufferIndices();
+        graphics.zeroBufferPositions();
         graphics.addCube(0.0f, 0.0f, 0.0f);
 
         int size;

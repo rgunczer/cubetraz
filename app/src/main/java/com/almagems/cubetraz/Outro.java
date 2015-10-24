@@ -282,7 +282,7 @@ public final class Outro extends Scene {
         if (m_stars_alpha > 1.0f) {
             m_state = OutroStateEnum.OutroExplosion;
             m_stars_alpha = 1.0f;
-            m_pos_cube_player = Game.getCubePosAt(4, 4, 4);
+            m_pos_cube_player = Game.getCubePosAt(new CubePos(4, 4, 4));
             m_degree = 0.0f;
             setupExplosion();
             Game.playMusic(MUSIC_VECTORS);
@@ -342,8 +342,8 @@ public final class Outro extends Scene {
     }
 
     public void drawTheCube() {
-        graphics.prepare();
-        graphics.setStreamSource();
+        graphics.resetBufferIndices();
+        graphics.setStreamSourcesFull3D();
 
         Cube cube;
         int size = m_lst_cubes_base.size();
@@ -360,7 +360,7 @@ public final class Outro extends Scene {
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
@@ -379,14 +379,14 @@ public final class Outro extends Scene {
         Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
 
         graphics.setStreamSourceFloat2DNoTexture();
-        graphics.prepare();
-        graphics.addQuad(0.0f, graphics.half_height - 20.0f * graphics.device_scale, graphics.width, 75.0f * graphics.device_scale, color_bg);
+        graphics.resetBufferIndices();
+        graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
         graphics.renderTriangles();
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_big);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
 
-        float scale = 0.75f * graphics.device_scale;
+        float scale = 0.75f * Graphics.device_scale;
         m_ar_text_center[0].setScale(scale, scale);
         m_ar_text_center[1].setScale(scale, scale);
 
@@ -395,24 +395,24 @@ public final class Outro extends Scene {
         Color color = new Color(0, 0, 0, a);
 
         m_text_display.init();
-        m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+        m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
 
-        m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+        m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
         glPushMatrix();
-        glTranslatef(graphics.device_scale, graphics.device_scale, 0.0f);
+        glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
         m_text_display.render();
         glPopMatrix();
 
         color = new Color(255, 255, 0, a);
 
         m_text_display.init();
-        m_ar_text_center[0].emitt(graphics.half_width - m_ar_text_center[0].getHalfWidth(), graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
+        m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
 
-        m_ar_text_center[1].emitt(graphics.half_width - m_ar_text_center[1].getHalfWidth(), graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
+        m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
         m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
 
         m_text_display.render();
@@ -435,13 +435,13 @@ public final class Outro extends Scene {
             glEnable(GL_TEXTURE_2D);
 
             Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
-            graphics.drawFBOTexture(graphics.texture_id_dirty, color_dirty, true);
+            graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
 
             glDepthMask(true); //GL_TRUE);
             glEnable(GL_LIGHTING);
         }
 
-        graphics.setStreamSource();
+        graphics.setStreamSourcesFull3D();
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
@@ -470,7 +470,7 @@ public final class Outro extends Scene {
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_player);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
 
         if (OutroStateEnum.OutroExplosion == m_state || OutroStateEnum.OutroDone == m_state) {
             glPushMatrix();
@@ -479,7 +479,7 @@ public final class Outro extends Scene {
             glRotatef(m_degree, 0.0f, 1.0f, 0.0f);
             glRotatef(m_degree, 0.0f, 0.0f, 1.0f);
 
-            graphics.prepare();
+            graphics.resetBufferIndices();
             graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
@@ -488,7 +488,7 @@ public final class Outro extends Scene {
             glPushMatrix();
             glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
 
-            graphics.prepare();
+            graphics.resetBufferIndices();
             graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 

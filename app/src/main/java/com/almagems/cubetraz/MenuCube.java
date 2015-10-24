@@ -1,7 +1,6 @@
 package com.almagems.cubetraz;
 
 import java.util.ArrayList;
-
 import static com.almagems.cubetraz.Constants.*;
 
 
@@ -49,7 +48,7 @@ public final class MenuCube {
         m_cube_pos.x = coordinate.x;
         m_cube_pos.y = coordinate.y;
         m_cube_pos.z = coordinate.z;
-        pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
+        pos = Game.getCubePosAt(m_cube_pos);
     }
 
     public void setHiliteOffset(CubePos offset) {
@@ -174,12 +173,10 @@ public final class MenuCube {
             cube_pos.init(m_cube_pos);
             calcMove(cube_pos, type);
 
-            if (m_cube_pos.x != cube_pos.x ||
-                m_cube_pos.y != cube_pos.y ||
-                m_cube_pos.z != cube_pos.z) {
+            if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {
                 Game.menu.dontHiliteMenuCube();
                 m_cube_pos_destination = cube_pos;
-                Vector pos_destination = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
+                Vector pos_destination = Game.getCubePosAt(cube_pos);
                 m_moveType = type;
 
                 switch (m_moveType) {

@@ -10,9 +10,10 @@ import static com.almagems.cubetraz.Constants.*;
 public final class Game {
 
     public static Graphics graphics;
+    public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
 
     // scenes
-    public static Scene m_scene;
+    public static Scene currentScene;
     public static Intro intro;
     public static Menu menu;
     public static Animator animator;
@@ -20,47 +21,102 @@ public final class Game {
     public static Statistics statistics;
     public static Outro outro;
 
-
-
     public static float dirty_alpha;
-
-    public static Vector getCubePosAt(CubePos cube_pos) {
-        Vector pos = new Vector();
-
-        pos.x = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tx;
-        pos.y = cubes[cube_pos.x][cube_pos.y][cube_pos.z].ty;
-        pos.z = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tz;
-
-        return pos;
-    }
-
-    public static Vector2 rotate(Vector2 a, float degree) {
-        float angle = (float)Math.toRadians(degree);
-        float c = (float)Math.cos(angle);
-        float s = (float)Math.sin(angle);
-        return new Vector2(c*a.x - s*a.y, s*a.x + c*a.y);
-    }
-
-    public static TexturedQuad getNewLineFont() {
-        return m_newlinefont;
-    }
-    public static TexturedQuad m_newlinefont;
-
-    public static TexturedQuad getFontBig(String ch) {
-        //printf("\nNumber of Fonts:%lu", m_fonts.size());
-        return m_fonts_big.get(ch);
-    }
-
+    public static float minSwipeLength;
+    public static TexturedQuad m_newlinefont = new TexturedQuad();
     public static FBO m_fbo;
+    public static StatInitData stat_init_data = new StatInitData();
 
-    public boolean isPlaying() {
-        return m_scene == level;
-    }
+    public static final MenuInitData menu_init_data = new MenuInitData();
+    public static final AnimInitData anim_init_data = new AnimInitData();
+    public static final LevelInitData level_init_data = new LevelInitData();
+
+    public static final Vector cube_offset = new Vector();
+    public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
+
 
 
     private static int m_framebuffer;
     private static int m_colorbuffer;
     private static int m_depthstencilbuffer;
+
+
+
+    static {
+        for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
+            for(int j = 0; j < MAX_CUBE_COUNT; ++j) {
+                for(int k = 0; k < MAX_CUBE_COUNT; ++k)
+                    cubes[i][j][k] = new Cube();
+            }
+        }
+        for (int i = 0; i < 6; ++i) {
+            ar_cubefacedata[i] = new CubeFaceData();
+        }
+    }
+
+    // ctor
+    public Game() {
+
+    }
+
+    public void init() {
+        Cubetraz.init();
+        Cubetraz.load();
+
+        graphics = Engine.graphics;
+
+        HUD.graphics = graphics;
+        Scene.graphics = graphics;
+        MovingCube.graphics = graphics;
+        MoverCube.graphics = graphics;
+        DeadCube.graphics = graphics;
+        Starfield.graphics = graphics;
+
+        minSwipeLength = Graphics.height / 10;
+
+        intro = null;
+        menu = null;
+        animator = null;
+        level = null;
+        statistics = null;
+        outro = null;
+
+        currentScene = null;
+
+        dirty_alpha = 0f;
+
+//        loading = new Loading();
+
+        initFonts();
+        initFontsBig();
+        initNumberFonts();
+        initSymbols();
+
+        loadOptions();
+
+        float size = (MAX_CUBE_COUNT * CUBE_SIZE) - CUBE_SIZE;
+        cube_offset.x = cube_offset.y = cube_offset.z = size / -2.0f;
+
+        Creator.createCubes();
+
+        level = new Level();
+        //menu = new Menu();
+
+        LevelBuilder.level = level;
+
+        showScene(Scene_Intro);
+        //showScene(Scene_Menu);
+        //showScene(Scene_Anim);
+        //showScene(Scene_Level);
+        //showScene(Scene_Stat);
+        //showScene(Scene_Outro);
+
+        graphics.warmCache();
+    }
+
+
+
+
 
 
 
@@ -108,12 +164,9 @@ public final class Game {
         }
     }
 
-    public static StatInitData stat_init_data = new StatInitData();
-
     public static TexturedQuad getNumberFont(int number) {
         return m_numbers.get(number);
     }
-
     public static TexturedQuad getSymbol(int key) {
         return m_symbols.get(key);
     }
@@ -138,6 +191,14 @@ public final class Game {
             }
         }
         return false;
+    }
+
+    public static TexturedQuad getFontBig(String ch) {
+        return m_fonts_big.get(ch);
+    }
+
+    public boolean isPlaying() {
+        return currentScene == level;
     }
 
     public static ArrayList<Cube> createBaseCubesList() {
@@ -194,8 +255,6 @@ public final class Game {
     public static Color getLockedLevelNumberColor() { return new Color(0, 0, 0, 60); }
     public static Color getLevelNumberColor() { return new  Color(0, 0, 0, 150); }
 
-
-
     public static void showScene(int scene_id) {
         Scene scene = null;
 
@@ -203,7 +262,6 @@ public final class Game {
             case Scene_Intro:
                 intro = new Intro();
                 intro.init();
-
                 scene = intro;
                 break;
 
@@ -212,96 +270,63 @@ public final class Game {
                 intro = null;
                 outro = null;
                 menu_init_data.reappear = false;
-
                 if (menu == null) {
                     menu = new Menu();
                 }
-
                 menu.init();
                 scene = menu;
                 break;
 
             case Scene_Anim:
-//
-//                if (null == m_animator)
-//                    m_animator = new cAnimator();
-//
-//                m_animator.Init();
-//
-//                scene = m_animator;
+                if (animator == null) {
+                    animator = new Animator();
+                }
+                animator.init();
+                scene = animator;
                 break;
 
             case Scene_Level:
-//
-//                m_level.Init(&level_init_data);
-//
-//                scene = m_level;
+                level.init();
+                scene = level;
                 break;
 
             case Scene_Stat:
-
-//                if (null == m_statistics)
-//                    m_statistics = new cStatistics();
-//
-//                m_statistics.Init();
-//
-//                scene = m_statistics;
-                break;
-
-            case Scene_Solvers:
-
-//                m_solvers.Init();
-//
-//                scene = m_solvers;
+                if (statistics == null) {
+                    statistics = new Statistics();
+                }
+                statistics.init();
+                scene = statistics;
                 break;
 
             case Scene_Outro:
-
-//                if (null == m_outro)
-//                    m_outro = new cOutro();
-//
-//                m_outro.Init();
-//
-//                scene = m_outro;
+                if (outro == null) {
+                    outro = new Outro();
+                }
+                outro.init();
+                scene = outro;
                 break;
         }
-
-        m_scene = scene;
+        currentScene = scene;
     }
 
 
 
 
-    public static final LevelInitData level_init_data = new LevelInitData();
-    public static final AnimInitData anim_init_data = new AnimInitData();
 
 
     public static boolean getCanPlayLockedLevels() {
         return true;
     }
 
-
-
-
-    public static final Vector cube_offset = new Vector();
-
-    public static Vector getCubePosAt(int x, int y, int z) {
-        Vector pos = new Vector();
-        pos.x = cubes[x][y][z].tx;
-        pos.y = cubes[x][y][z].ty;
-        pos.z = cubes[x][y][z].tz;
-        return pos;
+    public static Vector2 rotate(Vector2 a, float degree) {
+        float angle = (float)Math.toRadians(degree);
+        float c = (float)Math.cos(angle);
+        float s = (float)Math.sin(angle);
+        return new Vector2(c*a.x - s*a.y, s*a.x + c*a.y);
     }
 
-
-    public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
-    public static MenuInitData menu_init_data = new MenuInitData();
-
-    public enum GameState {
-        Loading,
-        Menu,
-        Stats,
-        Playing,
+    public static TexturedQuad getNewLineFont() {
+        return m_newlinefont;
     }
 
     public static void resetCubes() {
@@ -353,102 +378,18 @@ public final class Game {
 
 
 
-    public GameState gameState;
-
-    public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
-
-    private boolean initialized;
 
 
 
 
+    public static Vector getCubePosAt(CubePos cube_pos) {
+        Vector pos = new Vector();
 
-	private float elapsedTimeSelMarkerAnim;
+        pos.x = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tx;
+        pos.y = cubes[cube_pos.x][cube_pos.y][cube_pos.z].ty;
+        pos.z = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tz;
 
-	private boolean editorEnabled;
-
-	private final PositionInfo pos;
-
-    static {
-        for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
-            for(int j = 0; j < MAX_CUBE_COUNT; ++j) {
-                for(int k = 0; k < MAX_CUBE_COUNT; ++k)
-                    cubes[i][j][k] = new Cube();
-            }
-        }
-
-        for (int i = 0; i < 6; ++i) {
-            ar_cubefacedata[i] = new CubeFaceData();
-        }
-
-    }
-
-    // ctor
-	public Game() {
-        initialized = false;
-        gameState = GameState.Loading;
-        elapsedTimeSelMarkerAnim = 0f;
-        editorEnabled = false;
-        pos = new PositionInfo();
-    }
-
-    public void init() {
-        Cubetraz.init();
-        Cubetraz.load();
-
-        graphics = Engine.graphics;
-
-        HUD.graphics = graphics;
-        Scene.graphics = graphics;
-        MovingCube.graphics = graphics;
-        MoverCube.graphics = graphics;
-        DeadCube.graphics = graphics;
-        Starfield.graphics = graphics;
-
-        intro = null;
-        menu = null;
-        animator = null;
-        level = null;
-        statistics = null;
-        outro = null;
-
-        m_scene = null;
-
-        dirty_alpha = 0f;
-
-
-//        loading = new Loading();
-
-        initFonts();
-        initFontsBig();
-        initNumberFonts();
-        initSymbols();
-
-        loadOptions();
-
-        float size = (MAX_CUBE_COUNT * CUBE_SIZE) - CUBE_SIZE;
-        cube_offset.x = cube_offset.y = cube_offset.z = size / -2.0f;
-
-        Creator.createCubes();
-
-        level = new Level();
-        //menu = new Menu();
-
-        LevelBuilder.level = level;
-
-//	printf("\nsize of level:%lu", sizeof(cEngine));
-//	printf("\nsize of menu:%lu", sizeof(cMenu));
-//	printf("\nsize of level:%lu", sizeof(cLevel));
-
-        showScene(Scene_Intro);
-        //showScene(Scene_Menu);
-        //showScene(Scene_Anim);
-        //showScene(Scene_Level);
-        //showScene(Scene_Solvers);
-        //showScene(Scene_Stat);
-        //showScene(Scene_Outro);
-
-        graphics.warmCache();
+        return pos;
     }
 
     public static void renderToFBO(Scene scene) {
@@ -526,36 +467,31 @@ public final class Game {
     }
 
     public void handleButton() {
-        if (gameState == GameState.Menu) {
-            gameState = GameState.Playing;
-        }
+
     }
 
     public void showMenu() {
-        if (gameState != GameState.Menu) {
-            //menu.reset();
-            gameState = GameState.Menu;
-        }
+
     }
 
 	public void update() {
-        m_scene.update();
+        currentScene.update();
     }
 
 	public void draw() {
-        m_scene.render();
+        currentScene.render();
 	}
 
 	public void handleTouchPress(float normalizedX, float normalizedY) {
-        m_scene.onFingerDown(normalizedX, normalizedY, 1);
+        currentScene.onFingerDown(normalizedX, normalizedY, 1);
     }
 
 	public void handleTouchDrag(float normalizedX, float normalizedY) {
-        m_scene.onFingerMove(0f, 0f, normalizedX, normalizedY, 1);
+        currentScene.onFingerMove(0f, 0f, normalizedX, normalizedY, 1);
     }
 
 	public void handleTouchRelease(float normalizedX, float normalizedY) {
-        m_scene.onFingerUp(normalizedX, normalizedY, 1);
+        currentScene.onFingerUp(normalizedX, normalizedY, 1);
     }
 
     public static void setupHollowCube() {
@@ -692,9 +628,9 @@ public final class Game {
         return count;
     }
 
-    public static void cubeGLData() {
+    public static void bindCubeGLData() {
 
-        float vertices[] = {
+        final float verts[] = {
                 // x-plus
                 HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
                 HALF_CUBE_SIZE, HALF_CUBE_SIZE, HALF_CUBE_SIZE,
@@ -752,7 +688,7 @@ public final class Game {
                 HALF_CUBE_SIZE, HALF_CUBE_SIZE, -HALF_CUBE_SIZE,
         };
 
-        float normals[] = {
+        float norms[] = {
                 // x-plus
                 1.0f, 0.0f, 0.0f,
                 1.0f, 0.0f, 0.0f,
@@ -804,68 +740,68 @@ public final class Game {
         };
 
 
-        short texture_coordinates[] = {
+        float coords[] = {
                 // x-plus
-                1, 0, // 0
-                0, 0, // 1
-                0, 1, // 2
+                1f, 0f, // 0
+                0f, 0f, // 1
+                0f, 1f, // 2
 
-                0, 1, // 2
-                1, 1, // 3
-                1, 0, // 0
+                0f, 1f, // 2
+                1f, 1f, // 3
+                1f, 0f, // 0
 
                 // x-minus
-                1, 1, // 0
-                0, 1, // 1
-                0, 0, // 2
+                1f, 1f, // 0
+                0f, 1f, // 1
+                0f, 0f, // 2
 
-                0, 0, // 2
-                1, 0, // 3
-                1, 1, // 0
+                0f, 0f, // 2
+                1f, 0f, // 3
+                1f, 1f, // 0
 
                 // y-plus
-                1, 0, // 0
-                0, 0, // 1
-                0, 1, // 2
+                1f, 0f, // 0
+                0f, 0f, // 1
+                0f, 1f, // 2
 
-                0, 1, // 2
-                1, 1, // 3
-                1, 0, // 0
+                0f, 1f, // 2
+                1f, 1f, // 3
+                1f, 0f, // 0
 
                 // y-minus
-                1, 1, // 0
-                0, 1, // 1
-                0, 0, // 2
+                1f, 1f, // 0
+                0f, 1f, // 1
+                0f, 0f, // 2
 
-                0, 0, // 2
-                1, 0, // 3
-                1, 1, // 0
+                0f, 0f, // 2
+                1f, 0f, // 3
+                1f, 1f, // 0
 
                 // z-plus
-                1, 1, // 0
-                0, 1, // 1
-                0, 0, // 2
+                1f, 1f, // 0
+                0f, 1f, // 1
+                0f, 0f, // 2
 
-                0, 0, // 2
-                1, 0, // 3
-                1, 1, // 0
+                0f, 0f, // 2
+                1f, 0f, // 3
+                1f, 1f, // 0
 
                 // z-minus
-                1, 0, // 0
-                1, 1, // 1
-                0, 1, // 2
+                1f, 0f, // 0
+                1f, 1f, // 1
+                0f, 1f, // 2
 
-                0, 1, // 2
-                0, 0, // 3
-                1, 0, // 0
+                0f, 1f, // 2
+                0f, 0f, // 3
+                1f, 0f, // 0
         };
 
-        final int R = 255;
-        final int G = 255;
-        final int B = 255;
-        final int A = 255;
+        final byte R = (byte)255;
+        final byte G = (byte)255;
+        final byte B = (byte)255;
+        final byte A = (byte)255;
 
-        int colors[] = {
+       final byte colors[] = {
                 // x-plus
                 R, G, B, A,
                 R, G, B, A,
@@ -914,8 +850,19 @@ public final class Game {
                 R, G, B, A,
                 R, G, B, A,
         };
+
+        graphics._vertexBuffer.position(0);
+        graphics._vertexBuffer.put(verts);
+
+        graphics._normalBuffer.position(0);
+        graphics._normalBuffer.put(norms);
+
+        graphics._coordsBuffer.position(0);
+        graphics._coordsBuffer.put(coords);
+
+        graphics._coordsBuffer.position(0);
+        graphics._colorBuffer.put(colors);
     }
-
 
     // Scales a vector by a scalar
     public static void scaleVector(float[] vector, final float scale) {
@@ -1489,13 +1436,13 @@ public final class Game {
     }
 
     public static void enteredBackground() {
-        if (m_scene != null) {
+        if (currentScene != null) {
             //m_scene.enteredBackground();
         }
     }
 
     public static void enteredForeground() {
-        if (m_scene != null) {
+        if (currentScene != null) {
             //m_scene.enteredForeground();
         }
     }
@@ -1573,27 +1520,6 @@ public final class Game {
         if (y_plus){
             graphics.drawCubeFaceY_Plus();
         }
-    }
-
-    public static void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        m_scene.render();
-    }
-
-    public static void onFingerDown(float x, float y, int finger_count) {
-        m_scene.onFingerDown(x * graphics.scaleFactor, y * graphics.scaleFactor, finger_count);
-    }
-
-    public static void onFingerUp(float x, float y, int finger_count) {
-        m_scene.onFingerUp(x * graphics.scaleFactor, y * graphics.scaleFactor, finger_count);
-    }
-
-    public static void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
-        m_scene.onFingerMove(prev_x * graphics.scaleFactor, prev_y * graphics.scaleFactor, cur_x * graphics.scaleFactor, cur_y * graphics.scaleFactor, finger_count);
-    }
-
-    public static void onSwipe(SwipeDirEnums type) {
-        m_scene.onSwipe(type);
     }
 
     public static void saveOptions() {

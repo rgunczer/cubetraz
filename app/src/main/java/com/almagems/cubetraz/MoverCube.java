@@ -10,8 +10,8 @@ public final class MoverCube {
 
     public static Graphics graphics;
     
-    private CubePos m_cube_pos_starting;
-    private CubePos m_cube_pos;
+    private CubePos m_cube_pos_starting = new CubePos();
+    private CubePos m_cube_pos = new CubePos();
     private int m_move_dir;
     private TexturedQuad[] m_ar_cube_symbols = new TexturedQuad[6];
 
@@ -37,8 +37,8 @@ public final class MoverCube {
     }
 
     public void setCubePos(CubePos coordinate) {
-        m_cube_pos = coordinate;
-        pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
+        m_cube_pos.init(coordinate); // here!?
+        pos = Game.getCubePosAt(m_cube_pos);
     }
 
     public void setSymbols() {

@@ -10,19 +10,22 @@ public final class PlayerCube {
     private float m_step_t;
 	private float m_start_value;
     private float m_end_value;
-    private float position; // pointer (java)
+
+    private int m_moveType;
+
+    private Vector position;
 	
     private int m_prev_movement;
-    private CubePos m_cube_pos_key;
+    private CubePos m_cube_pos_key = new CubePos();
 
-	public CubePos m_cube_pos;
-	public CubePos m_cube_pos_destination;
+	public CubePos m_cube_pos = new CubePos();
+	public CubePos m_cube_pos_destination = new CubePos();
     
 	public MovingCube m_moving_cube; // pointer (java)
     public MoverCube m_mover_cube; // pointer (java)
     public DeadCube m_dead_cube; // pointer (java)
 		    
-	public Vector pos;
+	public Vector pos = new Vector();
 	
     
     // ctor
@@ -31,8 +34,8 @@ public final class PlayerCube {
     
         
     public void setCubePos(CubePos cube_pos) {
-	    m_cube_pos = cube_pos;
-	    pos = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
+	    m_cube_pos.init(cube_pos);
+	    pos = Game.getCubePosAt(cube_pos);
 	    m_done = true;
     }
 
@@ -52,7 +55,23 @@ public final class PlayerCube {
 			    m_t = 1.0f;
 			    setCubePos(m_cube_pos_destination);
 		    } else {
-			    position = Utils.lerp(m_start_value, m_end_value, m_t);
+			    float value = Utils.lerp(m_start_value, m_end_value, m_t);
+                switch (m_moveType) {
+                    case AxisMovement_X_Plus:
+                    case AxisMovement_X_Minus:
+                        position.x = value;
+                        break;
+
+                    case AxisMovement_Y_Plus:
+                    case AxisMovement_Y_Minus:
+                        position.y = value;
+                        break;
+
+                    case AxisMovement_Z_Plus:
+                    case AxisMovement_Z_Minus:
+                        position.z = value;
+                        break;
+                }
             }
 	    }
     }
@@ -71,7 +90,8 @@ public final class PlayerCube {
         boolean is_mover;
         boolean is_dead;
 
-        CubePos prev = cube_pos;
+        CubePos prev = new CubePos();
+        prev.init(cube_pos);
 
         switch(type) {
             case AxisMovement_X_Plus:
@@ -217,34 +237,35 @@ public final class PlayerCube {
             m_mover_cube = null;
             m_dead_cube = null;
 		
-		    CubePos cube_pos = m_cube_pos;
+		    CubePos cube_pos = new CubePos();
+            cube_pos.init(m_cube_pos);
 		    calcMovement(cube_pos, type, false);
 		
 		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {            
 			    m_cube_pos_destination = cube_pos;
-			
-			    Vector pos_destination = Game.getCubePosAt(cube_pos.x, cube_pos.y, cube_pos.z);
+			    Vector pos_destination = Game.getCubePosAt(cube_pos);
+                m_moveType = type;
 			
 			    switch (type) {
 				    case AxisMovement_X_Plus:
 				    case AxisMovement_X_Minus:
 					    m_start_value = pos.x;
 					    m_end_value = pos_destination.x;
-					    position = pos.x;
+					    position = pos; //.x;
 					    break;
 					
 				    case AxisMovement_Y_Plus:
 				    case AxisMovement_Y_Minus:
 					    m_start_value = pos.y;
 					    m_end_value = pos_destination.y;
-					    position = pos.y;
+					    position = pos; //.y;
 					    break;
 					
 				    case AxisMovement_Z_Plus:
 				    case AxisMovement_Z_Minus:
 					    m_start_value = pos.z;
 					    m_end_value = pos_destination.z;
-					    position = pos.z;
+					    position = pos; //.z;
 					    break;
                     
                     default:

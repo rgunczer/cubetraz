@@ -1,7 +1,6 @@
 package com.almagems.cubetraz;
 
 import java.util.ArrayList;
-
 import static com.almagems.cubetraz.Constants.*;
 
 

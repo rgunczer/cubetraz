@@ -7,8 +7,8 @@ public final class DeadCube {
 
     public static Graphics graphics;
     
-    private CubePos m_cube_pos_starting;
-    private CubePos m_cube_pos;
+    private CubePos m_cube_pos_starting = new CubePos();
+    private CubePos m_cube_pos = new CubePos();
 
     private TexturedQuad[] m_ar_cube_textures = new TexturedQuad[6];
     
@@ -45,8 +45,8 @@ public final class DeadCube {
     }
 
     public void setCubePos(CubePos coordinate) {
-        m_cube_pos = coordinate;
-        pos = Game.getCubePosAt(m_cube_pos.x, m_cube_pos.y, m_cube_pos.z);
+        m_cube_pos.init(coordinate);
+        pos = Game.getCubePosAt(m_cube_pos);
     }
 
     public void init(CubePos cube_pos) {

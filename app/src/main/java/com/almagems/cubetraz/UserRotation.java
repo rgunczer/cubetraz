@@ -3,8 +3,8 @@ package com.almagems.cubetraz;
 
 public final class UserRotation {
 
-    Vector2 current;
-    Vector2 from;
+    Vector2 current = new Vector2();
+    Vector2 from = new Vector2();
 
     void reset() {
         current.x = current.y = 0.0f;

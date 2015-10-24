@@ -1,7 +1,6 @@
 package com.almagems.cubetraz;
 
 import java.util.ArrayList;
-
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.Constants.*;
 
@@ -25,9 +24,9 @@ public final class Statistics extends Scene {
     private StatisticsStateEnum m_state;
     private StatisticsStateEnum m_state_next;
 
-    private TextDisplay m_text_display;
+    private TextDisplay m_text_display = new TextDisplay();
 
-    private Camera m_camera;
+    private Camera m_camera = new Camera();
 
     private int m_vertex_count1;
     private int m_vindex1;
@@ -58,12 +57,12 @@ public final class Statistics extends Scene {
     private float m_text_scale;
     private float[] m_text_scales = new float[3]; // title, time, moves
 
-    private Text m_text_title;
-    private Text m_text_middle;
-    private Text m_text_moves;
-    private Text m_text_tap;
+    private Text m_text_title = new Text();
+    private Text m_text_middle = new Text();
+    private Text m_text_moves = new Text();
+    private Text m_text_tap = new Text();
 
-    private ArrayList<FallingCube> m_lst_falling_cubes;
+    private ArrayList<FallingCube> m_lst_falling_cubes = new ArrayList<>();
 
     private float m_pulse;
     private boolean m_can_dismiss;
@@ -72,11 +71,6 @@ public final class Statistics extends Scene {
     private boolean canDismiss() { return m_can_dismiss; }
 
 
-    @Override
-    public void onFingerDown(float x, float y, int finger_count) {}
-
-    @Override
-    public  void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
 
 
 
@@ -85,26 +79,26 @@ public final class Statistics extends Scene {
         m_camera.eye = new Vector(0.0f, 10.0f, 30.0f);
         m_camera.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        for (int i = 0; i < 10; ++i) {
-            m_lst_falling_cubes.add(new FallingCube());
+        for (int i = 0; i < 12; ++i) {
+            FallingCube fc = new FallingCube();
+            m_lst_falling_cubes.add(fc);
         }
     }
 
     public void initFallingCubes() {
         m_falling_cubes = true;
 
-        float x = -7.0f;
-
+        final float x = -7.0f;
         FallingCube fc;
         int size = m_lst_falling_cubes.size();
         for (int i = 0; i < size; ++i) {
             fc = m_lst_falling_cubes.get(i);
 
             fc.degree = Utils.randInt(0, 180);
-            fc.pos = new Vector(x + i * 1.25f, Utils.randInt(9, 1), 0.0f);
-            fc.speed = (float)Utils.randInt(3, 5) / 100f;
-
-            ++i;
+            fc.pos.x = x + i * 1.25f;
+            fc.pos.y = Utils.randInt(6, 12);
+            fc.pos.z = 0f;
+            fc.speed = 0.05f + (float)Utils.randInt(3, 5) / 100f;
         }
 
         glDisable(GL_DEPTH_TEST);
@@ -174,12 +168,12 @@ public final class Statistics extends Scene {
         m_text_tap.init("TAP TO CONTINUE", true);
 
         // pre calc y positions
-        m_stars_y = graphics.height * 0.75f;
-        m_rating_y = graphics.height * 0.5f;
+        m_stars_y = Graphics.height * 0.75f;
+        m_rating_y = Graphics.height * 0.5f;
 
-        m_title_y = graphics.height * 0.33f;
-        m_moves_y = graphics.height * 0.2f;
-        m_tap_y = graphics.height * 0.017f;
+        m_title_y = Graphics.height * 0.33f;
+        m_moves_y = Graphics.height * 0.2f;
+        m_tap_y = Graphics.height * 0.017f;
     }
 
     public void updateFallingCubes() {
@@ -191,8 +185,8 @@ public final class Statistics extends Scene {
             fc.pos.y -= fc.speed;
 
             if (fc.pos.y < -4.0f) {
-                fc.pos.y = Utils.randInt(9, 1);
-                fc.speed = (float)Utils.randInt(3, 5) / 100f;
+                fc.pos.y = Utils.randInt(7, 10);
+                fc.speed = 0.05f + (float)Utils.randInt(3, 5) / 100f;
             }
 
             fc.degree += 1.0f;
@@ -205,10 +199,9 @@ public final class Statistics extends Scene {
 
         switch (m_state) {
             case StatWait:
-
                 if (StatisticsStateEnum.StatNone != m_state_next) {
                     m_pulse += 0.3f;
-                    m_text_scale = (float)( Math.sin(m_pulse) / 5.0f) * graphics.device_scale;
+                    m_text_scale = (float)( Math.sin(m_pulse) / 5.0f) * Graphics.device_scale;
 
                     //printf("\nPulse: %f, sinf(m_pulse): %f, text_scale: %f", m_pulse, sinf(m_pulse), m_text_scale);
 
@@ -259,12 +252,10 @@ public final class Statistics extends Scene {
                         }
                     }
                 }
-
                 break;
 
             case StatAppear:
                 m_background_alpha += 0.025f;
-
                 if (m_background_alpha > 0.5f) {
                     m_background_alpha = 0.5f;
                     m_state_next = StatisticsStateEnum.StatAppearTitle;
@@ -273,7 +264,6 @@ public final class Statistics extends Scene {
                     m_DrawTitle = true;
                     m_UpdateBackground = true;
                 }
-
                 break;
 
             case StatAppearTitle:
@@ -329,16 +319,18 @@ public final class Statistics extends Scene {
     public void drawFallingCubes() {
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera);
-        //const vec4 lightPosition(-100.0f, 300.0f, 900.0f, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
 
-//        glNormalPointer(GL_FLOAT, 0, graphics.normals);
-//        glVertexPointer(3, GL_FLOAT, 0, graphics.vertices);
-//        glTexCoordPointer(2, GL_SHORT, 0, graphics.texture_coordinates);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, graphics.colors);
+        final float[] lightPosition = {-100.0f, 300.0f, 900.0f, 1.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, lightPosition, 0);
+
+        graphics.setStreamSourcesFull3D();
+
+        Game.bindCubeGLData();
+
+        graphics.zeroBufferPositions();
 
         glPushMatrix();
-        glTranslatef(0.0f, 0.0f, 10.0f);
+        glTranslatef(0.0f, 0.0f, 6.0f);
 
         FallingCube fc;
         int size = m_lst_falling_cubes.size();
@@ -346,57 +338,68 @@ public final class Statistics extends Scene {
             fc = m_lst_falling_cubes.get(i);
 
             glPushMatrix();
-            glTranslatef(fc.pos.x, fc.pos.y, fc.pos.z);
+                glTranslatef(fc.pos.x, fc.pos.y, fc.pos.z);
 
-            glRotatef(fc.degree, 1.0f, 0.0f, 0.0f);
-            glRotatef(fc.degree, 0.0f, 1.0f, 0.0f);
-            glRotatef(fc.degree, 0.0f, 0.0f, 1.0f);
+                glRotatef(fc.degree, 1.0f, 0.0f, 0.0f);
+                glRotatef(fc.degree, 0.0f, 1.0f, 0.0f);
+                glRotatef(fc.degree, 0.0f, 0.0f, 1.0f);
 
-            glScalef(0.6f, 0.6f, 0.6f);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+                glScalef(0.6f, 0.6f, 0.6f);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
             glPopMatrix();
         }
         glPopMatrix();
     }
 
     public void drawBackground() {
-        float dim = Math.max(graphics.width, graphics.height) * 1.25f;
+        float dim = Math.max(Graphics.width, Graphics.height) * 1.25f;
         float q = dim / 2.0f;
 
-        float vertices[] =
-                {
-                        -q, -q,
-                        q, -q,
-                        q,  q,
-                        -q,  q
-                };
+        final float verts[] = {
+            -q, -q,
+             q, -q,
+             q,  q,
+            -q,  q
+        };
 
-        final short coords[] =
-            {
-                    0, 1,
-                    1, 1,
-                    1, 0,
-                    0, 0
-            };
+        final float coords[] = {
+            0f, 1f,
+            1f, 1f,
+            1f, 0f,
+            0f, 0f
+        };
 
-        final byte color = 100;
+        final byte color = (byte)100;
+        final byte maxColor = (byte)(m_background_alpha * 255);
 
-        final float colors[] =
-            {
-                    color, color, color, m_background_alpha * 255,
-                    color, color, color, m_background_alpha * 255,
-                    color, color, color, m_background_alpha * 255,
-                    color, color, color, m_background_alpha * 255
-            };
+        final byte colors[] = {
+            color, color, color, maxColor,
+            color, color, color, maxColor,
+            color, color, color, maxColor,
+            color, color, color, maxColor
+        };
 
-//        glVertexPointer(2, GL_FLOAT, 0, vertices);
-//        glTexCoordPointer(2, GL_SHORT, 0, coords);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+        graphics._vertexBuffer.position(0);
+        graphics._vertexBuffer.put(verts);
+
+        graphics._coordsBuffer.position(0);
+        graphics._coordsBuffer.put(coords);
+
+        graphics._coordsBuffer.position(0);
+        graphics._colorBuffer.put(colors);
+
+        glDisableClientState(GL_NORMAL_ARRAY);
+
+        graphics.zeroBufferPositions();
+
+        glVertexPointer(2, GL_FLOAT, 0, graphics._vertexBuffer);
+        glTexCoordPointer(2, GL_FLOAT, 0, graphics._coordsBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, graphics._colorBuffer);
 
         glPushMatrix();
-        glTranslatef(graphics.half_width, graphics.half_height, 0.0f);
-        glRotatef(m_background_rot_degree, 0.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+            glTranslatef(Graphics.half_width, Graphics.half_height, 0.0f);
+            glRotatef(m_background_rot_degree, 0.0f, 0.0f, 1.0f);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         glPopMatrix();
     }
 
@@ -455,54 +458,50 @@ public final class Statistics extends Scene {
     }
 
     public void drawStars() {
-        //return;
+        final float vertices[] = {
+            -0.5f, -0.5f,
+            0.5f, -0.5f,
+            0.5f,  0.5f,
+            -0.5f,  0.5f
+        };
 
-        final float vertices[] =
-            {
-                    -0.5f, -0.5f,
-                    0.5f, -0.5f,
-                    0.5f,  0.5f,
-                    -0.5f,  0.5f
-            };
+        final float coords[] = {
+            0f, 1f,
+            1f, 1f,
+            1f, 0f,
+            0f, 0f
+        };
 
-        final short coords[] =
-            {
-                    0, 1,
-                    1, 1,
-                    1, 0,
-                    0, 0
-            };
-
-        int a = (int)m_star_alpha * 255;
+        byte a = (byte)(int)(m_star_alpha * 255);
 
         Color color_text = new Color(220, 20, 60, 240);
 
-        final float colors_red[] =
-            {
-                    color_text.r, color_text.g, color_text.b, a,
-                    color_text.r, color_text.g, color_text.b, a,
-                    color_text.r, color_text.g, color_text.b, a,
-                    color_text.r, color_text.g, color_text.b, a
-            };
+        final byte colors_red[] = {
+            color_text.R, color_text.G, color_text.B, a,
+            color_text.R, color_text.G, color_text.B, a,
+            color_text.R, color_text.G, color_text.B, a,
+            color_text.R, color_text.G, color_text.B, a
+        };
 
-        final float colors_yellow[] =
-            {
-                    255, 255, 0, a,
-                    255, 255, 0, a,
-                    255, 255, 0, a,
-                    255, 255, 0, a
-            };
+        byte maxColor = (byte)255;
+
+        final byte colors_yellow[] = {
+            maxColor, maxColor, 0, a,
+            maxColor, maxColor, 0, a,
+            maxColor, maxColor, 0, a,
+            maxColor, maxColor, 0, a
+        };
 
 //        glVertexPointer(2, GL_FLOAT, 0, vertices);
 //        glTexCoordPointer(2, GL_SHORT, 0, coords);
 //        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors_red);
 
-        float s = graphics.width * 0.14f;
-        float w = graphics.width * 0.2f;
+        float s = Graphics.width * 0.14f;
+        float w = Graphics.width * 0.2f;
         float half_w = w / 2.0f;
-        float x = graphics.half_width - ((w * m_star_count) / 2.0f);
+        float x = Graphics.half_width - ((w * m_star_count) / 2.0f);
         float y = m_stars_y;
-        float raise = 3.0f * graphics.device_scale;
+        float raise = 3.0f * Graphics.device_scale;
 
         for (int i = 0; i < m_star_count; ++i) {
             glPushMatrix();
@@ -542,13 +541,13 @@ public final class Statistics extends Scene {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
 
-        Color color = new Color(255,255,255,255);
-        graphics.drawFBOTexture(Game.m_fbo.m_TextureId, color, true);
+        Color color = new Color(255, 255, 255, 255);
+        //graphics.drawFBOTexture(Game.m_fbo.m_TextureId, color, true);
 
         glEnable(GL_LIGHTING);
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnable(GL_LIGHT0);
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_gray_concrete);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
         drawFallingCubes();
         glDisable(GL_LIGHTING);
         glDisable(GL_LIGHT0);
@@ -560,18 +559,22 @@ public final class Statistics extends Scene {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_stat_background);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_stat_background);
         drawBackground();
 
-        glBindTexture(GL_TEXTURE_2D, graphics.texture_id_fonts_big);
+        if (true) {
+            return;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
 
         color = new Color(0, 0, 0, 225);
         drawText(color);
 
         if (m_text_display.m_vertex_count > 0) {
             glPushMatrix();
-            glTranslatef(-2.0f * graphics.device_scale, -2.0f * graphics.device_scale, 0.0f);
-            glDrawArrays(GL_TRIANGLES, 0, m_text_display.m_vertex_count);
+                glTranslatef(-2.0f * Graphics.device_scale, -2.0f * Graphics.device_scale, 0.0f);
+                glDrawArrays(GL_TRIANGLES, 0, m_text_display.m_vertex_count);
             glPopMatrix();
         }
 
@@ -579,16 +582,22 @@ public final class Statistics extends Scene {
         drawText(color);
 
         if (m_text_display.m_vertex_count > 0) {
-            glPushMatrix();
+            //glPushMatrix();
             glDrawArrays(GL_TRIANGLES, 0, m_text_display.m_vertex_count);
-            glPopMatrix();
+            //glPopMatrix();
         }
 
         if (m_DrawStars) {
-            glBindTexture(GL_TEXTURE_2D, graphics.texture_id_star);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_star);
             drawStars();
         }
     }
+
+    @Override
+    public void onFingerDown(float x, float y, int finger_count) {}
+
+    @Override
+    public  void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
 
     @Override
     public void onFingerUp(float x, float y, int finger_count) {

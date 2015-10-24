@@ -73,10 +73,10 @@ public final class Graphics {
 
     public Context context;
 
-    private FloatBuffer _vertexBuffer;
-    private FloatBuffer _normalBuffer;
-    private FloatBuffer _coordsBuffer;
-    private ByteBuffer _colorBuffer;
+    public FloatBuffer _vertexBuffer;
+    public FloatBuffer _normalBuffer;
+    public FloatBuffer _coordsBuffer;
+    public ByteBuffer _colorBuffer;
 
 
     //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
@@ -227,6 +227,13 @@ public final class Graphics {
         _colorBuffer.position(0);
     }
 
+    public void zeroBufferPositions() {
+        _vertexBuffer.position(0);
+        _colorBuffer.position(0);
+        _coordsBuffer.position(0);
+        _normalBuffer.position(0);
+    }
+
     public void updateViewProjMatrix() {
 //		multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 //		invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0);
@@ -293,8 +300,8 @@ public final class Graphics {
     public void warmCache() {
         glEnable(GL_TEXTURE_2D);
 
-        prepare();
-        setStreamSource();
+        resetBufferIndices();
+        setStreamSourcesFull3D();
         addCube(0.0f, 0.0f, 0.0f);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -308,7 +315,6 @@ public final class Graphics {
     public void drawQuad() {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
-
     public void drawCube() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
@@ -317,23 +323,18 @@ public final class Graphics {
     public void drawCubeFaceY_Plus() {
         glDrawArrays(GL_TRIANGLES, 30, 6);
     }
-
     public void drawCubeFaceY_Minus() {
         glDrawArrays(GL_TRIANGLES, 18, 6);
     }
-
     public void drawCubeFaceX_Plus() {
         glDrawArrays(GL_TRIANGLES, 12, 6);
     }
-
     public void drawCubeFaceX_Minus() {
         glDrawArrays(GL_TRIANGLES, 24, 6);
     }
-
     public void drawCubeFaceZ_Plus() {
         glDrawArrays(GL_TRIANGLES, 6, 6);
     }
-
     public void drawCubeFaceZ_Minus() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
@@ -390,7 +391,7 @@ public final class Graphics {
                 maxColor, 0, 0, maxColor, maxColor, 0, 0, maxColor, // z
         };
 
-        prepare();
+        resetBufferIndices();
 
         _vertexBuffer.put(axis);
         _vertexBuffer.position(0);
@@ -507,7 +508,6 @@ public final class Graphics {
     public void enableBlending() {
         if (!_blending_enabled) {
             glEnable(GL_BLEND);
-            glDisable(GL_DEPTH_TEST);
             _blending_enabled = true;
         }
     }
@@ -515,7 +515,6 @@ public final class Graphics {
     public void disableBlending() {
         if (_blending_enabled) {
             glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
             _blending_enabled = false;
         }
     }
@@ -529,24 +528,23 @@ public final class Graphics {
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
     }
 
-    public void prepare() {
+    public void resetBufferIndices() {
         _vertices_count = 0;
         _vindex = -1;
         _cindex = -1;
         _color_index = -1;
     }
 
-    public void setStreamSource() {
+    public void setStreamSourcesFull3D() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
         glNormalPointer(GL_FLOAT, 0, _normalBuffer);
         glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
-
-        //glEnableClientState(GL_NORMAL_ARRAY);
-        //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
     public void loadStartupAssets() throws Exception {
@@ -843,19 +841,6 @@ public final class Graphics {
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
-
-    public void setStreamSourceFloatAndColor() {
-        glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
-        glNormalPointer(GL_FLOAT, 0, _normalBuffer);
-        glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
-    }
-
-    public void setStreamSourceFloat() {
-//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-//        glNormalPointer(GL_FLOAT, 0, _normals);
-//        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
     }
 
     public void setStreamSourceFloat2D() {

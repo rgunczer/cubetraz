@@ -99,14 +99,45 @@ public final class Utils {
         //Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
     }
 
-    public static float quadraticIn(float time)
-    {
+    public static float quadraticIn(float time) {
         return time * time;
     }
 
-    public static float quadraticOut(float time)
-    {
+    public static float quadraticOut(float time) {
         return time * (2 - time);
+    }
+
+    public static Vector rotate3D_AroundXAxis(float x, float y, float z, float degree) {
+        Vector v = new Vector();
+        float q = (float)Math.toRadians(degree);
+
+        v.y = y * (float)Math.cos(q) - z * (float)Math.sin(q);
+        v.z = y * (float)Math.sin(q) + z * (float)Math.cos(q);
+        v.x = x;
+
+        return v;
+    }
+
+    public static Vector rotate3D_AroundYAxis(float x, float y, float z, float degree) {
+        Vector v = new Vector();
+        float q = (float)Math.toRadians(degree);
+
+        v.z = z * (float)Math.cos(q) - x * (float)Math.sin(q);
+        v.x = z * (float)Math.sin(q) + x * (float)Math.cos(q);
+        v.y = y ;
+
+        return v;
+    }
+
+    public static Vector rotate3D_AroundZAxis(float x, float y, float z, float degree) {
+        Vector v = new Vector();
+        float q = (float)Math.toRadians(degree);
+
+        v.x = x * (float)Math.cos(q) - y * (float)Math.sin(q);
+        v.y = x * (float)Math.sin(q) + y * (float)Math.cos(q);
+        v.z = z;
+
+        return v;
     }
 
 
