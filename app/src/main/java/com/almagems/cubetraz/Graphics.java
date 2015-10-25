@@ -73,10 +73,10 @@ public final class Graphics {
 
     public Context context;
 
-    public FloatBuffer _vertexBuffer;
-    public FloatBuffer _normalBuffer;
-    public FloatBuffer _coordsBuffer;
-    public ByteBuffer _colorBuffer;
+    private FloatBuffer _vertexBuffer;
+    private FloatBuffer _normalBuffer;
+    private FloatBuffer _coordsBuffer;
+    private ByteBuffer _colorBuffer;
 
 
     //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
@@ -301,7 +301,7 @@ public final class Graphics {
         glEnable(GL_TEXTURE_2D);
 
         resetBufferIndices();
-        setStreamSourcesFull3D();
+        bindStreamSources3d();
         addCube(0.0f, 0.0f, 0.0f);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -415,7 +415,7 @@ public final class Graphics {
         glDrawArrays(GL_LINES, 0, 6);
     }
 
-    public void drawFBOTexture(int texture_id, Color color, boolean magic) {
+    public void drawFullScreenTexture(int texture_id, Color color) { //, boolean magic) {
         final float verts[] = {
                 0f, height,
                 0f, 0f,
@@ -533,9 +533,31 @@ public final class Graphics {
         _vindex = -1;
         _cindex = -1;
         _color_index = -1;
+        zeroBufferPositions();
     }
 
-    public void setStreamSourcesFull3D() {
+    public void bindStreamSources2dNoTextures() {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+
+        glVertexPointer(2, GL_FLOAT, 0, _vertexBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+    }
+
+    public void bindStreamSources2d() {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+
+        glVertexPointer(2, GL_FLOAT, 0, _vertexBuffer);
+        glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+    }
+
+    public void bindStreamSources3d() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
@@ -568,9 +590,9 @@ public final class Graphics {
         texture_id_tutor = loadTexture(R.drawable.tutor_swipe);
     }
 
-    private int loadTexture(int resourceId) {
+    public int loadTexture(int resourceId) {
         Texture texture = TextureHelper.loadTexture(context, resourceId);
-        textures.add(texture);
+        // textures.add(texture);
         return texture.id;
     }
 
@@ -739,14 +761,14 @@ public final class Graphics {
 //        return vb;
 //    }
 
-    public int createTexture(int w, int h) {
+    public static int createTexture(int w, int h) {
         int[] temp = new int[1];
         glGenTextures(1, temp, 0);
 
         glBindTexture(GL10.GL_TEXTURE_2D, temp[0]);
 
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -828,37 +850,6 @@ public final class Graphics {
 //            printf("\nr:%d, g:%d, b:%d, a:%d", _colors[i], _colors[i+1], _colors[i+2], _colors[i+3]);
 //        }
 //	}
-
-    public void setStreamSourceOld() {
-//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-//        glNormalPointer(GL_FLOAT, 0, _normals);
-//        glTexCoordPointer(2, GL_SHORT, 0, _coords_byte);
-    }
-
-    public void setStreamSourceOnlyVerticeAndColor() {
-//        glVertexPointer(3, GL_FLOAT, 0, _vertices);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
-
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
-
-    public void setStreamSourceFloat2D() {
-//        glVertexPointer(2, GL_FLOAT, 0, _vertices);
-//        glTexCoordPointer(2, GL_FLOAT, 0, _coords_float);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
-
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
-
-    public void setStreamSourceFloat2DNoTexture() {
-//        glVertexPointer(2, GL_FLOAT, 0, _vertices);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colors);
-
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
 
     public void renderTriangles() {
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
@@ -1411,6 +1402,65 @@ public final class Graphics {
 //	DumpColorsBuffer(36);
 
         _vertices_count += 36;
+    }
+
+    public void addVerticesCoordsColors(float[] verts, float[] coords, byte[] colors) {
+        _vertexBuffer.position(0);
+        _coordsBuffer.position(0);
+        _colorBuffer.position(0);
+
+        _vertexBuffer.put(verts);
+        _coordsBuffer.put(coords);
+        _colorBuffer.put(colors);
+    }
+
+    public void addVerticesCoordsNormalsColors(float[] verts, float[] coords, float[] norms, byte[] colors) {
+        _vertexBuffer.position(0);
+        _coordsBuffer.position(0);
+        _normalBuffer.position(0);
+        _colorBuffer.position(0);
+
+        _vertexBuffer.put(verts);
+        _coordsBuffer.put(coords);
+        _normalBuffer.put(norms);
+        _colorBuffer.put(colors);
+    }
+
+    public void addFont(Vector2 pos, Vector2 scale, Color color, TexturedQuad pFont) {
+        // verts
+        int i = _vindex;
+        _vertices[++i] = pos.x;						_vertices[++i] = pos.y;
+        _vertices[++i] = pos.x + pFont.w * scale.x;	_vertices[++i] = pos.y;
+        _vertices[++i] = pos.x + pFont.w * scale.x;	_vertices[++i] = pos.y + pFont.h * scale.y;
+
+        _vertices[++i] = pos.x + pFont.w * scale.x;	_vertices[++i] = pos.y + pFont.h * scale.y;
+        _vertices[++i] = pos.x;						_vertices[++i] = pos.y + pFont.h * scale.y;
+        _vertices[++i] = pos.x;						_vertices[++i] = pos.y;
+        _vindex = i;
+
+        // coords
+        int k = _cindex;
+        _coords[++k] = pFont.tx_lo_left.x;		_coords[++k] = pFont.tx_lo_left.y;		// 0
+        _coords[++k] = pFont.tx_lo_right.x;	    _coords[++k] = pFont.tx_lo_right.y;	    // 1
+        _coords[++k] = pFont.tx_up_right.x;	    _coords[++k] = pFont.tx_up_right.y;	    // 2
+
+        _coords[++k] = pFont.tx_up_right.x;	    _coords[++k] = pFont.tx_up_right.y;	    // 2
+        _coords[++k] = pFont.tx_up_left.x;		_coords[++k] = pFont.tx_up_left.y;		// 3
+        _coords[++k] = pFont.tx_lo_left.x;		_coords[++k] = pFont.tx_lo_left.y;		// 0
+        _cindex = k;
+
+        // color
+        int c = _color_index;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _color_index = c;
+
+        _vertices_count += 6;
     }
 
     public void addQuad(float x, float y, float w, float h, Color color) {

@@ -336,7 +336,7 @@ public final class Menu extends Scene {
 
     public void drawMenuCubes() {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         Color color = new Color(255, 255, 255, 255);
         MenuCube p = m_pMenuCubePlay;
@@ -376,7 +376,7 @@ public final class Menu extends Scene {
 
     public void drawLevelCubes() {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         int size;
         LevelCube levelCube;
@@ -393,7 +393,7 @@ public final class Menu extends Scene {
 
     public void drawLevelCubesLocked() {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         int size;
         LevelCube levelCube;
@@ -829,7 +829,7 @@ public final class Menu extends Scene {
 
     public void drawLevelNumbersOnLocked() {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         switch (m_current_cube_face) {
             case Face_Easy01:
@@ -873,7 +873,7 @@ public final class Menu extends Scene {
 
     public void drawLevelNumbers() {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         switch (m_current_cube_face) {
             case Face_Easy01:
@@ -1412,7 +1412,7 @@ public final class Menu extends Scene {
 
     public void drawSymbols(Color color) {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         drawTextsDefaultOrientation(m_lst_symbols.get(Face_X_Plus),
                 m_lst_symbols.get(Face_X_Minus),
@@ -1478,23 +1478,15 @@ public final class Menu extends Scene {
             c76, 0, 0, c140,
         };
 
-        graphics._vertexBuffer.put(verts);
-        graphics._vertexBuffer.position(0);
+        final float coords[] = {};
 
-        graphics._normalBuffer.put(norms);
-        graphics._normalBuffer.position(0);
-
-        graphics._colorBuffer.put(colors);
-        graphics._colorBuffer.position(0);
+        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
 
         glDisable(GL_TEXTURE_2D);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-//        glPushMatrix();
-//            glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // progress bar music
-            glDrawArrays(GL_TRIANGLE_FAN, 4, 4); // progress bar soundfx
-//        glPopMatrix();
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // progress bar music
+        glDrawArrays(GL_TRIANGLE_FAN, 4, 4); // progress bar soundfx
 
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnable(GL_TEXTURE_2D);
@@ -1502,7 +1494,7 @@ public final class Menu extends Scene {
 
     public void drawLevelCubeSymbols() {
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         switch (m_current_cube_face) {
             case Face_Easy01:
@@ -1601,19 +1593,7 @@ public final class Menu extends Scene {
             0, 0, 0, maxColor,
         };
 
-        graphics._vertexBuffer.put(verts);
-        graphics._vertexBuffer.position(0);
-
-        graphics._normalBuffer.put(norms);
-        graphics._normalBuffer.position(0);
-
-        graphics._coordsBuffer.put(coords);
-        graphics._coordsBuffer.position(0);
-
-        graphics._colorBuffer.put(colors_white);
-        graphics._colorBuffer.position(0);
-
-
+        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors_white);
         glPushMatrix();
             glTranslatef(0.0f, -5.7f, m_credits_offset);
             glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
@@ -1621,9 +1601,7 @@ public final class Menu extends Scene {
             glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         glPopMatrix();
 
-        graphics._colorBuffer.put(colors_black);
-        graphics._colorBuffer.position(0);
-
+        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors_black);
         glPushMatrix();
             glTranslatef(0.0f, -5.6f, -10.0f);
             glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
@@ -1637,7 +1615,8 @@ public final class Menu extends Scene {
         Cube cube;
 
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.zeroBufferPositions();
+        graphics.bindStreamSources3d();
         size = m_list_cubes_base.size();
         for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_base.get(i);
@@ -1666,7 +1645,7 @@ public final class Menu extends Scene {
         coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         switch (m_current_cube_face_type) {
             case Face_X_Plus:
@@ -2603,23 +2582,20 @@ public final class Menu extends Scene {
                 break;
         }
 
-        graphics.setStreamSourceOnlyVerticeAndColor();
+        glDisable(GL_TEXTURE_2D);
+        graphics.bindStreamSources3d();
         graphics.updateBuffersAll();
         graphics.renderTriangles();
-
+        glEnable(GL_TEXTURE_2D);
         glPopMatrix();
     }
 
     @Override
     public void render() {
-        //printf("\nAspect ratio: %f", engine.m_aspectRatio);
-        //printf("\nm_camera_current %f, %f, %f", m_camera_current.eye.x, m_camera_current.eye.y, m_camera_current.eye.z);
-
-//        if (false) {
-//            //renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubePlay);
-//            renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
+//        renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubePlay);
+//        if (true) {
 //            return;
-//        }
+    //        }
 
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
@@ -2632,14 +2608,14 @@ public final class Menu extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color = new Color(255, 255, 255, (int)Game.dirty_alpha);
-        graphics.drawFBOTexture(Graphics.texture_id_dirty, color, false);
+        Color color = new Color(255, 255, 255, (int) Game.dirty_alpha);
+        graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color);
 
         glDepthMask(true);
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
         glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
@@ -2695,7 +2671,7 @@ public final class Menu extends Scene {
 
         graphics.resetBufferIndices();
         graphics.enableBlending();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         glPushMatrix();
             glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
@@ -2896,7 +2872,8 @@ public final class Menu extends Scene {
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
         if ((int) m_color_down.r == (int) m_color_up.r) {
-            int level_number = 255 - (int) m_color_down.r;
+            int realColor = (int)(m_color_up.r * 255f);
+            int level_number = 255 - realColor;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Normal, level_number);
@@ -2910,7 +2887,8 @@ public final class Menu extends Scene {
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
         if ((int) m_color_down.r == (int) m_color_up.r) {
-            int level_number = 255 - (int) m_color_down.r;
+            int realColor = (int)(m_color_up.r * 255f);
+            int level_number = 255 - realColor;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Hard, level_number);

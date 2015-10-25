@@ -634,7 +634,7 @@ public final class Animator extends Scene {
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
 	
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
 	    Color color = Game.getBaseColor();
         int size;
@@ -658,7 +658,7 @@ public final class Animator extends Scene {
 
     public void drawLevelCubes() {
 	    graphics.resetBufferIndices();
-	    graphics.setStreamSourcesFull3D();
+	    graphics.bindStreamSources3d();
 	
 	    LevelCube cube;
         int len = Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.size();
@@ -860,7 +860,7 @@ public final class Animator extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
     
         Color color = new Color(255, 255, 255, Game.dirty_alpha);
-        graphics.drawFBOTexture(Graphics.texture_id_dirty, color, false);
+        graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color);
     
         glDepthMask(true); //GL_TRUE);
     
@@ -894,7 +894,7 @@ public final class Animator extends Scene {
 	    graphics.enableBlending();
 	    glDisableClientState(GL_NORMAL_ARRAY);
 	
-	    graphics.setStreamSourcesFull3D();
+	    graphics.bindStreamSources3d();
 	
         color = Game.getTextColor();
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts);

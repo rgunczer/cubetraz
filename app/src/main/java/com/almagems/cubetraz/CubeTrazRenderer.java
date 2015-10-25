@@ -1,6 +1,5 @@
 package com.almagems.cubetraz;
 
-import static android.opengl.GLES10.*;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -9,10 +8,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 import android.widget.Toast;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 
 public final class CubeTrazRenderer implements Renderer {
@@ -23,8 +18,6 @@ public final class CubeTrazRenderer implements Renderer {
 
 	private long frameStartTimeMS;
 	public final Context context;
-
-    private FloatBuffer floatBuffer;
 
 	// ctor
 	public CubeTrazRenderer(Context context) {
@@ -41,35 +34,11 @@ public final class CubeTrazRenderer implements Renderer {
         width = -1;
         height = -1;
         frameStartTimeMS = SystemClock.elapsedRealtime();
-
-        float d = 0.5f;
-
-        float[] vertices = {
-             0f,   d, 0f,
-             -d,  -d, 0f,
-              d,  -d, 0f
-        };
-
-        ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
-        vbb.order(ByteOrder.nativeOrder());
-
-        floatBuffer = vbb.asFloatBuffer();
-        floatBuffer.put(vertices);
-        floatBuffer.position(0);
-
-        gl.glDisable(GL10.GL_LIGHTING);
-        gl.glDisable(GL10.GL_CULL_FACE);
-        gl.glDisable(GL10.GL_DEPTH_BUFFER_BIT);
-        gl.glDisable(GL10.GL_DEPTH_TEST);
-        gl.glShadeModel(GL10.GL_SMOOTH);
     }
 
     private void onCreate(GL10 gl, int width, int height, boolean contextLost) {
         Engine.createGraphicsObject(gl);
         Engine.initGraphicsObject(width, height);
-
-        //gl.glViewport(0, 0, width, height);
-        //gl.glClearColor(0f, 0f, 1f, 1f);
 
         try {
             Engine.graphics.loadStartupAssets();
@@ -109,13 +78,6 @@ public final class CubeTrazRenderer implements Renderer {
         onCreate(gl, width, height, surfaceCreated);
 		Engine.onSurfaceChanged(width, height);
         surfaceCreated = false;
-
-//        gl.glMatrixMode(GL10.GL_PROJECTION);
-//        gl.glLoadIdentity();
-//        gl.glOrthof(-1f, 1f, -1f, 1f, -1f, 1f);
-//
-//        gl.glMatrixMode(GL10.GL_MODELVIEW);
-//        gl.glLoadIdentity();
     }
 
 	@Override
@@ -133,16 +95,6 @@ public final class CubeTrazRenderer implements Renderer {
             SystemClock.sleep(timeToSleepMS);
         }
         frameStartTimeMS = SystemClock.elapsedRealtime();
-
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//        glPushMatrix();
-//            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-//            glEnableClientState(GL_VERTEX_ARRAY);
-//            glVertexPointer(3, GL_FLOAT, 0, floatBuffer);
-//            glDrawArrays(GL_TRIANGLES, 0, 3);
-//            glDisableClientState(GL_VERTEX_ARRAY);
-//        glPopMatrix();
     }
 
 	public void handleTouchPress(float normalizedX, float normalizedY) {

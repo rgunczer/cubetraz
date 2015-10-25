@@ -217,9 +217,9 @@ public final class Creator {
 	
         String str = null;
 	    switch (difficulty) {
-            case Easy: str = aeasy[level_number]; break;	
-		    case Normal: str = anormal[level_number]; break; 		
-		    case Hard: str = ahard[level_number]; break;
+            case Easy: str = aeasy[level_number].substring(3); break;
+		    case Normal: str = anormal[level_number].substring(3) ; break;
+		    case Hard: str = ahard[level_number].substring(3); break;
         }
 
         if (str != null) {

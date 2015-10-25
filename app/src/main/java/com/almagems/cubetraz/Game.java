@@ -65,6 +65,7 @@ public final class Game {
 
         graphics = Engine.graphics;
 
+        Text.graphics = graphics;
         HUD.graphics = graphics;
         Scene.graphics = graphics;
         MovingCube.graphics = graphics;
@@ -100,7 +101,7 @@ public final class Game {
         Creator.createCubes();
 
         level = new Level();
-        //menu = new Menu();
+        menu = new Menu();
 
         LevelBuilder.level = level;
 
@@ -113,12 +114,6 @@ public final class Game {
 
         graphics.warmCache();
     }
-
-
-
-
-
-
 
 
 
@@ -270,9 +265,6 @@ public final class Game {
                 intro = null;
                 outro = null;
                 menu_init_data.reappear = false;
-                if (menu == null) {
-                    menu = new Menu();
-                }
                 menu.init();
                 scene = menu;
                 break;
@@ -394,6 +386,9 @@ public final class Game {
 
     public static void renderToFBO(Scene scene) {
 
+        if (true) {
+            return;
+        }
 
 //        int defaultFBO = 0;
 //        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
@@ -801,7 +796,7 @@ public final class Game {
         final byte B = (byte)255;
         final byte A = (byte)255;
 
-       final byte colors[] = {
+        final byte colors[] = {
                 // x-plus
                 R, G, B, A,
                 R, G, B, A,
@@ -851,17 +846,7 @@ public final class Game {
                 R, G, B, A,
         };
 
-        graphics._vertexBuffer.position(0);
-        graphics._vertexBuffer.put(verts);
-
-        graphics._normalBuffer.position(0);
-        graphics._normalBuffer.put(norms);
-
-        graphics._coordsBuffer.position(0);
-        graphics._coordsBuffer.put(coords);
-
-        graphics._coordsBuffer.position(0);
-        graphics._colorBuffer.put(colors);
+        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
     }
 
     // Scales a vector by a scalar
@@ -967,15 +952,38 @@ public final class Game {
         return false;
     }
 
-    public static int loadTexture(final String name) {
-//        if (0 != texture_id_tutor) {
-//            glDeleteTextures(1, &texture_id_tutor);
-//            texture_id_tutor = 0;
-//        }
-//
-//        m_resourceManager.CreateTexture(name, texture_id_tutor);
-//        return texture_id_tutor;
-        return 0;
+    public static int loadTutorTexture(final String name) {
+        if (Graphics.texture_id_tutor != 0) {
+            int[] arr = {Graphics.texture_id_tutor};
+            glDeleteTextures(arr.length, arr, 0);
+        }
+
+        if (name.equals("tutor_swipe")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_swipe);
+        } else if (name.equals("tutor_goal")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_goal);
+        } else if (name.equals("tutor_drag")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_drag);
+        } else if (name.equals("tutor_dead")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_dead);
+        } else if (name.equals("tutor_moving")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_moving);
+        } else if (name.equals("tutor_pusher")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_pusher);
+        } else if (name.equals("tutor_plain")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_plain);
+        } else if (name.equals("tutor_menu_pause")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_pause);
+        } else if (name.equals("tutor_menu_undo")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_undo);
+        } else if (name.equals("tutor_menu_hint")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_hint);
+        } else if (name.equals("tutor_menu_solver")) {
+            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_solver);
+        } else {
+            // bad!
+        }
+        return Graphics.texture_id_tutor;
     }
 
     public static void initFontsBig() {
@@ -1071,7 +1079,7 @@ public final class Game {
             pFont.tx_up_right.x = (x+w) / tw;   pFont.tx_up_right.y =     y / th;	// 2
             pFont.tx_up_left.x  =     x / tw;	pFont.tx_up_left.y  =     y / th;	// 3
 
-            m_fonts_big.put("" + a[i].ch, pFont);
+            m_fonts_big.put(a[i].ch + "", pFont);
         }
     }
 

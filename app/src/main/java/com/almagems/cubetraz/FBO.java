@@ -1,13 +1,12 @@
 package com.almagems.cubetraz;
 
-
 import static android.opengl.GLES10.*;
 
 
 public final class FBO {
 
     // FBO vars
-    public int m_TextureId;
+    private int textureId;
 
     // Buffers
     private int m_ColorBuffer;
@@ -20,29 +19,23 @@ public final class FBO {
     public int getWidth() {
         return width;
     }
+
     public int getHeight() {
         return height;
     }
 
     public void create(int w, int h) {
-//        if (m_TextureId != 0) {
-//            return;
-//            /*
-//            System.out.println("FBO: Destroy old texture...");
-//            int[] arr = new int[]{
-//                m_TextureId
-//            };
-//
-//            glDeleteTextures(arr.length, arr, 0);
-//            m_TextureId = 0;
-//            */
-//        }
-//
-//        width = w;
-//        height = h;
-//
-//        int[] temp = new int[1];
-//
+        if (textureId != 0) {
+            int[] arr = { textureId };
+            glDeleteTextures(arr.length, arr, 0);
+            textureId = 0;
+        }
+
+        width = w;
+        height = h;
+
+        int[] temp = new int[1];
+
 //        // Create the color buffer
 //        glGenRenderbuffers(1, temp, 0);
 //        m_ColorBuffer = temp[0];
@@ -60,11 +53,10 @@ public final class FBO {
 //        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthBuffer);
 //
 //        // Create and Attach the texture to the FBO
-//        m_TextureId = Graphics.createTexture(w, h); // <-- CALL CREATE TEXTURE HERE!!!
-//        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureId, 0);
+//        textureId = Graphics.createTexture(w, h); // <-- CALL CREATE TEXTURE HERE!!!
+//        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
 //
 //        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-//
 //        if (status != GL_FRAMEBUFFER_COMPLETE) {
 //            //System.out.println("ERROR Creating FBO...");
 //
@@ -98,10 +90,6 @@ public final class FBO {
 
     public void unbind() {
         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    public int getTextureId() {
-        return m_TextureId;
     }
 
 }

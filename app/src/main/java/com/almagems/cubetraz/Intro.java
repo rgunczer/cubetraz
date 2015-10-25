@@ -638,7 +638,7 @@ public final class Intro extends Scene {
         glDepthMask(false);
 
         Color color_dirty = new Color(255, 255, 255, (int)Game.dirty_alpha);
-        graphics.drawFBOTexture(Graphics.texture_id_dirty, color_dirty, true);
+        graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color_dirty);
 
         glDisable(GL_TEXTURE_2D);
         //graphics.drawAxes();
@@ -654,7 +654,7 @@ public final class Intro extends Scene {
 
         graphics.zeroBufferPositions();
         graphics.resetBufferIndices();
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -671,7 +671,7 @@ public final class Intro extends Scene {
 
         //graphics.drawAxes();
 
-        graphics.setStreamSourcesFull3D();
+        graphics.bindStreamSources3d();
 
         glEnable(GL_LIGHTING);
 

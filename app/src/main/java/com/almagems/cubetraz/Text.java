@@ -1,20 +1,18 @@
 package com.almagems.cubetraz;
 
-
 import java.util.ArrayList;
-
 import static com.almagems.cubetraz.Constants.*;
 
 
 public final class Text {
 
+    public static Graphics graphics;
+
     private String m_text;
     private ArrayList<ArrayList<TexturedQuad>> m_ar_lines = new ArrayList<>(MAX_TEXT_LINES);
-    private float m_sx; // scale x
-    private float m_sy; // scale y
+    private Vector2 scale = new Vector2();
     private int m_length;
     private int m_lines_count;
-    private int m_vertex_count;
     private boolean m_use_big_fonts;
     private boolean m_visible;
 
@@ -28,8 +26,6 @@ public final class Text {
     private float m_height;
     private float m_half_height;
 
-    private TextDisplay m_display;
-
 
     // ctor
     public Text() {
@@ -42,8 +38,8 @@ public final class Text {
         m_half_height = 0.0f;
         m_half_width = 0.0f;
         m_align = TextAlignEnum.LeftAlign;
-        m_sx = 1.0f;
-        m_sy = 1.0f;
+        scale.x = 1.0f;
+        scale.y = 1.0f;
 
         for(int i = 0; i < MAX_TEXT_LINES; ++i) {
             m_ar_lines.add(new ArrayList<TexturedQuad>());
@@ -81,8 +77,8 @@ public final class Text {
     }
 
     public void setScale(float sx, float sy) {
-        m_sx = sx;
-        m_sy = sy;
+        scale.x = sx;
+        scale.y = sy;
         calcTextDimensions();
     }
 
@@ -99,22 +95,21 @@ public final class Text {
             w[i] = 0.0f;
             h[i] = 0.0f;
         }
-/*
+
+        int size;
         TexturedQuad pFont;
-        list<TexturedQuad*>::iterator it;
-
         for (int i = 0; i <= m_lines_count; ++i) {
-            if (!m_ar_lines[i].isEmpty()) {
-                pFont = m_ar_lines[i].front();
-                h[i] = pFont->h;
-
-                for (it = m_ar_lines[i].begin(); it != m_ar_lines[i].end(); ++it) {
-                    pFont = *it;
-                    w[i] += (pFont->w * m_vspace);
+            if (!m_ar_lines.get(i).isEmpty()) {
+                pFont = m_ar_lines.get(i).get(0);
+                h[i] = pFont.h;
+                size = m_ar_lines.get(i).size();
+                for (int j = 0; j < size; ++j) {
+                    pFont = m_ar_lines.get(i).get(j);
+                    w[i] += (pFont.w * m_vspace);
                 }
             }
         }
-*/
+
         m_width = 0.0f;
         m_height = 0.0f;
 
@@ -125,140 +120,71 @@ public final class Text {
             m_height += h[i];
         }
 
-        m_width *= m_sx;
-        m_height *= m_sy;
+        m_width *= scale.x;
+        m_height *= scale.y;
 
         m_half_width = m_width / 2.0f;
         m_half_height = m_height / 2.0f;
     }
 
-    public void emitt(float x, float y, Color color) {
-//        Vector2 pos = new Vector2(x, y);
-//        emitt(m_display.m_verts, m_display.m_coords, m_display.m_colors,
-//                m_display.m_vindex, m_display.m_cindex, m_display.m_color_index,
-//                pos, color);
-    }
-
     public void emitt(Vector2 pos, Color color) {
-//        emitt(m_display.m_verts, m_display.m_coords, m_display.m_colors,
-//                m_display.m_vindex, m_display.m_cindex, m_display.m_color_index,
-//                pos, color);
-    }
-/*
-    public void emitt(float* verts, float* coords, GLubyte* colors,
-                      int& vindex, int& cindex, int& color_index,
-                      Vector2 pos, Color& color) {
-        m_vertex_count = 0;
-
-        list<TexturedQuad*>::iterator it;
-        TexturedQuad* pFont;
+        int size;
+        TexturedQuad pFont;
         float x_start;
-        float x;
-        float y = pos.y;
+        Vector2 tmp = new Vector2();
+        tmp.y = pos.y;
 
-        for (int i = 0; i <= m_lines_count; ++i)
-        {
+        for (int i = 0; i <= m_lines_count; ++i) {
             x_start = pos.x;
 
-            if (RightAlign == m_align)
-            {
+            if (m_align == TextAlignEnum.RightAlign) {
                 float w = 0.0f;
-
-                for (it = m_ar_lines[i].begin(); it != m_ar_lines[i].end(); ++it)
-                {
-                    pFont = *it;
-                    w += (pFont->w * m_vspace) * m_sx;
+                size = m_ar_lines.get(i).size();
+                for (int j = 0; j < size; ++j) {
+                    pFont = m_ar_lines.get(i).get(j);
+                    w += (pFont.w * m_vspace) * scale.x;
                 }
-
                 x_start -= w;
             }
 
-            x = x_start;
+            tmp.x = x_start;
             //float x1 = x;
-
-            for (it = m_ar_lines[i].begin(); it != m_ar_lines[i].end(); ++it)
-            {
-                pFont = *it;
-
-                // verts
-                verts[++vindex] = x;						verts[++vindex] = y;
-                verts[++vindex] = x + pFont->w * m_sx;		verts[++vindex] = y;
-                verts[++vindex] = x + pFont->w * m_sx;		verts[++vindex] = y + pFont->h * m_sy;
-
-                verts[++vindex] = x + pFont->w * m_sx;		verts[++vindex] = y + pFont->h * m_sy;
-                verts[++vindex] = x;						verts[++vindex] = y + pFont->h * m_sy;
-                verts[++vindex] = x;						verts[++vindex] = y;
-
-                // coords
-                coords[++cindex] = pFont->tx_lo_left.x;		coords[++cindex] = pFont->tx_lo_left.y;		// 0
-                coords[++cindex] = pFont->tx_lo_right.x;	coords[++cindex] = pFont->tx_lo_right.y;	// 1
-                coords[++cindex] = pFont->tx_up_right.x;	coords[++cindex] = pFont->tx_up_right.y;	// 2
-
-                coords[++cindex] = pFont->tx_up_right.x;	coords[++cindex] = pFont->tx_up_right.y;	// 2
-                coords[++cindex] = pFont->tx_up_left.x;		coords[++cindex] = pFont->tx_up_left.y;		// 3
-                coords[++cindex] = pFont->tx_lo_left.x;		coords[++cindex] = pFont->tx_lo_left.y;		// 0
-
-                // color
-                colors[++color_index] = color.r; colors[++color_index] = color.g; colors[++color_index] = color.b; colors[++color_index] = color.a;
-                colors[++color_index] = color.r; colors[++color_index] = color.g; colors[++color_index] = color.b; colors[++color_index] = color.a;
-                colors[++color_index] = color.r; colors[++color_index] = color.g; colors[++color_index] = color.b; colors[++color_index] = color.a;
-
-                colors[++color_index] = color.r; colors[++color_index] = color.g; colors[++color_index] = color.b; colors[++color_index] = color.a;
-                colors[++color_index] = color.r; colors[++color_index] = color.g; colors[++color_index] = color.b; colors[++color_index] = color.a;
-                colors[++color_index] = color.r; colors[++color_index] = color.g; colors[++color_index] = color.b; colors[++color_index] = color.a;
-
-                m_vertex_count += 6;
-
-                x += (pFont->w * m_vspace) * m_sx;
+            size = m_ar_lines.get(i).size();
+            for (int j = 0; j < size; ++j) {
+                pFont = m_ar_lines.get(i).get(j);
+                graphics.addFont(tmp, scale, color, pFont);
+                tmp.x += (pFont.w * m_vspace) * scale.x;
             }
 
-            pFont = m_ar_lines[i].front();
-
-            y -= pFont->h * m_sy;
+            pFont = m_ar_lines.get(i).get(0);
+            tmp.y -= pFont.h * scale.y;
         }
     }
-*/
 
     public void setUseBigFonts(boolean use) {
         m_use_big_fonts = use;
     }
-
-    public void setDisplay(TextDisplay display) {
-        m_display = display;
-    }
-
     public void setAlign(TextAlignEnum align) {
         m_align = align;
     }
-
     public void setVisible(boolean visible) {
         m_visible = visible;
     }
-
     public boolean isVisible() {
         return m_visible;
     }
-
-    public int getVertexCount() {
-        return m_vertex_count;
-    }
-
     public int getLength() {
         return m_length;
     }
-
     public float getWidth() {
         return m_width;
     }
-
     public float getHalfWidth() {
         return m_half_width ;
     }
-
     public float getHeight() {
         return m_height;
     }
-
     public float getHalfHeight() {
         return m_half_height;
     }

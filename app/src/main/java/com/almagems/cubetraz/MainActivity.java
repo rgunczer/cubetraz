@@ -31,7 +31,7 @@ public final class MainActivity extends Activity {
         renderer = new CubeTrazRenderer(this);
         glSurfaceView.setEGLContextClientVersion(1);
 
-        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 1);
+        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 24, 8);
         glSurfaceView.setRenderer(renderer);
 
         glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
