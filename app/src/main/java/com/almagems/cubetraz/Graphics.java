@@ -33,7 +33,7 @@ public final class Graphics {
     public static int height;
     public static int half_width;
     public static int half_height;
-    public static float device_scale = 2f;
+    public static float device_scale;
 
     // textures
     public static int texture_id_gray_concrete;
@@ -78,7 +78,6 @@ public final class Graphics {
     private FloatBuffer _coordsBuffer;
     private ByteBuffer _colorBuffer;
 
-
     //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
 
 
@@ -100,8 +99,21 @@ public final class Graphics {
 
         glViewport(0, 0, width, height);
 
-        //m_menu.SetupCameras(); TODO!
+        device_scale = 4;
 
+        if (height < 1201) {
+            device_scale = 3;
+        }
+
+        if (height < 900) {
+            device_scale = 2;
+        }
+
+        if (height < 500) {
+            device_scale = 1f;
+        }
+
+        //m_menu.SetupCameras(); TODO!
 
 //        m_banner_height = banner_height;
 //        m_scaleFactor = scaleFactor;
@@ -206,14 +218,6 @@ public final class Graphics {
     }
 
     public void updateBuffers() {
-        _vertexBuffer.put(_vertices);
-        _vertexBuffer.position(0);
-
-        _colorBuffer.put(_colors);
-        _colorBuffer.position(0);
-    }
-
-    public void updateBuffersAll() {
         _vertexBuffer.put(_vertices);
         _vertexBuffer.position(0);
 

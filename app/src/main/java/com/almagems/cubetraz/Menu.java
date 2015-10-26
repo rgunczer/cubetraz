@@ -370,7 +370,7 @@ public final class Menu extends Scene {
             graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
         }
 
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -387,7 +387,7 @@ public final class Menu extends Scene {
                 graphics.addCube(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z);
             }
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -912,7 +912,7 @@ public final class Menu extends Scene {
             default:
                 break;
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -1056,7 +1056,7 @@ public final class Menu extends Scene {
             }
         }
 
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -1104,7 +1104,7 @@ public final class Menu extends Scene {
                     break;
             }
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -1422,7 +1422,7 @@ public final class Menu extends Scene {
                 m_lst_symbols.get(Face_Z_Minus),
                 color);
 
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -1551,7 +1551,7 @@ public final class Menu extends Scene {
             default:
                 break;
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -1622,7 +1622,7 @@ public final class Menu extends Scene {
             cube = m_list_cubes_base.get(i);
             graphics.addCubeWithColor(cube.tx, cube.ty, cube.tz, cube.color_current);
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
         graphics.resetBufferIndices();
@@ -1631,7 +1631,7 @@ public final class Menu extends Scene {
             cube = m_list_cubes_face.get(i);
             graphics.addCubeWithColor(cube.tx, cube.ty, cube.tz, cube.color_current);
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
@@ -1675,7 +1675,7 @@ public final class Menu extends Scene {
             default:
                 break;
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -2584,7 +2584,7 @@ public final class Menu extends Scene {
 
         glDisable(GL_TEXTURE_2D);
         graphics.bindStreamSources3d();
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
         glEnable(GL_TEXTURE_2D);
         glPopMatrix();

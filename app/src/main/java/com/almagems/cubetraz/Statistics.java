@@ -544,7 +544,7 @@ public final class Statistics extends Scene {
         if (shouldDraw) {
             glPushMatrix();
                 glTranslatef(-2.0f * Graphics.device_scale, -2.0f * Graphics.device_scale, 0.0f);
-                graphics.updateBuffersAll();
+                graphics.updateBuffers();
                 graphics.renderTriangles();
             glPopMatrix();
         }
@@ -552,7 +552,7 @@ public final class Statistics extends Scene {
         color = new Color(225, 10, 50, 255);
         shouldDraw = drawText(color);
         if (shouldDraw) {
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles();
         }
 

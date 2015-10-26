@@ -653,7 +653,7 @@ public final class HUD {
         graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
         graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
         graphics.addQuad(size, x, solver_quad_y, tcoords, color_solver);
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         glDisable(GL_TEXTURE_2D);
 	    graphics.renderTriangles();
         glEnable(GL_TEXTURE_2D);
@@ -785,7 +785,7 @@ public final class HUD {
             graphics.bindStreamSources2dNoTextures();
             graphics.resetBufferIndices();
             graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles();
         
             glEnable(GL_TEXTURE_2D);
@@ -809,7 +809,7 @@ public final class HUD {
 
             glPushMatrix();
             glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles();
             glPopMatrix();
     
@@ -824,7 +824,7 @@ public final class HUD {
             m_ar_text_center[1].emitt(pos, color);
         }
     
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
@@ -870,7 +870,7 @@ public final class HUD {
         graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.device_scale, undo_quad_y, tcoords, color_icon);
     
 	    graphics.bindStreamSources2d();
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
 	    graphics.renderTriangles();
 
         if (m_tutor_active) {
@@ -888,7 +888,7 @@ public final class HUD {
 
             graphics.resetBufferIndices();
             graphics.addQuad(sz, x, y, tcoords, col);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles();
         }
     
@@ -906,7 +906,7 @@ public final class HUD {
             graphics.addQuad(size, Graphics.half_width - (size / 2.0f), Graphics.half_height - (size / 2.0f), tcoords, color);
         
             graphics.bindStreamSources2d();
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles();
         }
 

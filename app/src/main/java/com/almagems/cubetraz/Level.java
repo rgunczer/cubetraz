@@ -64,7 +64,7 @@ public final class Level extends Scene {
     private UserRotation m_user_rotation = new UserRotation();
 
     private MenuCube m_menu_cube_hilite;
-    private CubeFont m_font_hilite;
+    private CubeFont m_font_hilite = new CubeFont();
     private float m_hilite_alpha;
 
     private float m_hilite_timeout;
@@ -959,7 +959,7 @@ public final class Level extends Scene {
             cubeFont.setColor(color);
         }
 
-        color = new Color(20, 0, 0, 20);
+        color = new Color(20, 0, 0, 255);
         m_cubefont_up.setColor(color);
         m_cubefont_mid.setColor(color);
         m_cubefont_low.setColor(color);
@@ -1017,9 +1017,9 @@ public final class Level extends Scene {
 
             Color color = new Color(100, 0, 0, 230);
 
-            m_cubefont_up.color  = color;
-            m_cubefont_mid.color = color;
-            m_cubefont_low.color = color;
+            m_cubefont_up.setColor(color);
+            m_cubefont_mid.setColor(color);
+            m_cubefont_low.setColor(color);
 
             m_show_hint_2nd = false;
 
@@ -1257,7 +1257,11 @@ public final class Level extends Scene {
             m_list_cubes_face.add(cube);
         }
 
-        //engine.IncT(m_t);
+        m_t += 0.04f;
+        if (m_t > 1f) {
+            m_t = 1f;
+        }
+
         Utils.lerpCamera(m_camera_level, m_camera_level_paused, m_t, m_camera_current);
 
         m_interpolator.interpolate();
@@ -1271,9 +1275,9 @@ public final class Level extends Scene {
             m_state = LevelStateEnum.Paused;
 
             Color color = new Color(100, 0, 0, 230);
-            m_cubefont_up.color  = color;
-            m_cubefont_mid.color = color;
-            m_cubefont_low.color = color;
+            m_cubefont_up.setColor(color);
+            m_cubefont_mid.setColor(color);
+            m_cubefont_low.setColor(color);
 
             m_show_hint_2nd = false;
 
@@ -1325,7 +1329,11 @@ public final class Level extends Scene {
     }
 
     public void updateAnimFromPaused() {
-        m_t += 0.01f;
+        m_t += 0.04f;
+        if (m_t > 1f) {
+            m_t = 1f;
+        }
+
         Utils.lerpCamera(m_camera_level_paused, m_camera_level, m_t, m_camera_current);
 
         Cube cube;
@@ -1833,6 +1841,16 @@ public final class Level extends Scene {
         }
     }
 
+    private boolean isPlayerAndKeyInSamePosition() {
+        if (m_cube_pos_key.x == m_player_cube.m_cube_pos.x &&
+            m_cube_pos_key.y == m_player_cube.m_cube_pos.y &&
+            m_cube_pos_key.z == m_player_cube.m_cube_pos.z) {
+            return true;
+        } else{
+            return false;
+        }
+    }
+
     public void drawTheCube() {
         glClear(GL_STENCIL_BUFFER_BIT);
 
@@ -1900,12 +1918,12 @@ public final class Level extends Scene {
             glEnable(GL_TEXTURE_2D);
 
             // draw shadow receivers (floor and two walls)
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             //----------------------------------------
             // cast shadow on a receiver
-            Color shadow_color = new Color(0, 0, 0, (m_fade_value / 2.0f) * 255);
+            Color shadow_color = new Color(0, 0, 0, (int)((m_fade_value / 2.0f) * 255));
 
             graphics.resetBufferIndices();
 
@@ -1952,7 +1970,8 @@ public final class Level extends Scene {
             }
 
             // with key cube
-            if (m_cube_pos_key.x != 0) {
+            if (m_cube_pos_key.x != 0 && !isPlayerAndKeyInSamePosition())
+            {
                 graphics.addCubeSize(Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tx + Game.cube_offset.x,
                                      Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].ty + Game.cube_offset.y,
                                      Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + Game.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
@@ -1968,7 +1987,7 @@ public final class Level extends Scene {
 
             glPushMatrix();
             glMultMatrixf(shadowMat, 0);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles();
             glPopMatrix();
             //----------------------------------------
@@ -2063,7 +2082,7 @@ public final class Level extends Scene {
             }
         }
 
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
         glPopMatrix();
@@ -2126,7 +2145,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
 
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -2186,7 +2205,7 @@ public final class Level extends Scene {
 
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
         }
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
         graphics.renderTriangles();
     }
 
@@ -2215,18 +2234,18 @@ public final class Level extends Scene {
                 graphics.addCube(m_menu_cube_mid.pos.x, m_menu_cube_mid.pos.y, m_menu_cube_mid.pos.z);
                 graphics.addCube(m_menu_cube_low.pos.x, m_menu_cube_low.pos.y, m_menu_cube_low.pos.z);
             }
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
 
-        if (0 != m_cube_pos_key.x) {
+        if (0 != m_cube_pos_key.x && !isPlayerAndKeyInSamePosition()) {
             glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
 
             Cube pCube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
 
             graphics.resetBufferIndices();
             graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.98f, color);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
 
@@ -2265,13 +2284,13 @@ public final class Level extends Scene {
             glEnable(GL_BLEND);
             graphics.bindStreamSources3d();
             glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
 
         if (m_menu_cube_hilite != null) {
             glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
-            color.a = m_hilite_alpha * 255;
+            color.init( new Color((int)color.R, (int)color.G, (int)color.B, (int)(m_hilite_alpha * 255)));
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_CULL_FACE);
             glDisable(GL_LIGHTING);
@@ -2301,7 +2320,7 @@ public final class Level extends Scene {
                     break;
             }
             glEnable(GL_BLEND);
-            graphics.updateBuffersAll();
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glEnable(GL_LIGHTING);
@@ -2424,7 +2443,7 @@ public final class Level extends Scene {
                 graphics.addCubeSize(m_menu_cube_mid.pos.x, m_menu_cube_mid.pos.y, m_menu_cube_mid.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_mid.color);
                 graphics.addCubeSize(m_menu_cube_low.pos.x, m_menu_cube_low.pos.y, m_menu_cube_low.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_low.color);
 
-                graphics.updateBuffersAll();
+                graphics.updateBuffers();
                 graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
                 break;
 
@@ -2804,12 +2823,13 @@ public final class Level extends Scene {
                     renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
                     down_color = Graphics.getColorFromScreen(mPosDown);
-                    MenuCube menuCube = getMovingCubeFromColor((int)down_color.b);
-
+                    int realColor = (int)(down_color.b * 255f);
+                    MenuCube menuCube = getMovingCubeFromColor(realColor);
                     if (menuCube != null) {
                         m_hilite_alpha = 0.0f;
                         m_menu_cube_hilite = menuCube;
-                        CubePos cp = m_menu_cube_hilite.m_cube_pos;
+                        CubePos cp = new CubePos();
+                        cp.init(m_menu_cube_hilite.m_cube_pos);
                         //printf("\nCubePos: %d, %d, %d", cp.x, cp.y, cp.z);
                         m_font_hilite.init(SymbolHilite, cp);
                     }
@@ -2885,7 +2905,6 @@ public final class Level extends Scene {
         mPosMove.y = cur_y;
 
         float dist = Utils.getDistance2D(mPosDown, mPosMove);
-
         //printf("\nOnFingerMove: %.2f", dist);
 
         if (dist > Game.minSwipeLength) {
@@ -2917,22 +2936,19 @@ public final class Level extends Scene {
             mIsSwipe = false;
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
             Color down_color = Graphics.getColorFromScreen(mPosDown);
+            SwipeInfo swipeInfo = Engine.getSwipeDirAndLength(mPosDown, mPosUp);
 
-            SwipeDirEnums swipeDir = SwipeDirEnums.SwipeDown;
-            float length = 1f;
-            //Engine.getSwipeDirAndLength(mPosDown, mPosUp, swipeDir, length);
-
-            if (length > 30.0f * graphics.scaleFactor) {
+            if (swipeInfo.length > 30.0f * graphics.scaleFactor) {
                 MenuCube menuCube = null;
-
-                switch ((int)down_color.b) {
+                int realColor = (int)(down_color.b * 255f);
+                switch (realColor) {
                     case 200: menuCube = m_menu_cube_up; break;
                     case 150: menuCube = m_menu_cube_mid; break;
                     case 100: menuCube = m_menu_cube_low; break;
                 }
 
                 if (menuCube != null) {
-                    switch (swipeDir) {
+                    switch (swipeInfo.swipeDir) {
                         case SwipeRight: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
                         case SwipeLeft:  menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
                         default:
@@ -2981,11 +2997,6 @@ public final class Level extends Scene {
     }
 
     public void fingerUpPlaying(float x, float y, int finger_count) {
-        if (x < 100 && y < 100) {
-            Game.showScene(Scene_Menu);
-            return;
-        }
-
         if (m_hud.getShowHint()) {
             return;
         }

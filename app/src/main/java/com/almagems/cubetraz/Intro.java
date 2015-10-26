@@ -710,7 +710,7 @@ public final class Intro extends Scene {
 
         int count_face = graphics._vertices_count - count_base - 36;
 
-        graphics.updateBuffersAll();
+        graphics.updateBuffers();
 
         glPushMatrix();
             glTranslatef(0.0f, m_offset_y, 0.0f);
