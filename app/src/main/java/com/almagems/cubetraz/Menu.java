@@ -2472,8 +2472,7 @@ public final class Menu extends Scene {
         Game.anim_init_data.pos_light_from.init(m_pos_light_current);
         Game.anim_init_data.pos_light_to.init(Game.level.m_pos_light);
 
-        //Game.showScene(Scene_Anim);
-        Game.showScene(Scene_Level);
+        Game.showScene(Scene_Anim);
     }
 
     public void eventShowCredits() {

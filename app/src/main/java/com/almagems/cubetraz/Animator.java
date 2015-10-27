@@ -1,14 +1,13 @@
 package com.almagems.cubetraz;
 
 import java.util.ArrayList;
-
 import static android.opengl.GLES10.*;
-
 import static com.almagems.cubetraz.Constants.*;
 
 
 public final class Animator extends Scene {
-      
+
+    private int m_counter;
     private float m_t;
 	private float m_t_camera;
 	private float m_timeout;
@@ -55,37 +54,27 @@ public final class Animator extends Scene {
 	private final AppearDisappearListData m_ad_face = new AppearDisappearListData();
 
 
-	private LevelCube getLevelCubeFrom(ArrayList<LevelCube> lst) {
-		if (lst.isEmpty()) {
-			return null;
-		} else {
-			return lst.get( lst.size() - 1);
-        }
-	}
-    
-	private Cube getCubeFrom(ArrayList<Cube> lst) {
-		if (lst.isEmpty()) {
-			return null;
-		} else {
-			return lst.get( lst.size() - 1);
-        }
-	}
-					
     // ctor   
     public Animator() {
 	    m_face_name_x_plus = CubeFaceNamesEnum.Face_Empty;
 	    m_face_name_y_plus = CubeFaceNamesEnum.Face_Empty;
 	    m_face_name_z_plus = CubeFaceNamesEnum.Face_Empty;
+
+        for(int i = 0; i < 6; ++i) {
+            m_lst_titles.add(new ArrayList<CubeFont>());
+            m_lst_texts.add(new ArrayList<CubeFont>());
+            m_lst_symbols.add(new ArrayList<CubeFont>());
+        }
     }
 
     @Override
     public void init() {
+        m_counter = 0;
         m_level_cube_hilite = null;
     
 	    AnimInitData aid = Game.anim_init_data;
 	    m_type = aid.type;
-
-	    m_t_camera = 0.0f;
+	    m_t_camera = 0f;
 		
 	    Game.resetCubes();
 	    Game.clearCubeFaceData();
@@ -159,6 +148,22 @@ public final class Animator extends Scene {
 	    MenuFaceBuilder.build(m_face_name_y_plus, Face_Y_Plus);
 	    MenuFaceBuilder.build(m_face_name_z_plus, Face_Z_Plus);
     }
+
+	private LevelCube getLevelCubeFrom(ArrayList<LevelCube> lst) {
+		if (lst.isEmpty()) {
+			return null;
+		} else {
+			return lst.get( lst.size() - 1);
+		}
+	}
+
+	private Cube getCubeFrom(ArrayList<Cube> lst) {
+		if (lst.isEmpty()) {
+			return null;
+		} else {
+			return lst.get( lst.size() - 1);
+		}
+	}
 
     public void localCopyLevelCubes() {
         int len;
@@ -252,8 +257,8 @@ public final class Animator extends Scene {
 	    //printf("\nSetup Anim To Level...");
 	    AnimInitData aid = Game.anim_init_data;
 
-	    m_hilite_alpha = 0.0f;
-	    m_t = 0.0f;
+	    m_hilite_alpha = 0f;
+	    m_t = 0f;
 	    m_timeout = 0.1f;
 
 	    m_cube_rotation.degree = -90.0f;
@@ -276,7 +281,6 @@ public final class Animator extends Scene {
 
         Cube cube;
 		int size = aid.list_cubes_base.size();
-
 	    for (int i = 0; i < size; ++i) {
             cube = aid.list_cubes_base.get(i);
 		    m_list_cubes_base.add(cube);
@@ -350,7 +354,10 @@ public final class Animator extends Scene {
         m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
 
-        m_t_camera += 0.01f;
+        m_t_camera += 0.04f;
+        if (m_t_camera > 1f) {
+            m_t_camera = 1f;
+        }
 	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t_camera, m_camera_current);
 	
 	    Cube cube;    
@@ -380,9 +387,11 @@ public final class Animator extends Scene {
     public void updateAnimToMenuPhaseOne() {
         m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
-	
-        //engine.IncT(m_t);
-        m_t += 0.01f;
+
+        m_t += 0.04f;
+        if (m_t > 1f) {
+            m_t = 1f;
+        }
         Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
 	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
 		
@@ -455,9 +464,9 @@ public final class Animator extends Scene {
     }
 
     public void updateAnimToLevel() {
-	    m_timeout -= 0.01f;
+	    m_timeout -= 0.04f;
 	
-	    if (m_timeout <= 0.0f) {
+	    if (m_timeout <= 0f) {
 		    LevelCube levelCube;
 		
 		    levelCube = getLevelCubeFrom(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes);
@@ -499,7 +508,7 @@ public final class Animator extends Scene {
 	    if (cube != null) {
 		    m_list_cubes_face.remove(cube);
 		    done = false;
-	    }	
+	    }
     
 	    // base
 	    cube = m_ad_base_disappear.getCubeFromDisappearList();	
@@ -511,12 +520,12 @@ public final class Animator extends Scene {
 			    m_list_cubes_base.remove(cube);
 			    done = false;
 		    }
-        
+
 		    cube = m_ad_base_disappear.getCubeFromDisappearList();
 		    if (cube != null) {
 			    m_list_cubes_base.remove(cube);
 			    done = false;
-		    }        
+		    }
 	    }
 	
 	    if (done) {
@@ -530,9 +539,9 @@ public final class Animator extends Scene {
             }
 	    }
 	
-        m_t += 0.05f;
-        if (m_t > 1.0f) {
-            m_t = 1.0f;
+        m_t += 0.04f;
+        if (m_t > 1f) {
+            m_t = 1f;
         }
     
         Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
@@ -612,20 +621,22 @@ public final class Animator extends Scene {
 
     @Override
     public void update() {
+        ++m_counter;
+
         switch (m_type) {
             case AnimToLevel:
                 updateAnimToLevel();
                 break;
-            
-		    case AnimToMenuFromCompleted:
+
+            case AnimToMenuFromCompleted:
             case AnimToMenuFromPaused:
                 updateAnimToMenu();
                 break;
-            
+
             default:
                 break;
         }
-	    updateCubes();
+        updateCubes();
     }
 
     public void drawTheCube() {        
@@ -641,9 +652,10 @@ public final class Animator extends Scene {
         Cube cube;
         size = m_list_cubes_base.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_list_cubes_face.get(i);
+            cube = m_list_cubes_base.get(i);
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
+        graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 	
 	    color = Game.getFaceColor(1f);
@@ -653,6 +665,7 @@ public final class Animator extends Scene {
             cube = m_list_cubes_face.get(i);
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
+        graphics.updateBuffers();
 	    graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
@@ -681,6 +694,7 @@ public final class Animator extends Scene {
 	
 	    if (graphics._vertices_count > 0) {
 		    glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_level_cubes);
+            graphics.updateBuffers();
 		    graphics.renderTriangles();
 	    }
     }
@@ -728,8 +742,8 @@ public final class Animator extends Scene {
             }
 	    }
 
+        face_type = Face_Y_Plus;
         size = Game.ar_cubefacedata[face_type].lst_level_cubes.size();
-	    face_type = Face_Y_Plus;
 	    for(int i = 0; i < size; ++i) {
 		    levelCube = Game.ar_cubefacedata[face_type].lst_level_cubes.get(i);
             p = null;
@@ -761,8 +775,8 @@ public final class Animator extends Scene {
             }
 	    }
 
+        face_type = Face_Z_Plus;
         size = Game.ar_cubefacedata[face_type].lst_level_cubes.size();
-	    face_type = Face_Z_Plus;
 	    for(int i = 0; i < size; ++i) {
 		    levelCube = Game.ar_cubefacedata[face_type].lst_level_cubes.get(i);
             p = null;
@@ -793,6 +807,7 @@ public final class Animator extends Scene {
                 graphics.addCubeFace_Z_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
             }
 	    }
+        graphics.updateBuffers();
 	    graphics.renderTriangles();
     }
 
@@ -842,7 +857,7 @@ public final class Animator extends Scene {
 		
 		    graphics.addCubeFace_Z_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
 	    }
-	
+	    graphics.updateBuffers();
 	    graphics.renderTriangles();
     }
 
@@ -850,7 +865,9 @@ public final class Animator extends Scene {
     public void render() {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
-    
+        graphics.bindStreamSources2d();
+        graphics.resetBufferIndices();
+
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
         glDepthMask(false);// GL_FALSE);
@@ -859,17 +876,19 @@ public final class Animator extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
     
-        Color color = new Color(255, 255, 255, Game.dirty_alpha);
+        Color color = new Color(255, 255, 255, (int)Game.dirty_alpha);
         graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color);
     
         glDepthMask(true); //GL_TRUE);
     
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
-	
-        //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
-	
+        graphics.bindStreamSources3d();
+        graphics.resetBufferIndices();
+
+        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
+
         glEnable(GL_LIGHTING);
     
 	    glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);

@@ -1,7 +1,6 @@
 package com.almagems.cubetraz;
 
 import java.util.ArrayList;
-
 import static com.almagems.cubetraz.Constants.*;
 
 
@@ -44,27 +43,15 @@ public final class AppearDisappearListData {
     }
 
     public void addAppear(Cube theCube) {
-        int size = lst_appear.size();
-        Cube cube;
-        for (int i = 0; i < size; ++i) {
-            cube = lst_appear.get(i);
-            if (cube == theCube) {
-                return;
-            }
+        if (!lst_appear.contains(theCube)) {
+            lst_appear.add(theCube);
         }
-        lst_appear.add(theCube);
     }
 
     public void addDisappear(Cube theCube) {
-        int size = lst_disappear.size();
-        Cube cube;
-        for (int i = 0; i < size; ++i) {
-            cube = lst_disappear.get(i);
-            if (cube == theCube) {
-                return;
-            }
+        if (!lst_disappear.contains(theCube)) {
+            lst_disappear.add(theCube);
         }
-        lst_disappear.add(theCube);
     }
 
     public Cube getCubeFromAppearList() {

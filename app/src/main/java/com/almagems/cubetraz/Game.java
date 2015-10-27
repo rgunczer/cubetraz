@@ -177,15 +177,16 @@ public final class Game {
     }
 
     public static boolean isOnAList(Cube theCube, ArrayList<Cube> lst) {
-        int size = lst.size();
-        Cube cube;
-        for (int i = 0; i < size; ++i) {
-            cube = lst.get(i);
-            if ( cube == theCube ) {
-                return true;
-            }
-        }
-        return false;
+        return  lst.contains(theCube);
+//        int size = lst.size();
+//        Cube cube;
+//        for (int i = 0; i < size; ++i) {
+//            cube = lst.get(i);
+//            if ( cube == theCube ) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     public static TexturedQuad getFontBig(String ch) {
@@ -263,8 +264,11 @@ public final class Game {
             case Scene_Menu:
                 //showFullScreenAd();
                 intro = null;
-                outro = null;
-                menu_init_data.reappear = false;
+
+                if (outro != null) {
+                    outro = null;
+                    menu_init_data.reappear = false;
+                }
                 menu.init();
                 scene = menu;
                 break;
