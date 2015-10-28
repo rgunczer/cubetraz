@@ -632,7 +632,7 @@ public final class Intro extends Scene {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
 
-        graphics.enableBlending();
+        glEnable(GL_BLEND);
 
         glEnable(GL_TEXTURE_2D);
         glDepthMask(false);
@@ -665,7 +665,7 @@ public final class Intro extends Scene {
         glDisable(GL_POINT_SMOOTH);
 
         glDepthMask(true);
-        graphics.disableBlending();
+        glDisable(GL_BLEND);
 
         //graphics.setStreamSourcesFull3D();
 

@@ -1430,7 +1430,7 @@ public final class Menu extends Scene {
         Cube p = Game.cubes[2][7][3];
 
         float x = p.tx - HALF_CUBE_SIZE;
-        float y = p.ty + HALF_CUBE_SIZE + 0.01f;
+        float y = p.ty + HALF_CUBE_SIZE + 0.02f;
         float z = p.tz - HALF_CUBE_SIZE;
         float w = CUBE_SIZE * 5.0f * Game.getMusicVolume();
         float ws = CUBE_SIZE * 5.0f * Game.getSoundVolume();
@@ -1480,15 +1480,15 @@ public final class Menu extends Scene {
 
         final float coords[] = {};
 
+        graphics.bindStreamSources3dNoTexture();
+        graphics.resetBufferIndices();
         graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
 
         glDisable(GL_TEXTURE_2D);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // progress bar music
         glDrawArrays(GL_TRIANGLE_FAN, 4, 4); // progress bar soundfx
 
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnable(GL_TEXTURE_2D);
     }
 
@@ -2582,7 +2582,7 @@ public final class Menu extends Scene {
         }
 
         glDisable(GL_TEXTURE_2D);
-        graphics.bindStreamSources3d();
+        graphics.bindStreamSources3dNoTexture();
         graphics.updateBuffers();
         graphics.renderTriangles();
         glEnable(GL_TEXTURE_2D);
@@ -2598,14 +2598,12 @@ public final class Menu extends Scene {
 
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
+        graphics.bindStreamSources2d();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
         glDepthMask(false); //GL_FALSE);
         glEnable(GL_TEXTURE_2D);
-
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
 
         Color color = new Color(255, 255, 255, (int) Game.dirty_alpha);
         graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color);
@@ -2669,7 +2667,7 @@ public final class Menu extends Scene {
         glDisable(GL_LIGHTING);
 
         graphics.resetBufferIndices();
-        graphics.enableBlending();
+        glEnable(GL_BLEND);
         graphics.bindStreamSources3d();
 
         glPushMatrix();
@@ -2817,12 +2815,10 @@ public final class Menu extends Scene {
         m_color_down = Graphics.getColorFromScreen(mPosDown);
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
-        int downR = (int) m_color_down.r;
-        int upR = (int) m_color_up.r;
+        int downR = (int)(m_color_down.r * 255f);
+        int upR = (int)(m_color_up.r * 255f);
 
-        //if (m_color_down.r == m_color_up.r) {
         if (downR == upR) {
-            //switch (m_color_down.r) {
             switch (downR) {
                 case 255:
                     Game.musicVolumeUp();

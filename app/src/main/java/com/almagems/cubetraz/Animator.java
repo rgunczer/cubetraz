@@ -910,7 +910,7 @@ public final class Animator extends Scene {
     
         glDisable(GL_LIGHTING);
 
-	    graphics.enableBlending();
+	    glEnable(GL_BLEND);
 	    glDisableClientState(GL_NORMAL_ARRAY);
 	
 	    graphics.bindStreamSources3d();
@@ -932,7 +932,7 @@ public final class Animator extends Scene {
     
         drawTexts(m_lst_symbols.get(Face_X_Plus), m_lst_symbols.get(Face_Y_Plus), m_lst_symbols.get(Face_Z_Plus), color);
     
-	    graphics.disableBlending();
+	    glDisable(GL_BLEND);
 	
 	    glPopMatrix();
     }    

@@ -12,14 +12,16 @@ public final class MovingCube {
     private float m_step_t;
     private float m_start_value;
     private float m_end_value;
-    
+
+    private int m_moveType;
+
     private Color m_color = new Color();
     private Color m_color_current = new Color();
 
     private Color m_color_symbol = new Color();
     private Color m_color_symbol_current = new Color();
     
-    private float position; // pointer! (java)
+    private Vector position;
         
     private CubePos m_cube_pos_starting = new CubePos();
     private CubePos m_cube_pos = new CubePos();
@@ -116,7 +118,7 @@ public final class MovingCube {
 			    m_done = true;
                 m_color_symbol_current = m_color_symbol;
 			
-			    //engine.PlaySound(SOUND_CUBE_HIT);
+			    Game.playSound(SOUND_CUBE_HIT);
 			
 			    setCubePos(m_cube_pos_destination);
 			
@@ -132,13 +134,33 @@ public final class MovingCube {
 			
 			    updateSymbols();
 		    } else {
-                position = Utils.lerp(m_start_value, m_end_value, m_t);
+                float value = Utils.lerp(m_start_value, m_end_value, m_t);
+                switch (m_moveType) {
+                    case AxisMovement_X_Plus:
+                    case AxisMovement_X_Minus:
+                        position.x = value;
+                        pos.x = position.x;
+                        break;
+
+                    case AxisMovement_Y_Plus:
+                    case AxisMovement_Y_Minus:
+                        position.y = value;
+                        pos.y = position.y;
+                        break;
+
+                    case AxisMovement_Z_Plus:
+                    case AxisMovement_Z_Minus:
+                        position.z = value;
+                        pos.z = position.z;
+                        break;
+                }
             }
         }
     }
 
     void calcMovement(CubePos cube_pos) {	
-	    CubePos prev = cube_pos;
+	    CubePos prev = new CubePos();
+        prev.init(cube_pos);
 
         boolean is_obstacle;
         boolean is_player;
@@ -255,34 +277,36 @@ public final class MovingCube {
 
     public void move() {
 	    if (m_done) {
-		    CubePos cube_pos = m_cube_pos;		
+		    CubePos cube_pos = new CubePos();
+			cube_pos.init(m_cube_pos);
 		    calcMovement(cube_pos);
 
 		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {
 			    m_cube_pos_destination = cube_pos;
             
 			    Vector pos_destination = Game.getCubePosAt(cube_pos);
-            
+                m_moveType = m_move_dir;
+
 			    switch (m_move_dir) {
 				    case AxisMovement_X_Plus:
 				    case AxisMovement_X_Minus:
 					    m_start_value = pos.x;
 					    m_end_value = pos_destination.x;
-					    position = pos.x;
+					    position = pos;
 					    break;
 					
 				    case AxisMovement_Y_Plus:
 				    case AxisMovement_Y_Minus:
 					    m_start_value = pos.y;
 					    m_end_value = pos_destination.y;
-					    position = pos.y;
+					    position = pos;
 					    break;
 					
 				    case AxisMovement_Z_Plus:
 				    case AxisMovement_Z_Minus:
 					    m_start_value = pos.z;
 					    m_end_value = pos_destination.z;
-					    position = pos.z;
+					    position = pos;
 					    break;
                     
                     default:

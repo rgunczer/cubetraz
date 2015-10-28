@@ -239,7 +239,7 @@ public final class PlayerCube {
 		
 		    CubePos cube_pos = new CubePos();
             cube_pos.init(m_cube_pos);
-		    calcMovement(cube_pos, type, false);
+		    calcMovement(cube_pos, type, true);
 		
 		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {            
 			    m_cube_pos_destination = cube_pos;

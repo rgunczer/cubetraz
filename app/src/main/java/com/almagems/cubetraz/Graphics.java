@@ -63,8 +63,6 @@ public final class Graphics {
     private float[] _coords = new float[BUF_SIZE * KILOBYTE];
     private byte[] _colors = new byte[BUF_SIZE * KILOBYTE];
 
-    public boolean _blending_enabled = false;
-
     public float screenWidth;
     public float screenHeight;
     public float aspectRatio;
@@ -99,18 +97,18 @@ public final class Graphics {
 
         glViewport(0, 0, width, height);
 
-        device_scale = 4;
+        device_scale = 4.5f;
 
         if (height < 1201) {
-            device_scale = 3;
+            device_scale = 3.5f;
         }
 
         if (height < 900) {
-            device_scale = 2;
+            device_scale = 2.5f;
         }
 
         if (height < 500) {
-            device_scale = 1f;
+            device_scale = 1.25f;
         }
 
         //m_menu.SetupCameras(); TODO!
@@ -419,7 +417,7 @@ public final class Graphics {
         glDrawArrays(GL_LINES, 0, 6);
     }
 
-    public void drawFullScreenTexture(int texture_id, Color color) { //, boolean magic) {
+    public void drawFullScreenTexture(int texture_id, Color color) {
         final float verts[] = {
                 0f, height,
                 0f, 0f,
@@ -434,11 +432,6 @@ public final class Graphics {
                 1f, 1f
         };
 
-//        if (magic) {
-//            coords[1] = 1.0f - (m_banner_height / m_height);
-//            coords[7] = coords[1];
-//        }
-
         final byte colors[] = {
                 color.R, color.G, color.B, color.A,
                 color.R, color.G, color.B, color.A,
@@ -446,23 +439,9 @@ public final class Graphics {
                 color.R, color.G, color.B, color.A
         };
 
-        _vertexBuffer.put(verts);
-        _vertexBuffer.position(0);
+        final float norms[] = {};
 
-        _coordsBuffer.put(coords);
-        _coordsBuffer.position(0);
-
-        _colorBuffer.put(colors);
-        _colorBuffer.position(0);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-
-        glVertexPointer(2, GL_FLOAT, 0, _vertexBuffer);
-        glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+        addVerticesCoordsNormalsColors(verts, coords, norms, colors);
 
         glBindTexture(GL_TEXTURE_2D, texture_id);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -507,20 +486,6 @@ public final class Graphics {
 
     public void addCubeWithColor(float tx, float ty, float tz, Color color) {
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
-    }
-
-    public void enableBlending() {
-        if (!_blending_enabled) {
-            glEnable(GL_BLEND);
-            _blending_enabled = true;
-        }
-    }
-
-    public void disableBlending() {
-        if (_blending_enabled) {
-            glDisable(GL_BLEND);
-            _blending_enabled = false;
-        }
     }
 
     public void renderPoints() {
@@ -572,6 +537,18 @@ public final class Graphics {
         glTexCoordPointer(2, GL_FLOAT, 0, _coordsBuffer);
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
     }
+
+    public void bindStreamSources3dNoTexture() {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glVertexPointer(3, GL_FLOAT, 0, _vertexBuffer);
+        glNormalPointer(GL_FLOAT, 0, _normalBuffer);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
+    }
+
 
     public void loadStartupAssets() throws Exception {
         //System.out.println("Load startup Assets...");
@@ -1419,15 +1396,15 @@ public final class Graphics {
     }
 
     public void addVerticesCoordsNormalsColors(float[] verts, float[] coords, float[] norms, byte[] colors) {
-        _vertexBuffer.position(0);
-        _coordsBuffer.position(0);
-        _normalBuffer.position(0);
-        _colorBuffer.position(0);
-
         _vertexBuffer.put(verts);
         _coordsBuffer.put(coords);
         _normalBuffer.put(norms);
         _colorBuffer.put(colors);
+
+        _vertexBuffer.position(0);
+        _normalBuffer.position(0);
+        _coordsBuffer.position(0);
+        _colorBuffer.position(0);
     }
 
     public void addFont(Vector2 pos, Vector2 scale, Color color, TexturedQuad pFont) {

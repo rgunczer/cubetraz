@@ -88,9 +88,10 @@ public final class MoverCube {
         m_cube_pos_starting = m_cube_pos;
         setSymbols();
     
-        m_color = m_color_current = Game.getFaceColor(1f);
-        m_color_symbol_current = new Color(50, 50, 50, 255);
-        m_color_symbol = new Color(50, 50, 50, 255);
+        m_color.init(Game.getFaceColor(1f));
+        m_color_current.init(Game.getFaceColor(1f));
+        m_color_symbol_current.init(new Color(50, 50, 50, 255));
+        m_color_symbol.init(new Color(50, 50, 50, 255));
     }
 
     public void update() {
@@ -102,6 +103,7 @@ public final class MoverCube {
     }
 
     public void renderSymbols() {
+        //System.out.println("renderSymbol: " + m_color_symbol_current.toString());
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         
@@ -142,8 +144,9 @@ public final class MoverCube {
     }
     
     public void hiLite() { 
-        m_color_symbol_current = new Color(51, 255, 51, 204); 
+        m_color_symbol_current.init(new Color(51, 255, 51, 204));
     }
+
     public void noHiLite() {
         m_color_symbol_current.init(m_color_symbol);
     }

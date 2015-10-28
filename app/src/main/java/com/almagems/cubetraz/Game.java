@@ -371,13 +371,6 @@ public final class Game {
         }
     }
 
-
-
-
-
-
-
-
     public static Vector getCubePosAt(CubePos cube_pos) {
         Vector pos = new Vector();
 
@@ -1364,67 +1357,63 @@ public final class Game {
     }
 
     public static void musicVolumeUp() {
-//        float volume = Engine.getMusicVolume();
-//
-//        volume += 0.1f;
-//
-//        if (volume > 1.0f) {
-//            volume = 1.0f;
-//        }
-//
-//        Engine.setMusicVolume(volume);
+        float volume = Game.getMusicVolume();
+
+        volume += 0.1f;
+        if (volume > 1.0f) {
+            volume = 1.0f;
+        }
+
+        Game.setMusicVolume(volume);
     }
 
     public static void musicVolumeDown() {
-//        float volume = Engine.getMusicVolume();
-//
-//        volume -= 0.1f;
-//
-//        if (volume < 0.0f) {
-//            volume = 0.0f;
-//        }
-//
-//        Engine.setMusicVolume(volume);
+        float volume = Game.getMusicVolume();
+
+        volume -= 0.1f;
+        if (volume < 0.0f) {
+            volume = 0.0f;
+        }
+
+        Game.setMusicVolume(volume);
     }
 
     public static void soundVolumeUp() {
-//        float volume = Engine.getSoundVolume();
-//
-//        volume += 0.1f;
-//
-//        if (volume > 1.0f) {
-//            volume = 1.0f;
-//        }
-//
-//        Engine.setSoundFXVolume(volume);
+        float volume = Engine.getSoundVolume();
+
+        volume += 0.1f;
+        if (volume > 1.0f) {
+            volume = 1.0f;
+        }
+
+        Engine.setSoundVolume(volume);
     }
 
     public static void soundVolumeDown() {
-//        float volume = Engine.getSoundVolume();
-//
-//        volume -= 0.1f;
-//
-//        if (volume < 0.0f) {
-//            volume = 0.0f;
-//        }
-//
-//        Engine.setSoundFXVolume(volume);
+        float volume = Engine.getSoundVolume();
+
+        volume -= 0.1f;
+        if (volume < 0.0f) {
+            volume = 0.0f;
+        }
+
+        Engine.setSoundVolume(volume);
     }
 
     public static float getMusicVolume() {
-        return 0.5f; // Engine.getMusicVolume();
+        return Engine.getMusicVolume();
     }
 
     public static float getSoundVolume() {
-        return 0.5f; // Engine.getSoundVolume();
+        return Engine.getSoundVolume();
     }
 
     public static void setMusicVolume(float volume) {
-        //Engine.setMusicVolume(volume);
+        Engine.setMusicVolume(volume);
     }
 
     public static void setSoundVolume(float volume) {
-        //Engine.SetSoundFXVolume(volume);
+        Engine.setSoundVolume(volume);
     }
 
     public static void playSound(final String key) {

@@ -72,6 +72,9 @@ public final class Engine {
     public static Game game;
 
 
+    private static float musicVolume = 0.5f;
+    private static float soundVolume = 0.5f;
+
     // ctor
 	private Engine() {
         //System.out.println("Engine ctor...");
@@ -323,6 +326,22 @@ public final class Engine {
 //        if (audio != null) {
 //            audio.create();
 //        }
+    }
+
+    public static float getMusicVolume() {
+        return musicVolume;
+    }
+
+    public static float getSoundVolume() {
+        return soundVolume;
+    }
+
+    public static void setSoundVolume(float volume) {
+        Engine.soundVolume = volume;
+    }
+
+    public static void setMusicVolume(float volume) {
+        Engine.musicVolume = volume;
     }
 
     public static void update() {

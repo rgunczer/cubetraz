@@ -410,7 +410,7 @@ public final class Level extends Scene {
 
         // uncomment to load alternative level
         //Game.level_init_data.difficulty = DifficultyEnum.Easy;
-        //Game.level_init_data.level_number = 6;
+        //Game.level_init_data.level_number = 12;
 
         m_tutor_index = 0;
         m_next_action = LevelNextActionEnum.NoNextAction;
@@ -841,7 +841,7 @@ public final class Level extends Scene {
     public void setupMoveCube(MovingCube movingCube) {
         m_state_to_restore = m_state;
         m_state = LevelStateEnum.MovingCube;
-        m_timeout = 0.3f;
+        m_timeout = 0.1f;
 
         m_moving_cube = movingCube;
         m_moving_cube.move();
@@ -851,7 +851,7 @@ public final class Level extends Scene {
         int movement = moverCube.getMoveDir();
         m_state_to_restore = m_state;
         m_state = LevelStateEnum.MovingPlayer;
-        m_timeout = 0.3f;
+        m_timeout = 0.15f;
 
         m_mover_cube = moverCube;
         m_mover_cube.hiLite();
@@ -1912,7 +1912,7 @@ public final class Level extends Scene {
             glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
             glStencilFunc(GL_ALWAYS, 0xff, 0xff);
 
-            graphics.disableBlending();
+            glDisable(GL_BLEND);
             glEnable(GL_LIGHTING);
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_TEXTURE_2D);
@@ -1977,7 +1977,7 @@ public final class Level extends Scene {
                                      Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + Game.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
             }
 
-            graphics.enableBlending();
+            glEnable(GL_BLEND);
             glDisable(GL_LIGHTING);
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_DEPTH_TEST);
@@ -1997,7 +1997,7 @@ public final class Level extends Scene {
 
         glDisable(GL_STENCIL_TEST);
         glEnable(GL_CULL_FACE);
-        graphics.disableBlending();
+        glDisable(GL_BLEND);
         glEnable(GL_LIGHTING);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
@@ -2359,6 +2359,7 @@ public final class Level extends Scene {
 
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
+        graphics.bindStreamSources2d();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -2415,7 +2416,7 @@ public final class Level extends Scene {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glDisable(GL_LIGHTING);
-        graphics.disableBlending();
+        glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
 
         glDisable(GL_TEXTURE_2D);
@@ -2479,13 +2480,13 @@ public final class Level extends Scene {
         glEnable(GL_LIGHTING);
         //glEnable(GL_LIGHT0);
 
-        float posLight[] = { m_pos_light.x, m_pos_light.y, m_pos_light.z, 1.0f };
+        float posLight[] = { m_pos_light.x, m_pos_light.y, m_pos_light.z, 1.0f};
         glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
 
         glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
         drawTheCube();
 
-        graphics.enableBlending();
+        glEnable(GL_BLEND);
 
         if (!m_lst_moving_cubes.isEmpty() || !m_lst_mover_cubes.isEmpty() || !m_lst_dead_cubes.isEmpty()) {
             int size;
@@ -2538,7 +2539,7 @@ public final class Level extends Scene {
             glDisable(GL_LIGHTING);
         }
 
-        graphics.disableBlending();
+        glDisable(GL_BLEND);
 
         // draw player cube
         graphics.resetBufferIndices();
@@ -2553,7 +2554,6 @@ public final class Level extends Scene {
     }
 
     public void eventBuildLevel() {
-
         switch (m_difficulty) {
             case Easy: LevelBuilderEasy.build(m_level_number); break;
             case Normal: LevelBuilderNormal.build(m_level_number); break; 
@@ -3052,7 +3052,7 @@ public final class Level extends Scene {
 
             float len = dir.len(); // swipe length
 
-            System.out.println("Swipe Length: " + len + ", minSwipeLength(" + Game.minSwipeLength + ")");
+            //System.out.println("Swipe Length: " + len + ", minSwipeLength(" + Game.minSwipeLength + ")");
 
             if (len < Game.minSwipeLength){
                 return;

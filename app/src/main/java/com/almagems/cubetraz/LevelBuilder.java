@@ -65,33 +65,31 @@ public final class LevelBuilder {
             Game.setCubeTypeInvisible(cube.getCubePos());
             lst_moving_cubes_pool.add(cube);
         }
-
         lst_moving_cubes.clear();
     }
 
     public static void recycleMoverCubes() {
         //printf("\nRecycle Mover Cubes...");
-/*
-        list<cMoverCube*>::iterator it;
-        for (it = lst_mover_cubes.begin(); it != lst_mover_cubes.end(); ++it) {
-            engine->SetCubeTypeInvisible( (*it)->GetCubePos() );
-            lst_mover_cubes_pool.push_back(*it);
+        MoverCube cube;
+        int len = lst_mover_cubes.size();
+        for (int i = 0; i < len; ++i) {
+            cube = lst_mover_cubes.get(i);
+            Game.setCubeTypeInvisible( cube.getCubePos() );
+            lst_mover_cubes_pool.add(cube);
         }
         lst_mover_cubes.clear();
-*/
     }
 
     public static void recycleDeadCubes() {
         //printf("\nRecycle Dead Cubes...");
-/*
-        list<cDeadCube*>::iterator it;
-        for (it = lst_dead_cubes.begin(); it != lst_dead_cubes.end(); ++it) 
-        {
-            engine->SetCubeTypeInvisible( (*it)->GetCubePos() );
-            lst_dead_cubes_pool.push_back(*it);
+        DeadCube cube;
+        int len = lst_dead_cubes.size();
+        for (int i = 0; i < len; ++i) {
+            cube = lst_dead_cubes.get(i);
+            Game.setCubeTypeInvisible( cube.getCubePos() );
+            lst_dead_cubes_pool.add(cube);
         }
         lst_dead_cubes.clear();
-*/
     }
 
     public static void prepare() {

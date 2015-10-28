@@ -20,10 +20,10 @@ public class UndoData {
     public UndoData(CubePos player_pos) {
         this.player_pos = player_pos;
 
-        moving_cube = null;
+        moving_cube = new MovingCube();
         moving_cube_pos = new CubePos(0,0,0);
 
-        mover_cube = null;
+        mover_cube = new MoverCube();
     }
 
 }
