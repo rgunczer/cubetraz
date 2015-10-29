@@ -780,7 +780,7 @@ public final class HUD {
             int a = (int)m_center_alpha * 255;
         
             glDisable(GL_TEXTURE_2D);
-            Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
+            Color color_bg = new Color(30, 30, 15, (int)(150 * m_center_alpha));
         
             graphics.bindStreamSources2dNoTextures();
             graphics.resetBufferIndices();
@@ -796,7 +796,6 @@ public final class HUD {
             m_ar_text_center[1].setScale(scale, scale);
         
             //printf("\na: %d", a);
-        
 		    Color color = new Color(0, 0, 0, a);
 
             pos.x = Graphics.half_width - m_ar_text_center[0].getHalfWidth();
@@ -921,25 +920,29 @@ public final class HUD {
 		    };
 
             byte maxColor = (byte)255;
-
 		    final byte colors[] = {
 			    maxColor,  maxColor,  0, maxColor,
 			    maxColor,  maxColor,  0, maxColor,
 		    };
-		
-//		    glVertexPointer(2, GL_FLOAT, 0, verts);
-//		    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-//		    glLineWidth(2.0f * graphics.device_scale);
-//            glEnable(GL_LINE_SMOOTH);
-//		    glDrawArrays(GL_LINES, 0, 2);
-//            glDisable(GL_LINE_SMOOTH);
-//            glLineWidth(1.0f);
-//
-//            Color color_circle = new Color(255, 255, 0, 255);
-//            graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.5f, color_circle);
-//
-//            color_circle = new Color(255, 0, 0, 255);
-//            graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.25f, color_circle);
+
+            final float norms[] = {};
+            final float coords[] = {};
+
+            graphics.zeroBufferPositions();
+            graphics.bindStreamSources2dNoTextures();
+            graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
+
+		    glLineWidth(2.0f * Graphics.device_scale);
+            glEnable(GL_LINE_SMOOTH);
+		    glDrawArrays(GL_LINES, 0, 2);
+            glDisable(GL_LINE_SMOOTH);
+            glLineWidth(1.0f);
+
+            Color color_circle = new Color(255, 255, 0, 255);
+            graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.5f, color_circle);
+
+            color_circle = new Color(255, 0, 0, 255);
+            graphics.drawCircleAt(m_pos_center.x + dir.x, m_pos_center.y + dir.y, m_radius * 0.25f, color_circle);
         }
         
         glDisable(GL_BLEND);

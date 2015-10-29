@@ -425,14 +425,13 @@ public final class Statistics extends Scene {
         Color color_text = new Color(220, 20, 60, 240);
 
         final byte colors_red[] = {
-            color_text.R, color_text.G, color_text.B, a,
-            color_text.R, color_text.G, color_text.B, a,
-            color_text.R, color_text.G, color_text.B, a,
-            color_text.R, color_text.G, color_text.B, a
+            (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a,
+            (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a,
+            (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a,
+            (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a
         };
 
         byte maxColor = (byte)255;
-
         final byte colors_yellow[] = {
             maxColor, maxColor, 0, a,
             maxColor, maxColor, 0, a,

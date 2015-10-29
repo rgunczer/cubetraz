@@ -631,6 +631,7 @@ public final class Intro extends Scene {
     public void render() {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
+        graphics.bindStreamSources2d();
 
         glEnable(GL_BLEND);
 

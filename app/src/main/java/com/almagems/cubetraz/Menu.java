@@ -83,9 +83,8 @@ public final class Menu extends Scene {
     private CubeFaceNamesEnum m_current_cube_face;
     private int m_current_cube_face_type;
 
-    private MenuCube getMovingCubeFromColor(float color) {
-        int realColor = (int)(color * 255f);
-        switch (realColor) {
+    private MenuCube getMovingCubeFromColor(int color) {
+        switch (color) {
             case 255: return m_pMenuCubePlay;
             case 200: return m_pMenuCubeOptions;
             case 100: return m_pMenuCubeStore;
@@ -2851,9 +2850,8 @@ public final class Menu extends Scene {
         m_color_down = Graphics.getColorFromScreen(mPosDown);
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
-        if ((int) m_color_down.r == (int) m_color_up.r) {
-            int realColor = (int)(m_color_up.r * 255f);
-            int level_number = 255 - realColor;
+        if (m_color_down.r == m_color_up.r) {
+            int level_number = 255 - m_color_up.r;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Easy, level_number);
@@ -2866,9 +2864,8 @@ public final class Menu extends Scene {
         m_color_down = Graphics.getColorFromScreen(mPosDown);
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
-        if ((int) m_color_down.r == (int) m_color_up.r) {
-            int realColor = (int)(m_color_up.r * 255f);
-            int level_number = 255 - realColor;
+        if (m_color_down.r == m_color_up.r) {
+            int level_number = 255 - m_color_up.r;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Normal, level_number);
@@ -2881,9 +2878,8 @@ public final class Menu extends Scene {
         m_color_down = Graphics.getColorFromScreen(mPosDown);
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
-        if ((int) m_color_down.r == (int) m_color_up.r) {
-            int realColor = (int)(m_color_up.r * 255f);
-            int level_number = 255 - realColor;
+        if (m_color_down.r == m_color_up.r) {
+            int level_number = 255 - m_color_up.r;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Hard, level_number);
@@ -2896,7 +2892,7 @@ public final class Menu extends Scene {
         m_color_down = Graphics.getColorFromScreen(mPosDown);
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
-        if ((int) m_color_down.r == (int) m_color_up.r) {
+        if (m_color_down.r == m_color_up.r) {
             MenuCube menuCube = getMovingCubeFromColor(m_color_up.r);
             if (menuCube == m_cubeCredits) {
                 eventShowCredits();

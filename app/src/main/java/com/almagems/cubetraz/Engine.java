@@ -1,10 +1,8 @@
 package com.almagems.cubetraz;
 
 import static com.almagems.cubetraz.Constants.*;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import javax.microedition.khronos.opengles.GL10;
 
 

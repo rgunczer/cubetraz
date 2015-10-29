@@ -51,7 +51,7 @@ public final class DeadCube {
 
     public void init(CubePos cube_pos) {
         setCubePos(cube_pos);
-        m_cube_pos_starting = m_cube_pos;
+        m_cube_pos_starting.init(m_cube_pos);
     
         m_ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolDeath);
         m_ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolDeath);

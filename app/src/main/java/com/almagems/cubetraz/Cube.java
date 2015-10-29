@@ -50,7 +50,7 @@ public final class Cube {
 	}
 
     public void resetColor() {
-        color_current = color;
+        color_current.init(color);
     }
 
     public void resetFonts() {
@@ -79,7 +79,7 @@ public final class Cube {
 		ar_symbols[5] = null;
     }
 
-    public void warmByFactor(int factor) {                
+    public void warmByFactor(int factor) {
         if (color_current.r < color.r) {
             color_current.r += factor;
             

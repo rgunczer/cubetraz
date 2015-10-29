@@ -11,7 +11,7 @@ public final class Constants {
     public static final int MAX_HINT_CUBES = 48;
     public static final float UNDO_TIMEOUT = 0.2f;
 
-    public static final int WARM_FACTOR = 5;
+    public static final byte WARM_FACTOR = (byte)5;
 
     public static final int KILOBYTE = 1024;
     public static final int BUF_SIZE = 64;

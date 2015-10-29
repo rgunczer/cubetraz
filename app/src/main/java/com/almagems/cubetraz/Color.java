@@ -9,17 +9,14 @@ public final class Color {
     public static final Color YELLOW = new Color(1f, 1f, 0f, 1f);
     public static final Color RED = new Color(1f, 0f, 0f, 1f);
 
-	public float r, g, b, a;
-
-    public byte R, G, B, A;
+	public int r, g, b, a;
 
     // ctor
 	public Color() {
-		r = 0f;
-		g = 0f;
-		b = 0f;
-		a = 0f;
-        updateBytesCodes();
+		r = 0;
+		g = 0;
+		b = 0;
+		a = 0;
 	}
 
     // cctor
@@ -28,31 +25,27 @@ public final class Color {
         g = another.g;
         b = another.b;
         a = another.a;
-        updateBytesCodes();
     }
 
     public Color(int r, int g, int b, int a) {
-        this.r = (float)r / 255f;
-        this.g = (float)g / 255f;
-        this.b = (float)b / 255f;
-        this.a = (float)a / 255f;
-        updateBytesCodes();
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
 
 	public Color(float r, float g, float b, float a) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.a = a;
-        updateBytesCodes();
+		this.r = (int)(r * 255);
+		this.g = (int)(g * 255);
+		this.b = (int)(b * 255);
+		this.a = (int)(a * 255);
 	}
 	
 	public Color(float r, float g, float b) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.a = 1f;
-        updateBytesCodes();
+		this.r = (int)(r * 255);
+		this.g = (int)(g * 255);
+		this.b = (int)(b * 255);
+		this.a = 255;
 	}
 
     public void init(Color from) {
@@ -60,14 +53,6 @@ public final class Color {
         this.g = from.g;
         this.b = from.b;
         this.a = from.a;
-        updateBytesCodes();
-    }
-
-    private void updateBytesCodes() {
-        R = (byte)(r * 255);
-        G = (byte)(g * 255);
-        B = (byte)(b * 255);
-        A = (byte)(a * 255);
     }
 
     public String toString() {

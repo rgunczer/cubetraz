@@ -433,10 +433,10 @@ public final class Graphics {
         };
 
         final byte colors[] = {
-                color.R, color.G, color.B, color.A,
-                color.R, color.G, color.B, color.A,
-                color.R, color.G, color.B, color.A,
-                color.R, color.G, color.B, color.A
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a,
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a,
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a,
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a
         };
 
         final float norms[] = {};
@@ -1212,168 +1212,168 @@ public final class Graphics {
         int c = _color_index;
 
         // x-plus
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         // x-minus
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
 
         // y-plus
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         // y-minus
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
 
         // z-plus
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         // z-minus
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -1432,13 +1432,13 @@ public final class Graphics {
 
         // color
         int c = _color_index;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r; _colors[++c] = (byte)color.g; _colors[++c] = (byte)color.b; _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r; _colors[++c] = (byte)color.g; _colors[++c] = (byte)color.b; _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r; _colors[++c] = (byte)color.g; _colors[++c] = (byte)color.b; _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
-        _colors[++c] = color.R; _colors[++c] = color.G; _colors[++c] = color.B; _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r; _colors[++c] = (byte)color.g; _colors[++c] = (byte)color.b; _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r; _colors[++c] = (byte)color.g; _colors[++c] = (byte)color.b; _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r; _colors[++c] = (byte)color.g; _colors[++c] = (byte)color.b; _colors[++c] = (byte)color.a;
         _color_index = c;
 
         _vertices_count += 6;
@@ -1466,31 +1466,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
         _color_index = c;
 
         _vertices_count += 6;
@@ -1578,31 +1578,31 @@ public final class Graphics {
         _cindex = k;
 
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
         _color_index = c;
 
         _vertices_count += 6;
@@ -1632,10 +1632,10 @@ public final class Graphics {
 
         int c = _color_index;
 
-        _colors[++c] = (byte) color.R;
-        _colors[++c] = (byte) color.G;
-        _colors[++c] = (byte) color.B;
-        _colors[++c] = (byte) color.A;
+        _colors[++c] = (byte) color.r;
+        _colors[++c] = (byte) color.g;
+        _colors[++c] = (byte) color.b;
+        _colors[++c] = (byte) color.a;
 
         _color_index = c;
 
@@ -2626,31 +2626,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -2726,31 +2726,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -2827,31 +2827,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -2927,31 +2927,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3027,31 +3027,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3125,31 +3125,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3225,31 +3225,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3325,31 +3325,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3432,31 +3432,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3531,31 +3531,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3630,31 +3630,31 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
 
@@ -3729,35 +3729,79 @@ public final class Graphics {
 
         // colors
         int c = _color_index;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
-        _colors[++c] = color.R;
-        _colors[++c] = color.G;
-        _colors[++c] = color.B;
-        _colors[++c] = color.A;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
+        _colors[++c] = (byte)color.r;
+        _colors[++c] = (byte)color.g;
+        _colors[++c] = (byte)color.b;
+        _colors[++c] = (byte)color.a;
 
         _color_index = c;
-
         _vertices_count += 6;
     }
+
+    public void drawCircleAt(float x, float y, float radius, Color color) {
+        float[] vertices = new float[80];
+        byte[] colors = new byte[150];
+        int v_index = -1;
+        int color_index = -1;
+        float radian;
+        Vector2 pos = new Vector2();
+        Vector2 pt = new Vector2();
+
+        pos.x = x;
+        pos.y = y;
+
+        vertices[++v_index] = pos.x;
+        vertices[++v_index] = pos.y;
+
+        colors[++color_index] = (byte)color.r;
+        colors[++color_index] = (byte)color.g;
+        colors[++color_index] = (byte)color.b;
+        colors[++color_index] = (byte)color.a;
+
+        for (float degree = 0.0f; degree <= 360.0f; degree += 36.0f) {
+            radian = (float)Math.toRadians(degree);
+
+            pt.x = pos.x + (float)Math.sin(radian) * radius;
+            pt.y = pos.y + (float)Math.cos(radian) * radius;
+
+            vertices[++v_index] = pt.x;
+            vertices[++v_index] = pt.y;
+
+            colors[++color_index] = (byte)color.r;
+            colors[++color_index] = (byte)color.g;
+            colors[++color_index] = (byte)color.b;
+            colors[++color_index] = (byte)color.a;
+        }
+
+        float[] coords = {};
+        float[] norms = {};
+
+        zeroBufferPositions();
+        addVerticesCoordsNormalsColors(vertices, coords, norms, colors);
+        bindStreamSources2dNoTextures();
+        glDrawArrays(GL_TRIANGLE_FAN, 0, v_index / 2 + 1);
+    }
+
 
 }

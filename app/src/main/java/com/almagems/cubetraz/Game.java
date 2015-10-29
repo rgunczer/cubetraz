@@ -115,8 +115,6 @@ public final class Game {
         graphics.warmCache();
     }
 
-
-
     public static void resetCubesColors() {
         for(int x = 0; x < MAX_CUBE_COUNT; ++x) {
             for(int y = 0; y < MAX_CUBE_COUNT; ++y) {
@@ -1448,49 +1446,6 @@ public final class Game {
         }
     }
 
-    public static void drawCircleAt(float x, float y, float radius, Color color) {
-        float[] vertices = new float[80];
-        float[] colors = new float[150];
-        int v_index = -1;
-        int color_index = -1;
-        float radian;
-        Vector2 pos = new Vector2();
-        Vector2 pt = new Vector2();
-
-        pos.x = x;
-        pos.y = y;
-
-        vertices[++v_index] = pos.x;
-        vertices[++v_index] = pos.y;
-
-        colors[++color_index] = color.r;
-        colors[++color_index] = color.g;
-        colors[++color_index] = color.b;
-        colors[++color_index] = color.a;
-
-        for (float degree = 0.0f; degree <= 360.0f; degree += 36.0f) {
-            radian = (float)Math.toRadians(degree);
-
-            pt.x = pos.x + (float)Math.sin(radian) * radius;
-            pt.y = pos.y + (float)Math.cos(radian) * radius;
-
-            vertices[++v_index] = pt.x;
-            vertices[++v_index] = pt.y;
-
-            colors[++color_index] = color.r;
-            colors[++color_index] = color.g;
-            colors[++color_index] = color.b;
-            colors[++color_index] = color.a;
-        }
-
-//        glVertexPointer(2, GL_FLOAT, 0, vertices);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        glDrawArrays(GL_TRIANGLE_FAN, 0, v_index/2+1);
-    }
 
     public static void drawCubeNoFace(  boolean x_plus,
                                         boolean x_minus,

@@ -1429,15 +1429,15 @@ public final class Level extends Scene {
         }
 
         if (m_show_hint_2nd) {
-            m_hint_timeout -= 0.01f;
+            m_hint_timeout -= 0.05f;
 
             if (m_hint_timeout < 0.0f) {
-                m_hint_timeout = 0.15f;
+                m_hint_timeout = 0.2f;
                 Cube cube = m_ar_hint_cubes[m_hint_index];
                 if (cube != null) {
                     Color col = new Color(255, 0, 0, 255);
 
-                    cube.color_current = col;
+                    cube.color_current.init(col);
                     ++m_hint_index;
 
                     // locate cube among moving cubes
@@ -1470,28 +1470,28 @@ public final class Level extends Scene {
                 Cube p = m_menu_cube_up.lst_cubes_to_hilite.get(0);
                 m_menu_cube_up.lst_cubes_to_hilite.remove(p);
 
-                p.color_current = color;
+                p.color_current.init(color);
             }
 
             if (!m_menu_cube_mid.lst_cubes_to_hilite.isEmpty()) {
                 Cube p = m_menu_cube_mid.lst_cubes_to_hilite.get(0);
                 m_menu_cube_mid.lst_cubes_to_hilite.remove(p);
 
-                p.color_current = color;
+                p.color_current.init(color);
             }
 
             if (!m_menu_cube_low.lst_cubes_to_hilite.isEmpty()) {
                 Cube p = m_menu_cube_low.lst_cubes_to_hilite.get(0);
                 m_menu_cube_low.lst_cubes_to_hilite.remove(p);
 
-                p.color_current = color;
+                p.color_current.init(color);
             }
         }
 
         int size;
         Cube cube;
-        size = m_list_cubes_wall_x_minus.size();
 
+        size = m_list_cubes_wall_x_minus.size();
         for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_wall_x_minus.get(i);
             cube.warmByFactor(WARM_FACTOR);
@@ -2290,7 +2290,7 @@ public final class Level extends Scene {
 
         if (m_menu_cube_hilite != null) {
             glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
-            color.init( new Color((int)color.R, (int)color.G, (int)color.B, (int)(m_hilite_alpha * 255)));
+            color.init( new Color(color.r, color.g, color.b, (int)(m_hilite_alpha * 255)));
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_CULL_FACE);
             glDisable(GL_LIGHTING);
@@ -2604,11 +2604,11 @@ public final class Level extends Scene {
                 m_ar_hint_cubes[i] = null;
             }
 
-            int size = m_list_cubes_hint.size();
             Cube cube;
+            int size = m_list_cubes_hint.size();
             for(int i = 0; i < size; ++i) {
                 cube = m_list_cubes_hint.get(i);
-                m_ar_hint_cubes[i++] = cube;
+                m_ar_hint_cubes[i] = cube;
             }
         }
     }
@@ -2806,8 +2806,7 @@ public final class Level extends Scene {
                         renderForPicking(PickRenderTypeEnum.RenderOnlyHUD);
 
                         down_color = Graphics.getColorFromScreen(mPosDown);
-                        int realColor = (int)(down_color.b * 255f);
-                        switch (realColor) {
+                        switch (down_color.b) {
                             case 200: m_hud.setHilitePause(true); break;
                             case 150: m_hud.setHiliteUndo(true); break;
                             case 100: m_hud.setHiliteHint(true); break;
@@ -2823,8 +2822,7 @@ public final class Level extends Scene {
                     renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
                     down_color = Graphics.getColorFromScreen(mPosDown);
-                    int realColor = (int)(down_color.b * 255f);
-                    MenuCube menuCube = getMovingCubeFromColor(realColor);
+                    MenuCube menuCube = getMovingCubeFromColor(down_color.b);
                     if (menuCube != null) {
                         m_hilite_alpha = 0.0f;
                         m_menu_cube_hilite = menuCube;
@@ -2940,8 +2938,7 @@ public final class Level extends Scene {
 
             if (swipeInfo.length > 30.0f * graphics.scaleFactor) {
                 MenuCube menuCube = null;
-                int realColor = (int)(down_color.b * 255f);
-                switch (realColor) {
+                switch (down_color.b) {
                     case 200: menuCube = m_menu_cube_up; break;
                     case 150: menuCube = m_menu_cube_mid; break;
                     case 100: menuCube = m_menu_cube_low; break;
@@ -2977,8 +2974,7 @@ public final class Level extends Scene {
 
             if (swipeInfo.length > 30.0f * graphics.scaleFactor) {
                 MenuCube menuCube = null;
-                int realColor = (int)(down_color.b * 255f);
-                switch (realColor) {
+                switch (down_color.b) {
                     case 200: menuCube = m_menu_cube_up; break;
                     case 150: menuCube = m_menu_cube_mid; break;
                     case 100: menuCube = m_menu_cube_low; break;
@@ -3021,8 +3017,7 @@ public final class Level extends Scene {
                 renderForPicking(PickRenderTypeEnum.RenderOnlyHUD);
                 Vector2 pos = new Vector2(x,y);
                 Color color = Graphics.getColorFromScreen(pos);
-                int realColor = (int)(color.b * 255f);
-                switch (realColor) {
+                switch (color.b) {
                     case 200: eventLevelPause(); break;
                     case 150: eventUndo(); break;
                     case 100: eventShowHint(); break;
