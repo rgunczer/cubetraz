@@ -26,12 +26,13 @@ public final class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         glSurfaceView = new GLSurfaceView(this);
+        glSurfaceView.setEGLContextClientVersion(1);
+        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 24, 8);
+
         setContentView(glSurfaceView);
 
         renderer = new CubeTrazRenderer(this);
-        glSurfaceView.setEGLContextClientVersion(1);
 
-        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 24, 8);
         glSurfaceView.setRenderer(renderer);
 
         glSurfaceView.setOnTouchListener(new View.OnTouchListener() {

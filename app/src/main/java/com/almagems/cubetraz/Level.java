@@ -1825,16 +1825,14 @@ public final class Level extends Scene {
 
         if (m_timeout_undo <= 0.0f) {
             if (m_player_cube.isDone()) {
-//            if (!m_lst_undo.empty())
-//            {
-//                UndoData ud = m_lst_undo.back();
-//
-//                if (ud.mover_cube)
-//                {
-//                    EventUndo();
-//                    return;
-//                }
-//            }
+                if (!m_lst_undo.isEmpty()) {
+                    UndoData ud = m_lst_undo.get( m_lst_undo.size() - 1 );
+
+                    if (ud.mover_cube != null) {
+                        eventUndo();
+                        return;
+                    }
+                }
                 m_state = LevelStateEnum.Playing;
             }
             m_timeout_undo = UNDO_TIMEOUT;
@@ -1861,8 +1859,6 @@ public final class Level extends Scene {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
 
-//        Vector light = m_pos_light;
-//        Vector light_tmp = new Vector();
         Vector light = Utils.rotate3D_AroundYAxis(m_pos_light.x, m_pos_light.y, m_pos_light.z, -m_cube_rotation.degree - m_user_rotation.current.y);
         Vector light_tmp = Utils.rotate3D_AroundXAxis(light.x, light.y, light.z, -m_user_rotation.current.x);
         light.init(light_tmp);

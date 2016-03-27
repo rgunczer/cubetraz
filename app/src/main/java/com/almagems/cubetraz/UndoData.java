@@ -5,25 +5,25 @@ import static com.almagems.cubetraz.Constants.*;
 
 public class UndoData {
 
-    CubePos player_pos;
     MovingCube moving_cube;
-    CubePos moving_cube_pos;
-    int moving_cube_move_dir;
     MoverCube mover_cube;
+
+    CubePos player_pos = new CubePos();
+    CubePos moving_cube_pos = new CubePos();
+
+    int moving_cube_move_dir;
 
     // ctor
     public UndoData() {
-        moving_cube = null;
-        mover_cube = null;
     }
 
     public UndoData(CubePos player_pos) {
-        this.player_pos = player_pos;
+        this.player_pos.init(player_pos);
 
-        moving_cube = new MovingCube();
-        moving_cube_pos = new CubePos(0,0,0);
+        moving_cube = null;
+        moving_cube_pos.reset();
 
-        mover_cube = new MoverCube();
+        mover_cube = null;
     }
 
 }

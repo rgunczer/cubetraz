@@ -41,22 +41,23 @@ public final class Utils {
         result.z = lerp(from.z, to.z, t);
     }
 
-    public static void calcShadowMatrixFloor(Vector light_pos, float shadow_matrix[], float degree) {
+    public static void calcShadowMatrixFloor(Vector light_pos, float[] shadow_mat, float degree) {
         float[] vLightPos = { light_pos.x, light_pos.y, light_pos.z, 1.0f };
 
         float[] vPointOnPlane0 = { 1.0f, -3.3f + 0.55f, 0.0f };
         float[] vPointOnPlane1 = { 0.0f, -3.3f + 0.55f, 0.0f };
         float[] vPointOnPlane2 = { 0.0f, -3.3f + 0.55f, 1.0f };
 
-//    float p0[3];
-//    float p1[3];
-//    float p2[3];
-//
-//    Rotate3D_AroundYAxis(vPointOnPlane0[0], vPointOnPlane0[1], vPointOnPlane0[2], degree, p0[0], p0[1], p0[2]);
-//    Rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree, p1[0], p1[1], p1[2]);
-//    Rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree, p2[0], p2[1], p2[2]);
-//
-//    engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
+        Vector v0 = rotate3D_AroundYAxis(vPointOnPlane0[0], vPointOnPlane0[1], vPointOnPlane0[2], degree);
+        Vector v1 = rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree);
+        Vector v2 = rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree);
+
+        float [] p0 = new float[] { v0.x, v0.y, v0.z };
+        float [] p1 = new float[] { v1.x, v1.y, v1.z };
+        float [] p2 = new float[] { v2.x, v2.y, v2.z };
+
+        Game.makeShadowMatrix(p0, p1, p2, vLightPos, shadow_mat);
+        //Engine.makeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
         //Graphics.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
     }
 
@@ -67,14 +68,15 @@ public final class Utils {
         float[] vPointOnPlane1 = { -1.0f,          0.0f, -3.3f + 0.55f };
         float[] vPointOnPlane2 = {  0.0f, -4.4f + 0.55f, -3.3f + 0.55f };
 
-//    float p0[3];
-//    float p1[3];
-//    float p2[3];
-//
-//    Rotate3D_AroundYAxis(vPointOnPlane0[0], vPointOnPlane0[1], vPointOnPlane0[2], degree, p0[0], p0[1], p0[2]);
-//    Rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree, p1[0], p1[1], p1[2]);
-//    Rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree, p2[0], p2[1], p2[2]);
+        Vector v0 = rotate3D_AroundYAxis(vPointOnPlane0[0], vPointOnPlane0[1], vPointOnPlane0[2], degree);
+        Vector v1 = rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree);
+        Vector v2 = rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree);
 
+        float [] p0 = new float[] { v0.x, v0.y, v0.z };
+        float [] p1 = new float[] { v1.x, v1.y, v1.z };
+        float [] p2 = new float[] { v2.x, v2.y, v2.z };
+
+        Game.makeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
         //Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
 //    engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
     }
@@ -86,16 +88,17 @@ public final class Utils {
         float[] vPointOnPlane1 = new float[] { -3.3f + 0.55f, -4.4f + 0.55f,  0.0f };
         float[] vPointOnPlane2 = new float[] { -3.3f + 0.55f,          0.0f, -1.0f };
 
-//    float p0[3];
-//    float p1[3];
-//    float p2[3];
-//
-//    Rotate3D_AroundYAxis(vPointOnPlane0[0], vPointOnPlane0[1], vPointOnPlane0[2], degree, p0[0], p0[1], p0[2]);
-//    Rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree, p1[0], p1[1], p1[2]);
-//    Rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree, p2[0], p2[1], p2[2]);
-//
-//	engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
+        Vector v0 = rotate3D_AroundYAxis(vPointOnPlane0[0], vPointOnPlane0[1], vPointOnPlane0[2], degree);
+        Vector v1 = rotate3D_AroundYAxis(vPointOnPlane1[0], vPointOnPlane1[1], vPointOnPlane1[2], degree);
+        Vector v2 = rotate3D_AroundYAxis(vPointOnPlane2[0], vPointOnPlane2[1], vPointOnPlane2[2], degree);
 
+        float [] p0 = new float[] { v0.x, v0.y, v0.z };
+        float [] p1 = new float[] { v1.x, v1.y, v1.z };
+        float [] p2 = new float[] { v2.x, v2.y, v2.z };
+
+        Game.makeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
+
+//	engine->MakeShadowMatrix(p0, p1, p2, vLightPos, shadow_matrix);
         //Engine.makeShadowMatrix(vPointOnPlane0, vPointOnPlane1, vPointOnPlane2, vLightPos, shadow_matrix);
     }
 

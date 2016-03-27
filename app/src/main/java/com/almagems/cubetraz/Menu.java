@@ -2814,8 +2814,8 @@ public final class Menu extends Scene {
         m_color_down = Graphics.getColorFromScreen(mPosDown);
         m_color_up = Graphics.getColorFromScreen(mPosUp);
 
-        int downR = (int)(m_color_down.r * 255f);
-        int upR = (int)(m_color_up.r * 255f);
+        int downR = m_color_down.r;
+        int upR = m_color_up.r;
 
         if (downR == upR) {
             switch (downR) {

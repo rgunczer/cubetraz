@@ -862,25 +862,25 @@ public final class Game {
     }
 
     // Calculate the cross product of two vectors
-    void calcVectorCrossProduct(final float[] vU, final float[] vV, float[] vResult) {
+    public static void calcVectorCrossProduct(final float[] vU, final float[] vV, float[] vResult) {
         vResult[0] =  vU[1] * vV[2] - vV[1] * vU[2];
         vResult[1] = -vU[0] * vV[2] + vV[0] * vU[2];
         vResult[2] =  vU[0] * vV[1] - vV[0] * vU[1];
     }
 
-    void normalizeVector(float[] vNormal) {
+    public static void normalizeVector(float[] vNormal) {
         float fLength = 1.0f / getVectorLength(vNormal);
         scaleVector(vNormal, fLength);
     }
 
     // Subtract one vector from another
-    void subtractVectors(final float[] vFirst, final float[] vSecond, float[] vResult) {
+    public static void subtractVectors(final float[] vFirst, final float[] vSecond, float[] vResult) {
         vResult[0] = vFirst[0] - vSecond[0];
         vResult[1] = vFirst[1] - vSecond[1];
         vResult[2] = vFirst[2] - vSecond[2];
     }
 
-    void getNormalVector(final float[] vP1, final float[] vP2, final float[] vP3, float[] vNormal) {
+    public static void getNormalVector(final float[] vP1, final float[] vP2, final float[] vP3, float[] vNormal) {
         float[] vV1 = new float[3];
         float[] vV2 = new float[3];
 
@@ -892,7 +892,7 @@ public final class Game {
     }
 
     // Gets the three coefficients of a plane equation given three points on the plane.
-    void getPlaneEquation(float[] vPoint1, float[] vPoint2, float[] vPoint3, float[] vPlane) {
+    static void getPlaneEquation(float[] vPoint1, float[] vPoint2, float[] vPoint3, float[] vPlane) {
         // Get normal vector from three points. The normal vector is the first three coefficients
         // to the plane equation...
         getNormalVector(vPoint1, vPoint2, vPoint3, vPlane);
@@ -901,7 +901,7 @@ public final class Game {
         vPlane[3] = -(vPlane[0] * vPoint3[0] + vPlane[1] * vPoint3[1] + vPlane[2] * vPoint3[2]);
     }
 
-    void makeShadowMatrix(float[] vPointOnPlane0, float[] vPointOnPlane1, float[] vPointOnPlane2, float[] vLightPos, float[] destMat) {
+    static void makeShadowMatrix(float[] vPointOnPlane0, float[] vPointOnPlane1, float[] vPointOnPlane2, float[] vLightPos, float[] destMat) {
         float[] vPlaneEquation = new float[4];
         float dot;
 
