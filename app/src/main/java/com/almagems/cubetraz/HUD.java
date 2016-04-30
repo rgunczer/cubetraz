@@ -419,17 +419,17 @@ public final class HUD {
     
         m_hilite_pause = m_hilite_undo = m_hilite_hint = m_hilite_solver = false;
 	
-        m_text_pause.init("PAUSE", true);
-        m_text_undo.init("UNDO\nLAST\nMOVE", true);
-        m_text_hint.init("HINT\nFIRST\nMOVE", true);
+        m_text_pause.init("PAUSE", false);
+        m_text_undo.init("UNDO\nLAST\nMOVE", false);
+        m_text_hint.init("HINT\nFIRST\nMOVE", false);
     
         String str = "SOLVERS\n" + Game.getSolverCount();
-        m_text_solver.init(str, true);
+        m_text_solver.init(str, false);
     
-        m_text_level.init("LEVEL\nEASY-01", true);
-        m_text_stars.init("STARS\n0", true);
-        m_text_moves.init("MOVES\n0", true);
-        m_text_motto.init("MOTTO\n0\n0", true);
+        m_text_level.init("LEVEL\nEASY-01", false);
+        m_text_stars.init("STARS\n0", false);
+        m_text_moves.init("MOVES\n0", false);
+        m_text_motto.init("MOTTO\n0\n0", false);
     
         final float scale = 0.3f * Graphics.device_scale;
         m_text_level.setScale(scale, scale);
@@ -766,7 +766,8 @@ public final class HUD {
             m_text_hint.emitt(pos, m_hilite_hint ? color_hilite : color_text);
         }
         
-        if (m_text_solver.isVisible()) {
+        //if (m_text_solver.isVisible()) {
+        if (false) {
             pos.x = m_pos_x_text_left + shadow_offset_x;
             pos.y = solver_quad_y - yOffset + shadow_offset_y;
             m_text_solver.emitt(pos, color_shadow);
@@ -854,12 +855,12 @@ public final class HUD {
         graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
         graphics.addQuad(ics, 5.0f * Graphics.device_scale ,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
     
-        tcoords.tx0 = m_symbol_solver.tx_lo_left;
-        tcoords.tx1 = m_symbol_solver.tx_lo_right;
-        tcoords.tx2 = m_symbol_solver.tx_up_right;
-        tcoords.tx3 = m_symbol_solver.tx_up_left;
-        graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
-        graphics.addQuad(ics, 5.0f * Graphics.device_scale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
+//        tcoords.tx0 = m_symbol_solver.tx_lo_left;
+//        tcoords.tx1 = m_symbol_solver.tx_lo_right;
+//        tcoords.tx2 = m_symbol_solver.tx_up_right;
+//        tcoords.tx3 = m_symbol_solver.tx_up_left;
+//        graphics.addQuad(ics, 5.0f * Graphics.device_scale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
+//        graphics.addQuad(ics, 5.0f * Graphics.device_scale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
 
         tcoords.tx0 = m_symbol_star.tx_lo_left;
         tcoords.tx1 = m_symbol_star.tx_lo_right;

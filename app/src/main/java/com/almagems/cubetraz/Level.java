@@ -410,7 +410,7 @@ public final class Level extends Scene {
 
         // uncomment to load alternative level
         //Game.level_init_data.difficulty = DifficultyEnum.Easy;
-        //Game.level_init_data.level_number = 12;
+        //Game.level_init_data.level_number = 10;
 
         m_tutor_index = 0;
         m_next_action = LevelNextActionEnum.NoNextAction;
@@ -2610,27 +2610,27 @@ public final class Level extends Scene {
     }
 
     public void eventSolver() {
-        if (LevelNextActionEnum.ShowSceneSolvers == m_next_action || LevelStateEnum.PrepareSolving == m_state) {
-            return;
-        }
-
-        boolean solved = false;
-
-        switch (m_difficulty) {
-            case Easy: solved = Cubetraz.getSolvedEasy(m_level_number); break;
-            case Normal: solved = Cubetraz.getSolvedNormal(m_level_number); break;
-            case Hard: solved = Cubetraz.getSolvedHard(m_level_number); break;
-        }
-
-        if (solved) {
-            reset();
-            m_state = LevelStateEnum.PrepareSolving;
-            m_timeout = 2.0f;
-        } else {
-            m_next_action = LevelNextActionEnum.ShowSceneSolvers;
-        }
-
-        m_hud.setupDisappear();
+//        if (LevelNextActionEnum.ShowSceneSolvers == m_next_action || LevelStateEnum.PrepareSolving == m_state) {
+//            return;
+//        }
+//
+//        boolean solved = false;
+//
+//        switch (m_difficulty) {
+//            case Easy: solved = Cubetraz.getSolvedEasy(m_level_number); break;
+//            case Normal: solved = Cubetraz.getSolvedNormal(m_level_number); break;
+//            case Hard: solved = Cubetraz.getSolvedHard(m_level_number); break;
+//        }
+//
+//        if (solved) {
+//            reset();
+//            m_state = LevelStateEnum.PrepareSolving;
+//            m_timeout = 2.0f;
+//        } else {
+//            m_next_action = LevelNextActionEnum.ShowSceneSolvers;
+//        }
+//
+//        m_hud.setupDisappear();
     }
 
     public void eventQuit() {
@@ -3109,6 +3109,7 @@ public final class Level extends Scene {
         UndoData ud = new UndoData(m_player_cube.getCubePos());
 
         if (m_player_cube.m_moving_cube != null) {
+            ud.moving_cube = m_player_cube.m_moving_cube;
             ud.moving_cube.init(m_player_cube.m_moving_cube);
             ud.moving_cube_pos.init(m_player_cube.m_moving_cube.getCubePos());
             ud.moving_cube_move_dir = m_player_cube.m_moving_cube.getMovement();
