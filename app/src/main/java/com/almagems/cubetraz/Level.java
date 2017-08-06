@@ -2451,30 +2451,28 @@ public final class Level extends Scene {
         glPopMatrix();
     }
 
+    @Override
     public void renderToFBO() {
-        //return Render();
-
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
-        glDepthMask(false); //GL_FALSE);
+        glDepthMask(false);
         glEnable(GL_TEXTURE_2D);
 
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
+        Color color_dirty = new Color(255, 255, 255, (int)Game.dirty_alpha);
         graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color_dirty);
 
-        glDepthMask(true); //GL_TRUE);
+        glDepthMask(true);
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
 
         glEnable(GL_LIGHTING);
-        //glEnable(GL_LIGHT0);
 
         float posLight[] = { m_pos_light.x, m_pos_light.y, m_pos_light.z, 1.0f};
         glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
@@ -2483,6 +2481,35 @@ public final class Level extends Scene {
         drawTheCube();
 
         glEnable(GL_BLEND);
+
+        graphics.bindStreamSources3d();
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
+
+        if (0 != m_cube_pos_key.x) {
+            glEnable(GL_LIGHTING);
+            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
+
+            Cube cube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
+
+            graphics.resetBufferIndices();
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.99f, Graphics.colorWhite);
+            graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+
+            glDisable(GL_LIGHTING);
+        }
+
+        glDisable(GL_BLEND);
+
+        // draw player cube
+        graphics.resetBufferIndices();
+
+        glEnable(GL_LIGHTING);
+        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+        graphics.addCubeSize(m_player_cube.pos.x, m_player_cube.pos.y, m_player_cube.pos.z, HALF_CUBE_SIZE, Graphics.colorWhite);
+        graphics.updateBuffers();
+        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+
+        glDisable(GL_LIGHTING);
 
         if (!m_lst_moving_cubes.isEmpty() || !m_lst_mover_cubes.isEmpty() || !m_lst_dead_cubes.isEmpty()) {
             int size;
@@ -2512,41 +2539,12 @@ public final class Level extends Scene {
 
             glDisable(GL_LIGHTING);
             glEnable(GL_BLEND);
+
             graphics.bindStreamSources3d();
             glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
-
-        graphics.bindStreamSources3d();
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
-
-        Color color = new Color(255, 255, 255, 255);
-
-        if (0 != m_cube_pos_key.x) {
-            glEnable(GL_LIGHTING);
-            glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_key);
-
-            Cube cube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
-
-            graphics.resetBufferIndices();
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.99f, color);
-            graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
-
-            glDisable(GL_LIGHTING);
-        }
-
-        glDisable(GL_BLEND);
-
-        // draw player cube
-        graphics.resetBufferIndices();
-        //graphics.SetStreamSource();
-        glEnable(GL_LIGHTING);
-        //Color color(255, 255, 255, 255);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
-        graphics.addCubeSize(m_player_cube.pos.x, m_player_cube.pos.y, m_player_cube.pos.z, HALF_CUBE_SIZE, color);
-        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
-
-        glDisable(GL_LIGHTING);
     }
 
     public void eventBuildLevel() {

@@ -24,7 +24,7 @@ public final class Game {
     public static float dirty_alpha;
     public static float minSwipeLength;
     public static TexturedQuad m_newlinefont = new TexturedQuad();
-    public static FBO m_fbo;
+
     public static StatInitData stat_init_data = new StatInitData();
 
     public static final MenuInitData menu_init_data = new MenuInitData();
@@ -303,11 +303,6 @@ public final class Game {
         currentScene = scene;
     }
 
-
-
-
-
-
     public static boolean getCanPlayLockedLevels() {
         return true;
     }
@@ -380,23 +375,35 @@ public final class Game {
     }
 
     public static void renderToFBO(Scene scene) {
+        Graphics.saveOriginalFBO();
 
-        if (true) {
-            return;
-        }
+        Graphics.fbo.bind();
+        //glClearColor(1f, 0f, 0f, 0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        scene.renderToFBO();
+        //glClearColor(0f, 0f, 0f, 0f);
+        Graphics.restoreOriginalFBO();
+    }
+
+    public static void renderToFBOOld(Scene scene) {
+
+//        if (true) {
+//            return;
+//        }
 
 //        int defaultFBO = 0;
 //        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
-//
+        Graphics.saveOriginalFBO();
+
 //        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_fbo.m_FrameBuffer);
-//
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//        m_scene.renderToFBO();
-//
+        Graphics.fbo.bind();
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        scene.renderToFBO();
+
 //        glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
-
-
+        Graphics.restoreOriginalFBO();
 
         //graphics.fboBackground.bind();
         //glViewport(0, 0, graphics.fboBackground.getWidth(), graphics.fboBackground.getHeight());

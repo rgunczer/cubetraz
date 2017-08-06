@@ -1,12 +1,13 @@
 package com.almagems.cubetraz;
 
 import static android.opengl.GLES10.*;
+import static android.opengl.GLES11Ext.*;
 
 
 public final class FBO {
 
     // FBO vars
-    private int textureId;
+    public int textureId;
 
     // Buffers
     private int m_ColorBuffer;
@@ -19,14 +20,22 @@ public final class FBO {
     public int getWidth() {
         return width;
     }
-
     public int getHeight() {
         return height;
     }
 
-    public void create(int w, int h) {
+    public FBO(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public void bind() {
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_FrameBuffer);
+    }
+
+    private void createTexture(int w, int h) {
         if (textureId != 0) {
-            int[] arr = { textureId };
+            int[] arr = {textureId};
             glDeleteTextures(arr.length, arr, 0);
             textureId = 0;
         }
@@ -35,61 +44,129 @@ public final class FBO {
         height = h;
 
         int[] temp = new int[1];
+        glGenTextures(1, temp, 0);
+        glBindTexture(GL_TEXTURE_2D, temp[0]);
 
-//        // Create the color buffer
-//        glGenRenderbuffers(1, temp, 0);
-//        m_ColorBuffer = temp[0];
-//        glBindRenderbuffer(GL_RENDERBUFFER, m_ColorBuffer);
-//        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, w, h);
-//
-//        // Create the dept buffer
-//        glGenRenderbuffers(1, temp, 0); m_DepthBuffer = temp[0];
-//        glBindRenderbuffer(GL_RENDERBUFFER, m_DepthBuffer);
-//        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-//
-//        glGenFramebuffers(1, temp, 0); m_FrameBuffer = temp[0];
-//        glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
-//        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_ColorBuffer);
-//        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthBuffer);
-//
-//        // Create and Attach the texture to the FBO
-//        textureId = Graphics.createTexture(w, h); // <-- CALL CREATE TEXTURE HERE!!!
-//        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
-//
-//        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-//        if (status != GL_FRAMEBUFFER_COMPLETE) {
-//            //System.out.println("ERROR Creating FBO...");
-//
-//            switch (status) {
-//                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-//                    //System.out.println("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-//                    break;
-//
-//                case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-//                    //System.out.println("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-//                    break;
-//
-//                case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-//                    //System.out.println("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
-//                    break;
-//
-//                case GL_FRAMEBUFFER_UNSUPPORTED:
-//                    //System.out.println("GL_FRAMEBUFFER_UNSUPPORTED");
-//                    break;
-//            }
-//        }
-//
-//        glBindTexture(GL_TEXTURE_2D, 0);
-//        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+        textureId = temp[0];
     }
 
-    public void bind() {
-        //glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+    private void checkStatus() {
+        int status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
+
+        switch (status)
+        {
+            case GL_FRAMEBUFFER_COMPLETE_OES:
+                System.out.println("FBO is OK!");
+                break;
+
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
+                System.out.println("ERROR: FBO incomplete attachment");
+                break;
+
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_OES:
+                System.out.println("ERROR: FBO incomplete missing attachment");
+                break;
+
+            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_OES:
+                System.out.println("ERROR: FBO incomplete dimensions");
+                break;
+
+            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_OES:
+                System.out.println("ERROR: FBO incomplete formats");
+                break;
+
+            case GL_FRAMEBUFFER_UNSUPPORTED_OES:
+                System.out.println("ERROR: FBO unsupported");
+                break;
+        }
     }
 
-    public void unbind() {
-        //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    public void createWithColorBuffer() {
+        int[] colorBuffer = new int[1];
+        glGenRenderbuffersOES(1, colorBuffer, 0);
+        glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorBuffer[0]);
+        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_RGBA8_OES, width, height);
+
+        int[] frameBuffer = new int[1];
+        glGenFramebuffersOES(1, frameBuffer, 0);
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, frameBuffer[0]);
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorBuffer[0]);
+
+        // create and attach the texture to the FBO
+        this.createTexture(width, height);
+        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, textureId, 0);
+
+        this.checkStatus();
+
+        m_ColorBuffer = colorBuffer[0];
+        m_FrameBuffer = frameBuffer[0];
+    }
+
+    public void createWithColorAndDebthBuffer() {
+        // color buffer
+        int[] colorBuffer = new int[1];
+        glGenRenderbuffersOES(1, colorBuffer, 0);
+        glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorBuffer[0]);
+        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_RGBA8_OES, width, height);
+
+        // Create the dept buffer
+        int[] depthBuffer = new int[1];
+        glGenRenderbuffersOES(1, depthBuffer, 0);
+        glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthBuffer[0]);
+        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, width, height);
+
+        int[] frameBuffer = new int[1];
+        glGenFramebuffersOES(1, frameBuffer, 0);
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, frameBuffer[0]);
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorBuffer[0]);
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthBuffer[0]);
+
+        // create and attach the texture to the FBO
+        this.createTexture(width, height);
+        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, textureId, 0);
+
+        this.checkStatus();
+
+        m_ColorBuffer = colorBuffer[0];
+        m_DepthBuffer = depthBuffer[0];
+        m_FrameBuffer = frameBuffer[0];
+    }
+
+    public void createWithColorAndDepthStencilBuffer() {
+        // color buffer
+        int[] colorBuffer = new int[1];
+        glGenRenderbuffersOES(1, colorBuffer, 0);
+        glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorBuffer[0]);
+        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_RGBA8_OES, width, height);
+
+        // create packed depth & stencil buffer with same size as the color buffer
+        int[] depthStencilBuffer = new int[1];
+        glGenRenderbuffersOES(1, depthStencilBuffer, 0);
+        glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthStencilBuffer[0]);
+        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH24_STENCIL8_OES, width, height);
+
+        int[] frameBuffer = new int[1];
+        glGenFramebuffersOES(1, frameBuffer, 0);
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, frameBuffer[0]);
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorBuffer[0]);
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthStencilBuffer[0]);
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthStencilBuffer[0]);
+
+        // create and attach the texture to the FBO
+        this.createTexture(width, height);
+        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, textureId, 0);
+
+        this.checkStatus();
+
+        m_ColorBuffer = colorBuffer[0];
+        m_DepthBuffer = depthStencilBuffer[0];
+        m_FrameBuffer = frameBuffer[0];
     }
 
 }

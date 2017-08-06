@@ -491,7 +491,7 @@ public final class Statistics extends Scene {
         graphics.bindStreamSources2d();
 
         color = new Color(255, 255, 255, 255);
-        graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color); // TODO: pass FBO texutre id as param!
+        graphics.drawFullScreenTexture(Graphics.fbo.textureId, color);
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera);

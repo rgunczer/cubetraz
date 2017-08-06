@@ -2,6 +2,7 @@ package com.almagems.cubetraz;
 
 
 import static android.opengl.GLES10.*;
+import static android.opengl.GLES11Ext.*;
 import static android.opengl.GLU.*;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -34,6 +35,12 @@ public final class Graphics {
     public static int half_width;
     public static int half_height;
     public static float device_scale;
+
+    private static int[] originalFBO = new int[1];
+
+    // colors
+    public static Color colorWhite = new Color(255, 255, 255, 255);
+
 
     // textures
     public static int texture_id_gray_concrete;
@@ -75,6 +82,8 @@ public final class Graphics {
     private FloatBuffer _normalBuffer;
     private FloatBuffer _coordsBuffer;
     private ByteBuffer _colorBuffer;
+
+    public static FBO fbo;
 
     //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
 
@@ -152,6 +161,15 @@ public final class Graphics {
 //
 //        int h = m_height - banner_height;
 
+        saveOriginalFBO();
+
+        fbo = new FBO(width, height);
+        //fbo.createWithColorBuffer();
+        //fbo.createWithColorAndDebthBuffer();
+        fbo.createWithColorAndDepthStencilBuffer();
+
+        restoreOriginalFBO();
+
 //        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
 //
 //        // make the OpenGL ModelView matrix the default
@@ -213,6 +231,14 @@ public final class Graphics {
         _coordsBuffer = vbb.asFloatBuffer();
 
         _colorBuffer = ByteBuffer.allocateDirect(_colors.length);
+    }
+
+    public static void saveOriginalFBO() {
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, originalFBO, 0);
+    }
+
+    public static void restoreOriginalFBO() {
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, originalFBO[0]);
     }
 
     public void updateBuffers() {
