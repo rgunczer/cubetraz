@@ -8,7 +8,7 @@ public final class AnimInitData {
 
 	public AnimTypeEnum type;
 	
-	public final ArrayList<Cube> list_cubes_base = new ArrayList();
+	public final ArrayList<Cube> list_cubes_base = new ArrayList<>();
 	
 	public float cube_rotation_degree;
 	public boolean from_level_paused;

@@ -1,5 +1,7 @@
 package com.almagems.cubetraz;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.Constants.*;
@@ -2492,7 +2494,7 @@ public final class Level extends Scene {
             Cube cube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
 
             graphics.resetBufferIndices();
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.99f, Graphics.colorWhite);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.99f, Color.WHITE);
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glDisable(GL_LIGHTING);
@@ -2505,7 +2507,7 @@ public final class Level extends Scene {
 
         glEnable(GL_LIGHTING);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
-        graphics.addCubeSize(m_player_cube.pos.x, m_player_cube.pos.y, m_player_cube.pos.z, HALF_CUBE_SIZE, Graphics.colorWhite);
+        graphics.addCubeSize(m_player_cube.pos.x, m_player_cube.pos.y, m_player_cube.pos.z, HALF_CUBE_SIZE, Color.WHITE);
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 

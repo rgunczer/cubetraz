@@ -1,15 +1,10 @@
 package com.almagems.cubetraz;
 
+
 public final class Camera {
 
-    public Vector eye;
-    public Vector target;
-
-    // ctor
-    public Camera() {
-        eye = new Vector(0f, 0f, 0f);
-        target = new Vector(0f, 0f, 0f);
-    }
+    public Vector eye = new Vector(0f, 0f, 0f);
+    public Vector target = new Vector(0f, 0f, 0f);
 
     public void init(Camera other) {
         eye.x = other.eye.x;

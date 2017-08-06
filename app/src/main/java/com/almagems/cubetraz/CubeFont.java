@@ -21,7 +21,6 @@ public final class CubeFont {
     public Color color = new Color();
 
 
-    // ctor
     public CubeFont() {
     
     }

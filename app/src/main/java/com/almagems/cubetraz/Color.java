@@ -11,7 +11,6 @@ public final class Color {
 
 	public int r, g, b, a;
 
-    // ctor
 	public Color() {
 		r = 0;
 		g = 0;
@@ -19,7 +18,6 @@ public final class Color {
 		a = 0;
 	}
 
-    // cctor
     public Color(Color another) {
         r = another.r;
         g = another.g;

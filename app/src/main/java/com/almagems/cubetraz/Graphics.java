@@ -38,10 +38,6 @@ public final class Graphics {
 
     private static int[] originalFBO = new int[1];
 
-    // colors
-    public static Color colorWhite = new Color(255, 255, 255, 255);
-
-
     // textures
     public static int texture_id_gray_concrete;
     public static int texture_id_key;

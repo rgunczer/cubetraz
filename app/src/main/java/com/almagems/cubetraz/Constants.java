@@ -318,6 +318,4 @@ public final class Constants {
 
         Hard1_To_Menu,
     }
-
-
 }

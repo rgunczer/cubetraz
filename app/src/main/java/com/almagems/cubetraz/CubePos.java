@@ -7,17 +7,14 @@ public final class CubePos {
     public int y;
     public int z;
 
-
-    // ctor
     public CubePos() {
-        x = y = z = 0;
+        this.reset();
     }
 
-    // ctor
-    public CubePos(int ix, int iy, int iz) {
-        x = ix;
-        y = iy;
-        z = iz;
+    public CubePos(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public void reset() {
