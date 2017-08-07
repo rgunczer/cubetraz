@@ -688,6 +688,7 @@ public final class MenuNavigator
                     m_cube_rotation.degree = 0.0f;
                     m_navigation = CubeFaceNavigationEnum.NoNavigation;
                     m_cube_rotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+                    Game.saveOptions();
                 }            
 			    break;
             

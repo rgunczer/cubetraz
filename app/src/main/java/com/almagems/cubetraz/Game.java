@@ -176,15 +176,6 @@ public final class Game {
 
     public static boolean isOnAList(Cube theCube, ArrayList<Cube> lst) {
         return  lst.contains(theCube);
-//        int size = lst.size();
-//        Cube cube;
-//        for (int i = 0; i < size; ++i) {
-//            cube = lst.get(i);
-//            if ( cube == theCube ) {
-//                return true;
-//            }
-//        }
-//        return false;
     }
 
     public static TexturedQuad getFontBig(String ch) {
@@ -383,80 +374,6 @@ public final class Game {
         scene.renderToFBO();
         //glClearColor(0f, 0f, 0f, 0f);
         Graphics.restoreOriginalFBO();
-    }
-
-    public static void renderToFBOOld(Scene scene) {
-
-//        if (true) {
-//            return;
-//        }
-
-//        int defaultFBO = 0;
-//        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &defaultFBO);
-        Graphics.saveOriginalFBO();
-
-//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_fbo.m_FrameBuffer);
-        Graphics.fbo.bind();
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        scene.renderToFBO();
-
-//        glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFBO);
-        Graphics.restoreOriginalFBO();
-
-        //graphics.fboBackground.bind();
-        //glViewport(0, 0, graphics.fboBackground.getWidth(), graphics.fboBackground.getHeight());
-
-        // regular render
-        glClearColor(0f, 0f, 0f, 0f);
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-        if (false) { // render test
-            glDisable(GL_DEPTH_TEST);
-            glDisable(GL_BLEND);
-
-            //graphics.setProjectionMatrix2D();
-            //graphics.updateViewProjMatrix();
-
-            // custom drawing
-            //graphics.bindNoTexture();
-            glDisable(GL_TEXTURE_2D);
-
-            //Color color = new Color(0f, 0f, 0f);
-            //EdgeDrawer edgeDrawer = new EdgeDrawer(10);
-            //edgeDrawer.begin();
-
-            //System.out.println("box2d " + edge.m_vertex1.x + ", " + edge.m_vertex1.y + ", " + edge.m_vertex2.x + ", " + edge.m_vertex2.y);
-
-//            edgeDrawer.addLine(-0.5f, 0.5f, 0f, 0.5f, 0.0f, 0f);
-//            edgeDrawer.addLine(0.5f, 0f, 0f, -0.5f, -0.5f, 0f);
-//            edgeDrawer.addLine(-0.5f, -0.5f, 0f, -0.5f, 0.5f, 0f);
-
-//            setIdentityM(graphics.modelMatrix, 0);
-//            multiplyMM(graphics.mvpMatrix, 0, graphics.viewProjectionMatrix, 0, graphics.modelMatrix, 0);
-//
-//            graphics.singleColorShader.useProgram();
-//            graphics.singleColorShader.setUniforms(graphics.mvpMatrix, color);
-//            edgeDrawer.bindData(graphics.singleColorShader);
-//            edgeDrawer.draw();
-        }
-
-        if (true) {
-            //graphics.setProjectionMatrix3D();
-            //graphics.updateViewProjMatrix();
-
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-
-            //drawBackgroundAndDecoration();
-        }
-
-//        graphics.fboBackground.unbind();
-//        background.initWithFBOTexture(graphics.fboBackground.getTextureId());
-
-        glViewport(0, 0, (int) graphics.screenWidth, (int) graphics.screenHeight);
-        glClearColor(0f, 0f, 0f, 1f);
     }
 
 	public void onSurfaceChanged(int width, int height) {
@@ -1486,23 +1403,11 @@ public final class Game {
     }
 
     public static void saveOptions() {
-        float mv = 0.5f; //Engine.getMusicVolume();
-        float sv = 0.5f; //Engine.getSoundVolume();
-
-        // TODO save code goes here
-    
+        Engine.savePreferences();
     }
 
     public static void loadOptions() {
-        float mv = 0.5f;
-        float sv = 0.5f;
-
-        
-        // TODO load code goes here
-        
-        
-        setMusicVolume(mv);
-        setSoundVolume(sv);
+        Engine.loadPreferences();
     }
 
     public static void resetHelp() {

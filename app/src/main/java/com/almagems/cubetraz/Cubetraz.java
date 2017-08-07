@@ -1,5 +1,10 @@
 package com.almagems.cubetraz;
 
+import android.content.Context;
+
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+
 import static com.almagems.cubetraz.Constants.*;
 
 
@@ -64,6 +69,20 @@ public final class Cubetraz {
     }
 
     public static void save() {
+//        try {
+//            Context context = Engine.activity;
+//            String DATA_FILE_NAME = "easy";
+//            FileOutputStream os = context.openFileOutput(DATA_FILE_NAME, context.MODE_PRIVATE));
+//            ObjectOutputStream oos = new ObjectOutputStream(os);
+//            oos.writeObject(ar_levels_easy);
+//
+//            oos.flush();
+//            os.getFD().sync();
+//            os.close();
+//        } catch (Exception ex) {
+//
+//        }
+
         //fwrite(ar_levels_easy, 1, sizeof(ar_levels_easy), fp);
         //fwrite(ar_levels_normal, 1, sizeof(ar_levels_normal), fp);
         //fwrite(ar_levels_hard, 1, sizeof(ar_levels_hard), fp);

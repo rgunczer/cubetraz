@@ -586,7 +586,7 @@ public final class MenuFaceBuilder {
 		"xxx     x" +
 		"xOPTIONSx" +
 		"xx     xx" +
-		"xSTORE  x" +
+		"xEXTRA  x" +
 		"xxxxxxx x";
 	    
 	   	final String easy2 =
@@ -636,11 +636,11 @@ public final class MenuFaceBuilder {
 	    final String store =
 		"xxxxxxx x" +
 		"xx      x" +
-		"xNOADS  x" +
+		"xHINT   x" +
 		"xx      x" +
-		"xSOLVERSx" +
+		"xSOLVER x" +
 		"xx      x" +
-		"xRESTOREx" +
+		"xUNLOCK x" +
 		"xx      x" +
 		"xxxxxxxxx";
 			
@@ -819,7 +819,7 @@ public final class MenuFaceBuilder {
 		"xxxxxxx x";
 
 	    final String store =
-		"STORE   x" +
+		"EXTRA   x" +
 		"x       x" +
 		"xx      x" +
 		"x       x" +

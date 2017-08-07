@@ -1,8 +1,6 @@
 package com.almagems.cubetraz;
 
 import static com.almagems.cubetraz.Constants.*;
-import android.content.Context;
-import android.content.SharedPreferences;
 import javax.microedition.khronos.opengles.GL10;
 
 
@@ -97,209 +95,46 @@ public final class Engine {
        game.init();
     }
 
+    private static SecurePreferences CreateSecurePreferencesObj() {
+        String name = "ctraz0";
+        String key = "jKDz2fJhKE33cBQlDAkRM9axAnrBmUxs9dp11AqoogfulCL2DvNsexBuL2qeEstAIc27bqiMZbOOxZbZ";
+        key = key.substring(10, 20) + key.substring(21, 26);
+
+        return new SecurePreferences(renderer.context, name, key, true);
+    }
+
     public static void savePreferences() {
-        //System.out.println("Save Preferences...");
-        innerSavePreferences();
+        SecurePreferences preferences = CreateSecurePreferencesObj();
+
+        // Put (all puts are automatically committed)
+        //preferences.put("userId", "User1234");
+
+        // save music and sound volume
+        preferences.put("MUSIC", "" + musicVolume);
+        preferences.put("SOUND", "" + soundVolume);
+    }
+
+    private static int getPref(SecurePreferences preferences, String key, int defaultValue) {
+        String valueString = preferences.getString(key);
+        if (valueString != null) {
+            return Integer.parseInt(valueString);
+        }
+        return defaultValue;
+    }
+
+    private static float getPref(SecurePreferences preferences, String key, float defaultValue) {
+        String valueString = preferences.getString(key);
+        if (valueString != null) {
+            return Float.parseFloat(valueString);
+        }
+        return defaultValue;
     }
 
     public static void loadPreferences() {
-        //System.out.println("Load preferences...");
-        innerLoadPreferences();
-    }
+        SecurePreferences preferences = CreateSecurePreferencesObj();
 
-//    private static SecurePreferences CreateSecurePreferencesObj() {
-//        String name = "raiders0";
-//        String key = "jKDz2fJhKE33cBQlDAkRM9axAnrBmUxs9dp11AqoogfulCL2DvNsexBuL2qeEstAIc27bqiMZbOOxZbZ";
-//        key = key.substring(10, 20) + key.substring(21, 26);
-//
-//        return new SecurePreferences(renderer.context, name, key, true);
-//    }
-
-    private static void innerSavePreferences() {
-//        if (game == null) {
-//            return;
-//        }
-//
-//        if (game.scoreCounter == null) {
-//            return;
-//        }
-//
-//        SecurePreferences preferences = CreateSecurePreferencesObj();
-//
-//        // Put (all puts are automatically committed)
-//        //preferences.put("userId", "User1234");
-//
-//        preferences.put("SCORE", "" + game.scoreCounter.score);
-//
-//        // save score by gem types
-//        ScoreByGemType scoreObj;
-//        int len = game.scoreCounter.scoreByGemTypes.size();
-//        for (int i = 0; i < len; ++i) {
-//            scoreObj = game.scoreCounter.getScoreObjForGemType(i);
-//            preferences.put("GEM" + scoreObj.type, "" + scoreObj.value);
-//        }
-//
-//        // save match types
-//        preferences.put("MATCH3H", "" + game.scoreCounter.match3CountHorizontal);
-//        preferences.put("MATCH3V", "" + game.scoreCounter.match3CountVertical);
-//
-//        preferences.put("MATCH4H", "" + game.scoreCounter.match4CountHorizontal);
-//        preferences.put("MATCH4V", "" + game.scoreCounter.match4CountVertical);
-//
-//        preferences.put("MATCH5H", "" + game.scoreCounter.match5CountHorizontal);
-//        preferences.put("MATCH5V", "" + game.scoreCounter.match5CountVertical);
-//
-//        // extras
-//        preferences.put("HINTS", "" + game.scoreCounter.hintCounter);
-//        preferences.put("SWAPS", "" + game.scoreCounter.perfectSwapCounter);
-//        preferences.put("COMBOS", "" + game.scoreCounter.highestComboCounter);
-//        preferences.put("MATCHES", "" + game.scoreCounter.sharedMatchesCounter);
-//
-//        // collected vs wasted
-//        preferences.put("COLLECTED", "" + game.scoreCounter.collectedGems);
-//        preferences.put("WASTED", "" + game.scoreCounter.wastedGems);
-//
-//        // save music and sound volume
-//        preferences.put("MUSIC", "" + audio.musicVolume);
-//        preferences.put("SOUND", "" + audio.soundVolume);
-    }
-
-//    private static int GetPref(SecurePreferences preferences, String key, int defaultValue) {
-//        String valueString = preferences.getString(key);
-//        if (valueString != null) {
-//            return Integer.parseInt(valueString);
-//        }
-//        return defaultValue;
-//    }
-//
-//    private static float GetPref(SecurePreferences preferences, String key, float defaultValue) {
-//        String valueString = preferences.getString(key);
-//        if (valueString != null) {
-//            return Float.parseFloat(valueString);
-//        }
-//        return defaultValue;
-//    }
-
-    private static void innerLoadPreferences() {
-//        SecurePreferences preferences = CreateSecurePreferencesObj();
-//
-//        // score
-//        game.scoreCounter.score = GetPref(preferences, "SCORE", 0);
-//
-//        // gem types
-//        int[] arr = new int[MAX_GEM_TYPES];
-//        for(int i = 0; i < MAX_GEM_TYPES; ++i) {
-//            arr[i] = GetPref(preferences, "GEM" + i, 0);
-//        }
-//        game.scoreCounter.setScoreByGemTypes(arr);
-//
-//        // match types
-//        game.scoreCounter.match3CountHorizontal = GetPref(preferences, "MATCH3H", 0);
-//        game.scoreCounter.match3CountVertical =  GetPref(preferences, "MATCH3V", 0);
-//
-//        game.scoreCounter.match4CountHorizontal = GetPref(preferences, "MATCH4H", 0);
-//        game.scoreCounter.match4CountVertical = GetPref(preferences, "MATCH4V", 0);
-//
-//        game.scoreCounter.match5CountHorizontal = GetPref(preferences, "MATCH5H", 0);
-//        game.scoreCounter.match5CountVertical = GetPref(preferences, "MATCH5V", 0);
-//
-//        // extras
-//        game.scoreCounter.hintCounter = GetPref(preferences, "HINTS", 0);
-//        game.scoreCounter.perfectSwapCounter = GetPref(preferences, "SWAPS", 0);
-//        game.scoreCounter.highestComboCounter = GetPref(preferences, "COMBOS", 0);
-//        game.scoreCounter.sharedMatchesCounter = GetPref(preferences, "MATCHES", 0);
-//
-//        // collected vs wasted
-//        game.scoreCounter.collectedGems = GetPref(preferences, "COLLECTED", 0);
-//        game.scoreCounter.wastedGems = GetPref(preferences, "WASTED", 0);
-//
-//        // audio
-//        audio.musicVolume = GetPref(preferences, "MUSIC", 0.5f);
-//        audio.soundVolume = GetPref(preferences, "SOUND", 0.5f);
-//
-//        game.scoreCounter.dump();
-    }
-
-    private static void innerSavePreferencesOld() {
-//        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//
-//        // save score
-//        editor.putInt("SCORE", game.scoreCounter.score);
-//
-//        // save score by gem types
-//        ScoreByGemType scoreObj;
-//        int len = game.scoreCounter.scoreByGemTypes.size();
-//        for(int i = 0; i < len; ++i) {
-//            scoreObj = game.scoreCounter.getScoreObjForGemType(i);
-//            editor.putInt("GEM" + scoreObj.type, scoreObj.value);
-//        }
-//
-//        // save match types
-//        editor.putInt("MATCH3H", game.scoreCounter.match3CountHorizontal);
-//        editor.putInt("MATCH3V", game.scoreCounter.match3CountVertical);
-//
-//        editor.putInt("MATCH4H", game.scoreCounter.match4CountHorizontal);
-//        editor.putInt("MATCH4V", game.scoreCounter.match4CountVertical);
-//
-//        editor.putInt("MATCH5H", game.scoreCounter.match5CountHorizontal);
-//        editor.putInt("MATCH5V", game.scoreCounter.match5CountVertical);
-//
-//        // extras
-//        editor.putInt("HINTS", game.scoreCounter.hintCounter);
-//        editor.putInt("SWAPS", game.scoreCounter.perfectSwapCounter);
-//        editor.putInt("COMBOS", game.scoreCounter.highestComboCounter);
-//        editor.putInt("MATCHES", game.scoreCounter.sharedMatchesCounter);
-//
-//        // collected vs wasted
-//        editor.putInt("COLLECTED", game.scoreCounter.collectedGems);
-//        editor.putInt("WASTED", game.scoreCounter.wastedGems);
-//
-//        // save music and sound volume
-//        editor.putFloat("MUSIC", audio.musicVolume);
-//        editor.putFloat("SOUND", audio.soundVolume);
-//
-//        editor.commit();
-    }
-
-    private static void innerLoadPreferencesOld() {
-//        SharedPreferences sharedPrefs = activity.getPreferences(Context.MODE_PRIVATE);
-//
-//        // score
-//        game.scoreCounter.score = sharedPrefs.getInt("SCORE", 0);
-//
-//        // gem types
-//        int[] arr = new int[MAX_GEM_TYPES];
-//        for(int i = 0; i < MAX_GEM_TYPES; ++i) {
-//            arr[i] = sharedPrefs.getInt("GEM" + i, 0);
-//        }
-//        game.scoreCounter.setScoreByGemTypes(arr);
-//
-//        // match types
-//        game.scoreCounter.match3CountHorizontal = sharedPrefs.getInt("MATCH3H", 0);
-//        game.scoreCounter.match3CountVertical =  sharedPrefs.getInt("MATCH3V", 0);
-//
-//        game.scoreCounter.match4CountHorizontal = sharedPrefs.getInt("MATCH4H", 0);
-//        game.scoreCounter.match4CountVertical = sharedPrefs.getInt("MATCH4V", 0);
-//
-//        game.scoreCounter.match5CountHorizontal = sharedPrefs.getInt("MATCH5H", 0);
-//        game.scoreCounter.match5CountVertical = sharedPrefs.getInt("MATCH5V", 0);
-//
-//        // extras
-//        game.scoreCounter.hintCounter = sharedPrefs.getInt("HINTS", 0);
-//        game.scoreCounter.perfectSwapCounter = sharedPrefs.getInt("SWAPS", 0);
-//        game.scoreCounter.highestComboCounter = sharedPrefs.getInt("COMBOS", 0);
-//        game.scoreCounter.sharedMatchesCounter = sharedPrefs.getInt("MATCHES", 0);
-//
-//        // collected vs wasted
-//        game.scoreCounter.collectedGems = sharedPrefs.getInt("COLLECTED", 0);
-//        game.scoreCounter.wastedGems = sharedPrefs.getInt("WASTED", 0);
-//
-//        // audio
-//        audio.musicVolume = sharedPrefs.getFloat("MUSIC", 0.5f);
-//        audio.soundVolume = sharedPrefs.getFloat("SOUND", 0.5f);
-//
-//        game.scoreCounter.dump();
+        musicVolume = getPref(preferences, "MUSIC", 0.5f);
+        soundVolume = getPref(preferences, "SOUND", 0.5f);
     }
 
     public static void pause() {
@@ -335,11 +170,11 @@ public final class Engine {
     }
 
     public static void setSoundVolume(float volume) {
-        Engine.soundVolume = volume;
+        soundVolume = volume;
     }
 
     public static void setMusicVolume(float volume) {
-        Engine.musicVolume = volume;
+        musicVolume = volume;
     }
 
     public static void update() {
