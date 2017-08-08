@@ -1,9 +1,11 @@
 package com.almagems.cubetraz;
 
+import java.io.Serializable;
+
 import static com.almagems.cubetraz.Constants.*;
 
 
-public class LevelData {
+public class LevelData implements Serializable {
 
     public int stars;
     public int moves;

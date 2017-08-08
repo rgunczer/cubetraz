@@ -1,9 +1,13 @@
 package com.almagems.cubetraz;
 
 import android.content.Context;
+import android.provider.Settings;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 import static com.almagems.cubetraz.Constants.*;
 
@@ -57,41 +61,77 @@ public final class Cubetraz {
 
 
     public static void init() {
-        for (int i = 0; i < MAX_LEVELS; ++i) {
-            ar_levels_easy[i] = new LevelData();
-            ar_levels_normal[i] = new LevelData();
-            ar_levels_hard[i] = new LevelData();
+//        for (int i = 0; i < MAX_LEVELS; ++i) {
+//            ar_levels_easy[i] = new LevelData();
+//            ar_levels_normal[i] = new LevelData();
+//            ar_levels_hard[i] = new LevelData();
+//
+//            ar_levels_easy[i].reset();
+//            ar_levels_normal[i].reset();
+//            ar_levels_hard[i].reset();
+//        }
+    }
 
-            ar_levels_easy[i].reset();
-            ar_levels_normal[i].reset();
-            ar_levels_hard[i].reset();
+    private static void saveArray(String fileName, LevelData[] array) {
+        try {
+            Context context = Engine.activity;
+            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(array);
+
+            oos.flush();
+            fos.getFD().sync();
+            fos.close();
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
         }
     }
 
     public static void save() {
-//        try {
-//            Context context = Engine.activity;
-//            String DATA_FILE_NAME = "easy";
-//            FileOutputStream os = context.openFileOutput(DATA_FILE_NAME, context.MODE_PRIVATE));
-//            ObjectOutputStream oos = new ObjectOutputStream(os);
-//            oos.writeObject(ar_levels_easy);
-//
-//            oos.flush();
-//            os.getFD().sync();
-//            os.close();
-//        } catch (Exception ex) {
-//
-//        }
+        saveArray("easy", ar_levels_easy);
+        saveArray("normal", ar_levels_normal);
+        saveArray("hard", ar_levels_hard);
+    }
 
-        //fwrite(ar_levels_easy, 1, sizeof(ar_levels_easy), fp);
-        //fwrite(ar_levels_normal, 1, sizeof(ar_levels_normal), fp);
-        //fwrite(ar_levels_hard, 1, sizeof(ar_levels_hard), fp);
+    private static LevelData[] loadArray(String fileName) {
+        LevelData[] ar = new LevelData[MAX_LEVELS];
+
+        for (int i = 0; i < MAX_LEVELS; ++i) {
+            ar[i] = new LevelData();
+            ar[i].reset();
+        }
+
+        try {
+            Context context = Engine.activity;
+            FileInputStream fis = context.openFileInput(fileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Object obj = ois.readObject();
+            ar = (LevelData[])(obj);
+            fis.close();
+        } catch(Exception ex) {
+            System.out.println(ex.toString());
+        }
+        return ar;
+    }
+
+    private static void copyArray(LevelData[] from, LevelData[] to) {
+        //System.arraycopy(from, 0, to, 0, from.length);
+        for(int i = 0; i < from.length; ++i) {
+            to[i] = from[i];
+        }
     }
 
     public static void load() {
-        //fread(ar_levels_easy, 1, sizeof(ar_levels_easy), fp);
-        //fread(ar_levels_normal, 1, sizeof(ar_levels_normal), fp);
-        //fread(ar_levels_hard, 1, sizeof(ar_levels_hard), fp);
+        LevelData[] temp;
+
+        temp = loadArray("easy");
+        copyArray(temp, ar_levels_easy);
+
+        temp = loadArray("normal");
+        copyArray(temp, ar_levels_normal);
+
+        temp = loadArray("hard");
+        copyArray(temp, ar_levels_hard);
     }
 
     public static int getStarCount() {
