@@ -34,14 +34,6 @@ public final class Game {
     public static final Vector cube_offset = new Vector();
     public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
 
-
-
-    private static int m_framebuffer;
-    private static int m_colorbuffer;
-    private static int m_depthstencilbuffer;
-
-
-
     static {
         for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
             for(int j = 0; j < MAX_CUBE_COUNT; ++j) {

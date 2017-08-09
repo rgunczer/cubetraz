@@ -302,11 +302,9 @@ public final class Outro extends Scene {
         for (int i = 0; i < size; ++i) {
             cube = m_lst_cubes_base.get(i);
             cube.update();
-//        if (m_degree > 25.0f)
-//            (*it).v = vec3(0.0f, 0.0f, 0.0f);
         }
 
-        if ( (m_cube_rotation.degree % 360) != 0) {
+        if ( (Math.ceil(m_cube_rotation.degree) % 360) != 0) {
             m_cube_rotation.degree += 0.5f;
         } else {
             m_cube_rotation.degree = 0.0f;
@@ -368,10 +366,11 @@ public final class Outro extends Scene {
     }
 
     public void drawText() {
-        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
 
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
@@ -379,13 +378,15 @@ public final class Outro extends Scene {
         int a = (int)m_center_alpha * 255;
 
         glDisable(GL_TEXTURE_2D);
-        Color color_bg = new Color(30, 30, 15, 150 * m_center_alpha);
+        Color color_bg = new Color(30, 30, 15, (int)m_center_alpha * 150);
 
         graphics.bindStreamSources2dNoTextures();
         graphics.resetBufferIndices();
         graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
+        graphics.updateBuffers();
         graphics.renderTriangles();
 
+        graphics.bindStreamSources2d();
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
 
@@ -397,32 +398,40 @@ public final class Outro extends Scene {
 
         Color color = new Color(0, 0, 0, a);
 
-//        m_text_display.init();
-//        m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
-//        m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
-//
-//        m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
-//        m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
-//
-//        glPushMatrix();
-//        glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
-//        m_text_display.render();
-//        glPopMatrix();
-//
-//        color = new Color(255, 255, 0, a);
-//
-//        m_text_display.init();
-//        m_ar_text_center[0].emitt(Graphics.half_width - m_ar_text_center[0].getHalfWidth(), Graphics.half_height + m_ar_text_center[0].getHalfHeight(), color);
-//        m_text_display.m_vertex_count += m_ar_text_center[0].getVertexCount();
-//
-//        m_ar_text_center[1].emitt(Graphics.half_width - m_ar_text_center[1].getHalfWidth(), Graphics.half_height - m_ar_text_center[1].getHalfHeight(), color);
-//        m_text_display.m_vertex_count += m_ar_text_center[1].getVertexCount();
-//
-//        m_text_display.render();
+        graphics.resetBufferIndices();
+
+        Vector2 pos = new Vector2();
+        pos.x = Graphics.half_width - m_ar_text_center[0].getHalfWidth();
+        pos.y = Graphics.half_height + m_ar_text_center[0].getHalfHeight();
+        m_ar_text_center[0].emitt(pos, color);
+
+        pos.x = Graphics.half_width - m_ar_text_center[1].getHalfWidth();
+        pos.y = Graphics.half_height - m_ar_text_center[1].getHalfHeight();
+        m_ar_text_center[1].emitt(pos, color);
+
+        glPushMatrix();
+        glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
+        graphics.updateBuffers();
+        graphics.renderTriangles();
+        glPopMatrix();
+
+        color = new Color(255, 255, 0, a);
+
+        graphics.resetBufferIndices();
+
+        pos.x = Graphics.half_width - m_ar_text_center[0].getHalfWidth();
+        pos.y = Graphics.half_height + m_ar_text_center[0].getHalfHeight();
+        m_ar_text_center[0].emitt(pos, color);
+
+        pos.x = Graphics.half_width - m_ar_text_center[1].getHalfWidth();
+        pos.y = Graphics.half_height - m_ar_text_center[1].getHalfHeight();
+        m_ar_text_center[1].emitt(pos, color);
+
+        graphics.updateBuffers();
+        graphics.renderTriangles();
 
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
-
     }
 
     public void render() {
@@ -434,13 +443,13 @@ public final class Outro extends Scene {
             graphics.setModelViewMatrix2D();
 
             glDisable(GL_LIGHTING);
-            glDepthMask(false); //GL_FALSE);
+            glDepthMask(false);
             glEnable(GL_TEXTURE_2D);
 
             Color color_dirty = new Color(255, 255, 255, (int)Game.dirty_alpha);
             graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color_dirty);
 
-            glDepthMask(true); //GL_TRUE);
+            glDepthMask(true);
             glEnable(GL_LIGHTING);
         }
 
@@ -456,14 +465,14 @@ public final class Outro extends Scene {
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-            glDepthMask(false); //GL_FALSE);
+            glDepthMask(false);
 
             glEnable(GL_POINT_SMOOTH);
             m_starfield.render();
             glDisable(GL_POINT_SMOOTH);
 
             glEnable(GL_LIGHTING);
-            glDepthMask(true); //GL_TRUE);
+            glDepthMask(true);
             glEnable(GL_TEXTURE_2D);
 
             glEnableClientState(GL_NORMAL_ARRAY);
@@ -481,6 +490,7 @@ public final class Outro extends Scene {
 
             graphics.resetBufferIndices();
             graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glPopMatrix();
@@ -490,6 +500,7 @@ public final class Outro extends Scene {
 
             graphics.resetBufferIndices();
             graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
+            graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glPopMatrix();
@@ -511,7 +522,9 @@ public final class Outro extends Scene {
 
             glPopMatrix();
         }
-        //drawText();
+        if (m_center_alpha > EPSILON) {
+            drawText();
+        }
     }
     
     public void onFingerUp(float x, float y, int finger_count) {
