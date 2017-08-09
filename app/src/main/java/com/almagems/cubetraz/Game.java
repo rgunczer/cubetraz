@@ -105,8 +105,8 @@ public final class Game {
 
         LevelBuilder.level = level;
 
-        showScene(Scene_Intro);
-        //showScene(Scene_Menu);
+        //showScene(Scene_Intro);
+        showScene(Scene_Menu);
         //showScene(Scene_Anim);
         //showScene(Scene_Level);
         //showScene(Scene_Stat);

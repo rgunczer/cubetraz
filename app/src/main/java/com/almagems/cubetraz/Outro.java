@@ -40,7 +40,7 @@ public final class Outro extends Scene {
     private boolean m_draw_starfield;
     private float m_cube_rot_speed;
 
-    private CubeRotation m_cube_rotation;
+    private CubeRotation m_cube_rotation = new CubeRotation();
 
     private ArrayList<Cube> m_lst_cubes_base = new ArrayList<>();
     private ArrayList<Cube> m_lst_cubes_level = new ArrayList<>();
@@ -57,6 +57,9 @@ public final class Outro extends Scene {
     public Outro() {
         m_camera_outro.eye = new Vector(0.0f, 10.0f, 30.0f);
         m_camera_outro.target = new Vector(0.0f, 0.0f, 0.0f);
+
+        m_ar_text_center[0] = new Text();
+        m_ar_text_center[1] = new Text();
 
         m_ar_text_center[0].setScale(1.0f, 1.0f);
         m_ar_text_center[1].setScale(1.0f, 1.0f);
@@ -163,12 +166,14 @@ public final class Outro extends Scene {
 
         m_pos_cube_player = Game.getCubePosAt(Game.level.m_player_cube.getCubePos());
 
+        //glClearColor(1f, 0f, 0f, 0f); // TODO: remove later
+
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
         glEnable(GL_BLEND);
 
-        //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
+        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
     }
 
     public void setupExplosion() {        
@@ -338,8 +343,8 @@ public final class Outro extends Scene {
     }
 
     public void drawTheCube() {
-        graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
+        graphics.resetBufferIndices();
 
         Cube cube;
         int size = m_lst_cubes_base.size();
@@ -356,7 +361,9 @@ public final class Outro extends Scene {
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
+
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+        graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
@@ -430,7 +437,7 @@ public final class Outro extends Scene {
             glDepthMask(false); //GL_FALSE);
             glEnable(GL_TEXTURE_2D);
 
-            Color color_dirty = new Color(255, 255, 255, Game.dirty_alpha);
+            Color color_dirty = new Color(255, 255, 255, (int)Game.dirty_alpha);
             graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color_dirty);
 
             glDepthMask(true); //GL_TRUE);
@@ -441,9 +448,6 @@ public final class Outro extends Scene {
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(m_camera_current);
-
-        //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
 
         if (m_draw_starfield) {
             glDisable(GL_TEXTURE_2D);
@@ -497,7 +501,7 @@ public final class Outro extends Scene {
 
             drawTheCube();
 
-            if (true) { //#ifdef DRAW_AXES_CUBE
+            if (false) { //#ifdef DRAW_AXES_CUBE
                 glDisable(GL_TEXTURE_2D);
                 glDisable(GL_LIGHTING);
                 graphics.drawAxes();
@@ -507,7 +511,7 @@ public final class Outro extends Scene {
 
             glPopMatrix();
         }
-        drawText();
+        //drawText();
     }
     
     public void onFingerUp(float x, float y, int finger_count) {

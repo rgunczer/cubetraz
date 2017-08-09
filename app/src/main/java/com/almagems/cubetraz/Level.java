@@ -1134,11 +1134,12 @@ public final class Level extends Scene {
         if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.isEmpty() && m_ad_base.lst_disappear.isEmpty()) {
             m_cube_rotation.degree = m_target_rotation_degree;
 
-            if (DifficultyEnum.Hard == m_difficulty && 61 == m_level_number) {
-                Game.showScene(Scene_Outro);
-            } else {
-                setupAppear();
-            }
+//            if (DifficultyEnum.Hard == m_difficulty && 61 == m_level_number) {
+//                Game.showScene(Scene_Outro);
+//            } else {
+//                setupAppear();
+//            }
+            Game.showScene(Scene_Outro);
         }
     }
     
