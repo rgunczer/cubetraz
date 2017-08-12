@@ -36,7 +36,6 @@ public final class Animator extends Scene {
 
 	private final Vector m_pos_light_from = new Vector();
 	private final Vector m_pos_light_to = new Vector();
-    private final Vector m_pos_light_current = new Vector();
 	
 	private final Camera m_camera_from = new Camera();
 	private final Camera m_camera_to = new Camera();
@@ -262,9 +261,9 @@ public final class Animator extends Scene {
 	    m_camera_to.init(Game.level.m_camera_level);
 	    m_camera_current.init(m_camera_from);
 	
-	    m_pos_light_from.init(Game.level.m_pos_light);
-	    m_pos_light_to.init(Game.menu.m_pos_light_current);
-	    m_pos_light_current.init(m_pos_light_from);
+	    m_pos_light_from.init(Game.level.getLightPositionCurrent());
+	    m_pos_light_to.init(Game.menu.getLightPositionCurrent());
+	    mPosLightCurrent.init(m_pos_light_from);
 
 	    m_ad_face.setLevelAndDirection(0, 1);
 	    m_ad_base_appear.setLevelAndDirection(0, 1);
@@ -312,7 +311,7 @@ public final class Animator extends Scene {
 	
 	    m_pos_light_from.init(aid.pos_light_from);
         m_pos_light_to.init(aid.pos_light_to);
-	    m_pos_light_current.init(m_pos_light_from);
+	    mPosLightCurrent.init(m_pos_light_from);
 	
 	    m_ad_base_disappear.clear();
 	        
@@ -410,7 +409,7 @@ public final class Animator extends Scene {
         if (m_t > 1f) {
             m_t = 1f;
         }
-        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
+        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, mPosLightCurrent);
 	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
 		
         Cube cube;    
@@ -467,7 +466,7 @@ public final class Animator extends Scene {
 			    m_list_cubes_face.add(cube);
             }
         
-            Game.stopMusic();
+            Game.audio.stopMusic();
 		
 		    m_anim_to_menu_phase = 1;
 		
@@ -563,7 +562,7 @@ public final class Animator extends Scene {
         }
     
         Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
-        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, m_pos_light_current);
+        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, mPosLightCurrent);
 
 	    m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
@@ -902,8 +901,7 @@ public final class Animator extends Scene {
         graphics.bindStreamSources3d();
         graphics.resetBufferIndices();
 
-        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
+        graphics.setLightPosition(mPosLightCurrent);
 
         glEnable(GL_LIGHTING);
     

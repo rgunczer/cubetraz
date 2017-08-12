@@ -26,19 +26,6 @@ public final class Constants {
     public static final int MAX_CUBE_COUNT = 9;
     public static final int MAX_STARS = 1024;
 
-    public static final String MUSIC_CPU = "POL-a-cpu-life-short";
-    public static final String MUSIC_BREEZE = "POL-breeze-short";
-    public static final String MUSIC_DRONES = "POL-positive-drones-short";
-    public static final String MUSIC_VECTORS = "POL-vectors-short";
-    public static final String MUSIC_WAVES = "POL-warm-waves-short";
-
-    public static final String SOUND_LEVEL_COMPLETED = "keys";
-    public static final String SOUND_VOLUME_UP = "NFF-switch-on";
-    public static final String SOUND_VOLUME_DOWN = "NFF-switch-off";
-    public static final String SOUND_CUBE_HIT = "cube_to_cube";
-    public static final String SOUND_TAP_ON_LEVEL_CUBE = "open";
-    public static final String SOUND_TAP_ON_LOCKED_LEVEL_CUBE = "locked";
-
     public static final float DIRTY_ALPHA = 60f;
 
     public static final int MAX_FACE_TRANSFORM_COUNT = 8;

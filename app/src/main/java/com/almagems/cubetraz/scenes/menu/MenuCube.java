@@ -8,6 +8,8 @@ import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 
 import java.util.ArrayList;
+
+import static com.almagems.cubetraz.game.Audio.SOUND_CUBE_HIT;
 import static com.almagems.cubetraz.game.Constants.*;
 
 
@@ -68,7 +70,7 @@ public final class MenuCube {
 		    if (m_t >= 1.0f) {
 			    m_t = 1.0f;
 			    m_done = true;                
-			    Game.playSound(SOUND_CUBE_HIT);
+			    Game.audio.playSound(SOUND_CUBE_HIT);
 			    setCubePos(m_cube_pos_destination);
 		    } else {
                 float value = Utils.lerp(m_start_value, m_end_value, m_t);

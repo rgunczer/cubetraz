@@ -57,8 +57,6 @@ public final class Cube {
     }
 
     public void resetFonts() {
-        //printf("\nReset Fonts...");
-        
 		ar_fonts[0] = null;
 		ar_fonts[1] = null;
 		
@@ -70,8 +68,6 @@ public final class Cube {
 	}
 
     public void resetSymbols() {
-        //printf("\nReset Symbols...");
-        
 		ar_symbols[0] = null;
 		ar_symbols[1] = null;
 		

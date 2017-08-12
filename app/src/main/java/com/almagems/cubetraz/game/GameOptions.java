@@ -1,13 +1,11 @@
 package com.almagems.cubetraz.game;
 
-
 import android.content.Context;
-
 import com.almagems.cubetraz.external.SecurePreferences;
 
 public class GameOptions {
 
-    private Context _context;
+    private Context mContext;
 
     //private static final String SAVE_OPTIONS_FILE = "options.dat";
 
@@ -15,34 +13,35 @@ public class GameOptions {
     private static String keySound = "SOUND";
     private static String keyCanSkipIntro = "INTRO";
 
-    private float _musicVolume = 0.5f;
-    private float _soundVolume = 0.5f;
-    private boolean _canSkipIntro = false;
+    private float mMusicVolume = 0.5f;
+    private float mSoundVolume = 0.5f;
+    private boolean mCanSkipIntro = false;
 
     public float getMusicVolume() {
-        return _musicVolume;
+        return mMusicVolume;
     }
     public float getSoundVolume() {
-        return _soundVolume;
+        return mSoundVolume;
     }
 
     public void setSoundVolume(float volume) {
-        _soundVolume = volume;
+        mSoundVolume = volume;
         save();
     }
     public void setMusicVolume(float volume) {
-        _musicVolume = volume;
+        mMusicVolume = volume;
         save();
     }
 
-    public boolean getCanSkipIntro() { return _canSkipIntro; }
+    //public boolean getCanSkipIntro() { return mCanSkipIntro; }
+    public boolean getCanSkipIntro() { return true; } // TODO: remove this in final version
     public void setCanSkipIntro(boolean value) {
-        _canSkipIntro = value;
+        mCanSkipIntro = value;
         save();
     }
 
     public GameOptions(Context context) {
-        _context = context;
+        mContext = context;
     }
 
     private static SecurePreferences CreateSecurePreferencesObj(Context context) {
@@ -70,23 +69,23 @@ public class GameOptions {
     }
 
     public void save() {
-        SecurePreferences preferences = CreateSecurePreferencesObj(_context);
+        SecurePreferences preferences = CreateSecurePreferencesObj(mContext);
 
         // Put (all puts are automatically committed)
         //preferences.put("userId", "User1234");
 
-        preferences.put(keyMusic, "" + _musicVolume);
-        preferences.put(keySound, "" + _soundVolume);
-        preferences.put(keyCanSkipIntro, "" + (_canSkipIntro ? 1 : 0));
+        preferences.put(keyMusic, "" + mMusicVolume);
+        preferences.put(keySound, "" + mSoundVolume);
+        preferences.put(keyCanSkipIntro, "" + (mCanSkipIntro ? 1 : 0));
     }
 
     public void load() {
-        SecurePreferences preferences = CreateSecurePreferencesObj(_context);
+        SecurePreferences preferences = CreateSecurePreferencesObj(mContext);
 
-        _musicVolume = getPref(preferences, keyMusic, 0.5f);
-        _soundVolume = getPref(preferences, keySound, 0.5f);
+        mMusicVolume = getPref(preferences, keyMusic, 0.5f);
+        mSoundVolume = getPref(preferences, keySound, 0.5f);
         int value = getPref(preferences, keyCanSkipIntro, 0);
-        _canSkipIntro = value != 0;
+        mCanSkipIntro = value != 0;
     }
 
 }

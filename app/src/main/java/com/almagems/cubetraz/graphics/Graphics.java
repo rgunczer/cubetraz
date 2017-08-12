@@ -319,6 +319,10 @@ public final class Graphics {
         //setLookAtM(viewMatrix, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f);
     }
 
+    public void setLightPosition(Vector pos) {
+        float posLight[] = { pos.x, pos.y, pos.z, 1.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
+    }
 
     public void warmCache() {
         glEnable(GL_TEXTURE_2D);

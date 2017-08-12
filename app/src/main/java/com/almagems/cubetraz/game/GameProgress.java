@@ -28,9 +28,9 @@ public final class GameProgress {
     public int getStarsNormal(final int level_number)   { return ar_levels_normal[level_number-1].stars;    }
     public int getStarsHard(final int level_number)     { return ar_levels_hard[level_number-1].stars;      }
 
-    public boolean getSolvedEasy(int level_number)   { return ar_levels_easy[level_number-1].solved;     }
-    public boolean getSolvedNormal(int level_number) { return ar_levels_normal[level_number-1].solved;   }
-    public boolean getSolvedHard(int level_number)   { return ar_levels_hard[level_number-1].solved;     }
+    public boolean getSolvedEasy(int level_number)      { return ar_levels_easy[level_number-1].solved;     }
+    public boolean getSolvedNormal(int level_number)    { return ar_levels_normal[level_number-1].solved;   }
+    public boolean getSolvedHard(int level_number)      { return ar_levels_hard[level_number-1].solved;     }
 
     public GameProgress(Context context) {
         mContext = context;
@@ -96,6 +96,8 @@ public final class GameProgress {
             ar[i] = new LevelData();
             ar[i].reset();
         }
+
+        ar[0].stars = LEVEL_UNLOCKED; // unlock first level
 
         try {
             FileInputStream fis = mContext.openFileInput(fileName);

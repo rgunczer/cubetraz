@@ -49,13 +49,15 @@ public final class MainActivity extends Activity {
                     Engine.rawX = event.getX();
                     Engine.rawY = event.getY();
 
+                    final int fingerCount = event.getPointerCount();
+
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         glSurfaceView.queueEvent(new Runnable() {
 
                             @Override
                             public void run() {
                                 //renderer.handleTouchPress(normalizedX, normalizedY);
-                                renderer.handleTouchPress(Engine.rawX, Engine.rawY);
+                                renderer.handleTouchPress(Engine.rawX, Engine.rawY, fingerCount);
                             }
                         });
                     } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -64,7 +66,7 @@ public final class MainActivity extends Activity {
                             @Override
                             public void run() {
                                 //renderer.handleTouchDrag(normalizedX, normalizedY);
-                                renderer.handleTouchDrag(Engine.rawX, Engine.rawY);
+                                renderer.handleTouchDrag(Engine.rawX, Engine.rawY, fingerCount);
                             }
                         });
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -83,4 +85,27 @@ public final class MainActivity extends Activity {
             }
         });
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        glSurfaceView.onPause();
+
+        if (renderer != null) {
+            renderer.pause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        glSurfaceView.onResume();
+
+        if (renderer != null) {
+            renderer.resume();
+        }
+    }
+
 }

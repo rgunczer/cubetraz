@@ -21,6 +21,7 @@ import com.almagems.cubetraz.scenes.Scene;
 
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
+import static com.almagems.cubetraz.game.Audio.*;
 import static com.almagems.cubetraz.game.Constants.*;
 
 
@@ -63,7 +64,6 @@ public final class Menu extends Scene {
     private float m_menu_rotation;
 
     private Vector m_pos_light_menu = new Vector();
-    public Vector m_pos_light_current = new Vector();
 
     public MenuCube m_pMenuCubePlay;
     public MenuCube m_pMenuCubeOptions;
@@ -189,7 +189,7 @@ public final class Menu extends Scene {
         m_camera_menu.eye = m_camera_menu.eye.scale(graphics.aspectRatio);
         m_camera_credits.eye = m_camera_credits.eye.scale(graphics.aspectRatio);
 
-        m_pos_light_current = m_pos_light_menu;
+        mPosLightCurrent = m_pos_light_menu;
         mCameraCurrent.init(m_camera_menu);
     }
 
@@ -199,7 +199,7 @@ public final class Menu extends Scene {
         //printf("\ncCube size: %lu byte, all cubes size: %lu kbyte\n", sizeof(cCube), (sizeof(cCube)*9*9*9) / 1024);
         //cMenuFaceBuilder::Custom();
         Game.dirtyAlpha = DIRTY_ALPHA;
-        //Game.playMusic(MUSIC_CPU);
+        Game.audio.playMusic(MUSIC_CPU);
 
         m_hilite_timeout = 0.0f;
         m_menu_cube_hilite = null;
@@ -208,7 +208,7 @@ public final class Menu extends Scene {
         m_prev_face = CubeFaceNamesEnum.Face_Empty;
         mIsFingerDown = false;
         mIsSwipe = false;
-        m_pos_light_current.init(m_pos_light_menu);
+        mPosLightCurrent.init(m_pos_light_menu);
         mCameraCurrent.init(m_camera_menu);
 
         Game.resetCubes();
@@ -1450,8 +1450,8 @@ public final class Menu extends Scene {
         float x = p.tx - HALF_CUBE_SIZE;
         float y = p.ty + HALF_CUBE_SIZE + 0.02f;
         float z = p.tz - HALF_CUBE_SIZE;
-        float w = CUBE_SIZE * 5.0f * Game.getMusicVolume();
-        float ws = CUBE_SIZE * 5.0f * Game.getSoundVolume();
+        float w = CUBE_SIZE * 5.0f * Game.options.getMusicVolume();
+        float ws = CUBE_SIZE * 5.0f * Game.options.getSoundVolume();
         float zs = Game.cubes[2][7][6].tz - HALF_CUBE_SIZE;
 
         final float verts[] = {
@@ -2386,30 +2386,30 @@ public final class Menu extends Scene {
             switch (difficulty) {
                 case Easy:
                     if (LEVEL_LOCKED == Game.progress.getStarsEasy(level_number)) {
-                        Game.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+                        Game.audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
                         return;
                     }
                     break;
 
                 case Normal:
                     if (LEVEL_LOCKED == Game.progress.getStarsNormal(level_number)) {
-                        Game.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+                        Game.audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
                         return;
                     }
                     break;
 
                 case Hard:
                     if (LEVEL_LOCKED == Game.progress.getStarsHard(level_number)) {
-                        Game.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+                        Game.audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
                         return;
                     }
                     break;
             }
         }
 
-        Game.playSound(SOUND_TAP_ON_LEVEL_CUBE);
+        Game.audio.playSound(SOUND_TAP_ON_LEVEL_CUBE);
 
-        Game.stopMusic();
+        Game.audio.stopMusic();
         Game.anim_init_data.clearTransforms();
 
         switch (difficulty) {
@@ -2486,8 +2486,8 @@ public final class Menu extends Scene {
         Game.anim_init_data.camera_from.init(mCameraCurrent);
         Game.anim_init_data.camera_to.init(Game.level.m_camera_level);
 
-        Game.anim_init_data.pos_light_from.init(m_pos_light_current);
-        Game.anim_init_data.pos_light_to.init(Game.level.m_pos_light);
+        Game.anim_init_data.pos_light_from.init(mPosLightCurrent);
+        Game.anim_init_data.pos_light_to.init(Game.level.getLightPositionCurrent());
 
         Game.showScene(Scene_Anim);
     }
@@ -2631,8 +2631,7 @@ public final class Menu extends Scene {
         graphics.setModelViewMatrix3D(mCameraCurrent);
         graphics.bindStreamSources3d();
 
-        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
+        graphics.setLightPosition(mPosLightCurrent);
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
@@ -2839,22 +2838,22 @@ public final class Menu extends Scene {
             switch (downR) {
                 case 255:
                     Game.musicVolumeUp();
-                    Game.playSound(SOUND_VOLUME_UP);
+                    Game.audio.playSound(SOUND_VOLUME_UP);
                     break;
 
                 case 254:
                     Game.musicVolumeDown();
-                    Game.playSound(SOUND_VOLUME_DOWN);
+                    Game.audio.playSound(SOUND_VOLUME_DOWN);
                     break;
 
                 case 253:
                     Game.soundVolumeUp();
-                    Game.playSound(SOUND_VOLUME_UP);
+                    Game.audio.playSound(SOUND_VOLUME_UP);
                     break;
 
                 case 252:
                     Game.soundVolumeDown();
-                    Game.playSound(SOUND_VOLUME_DOWN);
+                    Game.audio.playSound(SOUND_VOLUME_DOWN);
                     break;
 
                 default:

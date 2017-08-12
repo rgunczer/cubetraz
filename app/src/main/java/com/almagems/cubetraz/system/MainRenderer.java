@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.almagems.cubetraz.game.Engine;
+import com.almagems.cubetraz.game.Game;
 
 
 public final class MainRenderer implements Renderer {
@@ -99,12 +100,12 @@ public final class MainRenderer implements Renderer {
         frameStartTimeMS = SystemClock.elapsedRealtime();
     }
 
-	public void handleTouchPress(float normalizedX, float normalizedY) {
-		Engine.handleTouchPress(normalizedX, normalizedY);
+	public void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
+		Engine.handleTouchPress(normalizedX, normalizedY, fingerCount);
 	}
 	
-	public void handleTouchDrag(float normalizedX, float normalizedY) {
-		Engine.handleTouchDrag(normalizedX, normalizedY);
+	public void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
+		Engine.handleTouchDrag(normalizedX, normalizedY, fingerCount);
 	}
 	
 	public void handleTouchRelease(float normalizedX, float normalizedY) {
@@ -117,5 +118,13 @@ public final class MainRenderer implements Renderer {
 
     public void handleMenuButtonPress() {
         Engine.game.showMenu();
+    }
+
+    public void resume() {
+        Game.audio.resume();
+    }
+
+    public void pause() {
+        Game.audio.pause();
     }
 }

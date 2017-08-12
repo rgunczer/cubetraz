@@ -901,7 +901,7 @@ public final class HUD {
             graphics.renderTriangles();
         }
     
-        if (Level.LevelStateEnum.DeadAnim == Game.level.m_state) {
+        if (Level.LevelStateEnum.DeadAnim == Game.level.mState) {
             graphics.resetBufferIndices();
         
 		    Color color = new Color(200, 0, 0, Game.level.dead_alpha);

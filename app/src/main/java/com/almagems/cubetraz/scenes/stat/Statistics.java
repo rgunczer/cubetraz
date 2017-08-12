@@ -494,8 +494,7 @@ public final class Statistics extends Scene {
         glEnable(GL_LIGHT0);
         glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
 
-        final float[] lightPosition = { -100.0f, 300.0f, 900.0f, 1.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, lightPosition, 0);
+        graphics.setLightPosition(new Vector(-100.0f, 300.0f, 900.0f));
 
         drawFallingCubes();
         glDisable(GL_LIGHTING);

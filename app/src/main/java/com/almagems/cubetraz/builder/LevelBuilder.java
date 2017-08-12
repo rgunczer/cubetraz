@@ -20,85 +20,82 @@ public final class LevelBuilder {
     public static final CubePos player = new CubePos();
     public static final CubePos key = new CubePos();
 
-    public static final ArrayList<MovingCube> lst_moving_cubes = new ArrayList<>();
-    public static final ArrayList<MoverCube> lst_mover_cubes = new ArrayList<>();
-    public static final ArrayList<DeadCube> lst_dead_cubes = new ArrayList<>();
+    public static final ArrayList<MovingCube> movingCubes = new ArrayList<>();
+    public static final ArrayList<MoverCube> moverCubes = new ArrayList<>();
+    public static final ArrayList<DeadCube> deadCubes = new ArrayList<>();
     
-    public static final ArrayList<MovingCube> lst_moving_cubes_pool = new ArrayList<>();
-    public static final ArrayList<MoverCube> lst_mover_cubes_pool = new ArrayList<>();
-    public static final ArrayList<DeadCube> lst_dead_cubes_pool = new ArrayList<>();
+    private static final ArrayList<MovingCube> poolMovingCubes = new ArrayList<>();
+    private static final ArrayList<MoverCube> poolMoverCubes = new ArrayList<>();
+    private static final ArrayList<DeadCube> poolDeadCubes = new ArrayList<>();
 
 
-    public static MovingCube getNewMovingCube() {
-        MovingCube p;
-    
-        if (lst_moving_cubes_pool.isEmpty()) {
-            p = new MovingCube();
-        } else {
-            p = lst_moving_cubes_pool.get( lst_moving_cubes_pool.size() - 1 );
-            lst_moving_cubes_pool.remove(p);
-        }    
-        return p;
-    }
-
-    public static MoverCube getNewMoverCube() {
-        MoverCube p;
-    
-        if (lst_mover_cubes_pool.isEmpty()) {
-            p = new MoverCube();
-        } else {    
-            p = lst_mover_cubes_pool.get( lst_mover_cubes_pool.size() - 1 );
-            lst_mover_cubes_pool.remove(p);
-        }    
-        return p;
-    }
-
-    public static DeadCube getNewDeadCube() {
-        DeadCube p;
-    
-        if (lst_dead_cubes_pool.isEmpty()) {
-            p = new DeadCube();
-        } else {
-            p = lst_dead_cubes_pool.get( lst_dead_cubes_pool.size() - 1 );
-            lst_dead_cubes_pool.remove(p);
-        }    
-        return p;
-    }
-
-    public static void recycleMovingCubes() {
-        //printf("\nRecycle Moving Cubes...");
+    private static MovingCube getNewMovingCube() {
         MovingCube cube;
-        int len = lst_moving_cubes.size();            
-        for (int i = 0; i < len; ++i)  {
-            cube = lst_moving_cubes.get(i);
-            Game.setCubeTypeInvisible(cube.getCubePos());
-            lst_moving_cubes_pool.add(cube);
-        }
-        lst_moving_cubes.clear();
+    
+        if (poolMovingCubes.isEmpty()) {
+            cube = new MovingCube();
+        } else {
+            cube = poolMovingCubes.get( poolMovingCubes.size() - 1 );
+            poolMovingCubes.remove(cube);
+        }    
+        return cube;
     }
 
-    public static void recycleMoverCubes() {
-        //printf("\nRecycle Mover Cubes...");
+    private static MoverCube getNewMoverCube() {
         MoverCube cube;
-        int len = lst_mover_cubes.size();
-        for (int i = 0; i < len; ++i) {
-            cube = lst_mover_cubes.get(i);
-            Game.setCubeTypeInvisible( cube.getCubePos() );
-            lst_mover_cubes_pool.add(cube);
-        }
-        lst_mover_cubes.clear();
+    
+        if (poolMoverCubes.isEmpty()) {
+            cube = new MoverCube();
+        } else {    
+            cube = poolMoverCubes.get( poolMoverCubes.size() - 1 );
+            poolMoverCubes.remove(cube);
+        }    
+        return cube;
     }
 
-    public static void recycleDeadCubes() {
-        //printf("\nRecycle Dead Cubes...");
+    private static DeadCube getNewDeadCube() {
         DeadCube cube;
-        int len = lst_dead_cubes.size();
-        for (int i = 0; i < len; ++i) {
-            cube = lst_dead_cubes.get(i);
-            Game.setCubeTypeInvisible( cube.getCubePos() );
-            lst_dead_cubes_pool.add(cube);
+    
+        if (poolDeadCubes.isEmpty()) {
+            cube = new DeadCube();
+        } else {
+            cube = poolDeadCubes.get( poolDeadCubes.size() - 1 );
+            poolDeadCubes.remove(cube);
+        }    
+        return cube;
+    }
+
+    private static void recycleMovingCubes() {
+        MovingCube cube;
+        int len = movingCubes.size();
+        for (int i = 0; i < len; ++i)  {
+            cube = movingCubes.get(i);
+            Game.setCubeTypeInvisible(cube.getCubePos());
+            poolMovingCubes.add(cube);
         }
-        lst_dead_cubes.clear();
+        movingCubes.clear();
+    }
+
+    private static void recycleMoverCubes() {
+        MoverCube cube;
+        int len = moverCubes.size();
+        for (int i = 0; i < len; ++i) {
+            cube = moverCubes.get(i);
+            Game.setCubeTypeInvisible( cube.getCubePos() );
+            poolMoverCubes.add(cube);
+        }
+        moverCubes.clear();
+    }
+
+    private static void recycleDeadCubes() {
+        DeadCube cube;
+        int len = deadCubes.size();
+        for (int i = 0; i < len; ++i) {
+            cube = deadCubes.get(i);
+            Game.setCubeTypeInvisible( cube.getCubePos() );
+            poolDeadCubes.add(cube);
+        }
+        deadCubes.clear();
     }
 
     public static void prepare() {
@@ -120,7 +117,7 @@ public final class LevelBuilder {
         level.m_ad_level.clear();
     
         Color color = Game.getFaceColor(1f);
-        Cube pCube;
+        Cube cube;
 	    int x, y, z;
         int size = arr.length;
         for (int i = 6; i < size; i += 3) {
@@ -128,12 +125,12 @@ public final class LevelBuilder {
             y = arr[i+1];
             z = arr[i+2];
         
-            pCube = Game.cubes[x][y][z];
+            cube = Game.cubes[x][y][z];
         
-            pCube.type = CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel;
-		    pCube.setColor(color);
+            cube.type = CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel;
+		    cube.setColor(color);
         
-            level.m_ad_level.addAppear(pCube);
+            level.m_ad_level.addAppear(cube);
         }
     }
 
@@ -152,41 +149,42 @@ public final class LevelBuilder {
     }
 
     public static void setupMovingCubes(int arr[]) {
-        MovingCube pMovingCube;
-        int size = arr.length;
-        for (int i = 0; i < size; i+=4) {
-            pMovingCube = getNewMovingCube();
-            pMovingCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
-            lst_moving_cubes.add(pMovingCube);
+        MovingCube cube;
+        int x, y, z, moveDir;
+        for (int i = 0; i < arr.length; i+=4) {
+            x = arr[i];
+            y = arr[i+1];
+            z = arr[i+2];
+            moveDir = arr[i+3];
+            cube = getNewMovingCube();
+            cube.init(new CubePos(x, y, z), moveDir);
+            movingCubes.add(cube);
         }
     }
 
     public static void setupMoverCubes(int arr[]) {
-	    MoverCube pMoverCube;
-        int size = arr.length;
-	    for (int i = 0; i < size; i+=4) {	
-		    pMoverCube = getNewMoverCube();
-		    pMoverCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
-            lst_mover_cubes.add(pMoverCube);
+	    MoverCube cube;
+	    for (int i = 0; i < arr.length; i+=4) {
+		    cube = getNewMoverCube();
+		    cube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
+            moverCubes.add(cube);
 	    }
     }
 
     public static void setupDeathCubes(int arr[]) {
-	    DeadCube pDeadCube;
-        int size = arr.length;
-	    for (int i = 0; i < size; i+=3) {
-		    pDeadCube = getNewDeadCube();
-		    pDeadCube.init(new CubePos(arr[i], arr[i+1], arr[i+2]));
-            lst_dead_cubes.add(pDeadCube);
+	    DeadCube cube;
+	    for (int i = 0; i < arr.length; i+=3) {
+		    cube = getNewDeadCube();
+		    cube.init(new CubePos(arr[i], arr[i+1], arr[i+2]));
+            deadCubes.add(cube);
 	    }
     }
 
     public static void setupHintCubes(int arr[]) {
-	    Cube pCube;
-        int size = arr.length;
-	    for (int i = 0; i < size; i+=3) {
-		    pCube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
-		    level.m_list_cubes_hint.add(pCube);
+	    Cube cube;
+	    for (int i = 0; i < arr.length; i+=3) {
+		    cube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
+		    level.m_list_cubes_hint.add(cube);
 	    }
     }
 

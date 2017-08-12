@@ -13,6 +13,7 @@ import static android.opengl.GLES10.*;
 
 import java.util.ArrayList;
 
+import static com.almagems.cubetraz.game.Audio.*;
 import static com.almagems.cubetraz.game.Constants.*;
 
 
@@ -27,7 +28,7 @@ public final class Intro extends Scene {
     }
 
     private IntroStateEnum mState;
-    private Starfield m_starfield = new Starfield();
+    private Starfield mStarfield = new Starfield();
 
     private Camera m_camera_begin = new Camera();
     private Camera m_camera_end = new Camera();
@@ -37,9 +38,8 @@ public final class Intro extends Scene {
     private float m_degree;
     private int m_build_phase;
     private int m_build_to;
-    private int m_counter;
     private boolean mCanSkipIntro;
-    private Vector m_pos_light_current = new Vector();
+
     private float m_offset_y;
     private float m_stars_alpha;
 
@@ -51,7 +51,7 @@ public final class Intro extends Scene {
     public Intro() {
         m_build_phase = 0;
         m_build_to = 1;
-        m_counter = 0;
+        mTick = 0;
         m_offset_y = 10.0f;
         m_stars_alpha = 1.0f;
         setupCameras();
@@ -72,36 +72,27 @@ public final class Intro extends Scene {
     }
 
     public void init() {
-        m_starfield.speed = 0.2f;
+        mStarfield.speed = 0.2f;
         m_degree = 45.0f;
-        m_pos_light_current = new Vector(-10.0f, 3.0f, 12.0f);
+        mPosLightCurrent = new Vector(-10.0f, 3.0f, 12.0f);
         m_t_camera = 0.0f;
         m_stars_alpha = 0.0f;
 
-        m_starfield.create();
+        mStarfield.create();
 
         for (int i = 0; i < 400; ++i) {
-            m_starfield.update();
+            mStarfield.update();
         }
 
-        m_starfield.alpha = m_stars_alpha;
+        mStarfield.alpha = m_stars_alpha;
 
         glDisable(GL_BLEND);
         glEnable(GL_LIGHT0);
-
-        //const vec4 lightPosition(m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f);
-        //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition.Pointer());
-
+        
         setupCubetraz();
-
-        //mCanSkipIntro = true;
-        mCanSkipIntro = Game.getCanSkipIntro();
-
-        //engine->PrepareMusicToPlay(MUSIC_VECTORS);
-
+        
+        mCanSkipIntro = Game.options.getCanSkipIntro();
         mState = IntroStateEnum.AppearStarfield;
-
-        //engine->dirtyAlpha = 0;
     }
 
     private Cube setCubeVisible(int x, int y, int z) {
@@ -296,9 +287,9 @@ public final class Intro extends Scene {
         //System.out.println("Intro.update...");
 
         if (mState != IntroStateEnum.AppearStarfield) {
-            ++m_counter;
+            ++mTick;
         }
-        //printf("\nCounter: %d", m_counter);
+        //printf("\nCounter: %d", mTick);
 
         switch (mState) {
             case AppearStarfield:
@@ -311,25 +302,26 @@ public final class Intro extends Scene {
                 if (m_stars_alpha >= 1.0f) {
                     m_stars_alpha = 1.0f;
                     mState = IntroStateEnum.ShowStarfield;
+
                     //m_dirty_alpha = engine->dirtyAlpha;
                 }
-                //m_starfield.alpha = m_stars_alpha;
+                //mStarfield.alpha = m_stars_alpha;
                 break;
 
             case ShowStarfield:
-                if (m_counter > 200) {
-                    m_counter = 400;
+                if (mTick > 200) {
+                    mTick = 400;
                     mState = IntroStateEnum.BuildCubetraz;
                     m_offset_y = 0.0f;
-                    //engine->PlayPreparedMusic();
-                    //m_starfield.speed = 0.25f;
+                    Game.audio.playMusic(MUSIC_VECTORS);
+                    //mStarfield.speed = 0.25f;
                 }
                 break;
 
             case BuildCubetraz: {
-                m_starfield.speed += 0.0003f;
+                mStarfield.speed += 0.0003f;
 
-                switch (m_counter) {
+                switch (mTick) {
                     // build four corner cubes
                     case 600:
                         builCubetraz();
@@ -419,14 +411,14 @@ public final class Intro extends Scene {
 
                     if (4 == m_build_phase) {
                         mState = IntroStateEnum.FinalizeBuild;
-                        m_counter = 0;
+                        mTick = 0;
                     }
                 }
             }
             break;
 
             case FinalizeBuild:
-                switch (m_counter) {
+                switch (mTick) {
                     case 30:
                         setCubeVisibleAndBuild(2, 6, 7);
                         break;
@@ -475,6 +467,7 @@ public final class Intro extends Scene {
                     case 60:
                         setCubeVisibleAndBuild(4, 4, 7);
                         mState = IntroStateEnum.BuildCubetrazFace;
+                        Game.audio.stopMusic();
                         break;
                 } // switch
                 break;
@@ -499,7 +492,7 @@ public final class Intro extends Scene {
 
                 Utils.lerpCamera(m_camera_begin, m_camera_end, m_t_camera, mCameraCurrent);
 
-                switch (m_counter) {
+                switch (mTick) {
                     case 90:
                         setCubeVisibleAndBuild(8, 7, 5);
                         break;
@@ -617,15 +610,15 @@ public final class Intro extends Scene {
                         break;
 
                     case 150:
-                        Game.setCanSkipIntro();
+                        Game.options.setCanSkipIntro(true);
                         Game.showScene(Scene_Menu);
                         break;
                 } // switch
                 break;
         } // switch
 
-        m_starfield.alpha = m_stars_alpha * 255;
-        m_starfield.update();
+        mStarfield.alpha = m_stars_alpha * 255;
+        mStarfield.update();
     }
 
     @Override
@@ -648,11 +641,9 @@ public final class Intro extends Scene {
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(mCameraCurrent);
 
-        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
+        graphics.setLightPosition(mPosLightCurrent);
 
         glDisable(GL_LIGHTING);
-
 
         graphics.zeroBufferPositions();
         graphics.resetBufferIndices();
@@ -663,7 +654,7 @@ public final class Intro extends Scene {
 
 
         glEnable(GL_POINT_SMOOTH);
-        m_starfield.render();
+        mStarfield.render();
         glDisable(GL_POINT_SMOOTH);
 
         glDepthMask(true);
@@ -741,7 +732,7 @@ public final class Intro extends Scene {
     public void onFingerUp(float x, float y, int finger_count) {
         if (mCanSkipIntro) {
             Game.dirtyAlpha = DIRTY_ALPHA;
-            Game.stopMusic();
+            Game.audio.stopMusic();
             Game.showScene(Scene_Menu);
         }                
     }

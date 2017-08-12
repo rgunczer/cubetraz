@@ -143,12 +143,12 @@ public final class Engine {
     }
 
     // input
-    public static void handleTouchPress(float normalizedX, float normalizedY) {
-        game.handleTouchPress(normalizedX, normalizedY);
+    public static void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
+        game.handleTouchPress(normalizedX, normalizedY, fingerCount);
     }
 
-    public static void handleTouchDrag(float normalizedX, float normalizedY) {
-        game.handleTouchDrag(normalizedX, normalizedY);
+    public static void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
+        game.handleTouchDrag(normalizedX, normalizedY, fingerCount);
     }
 
     public static void handleTouchRelease(float normalizedX, float normalizedY) {

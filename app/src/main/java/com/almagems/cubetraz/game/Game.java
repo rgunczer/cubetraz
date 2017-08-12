@@ -2,7 +2,6 @@ package com.almagems.cubetraz.game;
 
 import com.almagems.cubetraz.R;
 import com.almagems.cubetraz.utils.Starfield;
-import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.builder.LevelBuilder;
@@ -72,7 +71,7 @@ public final class Game {
     public static final Vector cube_offset = new Vector();
     public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
 
-    public static boolean canPlayLockedLevels = false;
+    public static boolean canPlayLockedLevels = true;
 
     static {
         for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
@@ -92,6 +91,7 @@ public final class Game {
         progress.load();
 
         audio = new Audio();
+        audio.init(Engine.activity, options.getMusicVolume(), options.getSoundVolume());
     }
 
     // ctor
@@ -100,9 +100,6 @@ public final class Game {
     }
 
     public void init() {
-        progress.load();
-        options.load();
-
         graphics = Engine.graphics;
 
         Text.graphics = graphics;
@@ -141,8 +138,8 @@ public final class Game {
 
         LevelBuilder.level = level;
 
-        //showScene(Scene_Intro);
-        showScene(Scene_Menu);
+        showScene(Scene_Intro);
+        //showScene(Scene_Menu);
         //showScene(Scene_Anim);
         //showScene(Scene_Level);
         //showScene(Scene_Stat);
@@ -428,12 +425,12 @@ public final class Game {
         currentScene.render();
 	}
 
-	public void handleTouchPress(float normalizedX, float normalizedY) {
-        currentScene.onFingerDown(normalizedX, normalizedY, 1);
+	public void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
+        currentScene.onFingerDown(normalizedX, normalizedY, fingerCount);
     }
 
-	public void handleTouchDrag(float normalizedX, float normalizedY) {
-        currentScene.onFingerMove(0f, 0f, normalizedX, normalizedY, 1);
+	public void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
+        currentScene.onFingerMove(0f, 0f, normalizedX, normalizedY, fingerCount);
     }
 
 	public void handleTouchRelease(float normalizedX, float normalizedY) {
@@ -534,7 +531,7 @@ public final class Game {
     }
 
     public static boolean isPlayerCube(CubePos cube_pos) {
-        CubePos cp = level.m_player_cube.getCubePos();
+        CubePos cp = level.mPlayerCube.getCubePos();
         if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
             return true;
         } else {
@@ -1303,25 +1300,27 @@ public final class Game {
     }
 
     public static void musicVolumeUp() {
-        float volume = Game.getMusicVolume();
+        float volume = options.getMusicVolume();
 
         volume += 0.1f;
         if (volume > 1.0f) {
             volume = 1.0f;
         }
 
-        setMusicVolume(volume);
+        options.setMusicVolume(volume);
+        audio.setMusicVolume(volume);
     }
 
     public static void musicVolumeDown() {
-        float volume = Game.getMusicVolume();
+        float volume = options.getMusicVolume();
 
         volume -= 0.1f;
         if (volume < 0.0f) {
             volume = 0.0f;
         }
 
-        setMusicVolume(volume);
+        options.setMusicVolume(volume);
+        audio.setMusicVolume(volume);
     }
 
     public static void soundVolumeUp() {
@@ -1332,7 +1331,7 @@ public final class Game {
             volume = 1.0f;
         }
 
-        setSoundVolume(volume);
+        options.setSoundVolume(volume);
     }
 
     public static void soundVolumeDown() {
@@ -1343,43 +1342,7 @@ public final class Game {
             volume = 0.0f;
         }
 
-        setSoundVolume(volume);
-    }
-
-    public static float getMusicVolume() {
-        return options.getMusicVolume();
-    }
-
-    public static float getSoundVolume() {
-        return options.getSoundVolume();
-    }
-
-    public static void setMusicVolume(float volume) {
-        options.setMusicVolume(volume);
-    }
-
-    public static void setSoundVolume(float volume) {
         options.setSoundVolume(volume);
-    }
-
-    public static void playSound(final String key) {
-        //Engine.playSound(key);
-    }
-
-    public static void playMusic(final String key) {
-        //Engine.playMusic(key);
-    }
-
-    public static void PrepareMusicToPlay(final String key) {
-        //Engine.prepareMusicToPlay(key);
-    }
-
-    public static void playPreparedMusic() {
-        //Engine.playPreparedMusic();
-    }
-
-    public static void stopMusic() {
-        //Engine.stopMusic();
     }
 
     public static void enteredBackground() {
@@ -1446,15 +1409,6 @@ public final class Game {
 
         return width;
     }
-
-    public static boolean getCanSkipIntro() {
-        return options.getCanSkipIntro();
-    }
-
-    public static void setCanSkipIntro() {
-        options.setCanSkipIntro(true);
-    }
-
 
     public static void drawFullScreenQuad(Color color) {
         final float[] verts = {

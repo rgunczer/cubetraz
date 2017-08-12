@@ -9,6 +9,7 @@ import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
+import static com.almagems.cubetraz.game.Audio.SOUND_CUBE_HIT;
 import static com.almagems.cubetraz.game.Constants.*;
 
 
@@ -56,7 +57,7 @@ public final class MovingCube {
 
     public void setCubePos(CubePos coordinate) {
 	    m_done = true;
-        m_cube_pos.init(coordinate); // HERE?!??
+        m_cube_pos.init(coordinate);
         pos = Game.getCubePosAt(m_cube_pos);
     }
 
@@ -64,11 +65,11 @@ public final class MovingCube {
 
 	}
 
-    public void init(CubePos cube_pos, int move_dir) {
-        setCubePos(cube_pos);
-        m_cube_pos_starting = m_cube_pos;
-        m_move_dir_starting = move_dir;
-	    m_move_dir = move_dir;
+    public void init(CubePos cubePos, int moveDir) {
+        setCubePos(cubePos);
+        m_cube_pos_starting.init(m_cube_pos);
+        m_move_dir_starting = moveDir;
+	    m_move_dir = moveDir;
 	
 	    updateSymbols();
 
@@ -127,7 +128,7 @@ public final class MovingCube {
 			    m_done = true;
                 m_color_symbol_current = m_color_symbol;
 			
-			    Game.playSound(SOUND_CUBE_HIT);
+			    Game.audio.playSound(SOUND_CUBE_HIT);
 			
 			    setCubePos(m_cube_pos_destination);
 			

@@ -16,6 +16,7 @@ import com.almagems.cubetraz.math.Vector2;
 import java.util.ArrayList;
 
 import static android.opengl.GLES10.*;
+import static com.almagems.cubetraz.game.Audio.*;
 import static com.almagems.cubetraz.game.Constants.*;
 
 
@@ -45,7 +46,6 @@ public final class Outro extends Scene {
 
     private Vector m_pos_light_outro;
     private Vector m_pos_light_menu;
-    private Vector m_pos_light_current;
 
     private Vector m_pos_cube_player;
 
@@ -82,7 +82,7 @@ public final class Outro extends Scene {
 
     @Override
     public void init() {
-        tick = 0;
+        mTick = 0;
         m_ar_text_center[0].init("CONGRATULATIONS", true);
         m_ar_text_center[1].init("CUBETRAZ IS SOLVED", true);
 
@@ -100,9 +100,9 @@ public final class Outro extends Scene {
         m_camera_menu = Game.menu.getCamera();
         mCameraCurrent = m_camera_outro;
 
-        m_pos_light_outro = Game.level.m_pos_light;
+        m_pos_light_outro = Game.level.mPosLightCurrent;
         m_pos_light_menu = Game.menu.getLightPositon();
-        m_pos_light_current = m_pos_light_outro;
+        mPosLightCurrent = m_pos_light_outro;
 
         m_cube_rotation.degree = -45.0f;
         m_cube_rotation.axis = new Vector(0.0f, 1.0f, 0.0f);
@@ -177,14 +177,13 @@ public final class Outro extends Scene {
             }
         }
 
-        m_pos_cube_player = Game.getCubePosAt(Game.level.m_player_cube.getCubePos());
+        m_pos_cube_player = Game.getCubePosAt(Game.level.mPlayerCube.getCubePos());
 
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
         glEnable(GL_BLEND);
 
-        float posLight[] = { m_pos_light_current.x, m_pos_light_current.y, m_pos_light_current.z, 1.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
+        graphics.setLightPosition(mPosLightCurrent);
     }
 
     public void setupExplosion() {        
@@ -213,7 +212,7 @@ public final class Outro extends Scene {
 
     @Override
     public void update() {
-        ++tick;
+        ++mTick;
         switch (mState) {
             case AnimToOutro:
                 updateInAnimTo();
@@ -276,14 +275,21 @@ public final class Outro extends Scene {
             m_t += 0.01f;
             if (m_t > 1.0f) m_t = 1.0f;
             Utils.lerpCamera(m_camera_outro, m_camera_menu, m_t, mCameraCurrent);
-            Utils.lerpVector3(m_pos_light_outro, m_pos_light_menu, m_t, m_pos_light_current);
+            Utils.lerpVector3(m_pos_light_outro, m_pos_light_menu, m_t, mPosLightCurrent);
+        }
+
+        // do warm by factor
+        int size = m_lst_cubes_base.size();
+        for (int i = 0; i < size; ++i) {
+            cube = m_lst_cubes_base.get(i);
+            cube.warmByFactor(60);
         }
 
         if (done && Math.abs(1.0f - m_t) < EPSILON) {
             mState = OutroStateEnum.RotateFull;
             m_draw_starfield = true;
             m_stars_alpha = 0.0f;
-            Game.stopMusic();
+            Game.audio.stopMusic();
         }
     }
 
@@ -298,7 +304,7 @@ public final class Outro extends Scene {
             m_pos_cube_player = Game.getCubePosAt(new CubePos(4, 4, 4));
             m_degreePlayerCube = 0.0f;
             setupExplosion();
-            Game.playMusic(MUSIC_VECTORS);
+            Game.audio.playMusic(MUSIC_VECTORS);
         }
 
         m_starfield.alpha = m_stars_alpha * 255;
@@ -315,7 +321,7 @@ public final class Outro extends Scene {
             cube = m_lst_cubes_base.get(i);
             cube.update();
 
-            if (tick % 4 == 0) {
+            if (mTick % 4 == 0) {
                 cube.colorCurrent.randomize();
             }
         }

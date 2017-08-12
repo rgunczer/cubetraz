@@ -27,4 +27,10 @@ public final class CubePos {
         z = other.z;
     }
 
+    public void init(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
 }

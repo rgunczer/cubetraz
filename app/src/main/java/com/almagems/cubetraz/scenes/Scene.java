@@ -2,6 +2,7 @@ package com.almagems.cubetraz.scenes;
 
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Graphics;
+import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 
 import static com.almagems.cubetraz.game.Constants.*;
@@ -9,11 +10,13 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 public abstract class Scene {
 
-    protected int tick = 0;
+    protected int mTick = 0;
 
     public static Graphics graphics;
 
     protected Camera mCameraCurrent = new Camera();
+
+    protected Vector mPosLightCurrent = new Vector();
 
     protected Vector2 mPosDown = new Vector2();
     protected Vector2 mPosMove = new Vector2();
@@ -41,5 +44,6 @@ public abstract class Scene {
 
 
     public Camera getCameraCurrent() { return mCameraCurrent; }
+    public Vector getLightPositionCurrent() { return mPosLightCurrent; }
 
 }
