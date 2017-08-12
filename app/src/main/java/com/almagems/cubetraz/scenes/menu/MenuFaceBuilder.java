@@ -145,8 +145,8 @@ public final class MenuFaceBuilder {
 		}
 	}
 
-    public static void setupFaceX(final int[] arr, int face_type, CubeFaceNamesEnum face_id) {
-	    int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+    private static void setupFaceX(final int[] arr, int faceType, CubeFaceNamesEnum faceId) {
+	    int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -156,14 +156,14 @@ public final class MenuFaceBuilder {
 			    cube = Game.cubes[x][y][z];
 			    ch = (char)arr[counter];
 			
-			    Game.setCubeTypeOnFace(cube, ch, face_type, face_id);
+			    Game.setCubeTypeOnFace(cube, ch, faceType, faceId);
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFaceY(final int[] arr, int face_type, CubeFaceNamesEnum face_id) {
-	    int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+    private static void setupFaceY(final int[] arr, int faceType, CubeFaceNamesEnum faceId) {
+	    int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -173,14 +173,14 @@ public final class MenuFaceBuilder {
 			    cube = Game.cubes[x][y][z];
                 ch = (char)arr[counter];
 			
-			    Game.setCubeTypeOnFace(cube, ch, face_type, face_id);
+			    Game.setCubeTypeOnFace(cube, ch, faceType, faceId);
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFaceZ(final int[] arr, int face_type, CubeFaceNamesEnum face_id) {
-	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+    private static void setupFaceZ(final int[] arr, int faceType, CubeFaceNamesEnum faceId) {
+	    int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -190,13 +190,13 @@ public final class MenuFaceBuilder {
 			    cube = Game.cubes[x][y][z];
                 ch = (char)arr[counter];
 			
-			    Game.setCubeTypeOnFace(cube, ch, face_type, face_id);
+			    Game.setCubeTypeOnFace(cube, ch, faceType, faceId);
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFontFaceX(final int[] arr, int face_type, CubeFaceNamesEnum face_id, int x) {
+    private static void setupFontFaceX(final int[] arr, int faceType, CubeFaceNamesEnum faceId, int x) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -207,14 +207,14 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 			
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x,y,z), face_type);
+				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFontFaceY(final int[] arr, int face_type, CubeFaceNamesEnum face_id, int y) {
+    private static void setupFontFaceY(final int[] arr, int faceType, CubeFaceNamesEnum faceId, int y) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -225,14 +225,14 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 			
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x,y,z), face_type);
+				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFontFaceZ(final int[] arr, int face_type, CubeFaceNamesEnum face_id, int z) {
+    private static void setupFontFaceZ(final int[] arr, int faceType, CubeFaceNamesEnum faceId, int z) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -243,14 +243,14 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 	
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x, y, z), face_type);
+				    Creator.addCubeFont(ch, new CubePos(x, y, z), faceType);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFontFaceSymbolX(final int[] a, int face_type, CubeFaceNamesEnum face_id, int x) {
+    private static void setupFontFaceSymbolX(final int[] a, int faceType, CubeFaceNamesEnum faceId, int x) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -261,14 +261,14 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), face_type);
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFontFaceSymbolY(final int[] a, int face_type, CubeFaceNamesEnum face_id, int y) {
+    private static void setupFontFaceSymbolY(final int[] a, int faceType, CubeFaceNamesEnum faceId, int y) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -279,14 +279,14 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), face_type);
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    public static void setupFontFaceSymbolZ(final int[] a, int face_type, CubeFaceNamesEnum face_id, int z) {
+    private static void setupFontFaceSymbolZ(final int[] a, int faceType, CubeFaceNamesEnum faceId, int z) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -297,7 +297,7 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), face_type);
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType);
 			    }
 			    ++counter;
 		    }
@@ -350,12 +350,12 @@ public final class MenuFaceBuilder {
 //}
 
 
-    public static void build(CubeFaceNamesEnum face_id, int face_type) {
-	    buildCubeFaces(face_id, face_type);
-	    buildTitleTexts(face_id, face_type);
-	    buildTexts(face_id, face_type, false);
-	    buildSymbolsOnFace(face_id, face_type);
-	    buildSymbolsOnBase(face_id, face_type);
+    public static void build(CubeFaceNamesEnum faceId, int faceType) {
+	    buildCubeFaces(faceId, faceType);
+	    buildTitleTexts(faceId, faceType);
+	    buildTexts(faceId, faceType, false);
+	    buildSymbolsOnFace(faceId, faceType);
+	    buildSymbolsOnBase(faceId, faceType);
 	
 	    resetTransforms();
     }
@@ -368,30 +368,30 @@ public final class MenuFaceBuilder {
         return arr;
     }
 
-    public static void buildCubeFaces(CubeFaceNamesEnum face_id, int face_type) {	    
-        String str = getFace(face_id);
+    private static void buildCubeFaces(CubeFaceNamesEnum faceId, int faceType) {
+        String str = getFace(faceId);
         int[] arr = convertToIntArray(str);
 
 	    doTransforms(arr);
 	
-	    switch (face_type) {
-		    case Face_X_Plus: 	setupFaceX(arr, face_type, face_id); break;
-		    case Face_X_Minus: 	setupFaceX(arr, face_type, face_id); break;
-		    case Face_Y_Plus: 	setupFaceY(arr, face_type, face_id); break;
-		    case Face_Y_Minus: 	setupFaceY(arr, face_type, face_id); break;
-		    case Face_Z_Plus: 	setupFaceZ(arr, face_type, face_id); break;
-		    case Face_Z_Minus: 	setupFaceZ(arr, face_type, face_id); break;
+	    switch (faceType) {
+		    case Face_X_Plus: 	setupFaceX(arr, faceType, faceId); break;
+		    case Face_X_Minus: 	setupFaceX(arr, faceType, faceId); break;
+		    case Face_Y_Plus: 	setupFaceY(arr, faceType, faceId); break;
+		    case Face_Y_Minus: 	setupFaceY(arr, faceType, faceId); break;
+		    case Face_Z_Plus: 	setupFaceZ(arr, faceType, faceId); break;
+		    case Face_Z_Minus: 	setupFaceZ(arr, faceType, faceId); break;
 	    }
     }
 
-    public static void setFontFromCube(CubeFont cubeFontTarget, CubePos cp, CubePos offset, int face_type) {
+    private static void setFontFromCube(CubeFont cubeFontTarget, CubePos cp, CubePos offset, int faceType) {
         char ch;
         Cube cube;
         CubeFont cubeFont;
         TexturedQuad texturedQuad;
     
         cube = Game.cubes[cp.x + offset.x][cp.y + offset.y][cp.z + offset.z];
-        cubeFont = cube.ar_fonts[face_type];
+        cubeFont = cube.ar_fonts[faceType];
 
         if (cubeFont != null) {
             texturedQuad = cubeFont.getFont();
@@ -403,157 +403,155 @@ public final class MenuFaceBuilder {
         }
     }
 
-    public static void buildTexts(CubeFaceNamesEnum face_id, int face_type, boolean alt) {
+    public static void buildTexts(CubeFaceNamesEnum faceId, int faceType, boolean alt) {
         String str;
 	
 	    if (!alt) {
-            str = getFaceText(face_id);
+            str = getFaceText(faceId);
         } else {
-            str = getFaceHelpText(face_id);
+            str = getFaceHelpText(faceId);
         }
 
         int[] arr = convertToIntArray(str);
 
 	    doTransforms(arr);
 	
-	    int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	    int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	    int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+	    int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+	    int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+	    int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	
-	    switch (face_type) {
-		    case Face_X_Plus: 	setupFontFaceX(arr, face_type, face_id, x - 1); break;
-		    case Face_X_Minus: 	setupFontFaceX(arr, face_type, face_id, x + 1); break;
-		    case Face_Y_Plus: 	setupFontFaceY(arr, face_type, face_id, y - 1); break;
+	    switch (faceType) {
+		    case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceId, x - 1); break;
+		    case Face_X_Minus: 	setupFontFaceX(arr, faceType, faceId, x + 1); break;
+		    case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceId, y - 1); break;
 		    case Face_Y_Minus: {
-			    setupFontFaceY(arr, face_type, face_id, y + 1);
+			    setupFontFaceY(arr, faceType, faceId, y + 1);
             
-                if ( CubeFaceNamesEnum.Face_Store == face_id) {
+                if ( CubeFaceNamesEnum.Face_Store == faceId) {
                     CubePos cp;
                     cp = new CubePos(1, 0, 6);
-                    setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubePos(0, 1, 0), face_type);
+                    setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubePos(0, 1, 0), faceType);
                     Game.menu.m_cubefont_noads.pos.y -= FONT_OVERLAY_OFFSET;
 
                     cp = new CubePos(1, 0, 4);
-                    setFontFromCube(Game.menu.m_cubefont_solvers, cp, new CubePos(0, 1, 0), face_type);
+                    setFontFromCube(Game.menu.m_cubefont_solvers, cp, new CubePos(0, 1, 0), faceType);
                     Game.menu.m_cubefont_solvers.pos.y -= FONT_OVERLAY_OFFSET;
                 
                     cp = new CubePos(1, 0, 2);
-                    setFontFromCube(Game.menu.m_cubefont_restore, cp, new CubePos(0, 1, 0), face_type);
+                    setFontFromCube(Game.menu.m_cubefont_restore, cp, new CubePos(0, 1, 0), faceType);
                     Game.menu.m_cubefont_restore.pos.y -= FONT_OVERLAY_OFFSET;
                 }
             }
 			break;
 			
 			case Face_Z_Plus: {
-				setupFontFaceZ(arr, face_type, face_id, z - 1);
+				setupFontFaceZ(arr, faceType, faceId, z - 1);
             
-            	if (CubeFaceNamesEnum.Face_Menu == face_id) {
+            	if (CubeFaceNamesEnum.Face_Menu == faceId) {
                 	CubePos cp;
                 	cp = new CubePos(1, 5, 8);
-                	setFontFromCube(Game.menu.m_cubefont_play, cp, new CubePos(0, 0, -1), face_type);
+                	setFontFromCube(Game.menu.m_cubefont_play, cp, new CubePos(0, 0, -1), faceType);
                 	Game.menu.m_cubefont_play.pos.z += FONT_OVERLAY_OFFSET;
                 
                 	cp = new CubePos(1, 3, 8);
-                	setFontFromCube(Game.menu.m_cubefont_options, cp, new CubePos(0, 0, -1), face_type);
+                	setFontFromCube(Game.menu.m_cubefont_options, cp, new CubePos(0, 0, -1), faceType);
                 	Game.menu.m_cubefont_options.pos.z += FONT_OVERLAY_OFFSET;
                 
                 	cp = new CubePos(1, 1, 8);
-                	setFontFromCube(Game.menu.m_cubefont_store, cp, new CubePos(0, 0, -1), face_type);
+                	setFontFromCube(Game.menu.m_cubefont_store, cp, new CubePos(0, 0, -1), faceType);
                 	Game.menu.m_cubefont_store.pos.z += FONT_OVERLAY_OFFSET;                
             	}
         	}
 			break;
 			
-			case Face_Z_Minus: setupFontFaceZ(arr, face_type, face_id, z + 1); break;
+			case Face_Z_Minus: setupFontFaceZ(arr, faceType, faceId, z + 1); break;
 		}        	
 	}
 
-	public static void buildTitleTexts(CubeFaceNamesEnum face_id, int face_type) {
-    	String str = getFaceTitle(face_id);
+    private static void buildTitleTexts(CubeFaceNamesEnum faceId, int faceType) {
+    	String str = getFaceTitle(faceId);
         int[] arr = convertToIntArray(str);
 	
 		doTransforms(arr);
 	
-		int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-		int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-		int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	
-		switch (face_type) {
-			case Face_X_Plus: 	setupFontFaceX(arr, face_type, face_id, x); break;
-			case Face_X_Minus: 	setupFontFaceX(arr, face_type, face_id, x); break;
-			case Face_Y_Plus: 	setupFontFaceY(arr, face_type, face_id, y); break;
-			case Face_Y_Minus: 	setupFontFaceY(arr, face_type, face_id, y); break;
-			case Face_Z_Plus: 	setupFontFaceZ(arr, face_type, face_id, z); break;
-			case Face_Z_Minus: 	setupFontFaceZ(arr, face_type, face_id, z); break;
+		switch (faceType) {
+			case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceId, x); break;
+			case Face_X_Minus: 	setupFontFaceX(arr, faceType, faceId, x); break;
+			case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceId, y); break;
+			case Face_Y_Minus: 	setupFontFaceY(arr, faceType, faceId, y); break;
+			case Face_Z_Plus: 	setupFontFaceZ(arr, faceType, faceId, z); break;
+			case Face_Z_Minus: 	setupFontFaceZ(arr, faceType, faceId, z); break;
 		}	    
 	}
 
-	public static void buildSymbolsOnFace(CubeFaceNamesEnum face_id, int face_type) {
-		int[] arr = getFaceSymbol(face_id);
+    private static void buildSymbolsOnFace(CubeFaceNamesEnum faceId, int faceType) {
+		int[] arr = getFaceSymbol(faceId);
 
 		doTransforms(arr);
 	
-		int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
-		int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
-		int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
+		int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	
-		switch (face_type) {
-			case Face_X_Plus:	setupFontFaceSymbolX(arr, face_type, face_id, x); break;
-			case Face_X_Minus:	setupFontFaceSymbolX(arr, face_type, face_id, x);	break;
-			case Face_Y_Plus:	setupFontFaceSymbolY(arr, face_type, face_id, y);	break;
-			case Face_Y_Minus:	setupFontFaceSymbolY(arr, face_type, face_id, y);	break;
-			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, face_type, face_id, z);	break;
-			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, face_type, face_id, z);	break;
+		switch (faceType) {
+			case Face_X_Plus:	setupFontFaceSymbolX(arr, faceType, faceId, x); break;
+			case Face_X_Minus:	setupFontFaceSymbolX(arr, faceType, faceId, x);	break;
+			case Face_Y_Plus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
+			case Face_Y_Minus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
+			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
+			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
 		}    
 	}
 
-	public static void buildSymbolsOnBase(CubeFaceNamesEnum face_id, int face_type) {
-    	int[] arr = getFaceSymbolOnBase(face_id);
+    private static void buildSymbolsOnBase(CubeFaceNamesEnum faceId, int faceType) {
+    	int[] arr = getFaceSymbolOnBase(faceId);
 
 		doTransforms(arr);
 	
-		int x = (face_type == Face_X_Plus ? MAX_CUBE_COUNT - 2 : 1);
-		int y = (face_type == Face_Y_Plus ? MAX_CUBE_COUNT - 2 : 1);
-		int z = (face_type == Face_Z_Plus ? MAX_CUBE_COUNT - 2 : 1);
+		int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 2 : 1);
+		int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 2 : 1);
+		int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 2 : 1);
 	
-		switch (face_type) {
-			case Face_X_Plus:   setupFontFaceSymbolX(arr, face_type, face_id, x);	break;
-			case Face_X_Minus:	setupFontFaceSymbolX(arr, face_type, face_id, x);	break;
-			case Face_Y_Plus:	setupFontFaceSymbolY(arr, face_type, face_id, y);	break;
-			case Face_Y_Minus:	setupFontFaceSymbolY(arr, face_type, face_id, y);	break;
-			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, face_type, face_id, z);	break;
-			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, face_type, face_id, z);	break;
+		switch (faceType) {
+			case Face_X_Plus:   setupFontFaceSymbolX(arr, faceType, faceId, x);	break;
+			case Face_X_Minus:	setupFontFaceSymbolX(arr, faceType, faceId, x);	break;
+			case Face_Y_Plus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
+			case Face_Y_Minus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
+			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
+			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
 		}    
 	}
 
-	public static String getFaceHelpText(CubeFaceNamesEnum face_id) {
-		switch (face_id) {
-			case Face_Tutorial: {
-                final String tutorial =
-                "xxxxxxxxx" +
-                "x>>>>>>> " +
-                "xNOW    x" +
-                "xSLIDE  x" +
-                "xRIGHT  x" +
-                "xTO     x" +
-                "xSTART  x" +
-                "xGAME   x" +
-                "xxxxxxxxx";                
-                return tutorial;
-            }
+    private static String getFaceHelpText(CubeFaceNamesEnum faceId) {
+		switch (faceId) {
+			case Face_Tutorial:
+                return
+                    "xxxxxxxxx" +
+                    "x>>>>>>> " +
+                    "xNOW    x" +
+                    "xSLIDE  x" +
+                    "xRIGHT  x" +
+                    "xTO     x" +
+                    "xSTART  x" +
+                    "xGAME   x" +
+                    "xxxxxxxxx";
+
             
-		case Face_Menu: {
-                final String menu =
-                "xxxxxxx x" +
-                "   xxxx x" +
-                "xx      x" +
-                "xSLIDE   " +
-                "xxx     x" +
-                "xRED    x" +
-                "xx     xx" +
-                "xCUBE   x" +
-                "xxxxxxx x";    
-                return menu;
+	    	case Face_Menu: {
+                return
+                    "xxxxxxx x" +
+                    "   xxxx x" +
+                    "xx      x" +
+                    "xSLIDE   " +
+                    "xxx     x" +
+                    "xRED    x" +
+                    "xx     xx" +
+                    "xCUBE   x" +
+                    "xxxxxxx x";
             }
 			
 			default:
@@ -562,7 +560,7 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-	public static String getFaceText(CubeFaceNamesEnum face_id) {
+    private static String getFaceText(CubeFaceNamesEnum faceId) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -750,7 +748,7 @@ public final class MenuFaceBuilder {
 	    "xo o ox x" +
 	    "xxxx xxxx";
 	
-		switch (face_id) {
+		switch (faceId) {
 			case Face_Empty:	return empty;
 				
 			case Face_Tutorial: return tutorial;
@@ -780,7 +778,7 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-	public static String getFaceTitle(CubeFaceNamesEnum face_id) {
+    private static String getFaceTitle(CubeFaceNamesEnum faceId) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -968,7 +966,7 @@ public final class MenuFaceBuilder {
 	    "xo o ox x" +
 	    "xxxx xxxx";
 
-		switch (face_id) {
+		switch (faceId) {
 			case Face_Empty:	return empty;
 			
 			case Face_Tutorial: return tutorial;
@@ -998,7 +996,7 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-	public static String getFace(CubeFaceNamesEnum face_id) {
+    private static String getFace(CubeFaceNamesEnum faceId) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -1186,7 +1184,7 @@ public final class MenuFaceBuilder {
 	    "xDxE Fxxx" +
 	    "xxxx xxxx";
 	
-		switch (face_id) {
+		switch (faceId) {
 			case Face_Empty:	return empty;
 		
 			case Face_Tutorial: return tutorial;
@@ -1216,44 +1214,41 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-	public static int[] getFaceSymbol(CubeFaceNamesEnum face_id) {
-		switch (face_id) {
-			case Face_Menu: {
-                final int ar[] = {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolInfo,
+    private static int[] getFaceSymbol(CubeFaceNamesEnum faceId) {
+		switch (faceId) {
+			case Face_Menu:
+                return new int[]{
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolInfo,
                 };
-                return ar;
-            }
-			
-			default: {            
-                final int ar[] = {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                };
-                return ar;
-            }
-		}
-	}
 
-	public static int[] getFaceSymbolOnBase(CubeFaceNamesEnum face_id) {
-		switch (face_id) {
-			case Face_Menu: {                
-                final int ar[] = {
+			default:
+                return new int[]{
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+                };
+        }
+    }
+
+
+	private static int[] getFaceSymbolOnBase(CubeFaceNamesEnum faceId) {
+		switch (faceId) {
+			case Face_Menu:
+                return new int[] {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,      SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
@@ -1264,11 +1259,9 @@ public final class MenuFaceBuilder {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoDown,    SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                 };
-                return ar;
-            }
-            
-			case Face_Options: {
-                final int ar[] = {
+
+			case Face_Options:
+                return new int[] {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
@@ -1279,11 +1272,9 @@ public final class MenuFaceBuilder {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
                 };
-				return ar;                
-            }
-            
-			case Face_Easy01: {
-                final int ar[] = {
+
+			case Face_Easy01:
+                return new int[] {
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,  SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
@@ -1294,11 +1285,9 @@ public final class MenuFaceBuilder {
                     SymbolEmpty, SymbolEmpty,  SymbolGoDown, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                     SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
                 };
-                return ar;
-            }
             
-			default: {            
-                final int ar[] = {
+			default:
+                return new int[] {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
@@ -1309,9 +1298,7 @@ public final class MenuFaceBuilder {
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                     SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
                 };
-                return ar;
-            }
-		}
+        }
 	}
     
 }

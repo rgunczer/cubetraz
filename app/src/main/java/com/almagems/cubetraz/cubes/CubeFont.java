@@ -23,7 +23,7 @@ public final class CubeFont {
     private Vector pos_origin = new Vector();
             
     public Vector pos = new Vector();
-    public Color color_current = new Color();
+    public Color colorCurrent = new Color();
     public Color color = new Color();
 
 
@@ -32,74 +32,74 @@ public final class CubeFont {
     }
     
     public void warmByFactor(int factor) {
-        if (color_current.r < color.r) {
-            color_current.r += factor;
+        if (colorCurrent.r < color.r) {
+            colorCurrent.r += factor;
             
-            if (color_current.r > color.r) {
-                color_current.r = color.r;
+            if (colorCurrent.r > color.r) {
+                colorCurrent.r = color.r;
             }
         }
         
-        if (color_current.r > color.r) {
-            color_current.r -= factor;
+        if (colorCurrent.r > color.r) {
+            colorCurrent.r -= factor;
             
-            if (color_current.r < color.r) {
-                color_current.r = color.r;
+            if (colorCurrent.r < color.r) {
+                colorCurrent.r = color.r;
             }
         }        
         
-        if (color_current.g < color.g) {
-            color_current.g += factor;
+        if (colorCurrent.g < color.g) {
+            colorCurrent.g += factor;
             
-            if (color_current.g > color.g) {
-                color_current.g = color.g;
+            if (colorCurrent.g > color.g) {
+                colorCurrent.g = color.g;
             }
         }
         
-        if (color_current.g > color.g) {
-            color_current.g -= factor;
+        if (colorCurrent.g > color.g) {
+            colorCurrent.g -= factor;
             
-            if (color_current.g < color.g) {
-                color_current.g = color.g;
+            if (colorCurrent.g < color.g) {
+                colorCurrent.g = color.g;
             }
         }
                 
-        if (color_current.b < color.b) {
-            color_current.b += factor;
+        if (colorCurrent.b < color.b) {
+            colorCurrent.b += factor;
             
-            if (color_current.b > color.b) {
-                color_current.b = color.b;
+            if (colorCurrent.b > color.b) {
+                colorCurrent.b = color.b;
             }
         }
         
-        if (color_current.b > color.b) {
-            color_current.b -= factor;
+        if (colorCurrent.b > color.b) {
+            colorCurrent.b -= factor;
             
-            if (color_current.b < color.b) {
-                color_current.b = color.b;
+            if (colorCurrent.b < color.b) {
+                colorCurrent.b = color.b;
             }
         }
 
-        if (color_current.a < color.a) {
-            color_current.a += factor;
+        if (colorCurrent.a < color.a) {
+            colorCurrent.a += factor;
             
-            if (color_current.a > color.a) {
-                color_current.a = color.a;
+            if (colorCurrent.a > color.a) {
+                colorCurrent.a = color.a;
             }
         }
         
-        if (color_current.a > color.a) {
-            color_current.a -= factor;
+        if (colorCurrent.a > color.a) {
+            colorCurrent.a -= factor;
             
-            if (color_current.a < color.a) {
-                color_current.a = color.a;
+            if (colorCurrent.a < color.a) {
+                colorCurrent.a = color.a;
             }
         }
     }
     
     public void setColor(Color col) { 
         color.init(col);
-        color_current.init(col);
+        colorCurrent.init(col);
     }
     
     public void setAxis(AxisEnum trigger_axis, AxisEnum align_axis) {
@@ -145,7 +145,6 @@ public final class CubeFont {
 
     public void init(char ch, CubePos cube_pos) {
         m_pFont = Game.getFont(ch);
-
         if (m_pFont == null) {
             System.out.println("m_pFont is null");
         }

@@ -416,19 +416,23 @@ public final class Creator {
         Game.ar_cubefacedata[face_type].lst_level_cubes.add(cube);
     }
 
-	public static void addCubeFont(final char ch, CubePos cube_pos, int face_type) {
+	public static void addCubeFont(final char ch, CubePos cubePos, int faceType) {
 		CubeFont cubeFont = getCubeFontFromPool();
-		Cube cube = Game.cubes[cube_pos.x][cube_pos.y][cube_pos.z];
+		Cube cube = Game.cubes[cubePos.x][cubePos.y][cubePos.z];
 
-		cubeFont.init(ch, cube_pos);    
-		cube.ar_fonts[face_type] = cubeFont;
+		cubeFont.init(ch, cubePos);
+        cubeFont.setColor( Game.getTextColor() );
+        cubeFont.colorCurrent.a = 0;
+		cube.ar_fonts[faceType] = cubeFont;
 	}
 
-	public static void addCubeFontSymbol(final int symbol_id, CubePos cube_pos, int face_type) {
+	public static void addCubeFontSymbol(final int symbolId, CubePos cubePos, int faceType) {
 		CubeFont cubeFont = getCubeFontFromPool();
-		Cube cube = Game.cubes[cube_pos.x][cube_pos.y][cube_pos.z];
+		Cube cube = Game.cubes[cubePos.x][cubePos.y][cubePos.z];
 		
-		cubeFont.init(symbol_id, cube_pos);    
-		cube.ar_symbols[face_type] = cubeFont;
+		cubeFont.init(symbolId, cubePos);
+        cubeFont.setColor( Game.getSymbolColor() );
+        cubeFont.colorCurrent.a = 0;
+		cube.ar_symbols[faceType] = cubeFont;
 	}	
 }

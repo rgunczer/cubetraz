@@ -49,14 +49,14 @@ public final class MenuCube {
         lst_cubes_to_hilite.clear();
         this.color.init(color);
 	    visible = true;
-        setCubePos(cube_pos);
+        setCubePos(cube_pos.x, cube_pos.y, cube_pos.z);
     }
 
-    public void setCubePos(CubePos coordinate) {
+    public void setCubePos(int x, int y, int z) {
 	    m_done = true;
-        m_cube_pos.x = coordinate.x;
-        m_cube_pos.y = coordinate.y;
-        m_cube_pos.z = coordinate.z;
+        m_cube_pos.x = x;
+        m_cube_pos.y = y;
+        m_cube_pos.z = z;
         pos = Game.getCubePosAt(m_cube_pos);
     }
 
@@ -71,7 +71,7 @@ public final class MenuCube {
 			    m_t = 1.0f;
 			    m_done = true;                
 			    Game.audio.playSound(SOUND_CUBE_HIT);
-			    setCubePos(m_cube_pos_destination);
+			    setCubePos(m_cube_pos_destination.x, m_cube_pos_destination.y, m_cube_pos_destination.z);
 		    } else {
                 float value = Utils.lerp(m_start_value, m_end_value, m_t);
                 switch (m_moveType) {

@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 
@@ -31,13 +32,20 @@ public final class Cube {
     }
 
     public Cube() {
-        //printf("\ncCube Constructor");
     }
 
     public void update() {
         tx += v.x;
         ty += v.y;
         tz += v.z;
+    }
+
+    public void warmFonts() {
+        for(int i = 0; i < ar_fonts.length; ++i) {
+            if (ar_fonts[i] != null) {
+                ar_fonts[i].warmByFactor( Utils.randInt(0, 12) );
+            }
+        }
     }
 
     public void reset()	{

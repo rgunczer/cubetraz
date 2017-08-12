@@ -267,7 +267,7 @@ public final class Game {
     public static Color getFaceColor(float alpha) { return new Color( (int)(0.75f * 255), (int)(0.8f * 255), (int)(0.75f * 255), (int)(alpha * 255)); }
     public static Color getBaseColor() { return new Color(255, 255, 255, 255); }
     public static Color getTitleColor() { return new Color(139, 0, 0, 200); }
-    public static Color getTextColor() { return new Color(80, 0, 0, 130);  }
+    public static Color getTextColor() { return new Color(80, 0, 0, 130); }
     public static Color getSymbolColor() { return new Color(76, 0, 0, 150);  }
     public static Color getTextColorOnCubeFace() { return new Color(76, 0, 0, 153); }
     public static Color getLockedLevelNumberColor() { return new Color(0, 0, 0, 60); }

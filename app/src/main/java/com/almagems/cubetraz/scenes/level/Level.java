@@ -64,12 +64,12 @@ public final class Level extends Scene {
         DeadAnim,
     }
 
-    public enum LevelNextActionEnum {
+    private enum LevelNextActionEnum {
         NoNextAction,
         ShowSceneSolvers,
     }
 
-    public enum SubAppearStateEnum {
+    private enum SubAppearStateEnum {
         SubAppearWait,
         SubAppearKeyAndPlayer,
         SubAppearLevel,
@@ -133,7 +133,6 @@ public final class Level extends Scene {
 
     private DifficultyEnum mDifficulty;
     private int mLevelNumber;
-    private int m_level_number_begin;
 
     private int m_solution_pointer;
     public int[] m_ar_solution = new int[MAX_SOLUTION_MOVES];
@@ -972,9 +971,9 @@ public final class Level extends Scene {
 
         m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
 
-        m_menu_cube_up.setCubePos(new CubePos(0, 5, 0));
-        m_menu_cube_mid.setCubePos(new CubePos(0, 3, 0));
-        m_menu_cube_low.setCubePos(new CubePos(0, 1, 0));
+        m_menu_cube_up.setCubePos(0, 5, 0);
+        m_menu_cube_mid.setCubePos(0, 3, 0);
+        m_menu_cube_low.setCubePos(0, 1, 0);
 
         CubePos offset = new CubePos(0,0,1);
         m_menu_cube_up.setHiliteOffset(offset);
@@ -1231,9 +1230,9 @@ public final class Level extends Scene {
         m_ad_face.setLevelAndDirection(0, 1);
         m_ad_base.setLevelAndDirection(0, 1);
 
-        m_menu_cube_up.setCubePos(new CubePos(0, 5, 8));
-        m_menu_cube_mid.setCubePos(new CubePos(0, 3, 8));
-        m_menu_cube_low.setCubePos(new CubePos(0, 1, 8));
+        m_menu_cube_up.setCubePos(0, 5, 8);
+        m_menu_cube_mid.setCubePos(0, 3, 8);
+        m_menu_cube_low.setCubePos(0, 1, 8);
 
         CubePos offset = new CubePos(1, 0, 0);
         m_menu_cube_up.setHiliteOffset(offset);
@@ -2107,7 +2106,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         if (m_menu_cube_up.isDone() && m_menu_cube_up.m_cube_pos.x == 7) {
@@ -2119,7 +2118,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         if (m_menu_cube_mid.isDone() && m_menu_cube_mid.m_cube_pos.x == 7) {
@@ -2131,7 +2130,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         if (m_menu_cube_low.isDone() && m_menu_cube_low.m_cube_pos.x == 7) {
@@ -2143,7 +2142,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
 
-            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         graphics.updateBuffers();
@@ -2168,7 +2167,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         if (m_menu_cube_up.isDone() && m_menu_cube_up.m_cube_pos.z == 1) {
@@ -2180,7 +2179,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         if (m_menu_cube_mid.isDone() && m_menu_cube_mid.m_cube_pos.z == 1) {
@@ -2192,7 +2191,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
         if (m_menu_cube_low.isDone() && m_menu_cube_low.m_cube_pos.z == 1) {
@@ -2204,7 +2203,7 @@ public final class Level extends Scene {
             coords.tx2 = new Vector2(pFont.tx_up_right.x, pFont.tx_up_right.y);
             coords.tx3 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
 
-            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.color_current);
+            graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
         graphics.updateBuffers();
         graphics.renderTriangles();
