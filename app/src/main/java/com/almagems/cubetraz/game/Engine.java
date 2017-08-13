@@ -1,19 +1,39 @@
 package com.almagems.cubetraz.game;
 
+import android.content.Context;
+
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.system.MainRenderer;
-import com.almagems.cubetraz.system.MainActivity;
 import com.almagems.cubetraz.utils.SwipeInfo;
 
 import static com.almagems.cubetraz.game.Constants.*;
 import javax.microedition.khronos.opengles.GL10;
 
-
 public final class Engine {
 
-    public static float rawX;
-    public static float rawY;
+    private static Engine instance;
+
+    private MainRenderer renderer;
+
+    private Engine() {
+        //System.out.println("Engine.ctor");
+    }
+
+    public static Engine getInstance() {
+        if (instance == null) {
+            instance = new Engine();
+        }
+        return instance;
+    }
+
+    public void setRenderer(MainRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public static Context getContext() {
+        return instance.renderer.context;
+    }
 
     public static SwipeInfo getSwipeDirAndLength(Vector2 pos_down, Vector2 pos_up) {
         SwipeInfo swipeInfo = new SwipeInfo();
@@ -64,57 +84,43 @@ public final class Engine {
         return swipeInfo;
     }
 
-    // android
-    public static MainRenderer renderer;
-    public static MainActivity activity;
-
     // basic
     public static Graphics graphics;
-    //public static Audio audio;
     public static Game game;
 
-
-
-
-    // ctor
-	private Engine() {
-        //System.out.println("Engine ctor...");
-    }
-
     public static void createGraphicsObject(GL10 gl) {
-        //System.out.println("Engine createGraphicsObject...");
-        graphics = new Graphics(activity, gl);
+        graphics = new Graphics(gl);
     }
 
-    public static void initGraphicsObject(int width, int height) {
-        //System.out.println("Engine initGraphicsObject...");
-        graphics.initialSetup(width, height);
+    public static void initGraphicsObject() {
+        graphics.initialSetup();
     }
 
-    public static void createGameObject() {        
-        //System.out.println("Engine createGameObject...");
-        game = new Game();
+    public static void createGameObject() {
+        if (game == null) {
+            game = new Game();
+        }
     }
 
     public static void initGameObject() {
-       game.init();
+        game.init();
     }
 
     public static void pause() {
-//        if (audio != null) {
-//            audio.pause();
-//        }
+        if (Game.audio != null) {
+            Game.audio.pause();
+        }
     }
 
     public static void resume() {
-//        if (audio != null) {
-//            audio.resume();
-//        }
+        if (Game.audio != null) {
+            Game.audio.resume();
+        }
     }
 
     public static void releaseAudio() {
-//        if (audio != null) {
-//            audio.release();
+//        if (Game.audio != null) {
+//            Game.audio.release();
 //        }
     }
 

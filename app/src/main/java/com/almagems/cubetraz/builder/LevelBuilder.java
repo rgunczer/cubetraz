@@ -115,8 +115,7 @@ public final class LevelBuilder {
         key.z = arr[5];
     
         level.m_ad_level.clear();
-    
-        Color color = Game.getFaceColor(1f);
+
         Cube cube;
 	    int x, y, z;
         int size = arr.length;
@@ -128,7 +127,7 @@ public final class LevelBuilder {
             cube = Game.cubes[x][y][z];
         
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel;
-		    cube.setColor(color);
+		    cube.setColor(Game.baseColor);
         
             level.m_ad_level.addAppear(cube);
         }

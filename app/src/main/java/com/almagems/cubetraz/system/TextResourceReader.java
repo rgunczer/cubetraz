@@ -8,13 +8,15 @@ import java.io.InputStreamReader;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.almagems.cubetraz.game.Engine;
+
 public final class TextResourceReader {
 
-	public static String readTextFileFromResource(Context context, int resourceId) {
+	public static String readTextFileFromResource(int resourceId) {
 		StringBuilder body = new StringBuilder();
 		
 		try {
-			InputStream inputStream = context.getResources().openRawResource(resourceId);
+			InputStream inputStream = Engine.getContext().getResources().openRawResource(resourceId);
 			InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			

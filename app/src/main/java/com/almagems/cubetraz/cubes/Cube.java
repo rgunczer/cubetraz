@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
@@ -26,12 +27,14 @@ public final class Cube {
 
     public Vector v;
 
-    public void setColor(Color col) {
-        colorCurrent.init(col);
-        color.init(col);
+    public void setColor(Color color) {
+        this.color.init(color);
+        this.colorCurrent.init(color);
     }
 
     public Cube() {
+        color.init(Color.WHITE);
+        colorCurrent.init(color);
     }
 
     public void update() {
@@ -44,6 +47,14 @@ public final class Cube {
         for(int i = 0; i < ar_fonts.length; ++i) {
             if (ar_fonts[i] != null) {
                 ar_fonts[i].warmByFactor( Utils.randInt(0, 12) );
+            }
+        }
+    }
+
+    public void warmSymbols() {
+        for(int i = 0; i < ar_symbols.length; ++i) {
+            if (ar_symbols[i] != null) {
+                ar_symbols[i].warmByFactor( Utils.randInt(0, 12) );
             }
         }
     }

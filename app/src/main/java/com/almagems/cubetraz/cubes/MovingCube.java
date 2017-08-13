@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
@@ -14,9 +15,6 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 
 public final class MovingCube {
-
-	public static Graphics graphics;
-
 	private boolean m_done;
     private float m_t;
     private float m_step_t;
@@ -73,7 +71,8 @@ public final class MovingCube {
 	
 	    updateSymbols();
 
-        m_color_current = m_color = Game.getFaceColor(1f);
+        m_color = new Color(Game.faceColor);
+        m_color_current = new Color(m_color);
         m_color_symbol_current = new Color(40, 40, 40, 255);
 		m_color_symbol = new Color(40, 40, 40, 255);
     }
@@ -335,10 +334,11 @@ public final class MovingCube {
     }
 
     public void renderCube() {
-        graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        Engine.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
+        Graphics graphics = Engine.graphics;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         

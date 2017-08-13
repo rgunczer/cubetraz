@@ -17,11 +17,11 @@ public final class MainActivity extends Activity {
     private GLSurfaceView glSurfaceView;
     private MainRenderer renderer;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("MainActivity.onCreate");
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -34,7 +34,6 @@ public final class MainActivity extends Activity {
         setContentView(glSurfaceView);
 
         renderer = new MainRenderer(this);
-
         glSurfaceView.setRenderer(renderer);
 
         glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
@@ -44,38 +43,38 @@ public final class MainActivity extends Activity {
                     //System.out.println("Touch Event: " + event.getX() + ", " + event.getY() );
                     // convert touch coordinates into normalized device
                     // coordinates, keeping in mind that Android's Y coordinates are inverted
-                    final float normalizedX = (event.getX() / (float) v.getWidth()) * 2 - 1;
-                    final float normalizedY = -((event.getY() / (float) v.getHeight()) * 2 - 1);
-                    Engine.rawX = event.getX();
-                    Engine.rawY = event.getY();
+//                    final float normalizedX = (event.getX() / (float) v.getWidth()) * 2 - 1;
+//                    final float normalizedY = -((event.getY() / (float) v.getHeight()) * 2 - 1);
+//                    Engine.rawX = event.getX();
+//                    Engine.rawY = event.getY();
 
+                    final int action = event.getAction();
+                    final float x = event.getX();
+                    final float y = event.getY();
                     final int fingerCount = event.getPointerCount();
 
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (action == MotionEvent.ACTION_DOWN) {
                         glSurfaceView.queueEvent(new Runnable() {
 
                             @Override
                             public void run() {
-                                //renderer.handleTouchPress(normalizedX, normalizedY);
-                                renderer.handleTouchPress(Engine.rawX, Engine.rawY, fingerCount);
+                                renderer.handleTouchPress(x, y, fingerCount);
                             }
                         });
-                    } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    } else if (action == MotionEvent.ACTION_MOVE) {
                         glSurfaceView.queueEvent(new Runnable() {
 
                             @Override
                             public void run() {
-                                //renderer.handleTouchDrag(normalizedX, normalizedY);
-                                renderer.handleTouchDrag(Engine.rawX, Engine.rawY, fingerCount);
+                                renderer.handleTouchDrag(x, y, fingerCount);
                             }
                         });
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    } else if (action == MotionEvent.ACTION_UP) {
                         glSurfaceView.queueEvent(new Runnable() {
 
                             @Override
                             public void run() {
-                                //renderer.handleTouchRelease(normalizedX, normalizedY);
-                                renderer.handleTouchRelease(Engine.rawX, Engine.rawY);
+                                renderer.handleTouchRelease(x, y);
                             }
                         });
                     }
@@ -88,24 +87,27 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
+        System.out.println("MainActivity.onPause");
         super.onPause();
 
-        glSurfaceView.onPause();
-
         if (renderer != null) {
-            renderer.pause();
+            glSurfaceView.onPause();
         }
+
+        Engine.pause();
     }
 
     @Override
     protected void onResume() {
+        System.out.println("MainActivity.onResume");
         super.onResume();
 
-        glSurfaceView.onResume();
-
         if (renderer != null) {
-            renderer.resume();
+            glSurfaceView.onResume();
         }
+
+        Engine.resume();
+
     }
 
 }

@@ -1,9 +1,9 @@
-package com.almagems.cubetraz.scenes.level;
+package com.almagems.cubetraz.scenes;
 
-import com.almagems.cubetraz.game.GameProgress;
 import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.R;
+import com.almagems.cubetraz.scenes.level.Level;
 import com.almagems.cubetraz.system.TextResourceReader;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.cubes.Cube;
@@ -53,7 +53,7 @@ public final class Creator {
     private static String getMottoFrom(int resourceId, int levelNumber) {
         String value = null;
         String level2digits = String.format(Locale.US, "%02d", levelNumber);
-        String buffer = TextResourceReader.readTextFileFromResource(Engine.activity, resourceId);
+        String buffer = TextResourceReader.readTextFileFromResource(resourceId);
 
         try {
             JSONObject jObject = new JSONObject(buffer);
@@ -260,41 +260,6 @@ public final class Creator {
             cube_pos.z += step.z;
         }
     }
- 
-//void cCreator::AlterRedCubeFontsOnFaceMain(bool forHelp)
-//{
-//	cCubeFont* pCubeFont;
-//
-//    char a[3];
-//	
-//	if (forHelp)
-//	{
-//		a[0] = 'S';
-//		a[1] = 'R';
-//		a[2] = 'C';
-//	}
-//	else
-//	{
-//		a[0] = 'P';
-//		a[1] = 'O';
-//		a[2] = 'S';
-//	}
-//	
-//    // [D]rag
-//    pCubeFont = _pHost->m_cubefont_play;
-//    pCubeFont->Init(a[0], CubePos(1, 5, 8));
-//    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
-//
-//    // [R]ed
-//    pCubeFont = _pHost->m_cubefont_options;
-//    pCubeFont->Init(a[1], CubePos(1, 3, 8));
-//    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
-//	
-//    // [C]ubes
-//    pCubeFont = _pHost->m_cubefont_store;
-//    pCubeFont->Init(a[2], CubePos(1, 1, 8));
-//    pCubeFont->pos.z += FONT_OVERLAY_OFFSET;
-//}
 
     public static void createCubes() {
         Cube cube;
@@ -330,15 +295,15 @@ public final class Creator {
     
         menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 5, 8), new Color(255, 0, 0, 255));
-        menu.m_pMenuCubePlay = menuCube;
+        menu.mMenuCubePlay = menuCube;
     
         menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 3, 8), new Color(200, 0, 0, 255));
-        menu.m_pMenuCubeOptions = menuCube;
+        menu.mMenuCubeOptions = menuCube;
    
         menuCube = new MenuCube();
         menuCube.init(new CubePos(7, 1, 8), new Color(100, 0, 0, 255));
-        menu.m_pMenuCubeStore = menuCube;
+        menu.mMenuCubeStore = menuCube;
 
     
         // option cubes    
@@ -416,23 +381,27 @@ public final class Creator {
         Game.ar_cubefacedata[face_type].lst_level_cubes.add(cube);
     }
 
-	public static void addCubeFont(final char ch, CubePos cubePos, int faceType) {
+	public static void addCubeFont(final char ch, CubePos cubePos, int faceType, CubeFaceNamesEnum faceName, Color color) {
 		CubeFont cubeFont = getCubeFontFromPool();
 		Cube cube = Game.cubes[cubePos.x][cubePos.y][cubePos.z];
 
 		cubeFont.init(ch, cubePos);
-        cubeFont.setColor( Game.getTextColor() );
-        cubeFont.colorCurrent.a = 0;
+        cubeFont.setColor(color);
+
+        if (faceName == CubeFaceNamesEnum.Face_Tutorial) {
+            cubeFont.colorCurrent.a = 0;
+        }
+
 		cube.ar_fonts[faceType] = cubeFont;
 	}
 
-	public static void addCubeFontSymbol(final int symbolId, CubePos cubePos, int faceType) {
+	public static void addCubeFontSymbol(final int symbolId, CubePos cubePos, int faceType, CubeFaceNamesEnum faceName, Color color) {
 		CubeFont cubeFont = getCubeFontFromPool();
 		Cube cube = Game.cubes[cubePos.x][cubePos.y][cubePos.z];
 		
 		cubeFont.init(symbolId, cubePos);
-        cubeFont.setColor( Game.getSymbolColor() );
-        cubeFont.colorCurrent.a = 0;
+        cubeFont.setColor(color);
+
 		cube.ar_symbols[faceType] = cubeFont;
 	}	
 }

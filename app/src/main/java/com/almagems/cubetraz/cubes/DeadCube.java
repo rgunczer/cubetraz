@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
@@ -12,9 +13,6 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 
 public final class DeadCube {
-
-    public static Graphics graphics;
-    
     private CubePos m_cube_pos_starting = new CubePos();
     private CubePos m_cube_pos = new CubePos();
 
@@ -64,8 +62,8 @@ public final class DeadCube {
         m_ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolDeath);
         m_ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolDeath);
     
-        m_color_current.init( Game.getFaceColor(1f) );
-        m_color.init( Game.getFaceColor(1f) );
+        m_color_current.init( Game.faceColor );
+        m_color.init( Game.faceColor );
         m_color_symbol_current.init((new Color(50, 50, 50, 255)));
         m_color_symbol.init(m_color_symbol_current);
     }
@@ -74,10 +72,11 @@ public final class DeadCube {
     }
 
     public void renderCube() {
-        graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        Engine.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
+        Graphics graphics = Engine.graphics;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ = m_ar_cube_textures[Face_X_Plus];
     

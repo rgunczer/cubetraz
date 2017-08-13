@@ -68,6 +68,10 @@ public final class Color {
         this.b = Utils.rand.nextInt(255);
     }
 
+    public void randomizeGray() {
+        this.r = this.g = this.b = 100 + Utils.rand.nextInt(100);
+    }
+
     public String toString() {
         return "MyColor (" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
     }

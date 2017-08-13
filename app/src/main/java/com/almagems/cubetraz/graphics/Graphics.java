@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.graphics;
 
-
 import static android.opengl.GLES10.*;
 import static android.opengl.GLES11Ext.*;
 import static android.opengl.GLU.*;
@@ -9,16 +8,11 @@ import javax.microedition.khronos.opengles.GL10;
 
 import static com.almagems.cubetraz.game.Constants.*;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-
 import com.almagems.cubetraz.utils.PositionInfo;
 import com.almagems.cubetraz.R;
 import com.almagems.cubetraz.system.TextResourceReader;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
-
-import java.util.ArrayList;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -27,33 +21,31 @@ import java.nio.FloatBuffer;
 
 public final class Graphics {
 
-    public GL10 gl;
+    private GL10 gl;
 
-    public static int width;
-    public static int height;
-    public static int half_width;
-    public static int half_height;
-    public static float device_scale;
+    public int width;
+    public int height;
+    public int halfWidth;
+    public int halfHeight;
+    public float deviceScale;
 
-    private static int[] originalFBO = new int[1];
+    private int[] originalFBO = new int[1];
 
     // textures
-    public static int texture_id_gray_concrete;
-    public static int texture_id_key;
-    public static int texture_id_fonts;
-    public static int texture_id_fonts_clear;
-    public static int texture_id_level_cubes;
-    public static int texture_id_fonts_big;
-    public static int texture_id_level_cubes_locked;
-    public static int texture_id_numbers;
-    public static int texture_id_player;
-    public static int texture_id_star;
-    public static int texture_id_symbols;
-    public static int texture_id_stat_background;
-    public static int texture_id_credits;
-    public static int texture_id_dirty;
-    public static int texture_id_tutor;
-    private ArrayList<Texture> textures = new ArrayList<Texture>(20);
+    public Texture textureGrayConcrete;
+    public Texture textureKey;
+    public Texture textureFonts;
+    public Texture textureFontsClear;
+    public Texture textureLevelCubes;
+    public Texture textureFontsBig;
+    public Texture textureNumbers;
+    public Texture texturePlayer;
+    public Texture textureStar;
+    public Texture textureSymbols;
+    public Texture textureStatBackground;
+    public Texture textureCredits;
+    public Texture textureDirty;
+    public Texture textureTutor;
 
     public int _vertices_count = 0;
     public int _vindex = -1;
@@ -71,49 +63,19 @@ public final class Graphics {
     public final float referenceScreenWidth = 1080f;
     public float scaleFactor;
 
-    public Context context;
-
     private FloatBuffer _vertexBuffer;
     private FloatBuffer _normalBuffer;
     private FloatBuffer _coordsBuffer;
     private ByteBuffer _colorBuffer;
 
-    public static FBO fbo;
+    public FBO fbo;
 
-    //public Map<String, TexturedQuad> fonts = new HashMap<String, TexturedQuad>();
-
-
-    // ctor
-    public Graphics(Context context, GL10 gl) {
-        System.out.println("Graphics ctor...");
-        this.context = context;
+    public Graphics(GL10 gl) {
         this.gl = gl;
     }
 
-    public void initialSetup(int width, int height) {
-        Graphics.width = width;
-        Graphics.height = height;
+    public void initialSetup() {
 
-        half_width = width / 2;
-        half_height = height / 2;
-
-        aspectRatio = (float) width / (float) height;
-
-        glViewport(0, 0, width, height);
-
-        device_scale = 4.5f;
-
-        if (height < 1201) {
-            device_scale = 3.5f;
-        }
-
-        if (height < 900) {
-            device_scale = 2.5f;
-        }
-
-        if (height < 500) {
-            device_scale = 1.25f;
-        }
 
         //m_menu.SetupCameras(); TODO!
 
@@ -156,14 +118,7 @@ public final class Graphics {
 //
 //        int h = m_height - banner_height;
 
-        saveOriginalFBO();
 
-        fbo = new FBO(width, height);
-        //fbo.createWithColorBuffer();
-        //fbo.createWithColorAndDebthBuffer();
-        fbo.createWithColorAndDepthStencilBuffer();
-
-        restoreOriginalFBO();
 
 //        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
 //
@@ -228,11 +183,11 @@ public final class Graphics {
         _colorBuffer = ByteBuffer.allocateDirect(_colors.length);
     }
 
-    public static void saveOriginalFBO() {
+    public void saveOriginalFBO() {
         glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, originalFBO, 0);
     }
 
-    public static void restoreOriginalFBO() {
+    public void restoreOriginalFBO() {
         glBindFramebufferOES(GL_FRAMEBUFFER_OES, originalFBO[0]);
     }
 
@@ -324,20 +279,20 @@ public final class Graphics {
         glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
     }
 
-    public void warmCache() {
-        glEnable(GL_TEXTURE_2D);
-
-        resetBufferIndices();
-        bindStreamSources3d();
-        addCube(0.0f, 0.0f, 0.0f);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glDisable(GL_TEXTURE_2D);
-    }
+//    public void warmCache() {
+//        glEnable(GL_TEXTURE_2D);
+//
+//        resetBufferIndices();
+//        bindStreamSources3d();
+//        addCube(0.0f, 0.0f, 0.0f);
+//        texturePlayer.bind();
+//        glDrawArrays(GL_TRIANGLES, 0, 36);
+//
+//        textureGrayConcrete.bind();
+//        glDrawArrays(GL_TRIANGLES, 0, 36);
+//
+//        glDisable(GL_TEXTURE_2D);
+//    }
 
     public void drawQuad() {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -366,11 +321,11 @@ public final class Graphics {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    public static Color getColorFromScreen(Vector2 pos) {
+    public Color getColorFromScreen(Vector2 pos) {
         int ix = (int) pos.x; //(int)Engine.rawX; //(int)pos.x * width/2;
         int iy = height - (int) pos.y; //(int)Engine.rawY; //(int)pos.y * height/2;
 
-        ByteBuffer pixelBuf = ByteBuffer.allocateDirect(1 * 4);
+        ByteBuffer pixelBuf = ByteBuffer.allocateDirect(4);
         pixelBuf.order(ByteOrder.LITTLE_ENDIAN);
         glReadPixels(ix, iy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuf);
 
@@ -442,7 +397,15 @@ public final class Graphics {
         glDrawArrays(GL_LINES, 0, 6);
     }
 
-    public void drawFullScreenTexture(int texture_id, Color color) {
+    public void drawFullScreenTexture(FBO fbo, Color color) {
+        drawFullScreenTexture(fbo.textureId, color);
+    }
+
+    public void drawFullScreenTexture(Texture texture, Color color) {
+        drawFullScreenTexture(texture.id, color);
+    }
+
+    private void drawFullScreenTexture(int textureId, Color color) {
         final float verts[] = {
                 0f, height,
                 0f, 0f,
@@ -468,7 +431,7 @@ public final class Graphics {
 
         addVerticesCoordsNormalsColors(verts, coords, norms, colors);
 
-        glBindTexture(GL_TEXTURE_2D, texture_id);
+        glBindTexture(GL_TEXTURE_2D, textureId);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
@@ -578,48 +541,32 @@ public final class Graphics {
         //System.out.println("Load startup Assets...");
 
         // textures
-        texture_id_gray_concrete = loadTexture(R.drawable.grey_concrete128_stroke);
-        texture_id_key = loadTexture(R.drawable.key);
-        texture_id_fonts = loadTexture(R.drawable.fonts);
-        texture_id_fonts_clear = loadTexture(R.drawable.fonts_clear);
-        texture_id_level_cubes = loadTexture(R.drawable.level_cube);
-        texture_id_fonts_big = loadTexture(R.drawable.fonts_big);
-        texture_id_level_cubes_locked = loadTexture(R.drawable.level_cube_locked);
-        texture_id_numbers = loadTexture(R.drawable.level_numbers);
-        texture_id_player = loadTexture(R.drawable.player);
-        texture_id_star = loadTexture(R.drawable.star);
-        texture_id_symbols = loadTexture(R.drawable.symbols);
-        texture_id_stat_background = loadTexture(R.drawable.stat_background);
-        texture_id_credits = loadTexture(R.drawable.credits);
-        texture_id_dirty = loadTexture(R.drawable.dirty);
-        texture_id_tutor = loadTexture(R.drawable.tutor_swipe);
+        textureGrayConcrete = loadTexture(R.drawable.grey_concrete128_stroke);
+        textureKey = loadTexture(R.drawable.key);
+        textureFonts = loadTexture(R.drawable.fonts);
+        textureFontsClear = loadTexture(R.drawable.fonts_clear);
+        textureLevelCubes = loadTexture(R.drawable.level_cube);
+        textureFontsBig = loadTexture(R.drawable.fonts_big);
+        textureNumbers = loadTexture(R.drawable.level_numbers);
+        texturePlayer = loadTexture(R.drawable.player);
+        textureStar = loadTexture(R.drawable.star);
+        textureSymbols = loadTexture(R.drawable.symbols);
+        textureStatBackground = loadTexture(R.drawable.stat_background);
+        textureCredits = loadTexture(R.drawable.credits);
+        textureDirty = loadTexture(R.drawable.dirty);
+        textureTutor = loadTexture(R.drawable.tutor_swipe);
     }
 
-    public int loadTexture(int resourceId) {
-        Texture texture = TextureHelper.loadTexture(context, resourceId);
-        // textures.add(texture);
-        return texture.id;
+    public Texture loadTexture(int resourceId) {
+        Texture texture = TextureHelper.loadTexture(resourceId);
+        return texture;
     }
 
     private int loadTextureAndJson(int textureResourceId, int jsonResourceId) {
-        Texture texture = TextureHelper.loadTexture(context, textureResourceId);
-        String jsonText = TextResourceReader.readTextFileFromResource(context, jsonResourceId);
+        Texture texture = TextureHelper.loadTexture(textureResourceId);
+        String jsonText = TextResourceReader.readTextFileFromResource(jsonResourceId);
         texture.loadFrames(jsonText);
-        textures.add(texture);
         return texture.id;
-    }
-
-    @Nullable
-    public Texture getTextureObj(int textureId) {
-        Texture texture;
-        int size = textures.size();
-        for (int i = 0; i < size; ++i) {
-            texture = textures.get(i);
-            if (texture.id == textureId) {
-                return texture;
-            }
-        }
-        return null;
     }
 
     public void calcMatricesForObject(PositionInfo op, float tx, float ty) {
@@ -766,11 +713,11 @@ public final class Graphics {
 //        return vb;
 //    }
 
-    public static int createTexture(int w, int h) {
+    public int createTexture(int w, int h) {
         int[] temp = new int[1];
         glGenTextures(1, temp, 0);
 
-        glBindTexture(GL10.GL_TEXTURE_2D, temp[0]);
+        glBindTexture(GL_TEXTURE_2D, temp[0]);
 
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -783,28 +730,46 @@ public final class Graphics {
         return temp[0];
     }
 
-
     public void prepareFrame() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     public void onSurfaceChanged(int width, int height) {
-        //glViewport(0, 0, width, height);
+        System.out.println("Graphics.onSurfaceChanged");
 
-//        screenWidth = width;
-//        screenHeight = height;
-//        aspectRatio = width > height ? (float)width / (float)height : (float)height / (float)width;
-//        scaleFactor = screenWidth / referenceScreenWidth;
+        this.width = width;
+        this.height = height;
 
-//        ParticleShader.pointSize = (float)width * 0.12f;
-//
-//        if (width > 1080) {
-//            fboBackground.create(width / 2, height / 2); // on really big displays avoid creating a full screen texture
-//        } else {
-//            fboBackground.create(width, height);
-//        }
+        halfWidth = width / 2;
+        halfHeight = height / 2;
+
+        aspectRatio = (float) width / (float) height;
+
+        glViewport(0, 0, width, height);
+
+        deviceScale = 4.5f;
+
+        if (height < 1201) {
+            deviceScale = 3.5f;
+        }
+
+        if (height < 900) {
+            deviceScale = 2.5f;
+        }
+
+        if (height < 500) {
+            deviceScale = 1.25f;
+        }
+
+        if (fbo == null) {
+            saveOriginalFBO();
+
+            fbo = new FBO(width, height);
+            fbo.createWithColorAndDepthStencilBuffer();
+
+            restoreOriginalFBO();
+        }
     }
-
 
 //     inline void DumpVerticesBuffer(int count)
 //    {

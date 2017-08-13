@@ -1,7 +1,9 @@
 package com.almagems.cubetraz.scenes.menu;
 
 
-import com.almagems.cubetraz.scenes.level.Creator;
+import com.almagems.cubetraz.game.Engine;
+import com.almagems.cubetraz.graphics.Color;
+import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
@@ -196,7 +198,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceX(final int[] arr, int faceType, CubeFaceNamesEnum faceId, int x) {
+    private static void setupFontFaceX(final int[] arr, int faceType, CubeFaceNamesEnum faceName, int x, Color color) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -207,14 +209,14 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 			
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType);
+				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    private static void setupFontFaceY(final int[] arr, int faceType, CubeFaceNamesEnum faceId, int y) {
+    private static void setupFontFaceY(final int[] arr, int faceType, CubeFaceNamesEnum faceName, int y, Color color) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -225,14 +227,14 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 			
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType);
+				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    private static void setupFontFaceZ(final int[] arr, int faceType, CubeFaceNamesEnum faceId, int z) {
+    private static void setupFontFaceZ(final int[] arr, int faceType, CubeFaceNamesEnum faceName, int z, Color color) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -243,14 +245,14 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 	
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x, y, z), faceType);
+				    Creator.addCubeFont(ch, new CubePos(x, y, z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    private static void setupFontFaceSymbolX(final int[] a, int faceType, CubeFaceNamesEnum faceId, int x) {
+    private static void setupFontFaceSymbolX(final int[] a, int faceType, CubeFaceNamesEnum faceName, int x, Color color) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -261,14 +263,14 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType);
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    private static void setupFontFaceSymbolY(final int[] a, int faceType, CubeFaceNamesEnum faceId, int y) {
+    private static void setupFontFaceSymbolY(final int[] a, int faceType, CubeFaceNamesEnum faceName, int y, Color color) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -279,14 +281,14 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType);
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
 	    }
     }
 
-    private static void setupFontFaceSymbolZ(final int[] a, int faceType, CubeFaceNamesEnum faceId, int z) {
+    private static void setupFontFaceSymbolZ(final int[] a, int faceType, CubeFaceNamesEnum faceName, int z, Color color) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -297,7 +299,7 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType);
+				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -325,31 +327,6 @@ public final class MenuFaceBuilder {
 //	}
 //}
 
-//void cMenuFaceBuilder::Custom()
-//{
-//	return;
-//
-//    char* a = new char[FACE_SIZE];
-//    
-//    GetFace(Face_Normal03, a);
-//    
-//    //printf("\nbefore...");
-//    DumpFace(a);
-//	MirrorFaceVert(a);
-//    //printf("\nafter...");
-//    DumpFace(a);
-//    
-////	char* arr = GetFace(Face_Easy04);
-////	ConvertToIntArray(arr);
-////	
-////	RotateFace90CW(&iarr[0]);
-////	//RotateFace90CW(&iarr[0]);
-////	//RotateFace90CW(&iarr[0]);
-////	
-////	DumpIntArrayAsChars();
-//}
-
-
     public static void build(CubeFaceNamesEnum faceId, int faceType) {
 	    buildCubeFaces(faceId, faceType);
 	    buildTitleTexts(faceId, faceType);
@@ -363,24 +340,24 @@ public final class MenuFaceBuilder {
     private static int[] convertToIntArray(String str) {
         int[] arr = new int[str.length()];
         for(int i = 0; i < str.length(); ++i) {
-            arr[i] = str.charAt(i); //(str.charAt(i) - '0');
+            arr[i] = str.charAt(i);
         }
         return arr;
     }
 
-    private static void buildCubeFaces(CubeFaceNamesEnum faceId, int faceType) {
-        String str = getFace(faceId);
+    private static void buildCubeFaces(CubeFaceNamesEnum faceName, int faceType) {
+        String str = getFace(faceName);
         int[] arr = convertToIntArray(str);
 
 	    doTransforms(arr);
 	
 	    switch (faceType) {
-		    case Face_X_Plus: 	setupFaceX(arr, faceType, faceId); break;
-		    case Face_X_Minus: 	setupFaceX(arr, faceType, faceId); break;
-		    case Face_Y_Plus: 	setupFaceY(arr, faceType, faceId); break;
-		    case Face_Y_Minus: 	setupFaceY(arr, faceType, faceId); break;
-		    case Face_Z_Plus: 	setupFaceZ(arr, faceType, faceId); break;
-		    case Face_Z_Minus: 	setupFaceZ(arr, faceType, faceId); break;
+		    case Face_X_Plus: 	setupFaceX(arr, faceType, faceName); break;
+		    case Face_X_Minus: 	setupFaceX(arr, faceType, faceName); break;
+		    case Face_Y_Plus: 	setupFaceY(arr, faceType, faceName); break;
+		    case Face_Y_Minus: 	setupFaceY(arr, faceType, faceName); break;
+		    case Face_Z_Plus: 	setupFaceZ(arr, faceType, faceName); break;
+		    case Face_Z_Minus: 	setupFaceZ(arr, faceType, faceName); break;
 	    }
     }
 
@@ -403,7 +380,7 @@ public final class MenuFaceBuilder {
         }
     }
 
-    public static void buildTexts(CubeFaceNamesEnum faceId, int faceType, boolean alt) {
+    static void buildTexts(CubeFaceNamesEnum faceId, int faceType, boolean alt) {
         String str;
 	
 	    if (!alt) {
@@ -419,13 +396,17 @@ public final class MenuFaceBuilder {
 	    int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	    int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
 	    int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	
+
+        Color color = Game.textColor;
+
 	    switch (faceType) {
-		    case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceId, x - 1); break;
-		    case Face_X_Minus: 	setupFontFaceX(arr, faceType, faceId, x + 1); break;
-		    case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceId, y - 1); break;
+		    case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceId, x - 1, color); break;
+		    case Face_X_Minus:
+		        setupFontFaceX(arr, faceType, faceId, x + 1, color);
+                break;
+		    case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceId, y - 1, color); break;
 		    case Face_Y_Minus: {
-			    setupFontFaceY(arr, faceType, faceId, y + 1);
+			    setupFontFaceY(arr, faceType, faceId, y + 1, color);
             
                 if ( CubeFaceNamesEnum.Face_Store == faceId) {
                     CubePos cp;
@@ -445,7 +426,7 @@ public final class MenuFaceBuilder {
 			break;
 			
 			case Face_Z_Plus: {
-				setupFontFaceZ(arr, faceType, faceId, z - 1);
+				setupFontFaceZ(arr, faceType, faceId, z - 1, color);
             
             	if (CubeFaceNamesEnum.Face_Menu == faceId) {
                 	CubePos cp;
@@ -464,27 +445,31 @@ public final class MenuFaceBuilder {
         	}
 			break;
 			
-			case Face_Z_Minus: setupFontFaceZ(arr, faceType, faceId, z + 1); break;
-		}        	
+			case Face_Z_Minus:
+			    setupFontFaceZ(arr, faceType, faceId, z + 1, color);
+                break;
+		}
 	}
 
-    private static void buildTitleTexts(CubeFaceNamesEnum faceId, int faceType) {
-    	String str = getFaceTitle(faceId);
+    private static void buildTitleTexts(CubeFaceNamesEnum faceName, int faceType) {
+    	String str = getFaceTitle(faceName);
         int[] arr = convertToIntArray(str);
-	
+
 		doTransforms(arr);
 	
 		int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
 		int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
 		int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
-	
+
+        Color color = Game.titleColor;
+
 		switch (faceType) {
-			case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceId, x); break;
-			case Face_X_Minus: 	setupFontFaceX(arr, faceType, faceId, x); break;
-			case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceId, y); break;
-			case Face_Y_Minus: 	setupFontFaceY(arr, faceType, faceId, y); break;
-			case Face_Z_Plus: 	setupFontFaceZ(arr, faceType, faceId, z); break;
-			case Face_Z_Minus: 	setupFontFaceZ(arr, faceType, faceId, z); break;
+			case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceName, x, color); break;
+			case Face_X_Minus: 	setupFontFaceX(arr, faceType, faceName, x, color); break;
+			case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceName, y, color); break;
+			case Face_Y_Minus: 	setupFontFaceY(arr, faceType, faceName, y, color); break;
+			case Face_Z_Plus: 	setupFontFaceZ(arr, faceType, faceName, z, color); break;
+			case Face_Z_Minus: 	setupFontFaceZ(arr, faceType, faceName, z, color); break;
 		}	    
 	}
 
@@ -496,14 +481,16 @@ public final class MenuFaceBuilder {
 		int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
 		int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
 		int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
+
+        Color color = Game.symbolColor;
 	
 		switch (faceType) {
-			case Face_X_Plus:	setupFontFaceSymbolX(arr, faceType, faceId, x); break;
-			case Face_X_Minus:	setupFontFaceSymbolX(arr, faceType, faceId, x);	break;
-			case Face_Y_Plus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
-			case Face_Y_Minus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
-			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
-			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
+			case Face_X_Plus:	setupFontFaceSymbolX(arr, faceType, faceId, x, color); break;
+			case Face_X_Minus:	setupFontFaceSymbolX(arr, faceType, faceId, x, color);	break;
+			case Face_Y_Plus:	setupFontFaceSymbolY(arr, faceType, faceId, y, color);	break;
+			case Face_Y_Minus:	setupFontFaceSymbolY(arr, faceType, faceId, y, color);	break;
+			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, faceType, faceId, z, color);	break;
+			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, faceType, faceId, z, color);	break;
 		}    
 	}
 
@@ -515,14 +502,16 @@ public final class MenuFaceBuilder {
 		int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 2 : 1);
 		int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 2 : 1);
 		int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 2 : 1);
+
+        Color color = Game.symbolColor;
 	
 		switch (faceType) {
-			case Face_X_Plus:   setupFontFaceSymbolX(arr, faceType, faceId, x);	break;
-			case Face_X_Minus:	setupFontFaceSymbolX(arr, faceType, faceId, x);	break;
-			case Face_Y_Plus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
-			case Face_Y_Minus:	setupFontFaceSymbolY(arr, faceType, faceId, y);	break;
-			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
-			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, faceType, faceId, z);	break;
+			case Face_X_Plus:   setupFontFaceSymbolX(arr, faceType, faceId, x, color);	break;
+			case Face_X_Minus:	setupFontFaceSymbolX(arr, faceType, faceId, x, color);	break;
+			case Face_Y_Plus:	setupFontFaceSymbolY(arr, faceType, faceId, y, color);	break;
+			case Face_Y_Minus:	setupFontFaceSymbolY(arr, faceType, faceId, y, color);	break;
+			case Face_Z_Plus:	setupFontFaceSymbolZ(arr, faceType, faceId, z, color);	break;
+			case Face_Z_Minus:	setupFontFaceSymbolZ(arr, faceType, faceId, z, color);	break;
 		}    
 	}
 

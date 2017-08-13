@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.utils;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.math.Utils;
@@ -9,9 +10,6 @@ import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.game.Constants.*;
 
 public class Starfield {
-
-    public static Graphics graphics;
-
     public float speed;
     public float alpha;
     private int m_star_count;
@@ -29,7 +27,7 @@ public class Starfield {
     }
 
     public void create() {
-        m_star_count = (int)(384f * Graphics.device_scale);
+        m_star_count = (int)(384f * Engine.graphics.deviceScale);
 
         for (int i = 0; i < MAX_STARS; ++i) {
             m_stars[i] = new Vector();
@@ -54,6 +52,7 @@ public class Starfield {
     }
 
     public void render() {
+        Graphics graphics = Engine.graphics;
         int big_points = 0;
         Color color = new Color(224, 255, 255, (int)alpha);
 
@@ -76,10 +75,10 @@ public class Starfield {
         graphics.updateBuffers();
 
         if (small_points > 0 && big_points > 0) {
-            glPointSize(2.0f * Graphics.device_scale);
+            glPointSize(2.0f * Engine.graphics.deviceScale);
             glDrawArrays(GL_POINTS, 0, big_points);
 
-            glPointSize(1.0f * Graphics.device_scale);
+            glPointSize(1.0f * Engine.graphics.deviceScale);
             glDrawArrays(GL_POINTS, big_points, small_points);
 //            glDrawArrays(GL_LINE_LOOP, 0, big_points);
 //            glDrawArrays(GL_LINE_LOOP, big_points, small_points);

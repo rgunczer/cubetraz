@@ -44,7 +44,7 @@ public final class LevelCube {
         pStars = Game.getSymbol(SymbolLock);
         pSolver = null;
     
-        color_number = Game.getLevelNumberColor();
+        color_number = new Color(Game.levelNumberColor);
         color_stars_and_solver = new Color(255, 255, 255, 180);
     
         font_pos = pos;

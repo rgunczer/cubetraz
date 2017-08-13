@@ -6,6 +6,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.opengl.GLES10.GL_TEXTURE_2D;
+import static android.opengl.GLES10.glBindTexture;
+import static android.opengl.GLES10.glDeleteTextures;
+
 
 public final class Texture {
     public int id;
@@ -15,9 +19,7 @@ public final class Texture {
 
     private Map<String, Rectangle> frames = new HashMap<String, Rectangle>(20);
 
-    // ctor
     public Texture() {
-        //System.out.println("Texture ctor...");
     }
 
     public Rectangle getFrame(String key) {
@@ -58,6 +60,16 @@ public final class Texture {
             //System.out.println( ex.toString() );
         }
     }
+
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    public void release() {
+        int[] arr = { id };
+        glDeleteTextures(arr.length, arr, 0);
+    }
+
 
     public String toString() {
         return "Texture name:" + this.name + ", w:" + width + ", h:" + height + ", id:" + id;

@@ -1,6 +1,6 @@
 package com.almagems.cubetraz.scenes.menu;
 
-import com.almagems.cubetraz.scenes.level.Creator;
+import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
 import com.almagems.cubetraz.game.Game;
@@ -427,7 +427,7 @@ public final class MenuNavigator
                 break;
         } // switch
     
-        Game.buildVisibleCubesListOnlyOnFaces(m_menu.m_list_cubes_face);
+        Game.buildVisibleCubesListOnlyOnFaces(m_menu.mCubesFace);
     }
 
     public void update() {

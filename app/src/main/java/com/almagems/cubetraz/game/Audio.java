@@ -5,18 +5,11 @@ import com.almagems.cubetraz.R;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.almagems.cubetraz.game.Constants.*;
-
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 
-
-
 public final class Audio {
-
-    private Context mContext;
 
     // music
     public static final String MUSIC_CPU = "POL-a-cpu-life-short";
@@ -36,8 +29,8 @@ public final class Audio {
     private Map<String, String> mResources = new HashMap<>();
     private Map<String, Integer> mSounds = new HashMap<>();
 
-    public float musicVolume = 0.5f;
-    public float soundVolume = 0.5f;
+    private float musicVolume = 0.5f;
+    private float soundVolume = 0.5f;
 
     private MediaPlayer mediaPlayer;
     private SoundPool soundPool;
@@ -45,8 +38,6 @@ public final class Audio {
     private int soundStreamId;
     private int musicTrackPos = 0;
 
-
-    // ctor
     public Audio() {
         mResources.clear();
 
@@ -91,7 +82,7 @@ public final class Audio {
 
     private void createMediaPlayer(String key) {
         int resourceId = getResourceIdFromKey(key);
-        mediaPlayer = MediaPlayer.create(mContext, resourceId);
+        mediaPlayer = MediaPlayer.create(Engine.getContext(), resourceId);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
@@ -104,7 +95,7 @@ public final class Audio {
 
     private void loadToSoundPool(String key) {
         int resourceId = Integer.parseInt(mResources.get(key));
-        int id = soundPool.load(mContext, resourceId, 1);
+        int id = soundPool.load(Engine.getContext(), resourceId, 1);
         mSounds.put(key, id);
     }
 
@@ -114,7 +105,7 @@ public final class Audio {
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                System.out.println("loadComplete: " + sampleId);
+                //System.out.println("soundPool loadComplete: " + sampleId);
             }
         });
 
@@ -126,8 +117,7 @@ public final class Audio {
         loadToSoundPool(SOUND_VOLUME_UP);
     }
 
-    public void init(Context context, float musicVolume, float soundVolume) {
-        mContext = context;
+    public void init(float musicVolume, float soundVolume) {
         this.musicVolume = musicVolume;
         this.soundVolume = soundVolume;
 

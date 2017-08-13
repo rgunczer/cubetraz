@@ -12,8 +12,6 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 public final class GameProgress {
 
-    private Context mContext;
-
     private static final int MAX_LEVELS = 61;
 
     private static final String SAVE_GAME_FILE_EASY = "easy_game.dat";
@@ -32,8 +30,7 @@ public final class GameProgress {
     public boolean getSolvedNormal(int level_number)    { return ar_levels_normal[level_number-1].solved;   }
     public boolean getSolvedHard(int level_number)      { return ar_levels_hard[level_number-1].solved;     }
 
-    public GameProgress(Context context) {
-        mContext = context;
+    public GameProgress() {
     }
 
     public void setStarsEasy(final int level_number, final int stars) {
@@ -71,7 +68,7 @@ public final class GameProgress {
 
     private void saveArray(String fileName, LevelData[] array) {
         try {
-            FileOutputStream fos = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream fos = Engine.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(array);
 
@@ -100,7 +97,7 @@ public final class GameProgress {
         ar[0].stars = LEVEL_UNLOCKED; // unlock first level
 
         try {
-            FileInputStream fis = mContext.openFileInput(fileName);
+            FileInputStream fis = Engine.getContext().openFileInput(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
             Object obj = ois.readObject();
             ar = (LevelData[])(obj);

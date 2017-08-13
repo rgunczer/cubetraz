@@ -1,16 +1,17 @@
 package com.almagems.cubetraz.scenes.anim;
 
+import com.almagems.cubetraz.game.Engine;
+import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.AppearDisappearListData;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.Scene;
-import com.almagems.cubetraz.scenes.level.Creator;
+import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
 import com.almagems.cubetraz.game.Game;
-import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.cubes.LevelCube;
 import com.almagems.cubetraz.scenes.menu.MenuFaceBuilder;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
@@ -472,7 +473,7 @@ public final class Animator extends Scene {
 		
 		    m_t_camera = 0.0f;
 		    m_camera_from.init(m_camera_current);
-		    m_camera_to.init(Game.menu.m_camera_menu);
+		    m_camera_to.init(Game.menu.mCameraMenu);
 		
 		    m_cube_rotation.degree = -45.0f;
 		    m_target_rotation_degree = -90.0f;
@@ -654,26 +655,26 @@ public final class Animator extends Scene {
         updateCubes();
     }
 
-    public void drawTheCube() {        
+    public void drawTheCube() {
+		Graphics graphics = Engine.graphics;
 	    glEnable(GL_LIGHTING);
 	    glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+		graphics.textureGrayConcrete.bind();
 	
         graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
 
-	    Color color = Game.getBaseColor();
         int size;
         Cube cube;
         size = m_list_cubes_base.size();
         for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_base.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
         }
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 	
-	    color = Game.getFaceColor(1f);
+	    Color color = new Color(Game.faceColor);
 	    graphics.resetBufferIndices();
         size = m_list_cubes_face.size();
         for (int i = 0; i < size; ++i) {
@@ -684,7 +685,8 @@ public final class Animator extends Scene {
 	    graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
-    public void drawLevelCubes() {
+    private void drawLevelCubes() {
+        Graphics graphics = Engine.graphics;
 	    graphics.resetBufferIndices();
 	    graphics.bindStreamSources3d();
 	
@@ -708,13 +710,14 @@ public final class Animator extends Scene {
         }
 	
 	    if (graphics._vertices_count > 0) {
-		    glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_level_cubes);
+			Engine.graphics.textureLevelCubes.bind();
             graphics.updateBuffers();
 		    graphics.renderTriangles();
 	    }
     }
 
     public void drawLevelCubeDecals(LevelCubeDecalTypeEnum decal_type) {
+        Graphics graphics = Engine.graphics;
 	    graphics.resetBufferIndices();
 	
 	    TexCoordsQuad coords = new TexCoordsQuad();
@@ -827,6 +830,7 @@ public final class Animator extends Scene {
     }
 
     public void drawTexts(ArrayList<CubeFont> lst_face_x_plus, ArrayList<CubeFont> lst_face_y_plus, ArrayList<CubeFont> lst_face_z_plus, Color color) {
+        Graphics graphics = Engine.graphics;
 	    int size;
         CubeFont cubeFont;
 	    TexturedQuad font;
@@ -878,6 +882,7 @@ public final class Animator extends Scene {
 
     @Override
     public void render() {
+        Graphics graphics = Engine.graphics;
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
         graphics.bindStreamSources2d();
@@ -892,7 +897,7 @@ public final class Animator extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
     
         Color color = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-        graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color);
+        graphics.drawFullScreenTexture(Engine.graphics.textureDirty, color);
     
         glDepthMask(true); //GL_TRUE);
     
@@ -929,18 +934,18 @@ public final class Animator extends Scene {
 	
 	    graphics.bindStreamSources3d();
 	
-        color = Game.getTextColor();
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts);
+        color = Game.textColor;
+		graphics.textureFonts.bind();
         drawTexts(m_lst_texts.get(Face_X_Plus), m_lst_texts.get(Face_Y_Plus), m_lst_texts.get(Face_Z_Plus), color);
 	
-	    color = Game.getTitleColor();
+	    color = Game.titleColor;
 	    drawTexts(m_lst_titles.get(Face_X_Plus), m_lst_titles.get(Face_Y_Plus), m_lst_titles.get(Face_Z_Plus), color);
 
-	    color = Game.getSymbolColor();
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_numbers);
+	    color = Game.symbolColor;
+		graphics.textureNumbers.bind();
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
-	
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_symbols);
+
+		graphics.textureSymbols.bind();
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalStars);
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalSolver);
     

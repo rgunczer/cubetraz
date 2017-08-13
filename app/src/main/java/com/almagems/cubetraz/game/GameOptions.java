@@ -1,11 +1,8 @@
 package com.almagems.cubetraz.game;
 
-import android.content.Context;
 import com.almagems.cubetraz.external.SecurePreferences;
 
 public class GameOptions {
-
-    private Context mContext;
 
     //private static final String SAVE_OPTIONS_FILE = "options.dat";
 
@@ -40,16 +37,15 @@ public class GameOptions {
         save();
     }
 
-    public GameOptions(Context context) {
-        mContext = context;
+    public GameOptions() {
     }
 
-    private static SecurePreferences CreateSecurePreferencesObj(Context context) {
+    private static SecurePreferences CreateSecurePreferencesObj() {
         String name = "ctraz0";
         String key = "jKDz2fJhKE33cBQlDAkRM9axAnrBmUxs9dp11AqoogfulCL2DvNsexBuL2qeEstAIc27bqiMZbOOxZbZ";
         key = key.substring(10, 20) + key.substring(21, 26);
 
-        return new SecurePreferences(context, name, key, true);
+        return new SecurePreferences(Engine.getContext(), name, key, true);
     }
 
     private static int getPref(SecurePreferences preferences, String key, int defaultValue) {
@@ -69,7 +65,7 @@ public class GameOptions {
     }
 
     public void save() {
-        SecurePreferences preferences = CreateSecurePreferencesObj(mContext);
+        SecurePreferences preferences = CreateSecurePreferencesObj();
 
         // Put (all puts are automatically committed)
         //preferences.put("userId", "User1234");
@@ -80,7 +76,7 @@ public class GameOptions {
     }
 
     public void load() {
-        SecurePreferences preferences = CreateSecurePreferencesObj(mContext);
+        SecurePreferences preferences = CreateSecurePreferencesObj();
 
         mMusicVolume = getPref(preferences, keyMusic, 0.5f);
         mSoundVolume = getPref(preferences, keySound, 0.5f);

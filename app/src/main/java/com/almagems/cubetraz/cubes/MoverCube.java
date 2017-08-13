@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
@@ -12,9 +13,6 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 
 public final class MoverCube {
-
-    public static Graphics graphics;
-    
     private CubePos m_cube_pos_starting = new CubePos();
     private CubePos m_cube_pos = new CubePos();
     private int m_move_dir;
@@ -93,8 +91,8 @@ public final class MoverCube {
         m_cube_pos_starting = m_cube_pos;
         setSymbols();
     
-        m_color.init(Game.getFaceColor(1f));
-        m_color_current.init(Game.getFaceColor(1f));
+        m_color.init(Game.faceColor);
+        m_color_current.init(Game.faceColor);
         m_color_symbol_current.init(new Color(50, 50, 50, 255));
         m_color_symbol.init(new Color(50, 50, 50, 255));
     }
@@ -104,11 +102,11 @@ public final class MoverCube {
     }
 
     public void renderCube() {
-        graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        Engine.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
-        //System.out.println("renderSymbol: " + m_color_symbol_current.toString());
+        Graphics graphics = Engine.graphics;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         

@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.graphics;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Vector2;
 
@@ -8,9 +9,6 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 
 public final class Text {
-
-    public static Graphics graphics;
-
     private String m_text;
     private ArrayList<ArrayList<TexturedQuad>> m_ar_lines = new ArrayList<>(MAX_TEXT_LINES);
     private Vector2 scale = new Vector2();
@@ -155,7 +153,7 @@ public final class Text {
             size = m_ar_lines.get(i).size();
             for (int j = 0; j < size; ++j) {
                 pFont = m_ar_lines.get(i).get(j);
-                graphics.addFont(tmp, scale, color, pFont);
+                Engine.graphics.addFont(tmp, scale, color, pFont);
                 tmp.x += (pFont.w * m_vspace) * scale.x;
             }
 

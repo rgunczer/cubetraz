@@ -1,7 +1,6 @@
 package com.almagems.cubetraz.scenes;
 
 import com.almagems.cubetraz.graphics.Camera;
-import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 
@@ -10,12 +9,11 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 public abstract class Scene {
 
-    protected int mTick = 0;
-
-    public static Graphics graphics;
+    int mTick = 0;
 
     protected Camera mCameraCurrent = new Camera();
 
+    protected Vector mPosLight = new Vector();
     protected Vector mPosLightCurrent = new Vector();
 
     protected Vector2 mPosDown = new Vector2();

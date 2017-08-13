@@ -1,12 +1,13 @@
 package com.almagems.cubetraz.scenes;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubePos;
+import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.game.Game;
-import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.Starfield;
 import com.almagems.cubetraz.graphics.Text;
 import com.almagems.cubetraz.math.Utils;
@@ -22,7 +23,7 @@ import static com.almagems.cubetraz.game.Constants.*;
 
 public final class Outro extends Scene {
 
-    public enum OutroStateEnum {
+    private enum OutroStateEnum {
         AnimToOutro,
         RotateFull,
         OutroExplosion,
@@ -31,94 +32,93 @@ public final class Outro extends Scene {
 
     private int mCubeTrazAlpha;
 
-    private Text[] m_ar_text_center = new Text[2];
+    private Text[] mTextCenter = new Text[2];
 
     private OutroStateEnum mState;
 
-    private Camera m_camera_menu = new Camera();
-    private Camera m_camera_outro = new Camera();
+    private Camera mCameraMenu = new Camera();
+    private Camera mCameraOutro = new Camera();
 
-    private Starfield m_starfield = new Starfield();
+    private Starfield mStarfield = new Starfield();
 
-    private float m_stars_alpha;
+    private float mStarsAlpha;
     private float m_t;
-    private float m_degreePlayerCube;
+    private float mDegreePlayerCube;
 
-    private Vector m_pos_light_outro;
-    private Vector m_pos_light_menu;
+    private Vector mPosLightOutro;
+    private Vector mPosLightMenu;
 
-    private Vector m_pos_cube_player;
+    private Vector mPosCubePlayer;
 
-    private boolean m_draw_starfield;
-    private float m_cube_rot_speed;
+    private boolean mDrawStarfield;
+    private float mCubeRotSpeed;
 
-    private CubeRotation m_cube_rotation = new CubeRotation();
+    private CubeRotation mCubeRotation = new CubeRotation();
 
-    private ArrayList<Cube> m_lst_cubes_base = new ArrayList<>();
-    private ArrayList<Cube> m_lst_cubes_level = new ArrayList<>();
-    private ArrayList<Cube> m_lst_cubes_base_appear = new ArrayList<>();
-    private ArrayList<Cube> m_lst_cubes_base_disappear = new ArrayList<>();
+    private ArrayList<Cube> mCubesBase = new ArrayList<>();
+    private ArrayList<Cube> mCubesLevel = new ArrayList<>();
+    private ArrayList<Cube> mCubesBaseAppear = new ArrayList<>();
+    private ArrayList<Cube> mCubesBaseDisappear = new ArrayList<>();
 
-    private float m_center_alpha;
+    private float mCenterAlpha;
 
-
-    public void onFingerDown(float x, float y, int finger_count) {}    
-    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
+    public void onFingerDown(float x, float y, int fingerCount) {}
+    public void onFingerMove(float prevX, float prevY, float curX, float curY, int fingerCount) {}
 
 
     public Outro() {
-        m_camera_outro.eye = new Vector(0.0f, 10.0f, 30.0f);
-        m_camera_outro.target = new Vector(0.0f, 0.0f, 0.0f);
+        mCameraOutro.eye = new Vector(0.0f, 10.0f, 30.0f);
+        mCameraOutro.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        m_ar_text_center[0] = new Text();
-        m_ar_text_center[1] = new Text();
+        mTextCenter[0] = new Text();
+        mTextCenter[1] = new Text();
 
-        m_ar_text_center[0].setScale(1.0f, 1.0f);
-        m_ar_text_center[1].setScale(1.0f, 1.0f);
+        mTextCenter[0].setScale(1.0f, 1.0f);
+        mTextCenter[1].setScale(1.0f, 1.0f);
 
-        m_ar_text_center[0].setVSPace(0.8f);
-        m_ar_text_center[1].setVSPace(0.8f);
+        mTextCenter[0].setVSPace(0.8f);
+        mTextCenter[1].setVSPace(0.8f);
     }
 
     @Override
     public void init() {
         mTick = 0;
-        m_ar_text_center[0].init("CONGRATULATIONS", true);
-        m_ar_text_center[1].init("CUBETRAZ IS SOLVED", true);
+        mTextCenter[0].init("CONGRATULATIONS", true);
+        mTextCenter[1].init("CUBETRAZ IS SOLVED", true);
 
-        m_center_alpha = 0.0f;
+        mCenterAlpha = 0.0f;
         mCubeTrazAlpha = 255;
 
-        m_starfield.speed = 0.2f;
-        m_starfield.create();
+        mStarfield.speed = 0.2f;
+        mStarfield.create();
 
         for (int i = 0; i < 30*10; ++i) {
-            m_starfield.update();
+            mStarfield.update();
         }
 
-        m_camera_outro = Game.level.m_camera_level;
-        m_camera_menu = Game.menu.getCamera();
-        mCameraCurrent = m_camera_outro;
+        mCameraOutro = Game.level.m_camera_level;
+        mCameraMenu = Game.menu.getCamera();
+        mCameraCurrent = mCameraOutro;
 
-        m_pos_light_outro = Game.level.mPosLightCurrent;
-        m_pos_light_menu = Game.menu.getLightPositon();
-        mPosLightCurrent = m_pos_light_outro;
+        mPosLightOutro = Game.level.mPosLightCurrent;
+        mPosLightMenu = Game.menu.getLightPositon();
+        mPosLightCurrent = mPosLightOutro;
 
-        m_cube_rotation.degree = -45.0f;
-        m_cube_rotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+        mCubeRotation.degree = -45.0f;
+        mCubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
 
-        m_draw_starfield = false;
-        m_stars_alpha = 0.0f;
-        m_starfield.alpha = m_stars_alpha * 255;
+        mDrawStarfield = false;
+        mStarsAlpha = 0.0f;
+        mStarfield.alpha = mStarsAlpha * 255;
 
-        m_cube_rot_speed = 0.1f;
+        mCubeRotSpeed = 0.1f;
 
         mState = OutroStateEnum.AnimToOutro;
 
         m_t = 0.0f;
 
-        m_lst_cubes_base.clear();
-        m_lst_cubes_level.clear();
+        mCubesBase.clear();
+        mCubesLevel.clear();
 
         int size;
         Cube cube;
@@ -126,72 +126,68 @@ public final class Outro extends Scene {
         size = Game.level.m_list_cubes_level.size();
         for (int i = 0; i < size; ++i) {
             cube = Game.level.m_list_cubes_level.get(i);
-            m_lst_cubes_level.add(cube);
+            mCubesLevel.add(cube);
         }
 
         size = Game.level.m_list_cubes_wall_y_minus.size();
         for (int i = 0; i < size; ++i) {
             cube = Game.level.m_list_cubes_wall_y_minus.get(i);
-            m_lst_cubes_base.add(cube);
+            mCubesBase.add(cube);
         }
 
         size = Game.level.m_list_cubes_wall_x_minus.size();
         for (int i = 0; i < size; ++i) {
             cube = Game.level.m_list_cubes_wall_x_minus.get(i);
-            m_lst_cubes_base.add(cube);
+            mCubesBase.add(cube);
         }
 
         size = Game.level.m_list_cubes_wall_z_minus.size();
         for (int i = 0; i < size; ++i) {
             cube = Game.level.m_list_cubes_wall_z_minus.get(i);
-            m_lst_cubes_base.add(cube);
+            mCubesBase.add(cube);
         }
 
         size = Game.level.m_list_cubes_edges.size();
         for (int i = 0; i < size; ++i) {
             cube = Game.level.m_list_cubes_edges.get(i);
-            m_lst_cubes_base.add(cube);
+            mCubesBase.add(cube);
         }
 
-        m_lst_cubes_base_disappear.clear();
+        mCubesBaseDisappear.clear();
         
-        size = m_lst_cubes_base.size();
+        size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_base.get(i);
+            cube = mCubesBase.get(i);
             if (cube != null) {
                 if (8 == cube.x || 8 == cube.z) {
-                    m_lst_cubes_base_disappear.add(cube);
+                    mCubesBaseDisappear.add(cube);
                 }
             }
         }
 
-        m_lst_cubes_base_appear.clear();
+        mCubesBaseAppear.clear();
 
         ArrayList<Cube> lst = Game.createBaseCubesList();
         size = lst.size();
         for (int i = 0; i < size; ++i) {
             cube = lst.get(i);
-            if ( !Game.isOnAList(cube, m_lst_cubes_base) ) {
+            if ( !Game.isOnAList(cube, mCubesBase) ) {
                 cube.setColor(Color.WHITE);
-                m_lst_cubes_base_appear.add(cube);
+                mCubesBaseAppear.add(cube);
             }
         }
 
-        m_pos_cube_player = Game.getCubePosAt(Game.level.mPlayerCube.getCubePos());
+        mPosCubePlayer = Game.getCubePosAt(Game.level.mPlayerCube.getCubePos());
 
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glEnable(GL_BLEND);
-
-        graphics.setLightPosition(mPosLightCurrent);
+        Engine.graphics.setLightPosition(mPosLightCurrent);
     }
 
-    public void setupExplosion() {        
+    private void setupExplosion() {
         Cube cube;
-        int size = m_lst_cubes_base.size();
+        int size = mCubesBase.size();
 
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_base.get(i);
+            cube = mCubesBase.get(i);
 
             cube.v = new Vector((-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120));
 
@@ -219,7 +215,7 @@ public final class Outro extends Scene {
                 break;
 
             case RotateFull:
-                m_center_alpha += 0.04f;
+                mCenterAlpha += 0.04f;
                 --Game.dirtyAlpha;
 
                 if (Game.dirtyAlpha < 0) {
@@ -233,114 +229,114 @@ public final class Outro extends Scene {
                 break;
 
             case OutroDone:
-                m_center_alpha -= 0.03f;
+                mCenterAlpha -= 0.03f;
                 updateInOutroDone();
                 break;
         }
     }
 
-    public void updateInAnimTo() {
+    private void updateInAnimTo() {
         boolean done = true;
         Cube cube;
 
-        if (!m_lst_cubes_base_appear.isEmpty()) {
+        if (!mCubesBaseAppear.isEmpty()) {
             done = false;
-            cube = m_lst_cubes_base_appear.get(0);
-            m_lst_cubes_base_appear.remove(cube);
+            cube = mCubesBaseAppear.get(0);
+            mCubesBaseAppear.remove(cube);
 
-            m_lst_cubes_base.add(cube);
+            mCubesBase.add(cube);
         }
 
-        if (!m_lst_cubes_base_disappear.isEmpty()) {
+        if (!mCubesBaseDisappear.isEmpty()) {
             done = false;
-            cube = m_lst_cubes_base_disappear.get(0);
-            m_lst_cubes_base_disappear.remove(cube);
+            cube = mCubesBaseDisappear.get(0);
+            mCubesBaseDisappear.remove(cube);
 
-            m_lst_cubes_base.remove(cube);
+            mCubesBase.remove(cube);
         }
 
-        if (!m_lst_cubes_level.isEmpty()) {
+        if (!mCubesLevel.isEmpty()) {
             done = false;
-            cube = m_lst_cubes_level.get( m_lst_cubes_level.size() - 1);
-            m_lst_cubes_level.remove(cube);
+            cube = mCubesLevel.get( mCubesLevel.size() - 1);
+            mCubesLevel.remove(cube);
         }
 
-        if (m_cube_rot_speed < 4.0f && m_cube_rot_speed > 0.0f) {
+        if (mCubeRotSpeed < 4.0f && mCubeRotSpeed > 0.0f) {
             done = false;
-            m_cube_rotation.degree -= m_cube_rot_speed;
-            m_cube_rot_speed += 0.01f;
+            mCubeRotation.degree -= mCubeRotSpeed;
+            mCubeRotSpeed += 0.01f;
         }
 
-        if (m_lst_cubes_base_appear.isEmpty()) {
+        if (mCubesBaseAppear.isEmpty()) {
             m_t += 0.01f;
             if (m_t > 1.0f) m_t = 1.0f;
-            Utils.lerpCamera(m_camera_outro, m_camera_menu, m_t, mCameraCurrent);
-            Utils.lerpVector3(m_pos_light_outro, m_pos_light_menu, m_t, mPosLightCurrent);
+            Utils.lerpCamera(mCameraOutro, mCameraMenu, m_t, mCameraCurrent);
+            Utils.lerpVector3(mPosLightOutro, mPosLightMenu, m_t, mPosLightCurrent);
         }
 
         // do warm by factor
-        int size = m_lst_cubes_base.size();
+        int size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_base.get(i);
+            cube = mCubesBase.get(i);
             cube.warmByFactor(60);
         }
 
         if (done && Math.abs(1.0f - m_t) < EPSILON) {
             mState = OutroStateEnum.RotateFull;
-            m_draw_starfield = true;
-            m_stars_alpha = 0.0f;
+            mDrawStarfield = true;
+            mStarsAlpha = 0.0f;
             Game.audio.stopMusic();
         }
     }
 
-    public void updateInRotateFull() {
-        m_cube_rotation.degree -= m_cube_rot_speed;
+    private void updateInRotateFull() {
+        mCubeRotation.degree -= mCubeRotSpeed;
 
-        m_stars_alpha += 0.02f;
+        mStarsAlpha += 0.02f;
 
-        if (m_stars_alpha > 1.0f) {
+        if (mStarsAlpha > 1.0f) {
             mState = OutroStateEnum.OutroExplosion;
-            m_stars_alpha = 1.0f;
-            m_pos_cube_player = Game.getCubePosAt(new CubePos(4, 4, 4));
-            m_degreePlayerCube = 0.0f;
+            mStarsAlpha = 1.0f;
+            mPosCubePlayer = Game.getCubePosAt(new CubePos(4, 4, 4));
+            mDegreePlayerCube = 0.0f;
             setupExplosion();
             Game.audio.playMusic(MUSIC_VECTORS);
         }
 
-        m_starfield.alpha = m_stars_alpha * 255;
-        m_starfield.update();
+        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.update();
     }
 
-    public void updateInOutroExplosion() {
-        m_starfield.speed += 0.0003f;
-        m_degreePlayerCube += 1.0f;
+    private void updateInOutroExplosion() {
+        mStarfield.speed += 0.0003f;
+        mDegreePlayerCube += 1.0f;
 
         Cube cube;
-        int size = m_lst_cubes_base.size();
+        int size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_base.get(i);
+            cube = mCubesBase.get(i);
             cube.update();
 
             if (mTick % 4 == 0) {
-                cube.colorCurrent.randomize();
+                cube.colorCurrent.randomizeGray();
             }
         }
 
-        if ( (Math.ceil(m_cube_rotation.degree) % 360) != 0) {
-            m_cube_rotation.degree += 0.5f;
-        } else {
-            m_cube_rotation.degree = 0.0f;
+        float rot = (float)Math.ceil(mCubeRotation.degree);
+        if ((rot % 180) == 0 ) {
             mState = OutroStateEnum.OutroDone;
+        } else {
+            mCubeRotation.degree += 0.5f;
         }
 
-        m_starfield.alpha = m_stars_alpha * 255;
-        m_starfield.update();
+        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.update();
     }
 
-    public void updateInOutroDone() {
-        m_cube_rotation.degree += 0.5f;
-        m_starfield.speed += 0.0003f;
-        m_degreePlayerCube += 1.25f;
+    private void updateInOutroDone() {
+        mCubeRotation.degree += 0.5f;
+        mStarfield.speed += 0.0003f;
+        mDegreePlayerCube += 1.25f;
         mCubeTrazAlpha -= 2;
 
         if (mCubeTrazAlpha < 0) {
@@ -348,47 +344,49 @@ public final class Outro extends Scene {
         }
 
         Cube cube;
-        int size = m_lst_cubes_base.size();
+        int size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_base.get(i);
+            cube = mCubesBase.get(i);
             cube.colorCurrent.a = mCubeTrazAlpha;
             cube.update();
         }
 
-        m_starfield.alpha = m_stars_alpha * 255;
-        m_starfield.update();
+        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.update();
 
-        if (m_starfield.speed > 1.2f && mCubeTrazAlpha == 0) {
-            Game.showScene(Scene_Menu);
+        if (mStarfield.speed > 1.2f && mCubeTrazAlpha == 0) {
+            goToMenuScene();
         }
     }
 
-    public void drawTheCube() {
+    private void drawTheCube() {
+        Graphics graphics = Engine.graphics;
         graphics.bindStreamSources3d();
         graphics.resetBufferIndices();
 
         Cube cube;
-        int size = m_lst_cubes_base.size();
+        int size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_base.get(i);
+            cube = mCubesBase.get(i);
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.colorCurrent);
         }
 
-        size = m_lst_cubes_level.size();
+        size = mCubesLevel.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_lst_cubes_level.get(i);
+            cube = mCubesLevel.get(i);
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.colorCurrent);
         }
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
 
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+        graphics.textureGrayConcrete.bind();
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
     }
 
-    public void drawText() {
+    private void drawText() {
+        Graphics graphics = Engine.graphics;
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
@@ -398,42 +396,40 @@ public final class Outro extends Scene {
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
 
-        int a = (int)m_center_alpha * 255;
+        int a = (int) mCenterAlpha * 255;
 
         glDisable(GL_TEXTURE_2D);
-        Color color_bg = new Color(30, 30, 15, (int)m_center_alpha * 150);
+        Color color_bg = new Color(30, 30, 15, (int) mCenterAlpha * 150);
 
         graphics.bindStreamSources2dNoTextures();
         graphics.resetBufferIndices();
-        graphics.addQuad(0.0f, Graphics.half_height - 20.0f * Graphics.device_scale, Graphics.width, 75.0f * Graphics.device_scale, color_bg);
+        graphics.addQuad(0.0f, Engine.graphics.halfHeight - 20.0f * Engine.graphics.deviceScale, Engine.graphics.width, 75.0f * Engine.graphics.deviceScale, color_bg);
         graphics.updateBuffers();
         graphics.renderTriangles();
 
         graphics.bindStreamSources2d();
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_fonts_big);
+        graphics.textureFontsBig.bind();
 
-        float scale = 0.75f * Graphics.device_scale;
-        m_ar_text_center[0].setScale(scale, scale);
-        m_ar_text_center[1].setScale(scale, scale);
-
-        //printf("\na: %d", a);
+        float scale = 0.75f * Engine.graphics.deviceScale;
+        mTextCenter[0].setScale(scale, scale);
+        mTextCenter[1].setScale(scale, scale);
 
         Color color = new Color(0, 0, 0, a);
 
         graphics.resetBufferIndices();
 
         Vector2 pos = new Vector2();
-        pos.x = Graphics.half_width - m_ar_text_center[0].getHalfWidth();
-        pos.y = Graphics.half_height + m_ar_text_center[0].getHalfHeight();
-        m_ar_text_center[0].emitt(pos, color);
+        pos.x = Engine.graphics.halfWidth - mTextCenter[0].getHalfWidth();
+        pos.y = Engine.graphics.halfHeight + mTextCenter[0].getHalfHeight();
+        mTextCenter[0].emitt(pos, color);
 
-        pos.x = Graphics.half_width - m_ar_text_center[1].getHalfWidth();
-        pos.y = Graphics.half_height - m_ar_text_center[1].getHalfHeight();
-        m_ar_text_center[1].emitt(pos, color);
+        pos.x = Engine.graphics.halfWidth - mTextCenter[1].getHalfWidth();
+        pos.y = Engine.graphics.halfHeight - mTextCenter[1].getHalfHeight();
+        mTextCenter[1].emitt(pos, color);
 
         glPushMatrix();
-        glTranslatef(Graphics.device_scale, Graphics.device_scale, 0.0f);
+        glTranslatef(Engine.graphics.deviceScale, Engine.graphics.deviceScale, 0.0f);
         graphics.updateBuffers();
         graphics.renderTriangles();
         glPopMatrix();
@@ -442,13 +438,13 @@ public final class Outro extends Scene {
 
         graphics.resetBufferIndices();
 
-        pos.x = Graphics.half_width - m_ar_text_center[0].getHalfWidth();
-        pos.y = Graphics.half_height + m_ar_text_center[0].getHalfHeight();
-        m_ar_text_center[0].emitt(pos, color);
+        pos.x = Engine.graphics.halfWidth - mTextCenter[0].getHalfWidth();
+        pos.y = Engine.graphics.halfHeight + mTextCenter[0].getHalfHeight();
+        mTextCenter[0].emitt(pos, color);
 
-        pos.x = Graphics.half_width - m_ar_text_center[1].getHalfWidth();
-        pos.y = Graphics.half_height - m_ar_text_center[1].getHalfHeight();
-        m_ar_text_center[1].emitt(pos, color);
+        pos.x = Engine.graphics.halfWidth - mTextCenter[1].getHalfWidth();
+        pos.y = Engine.graphics.halfHeight - mTextCenter[1].getHalfHeight();
+        mTextCenter[1].emitt(pos, color);
 
         graphics.updateBuffers();
         graphics.renderTriangles();
@@ -458,6 +454,11 @@ public final class Outro extends Scene {
     }
 
     public void render() {
+        Graphics graphics = Engine.graphics;
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glEnable(GL_BLEND);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
@@ -471,7 +472,7 @@ public final class Outro extends Scene {
             glEnable(GL_TEXTURE_2D);
 
             Color color_dirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-            graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color_dirty);
+            graphics.drawFullScreenTexture(Engine.graphics.textureDirty, color_dirty);
 
             glDepthMask(true);
             glEnable(GL_LIGHTING);
@@ -483,7 +484,7 @@ public final class Outro extends Scene {
         graphics.zeroBufferPositions();
         graphics.resetBufferIndices();
 
-        if (m_draw_starfield) {
+        if (mDrawStarfield) {
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_LIGHTING);
 
@@ -493,7 +494,7 @@ public final class Outro extends Scene {
             glDepthMask(false);
 
             glEnable(GL_POINT_SMOOTH);
-            m_starfield.render();
+            mStarfield.render();
             glDisable(GL_POINT_SMOOTH);
 
             glEnable(GL_LIGHTING);
@@ -504,27 +505,27 @@ public final class Outro extends Scene {
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
 
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+        graphics.texturePlayer.bind();
 
         if (OutroStateEnum.OutroExplosion == mState || OutroStateEnum.OutroDone == mState) {
             glPushMatrix();
 
-            glRotatef(m_degreePlayerCube, 1.0f, 0.0f, 0.0f);
-            glRotatef(m_degreePlayerCube, 0.0f, 1.0f, 0.0f);
-            glRotatef(m_degreePlayerCube, 0.0f, 0.0f, 1.0f);
+            glRotatef(mDegreePlayerCube, 1.0f, 0.0f, 0.0f);
+            glRotatef(mDegreePlayerCube, 0.0f, 1.0f, 0.0f);
+            glRotatef(mDegreePlayerCube, 0.0f, 0.0f, 1.0f);
 
             graphics.resetBufferIndices();
-            graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
+            graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
             graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glPopMatrix();
         } else {
             glPushMatrix();
-            glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
+            glRotatef(mCubeRotation.degree, mCubeRotation.axis.x, mCubeRotation.axis.y, mCubeRotation.axis.z);
 
             graphics.resetBufferIndices();
-            graphics.addCube(m_pos_cube_player.x, m_pos_cube_player.y, m_pos_cube_player.z);
+            graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
             graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
@@ -533,29 +534,34 @@ public final class Outro extends Scene {
 
         if (mCubeTrazAlpha > 0) {
             glPushMatrix();
-            glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
+            glRotatef(mCubeRotation.degree, mCubeRotation.axis.x, mCubeRotation.axis.y, mCubeRotation.axis.z);
 
             drawTheCube();
 
-            if (false) { //#ifdef DRAW_AXES_CUBE
-                glDisable(GL_TEXTURE_2D);
-                glDisable(GL_LIGHTING);
-                graphics.drawAxes();
-                glEnable(GL_LIGHTING);
-                glEnable(GL_TEXTURE_2D);
-            } //#endif
+//            if (false) { //#ifdef DRAW_AXES_CUBE
+//                glDisable(GL_TEXTURE_2D);
+//                glDisable(GL_LIGHTING);
+//                graphics.drawAxes();
+//                glEnable(GL_LIGHTING);
+//                glEnable(GL_TEXTURE_2D);
+//            } //#endif
 
             glPopMatrix();
         }
-        if (m_center_alpha > EPSILON) {
+        if (mCenterAlpha > EPSILON) {
             drawText();
         }
     }
     
-    public void onFingerUp(float x, float y, int finger_count) {
+    public void onFingerUp(float x, float y, int fingerCount) {
         if (OutroStateEnum.OutroDone == mState) {
-            Game.showScene(Scene_Menu);
+            goToMenuScene();
         }
+    }
+
+    private void goToMenuScene() {
+        Game.audio.stopMusic();
+        Game.showScene(Scene_Menu);
     }
 
 }

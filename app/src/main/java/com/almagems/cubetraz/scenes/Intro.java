@@ -1,13 +1,14 @@
 package com.almagems.cubetraz.scenes;
 
+import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.Starfield;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
-import com.almagems.cubetraz.graphics.Graphics;
 
 import static android.opengl.GLES10.*;
 
@@ -54,7 +55,6 @@ public final class Intro extends Scene {
         mTick = 0;
         m_offset_y = 10.0f;
         m_stars_alpha = 1.0f;
-        setupCameras();
     }
 
     public void setupCameras() {
@@ -64,14 +64,15 @@ public final class Intro extends Scene {
         m_camera_end.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
         m_camera_end.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        m_camera_begin.eye = m_camera_begin.eye.scale(graphics.aspectRatio);
-        m_camera_end.eye = m_camera_end.eye.scale(graphics.aspectRatio);
+        m_camera_begin.eye = m_camera_begin.eye.scale(Engine.graphics.aspectRatio);
+        m_camera_end.eye = m_camera_end.eye.scale(Engine.graphics.aspectRatio);
 
         mCameraCurrent.eye.init(m_camera_begin.eye);
         mCameraCurrent.target.init(m_camera_begin.target);
     }
 
     public void init() {
+        setupCameras();
         mStarfield.speed = 0.2f;
         m_degree = 45.0f;
         mPosLightCurrent = new Vector(-10.0f, 3.0f, 12.0f);
@@ -86,9 +87,6 @@ public final class Intro extends Scene {
 
         mStarfield.alpha = m_stars_alpha;
 
-        glDisable(GL_BLEND);
-        glEnable(GL_LIGHT0);
-        
         setupCubetraz();
         
         mCanSkipIntro = Game.options.getCanSkipIntro();
@@ -623,6 +621,11 @@ public final class Intro extends Scene {
 
     @Override
     public void render() {
+        Graphics graphics = Engine.graphics;
+
+        glDisable(GL_BLEND);
+        glEnable(GL_LIGHT0);
+
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
         graphics.bindStreamSources2d();
@@ -633,7 +636,7 @@ public final class Intro extends Scene {
         glDepthMask(false);
 
         Color color_dirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-        graphics.drawFullScreenTexture(Graphics.texture_id_dirty, color_dirty);
+        graphics.drawFullScreenTexture(graphics.textureDirty, color_dirty);
 
         glDisable(GL_TEXTURE_2D);
         //graphics.drawAxes();
@@ -671,12 +674,10 @@ public final class Intro extends Scene {
         glDepthMask(true); //GL_TRUE);
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_player);
+        graphics.texturePlayer.bind();
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        Color color = Game.getBaseColor();
 
         graphics.resetBufferIndices();
         graphics.zeroBufferPositions();
@@ -688,12 +689,12 @@ public final class Intro extends Scene {
         size = m_list_cubes_base.size();
         for (int i = 0; i < size; ++i) {
             cube = m_list_cubes_base.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
         }
 
         int count_base = graphics._vertices_count - 36;
 
-        color = Game.getFaceColor(1f);
+        Color color = new Color(Game.faceColor);
 
         size = m_list_cubes_face.size();
         for (int i = 0; i < size; ++i) {
@@ -713,7 +714,7 @@ public final class Intro extends Scene {
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             if (count_base > 0 || count_face > 0) {
-                glBindTexture(GL_TEXTURE_2D, Graphics.texture_id_gray_concrete);
+                graphics.textureGrayConcrete.bind();
                 glPushMatrix();
                 glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
                 glDrawArrays(GL_TRIANGLES, 36, count_base);

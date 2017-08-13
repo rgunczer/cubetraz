@@ -10,38 +10,30 @@ import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.almagems.cubetraz.game.Engine;
-import com.almagems.cubetraz.game.Game;
 
 
 public final class MainRenderer implements Renderer {
 
-    private boolean surfaceCreated;
-    private int width;
-    private int height;
-
 	private long frameStartTimeMS;
-	public final Context context;
+    public final Context context;
+    public String sceneName;
 
-	// ctor
-	public MainRenderer(Context context) {
+	MainRenderer(Context context) {
+        System.out.println("MainRenderer.ctor");
 		this.context = context;
-        surfaceCreated = false;
-		Engine.activity = (MainActivity)context;
-		Engine.renderer = this;
+        Engine engine = Engine.getInstance();
+        engine.setRenderer(this);
+
+
 	}
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        //System.out.println("onSurfaceCreated...");
-        surfaceCreated = true;
-        width = -1;
-        height = -1;
+        System.out.println("MainRenderer.onSurfaceCreated");
         frameStartTimeMS = SystemClock.elapsedRealtime();
-    }
 
-    private void onCreate(GL10 gl, int width, int height, boolean contextLost) {
         Engine.createGraphicsObject(gl);
-        Engine.initGraphicsObject(width, height);
+        Engine.initGraphicsObject();
 
         try {
             Engine.graphics.loadStartupAssets();
@@ -53,34 +45,15 @@ public final class MainRenderer implements Renderer {
                 }
             });
             return;
-       }
+        }
 
-       Engine.createGameObject();
-       Engine.initGameObject();
+        Engine.createGameObject();
+        Engine.initGameObject();
     }
 
-	@Override
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-        if (!surfaceCreated && width == this.width && height == this.height) {
-            return;
-        }
-
-        String msg = "Surface changed width: " + width + ", height: " + height;
-
-        if (surfaceCreated) {
-            msg += " (context lost)";
-        } else {
-            msg += ".";
-        }
-
-        //System.out.println(msg);
-
-        this.width = width;
-        this.height = height;
-
-        onCreate(gl, width, height, surfaceCreated);
-		Engine.onSurfaceChanged(width, height);
-        surfaceCreated = false;
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+        Engine.onSurfaceChanged(width, height);
     }
 
 	@Override
@@ -100,31 +73,16 @@ public final class MainRenderer implements Renderer {
         frameStartTimeMS = SystemClock.elapsedRealtime();
     }
 
-	public void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
+    void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
 		Engine.handleTouchPress(normalizedX, normalizedY, fingerCount);
 	}
 	
-	public void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
+	void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
 		Engine.handleTouchDrag(normalizedX, normalizedY, fingerCount);
 	}
 	
-	public void handleTouchRelease(float normalizedX, float normalizedY) {
+	void handleTouchRelease(float normalizedX, float normalizedY) {
 		Engine.handleTouchRelease(normalizedX, normalizedY);
 	}
 
-    public void handleBackButtonPress() {
-        Engine.game.handleButton();
-    }
-
-    public void handleMenuButtonPress() {
-        Engine.game.showMenu();
-    }
-
-    public void resume() {
-        Game.audio.resume();
-    }
-
-    public void pause() {
-        Game.audio.pause();
-    }
 }

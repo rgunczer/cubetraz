@@ -1,27 +1,22 @@
 package com.almagems.cubetraz.game;
 
 import com.almagems.cubetraz.R;
-import com.almagems.cubetraz.utils.Starfield;
+import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.builder.LevelBuilder;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFaceData;
 import com.almagems.cubetraz.cubes.CubePos;
-import com.almagems.cubetraz.cubes.DeadCube;
-import com.almagems.cubetraz.cubes.MoverCube;
-import com.almagems.cubetraz.cubes.MovingCube;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.FontStruct;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.Rectangle;
-import com.almagems.cubetraz.graphics.Text;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 import com.almagems.cubetraz.scenes.anim.AnimInitData;
 import com.almagems.cubetraz.scenes.anim.Animator;
 import com.almagems.cubetraz.scenes.Intro;
-import com.almagems.cubetraz.scenes.level.Creator;
-import com.almagems.cubetraz.scenes.level.HUD;
+import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.scenes.level.Level;
 import com.almagems.cubetraz.scenes.menu.Menu;
 import com.almagems.cubetraz.scenes.Outro;
@@ -37,10 +32,8 @@ import java.util.Map;
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.game.Constants.*;
 
-
 public final class Game {
 
-    public static Graphics graphics;
     public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
 
     public static GameOptions options;
@@ -49,14 +42,16 @@ public final class Game {
     // audio
     public static Audio audio;
 
+    private boolean initialized;
+
     // scenes
-    public static Scene currentScene;
-    public static Intro intro;
+    private static Scene currentScene;
+    private static Intro intro;
     public static Menu menu;
-    public static Animator animator;
+    private static Animator animator;
     public static Level level;
-    public static Statistics statistics;
-    public static Outro outro;
+    private static Statistics statistics;
+    private static Outro outro;
 
     public static float dirtyAlpha;
     public static float minSwipeLength;
@@ -73,6 +68,15 @@ public final class Game {
 
     public static boolean canPlayLockedLevels = true;
 
+    public static Color faceColor = new Color(191, 204, 191, 255);
+    public static Color baseColor = new Color(200, 255, 255, 255);
+    public static Color titleColor = new Color(100, 0, 0, 200);
+    public static Color textColor = new Color(80, 0, 0, 130);
+    public static Color fontColorOnMenuCube = new Color(80, 0, 0, 230);
+    public static Color symbolColor = new Color(23, 23, 23, 150);
+    public static Color textColorOnCubeFace = new Color(76, 0, 0, 153);
+    public static Color levelNumberColor = new Color(0, 0, 0, 150);
+
     static {
         for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
             for(int j = 0; j < MAX_CUBE_COUNT; ++j) {
@@ -84,33 +88,28 @@ public final class Game {
             ar_cubefacedata[i] = new CubeFaceData();
         }
 
-        options = new GameOptions(Engine.activity);
+        options = new GameOptions();
         options.load();
 
-        progress = new GameProgress(Engine.activity);
+        progress = new GameProgress();
         progress.load();
-
-        audio = new Audio();
-        audio.init(Engine.activity, options.getMusicVolume(), options.getSoundVolume());
     }
 
-    // ctor
     public Game() {
-
+        //System.out.println("Game.ctor");
     }
 
     public void init() {
-        graphics = Engine.graphics;
+        //System.out.println("Game.init");
 
-        Text.graphics = graphics;
-        HUD.graphics = graphics;
-        Scene.graphics = graphics;
-        MovingCube.graphics = graphics;
-        MoverCube.graphics = graphics;
-        DeadCube.graphics = graphics;
-        Starfield.graphics = graphics;
+        if (initialized) {
+            return;
+        }
 
-        minSwipeLength = Graphics.height / 10;
+        initialized = true;
+
+        audio = new Audio();
+        audio.init(options.getMusicVolume(), options.getSoundVolume());
 
         intro = null;
         menu = null;
@@ -137,15 +136,19 @@ public final class Game {
         menu = new Menu();
 
         LevelBuilder.level = level;
+    }
 
-        showScene(Scene_Intro);
-        //showScene(Scene_Menu);
-        //showScene(Scene_Anim);
-        //showScene(Scene_Level);
-        //showScene(Scene_Stat);
-        //showScene(Scene_Outro);
+    public void onSurfaceChanged(int width, int height) {
+        minSwipeLength = Engine.graphics.height / 10;
 
-        graphics.warmCache();
+        if (currentScene == null) {
+            showScene(Scene_Intro);
+            //showScene(Scene_Menu);
+            //showScene(Scene_Anim);
+            //showScene(Scene_Level);
+            //showScene(Scene_Stat);
+            //showScene(Scene_Outro);
+        }
     }
 
     public static void resetCubesColors() {
@@ -264,15 +267,6 @@ public final class Game {
         resetCubesFonts();
     }
 
-    public static Color getFaceColor(float alpha) { return new Color( (int)(0.75f * 255), (int)(0.8f * 255), (int)(0.75f * 255), (int)(alpha * 255)); }
-    public static Color getBaseColor() { return new Color(255, 255, 255, 255); }
-    public static Color getTitleColor() { return new Color(139, 0, 0, 200); }
-    public static Color getTextColor() { return new Color(80, 0, 0, 130); }
-    public static Color getSymbolColor() { return new Color(76, 0, 0, 150);  }
-    public static Color getTextColorOnCubeFace() { return new Color(76, 0, 0, 153); }
-    public static Color getLockedLevelNumberColor() { return new Color(0, 0, 0, 60); }
-    public static Color getLevelNumberColor() { return new  Color(0, 0, 0, 150); }
-
     public static void showScene(int scene_id) {
         Scene scene = null;
 
@@ -361,7 +355,6 @@ public final class Game {
                 }
             }
         }
-        //printf("\nNum of Visible Cubes: %lu", m_list_cubes_to_draw.size());
     }
 
     public static void buildVisibleCubesListOnlyOnFaces(ArrayList<Cube> lst) {
@@ -376,7 +369,7 @@ public final class Game {
                             y == 0 || y == MAX_CUBE_COUNT - 1 ||
                             z == 0 || z == MAX_CUBE_COUNT - 1) {
                                 lst.add(cubes[x][y][z]);
-                                cubes[x][y][z].setColor( getFaceColor(1f) );
+                                cubes[x][y][z].setColor( faceColor );
                         }
                     }
                 }
@@ -384,37 +377,31 @@ public final class Game {
         }
     }
 
-    public static Vector getCubePosAt(CubePos cube_pos) {
+    public static Vector getCubePosAt(CubePos pos) {
+        return getCubePosAt(pos.x, pos.y, pos.z);
+    }
+
+    public static Vector getCubePosAt(int x, int y, int z) {
         Vector pos = new Vector();
 
-        pos.x = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tx;
-        pos.y = cubes[cube_pos.x][cube_pos.y][cube_pos.z].ty;
-        pos.z = cubes[cube_pos.x][cube_pos.y][cube_pos.z].tz;
+        pos.x = cubes[x][y][z].tx;
+        pos.y = cubes[x][y][z].ty;
+        pos.z = cubes[x][y][z].tz;
 
         return pos;
     }
 
     public static void renderToFBO(Scene scene) {
-        Graphics.saveOriginalFBO();
+        Graphics graphics = Engine.graphics;
 
-        Graphics.fbo.bind();
+        graphics.saveOriginalFBO();
+
+        graphics.fbo.bind();
         //glClearColor(1f, 0f, 0f, 0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.renderToFBO();
         //glClearColor(0f, 0f, 0f, 0f);
-        Graphics.restoreOriginalFBO();
-    }
-
-	public void onSurfaceChanged(int width, int height) {
-        //loading.init();
-    }
-
-    public void handleButton() {
-
-    }
-
-    public void showMenu() {
-
+        graphics.restoreOriginalFBO();
     }
 
 	public void update() {
@@ -454,7 +441,7 @@ public final class Game {
                         } else {
                             ++number_of_visible_cubes;
                             cubes[x][y][z].type = CubeTypeEnum.CubeIsVisibleAndObstacle;
-                            cubes[x][y][z].setColor(Color.WHITE);
+                            cubes[x][y][z].setColor(baseColor);
                         }
                     }
                 }
@@ -465,32 +452,32 @@ public final class Game {
         System.out.println("Number of Invisible Cubes: " + number_of_invisible_cubes);
     }
 
-    public static void setCubeTypeOnFace(Cube cube, char ch, int face_type, CubeFaceNamesEnum face_id) {
-        int level_number = -1;
+    public static void setCubeTypeOnFace(Cube cube, char ch, int face_type, CubeFaceNamesEnum faceName) {
+        int levelNumber = -1;
 
-        switch (face_id) {
+        switch (faceName) {
             case Face_Easy01:
             case Face_Normal01:
             case Face_Hard01:
-                level_number = 0;
+                levelNumber = 0;
                 break;
 
             case Face_Easy02:
             case Face_Normal02:
             case Face_Hard02:
-                level_number = 15;
+                levelNumber = 15;
                 break;
 
             case Face_Easy03:
             case Face_Normal03:
             case Face_Hard03:
-                level_number = 30;
+                levelNumber = 30;
                 break;
 
             case Face_Easy04:
             case Face_Normal04:
             case Face_Hard04:
-                level_number = 45;
+                levelNumber = 45;
                 break;
 
             default:
@@ -500,29 +487,29 @@ public final class Game {
         switch (ch) {
             case ' ': cube.type = CubeTypeEnum.CubeIsInvisible; return;
             case 'x': cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle; return;
-            case '1': level_number+=1; break;
-            case '2': level_number+=2; break;
-            case '3': level_number+=3; break;
-            case '4': level_number+=4; break;
-            case '5': level_number+=5; break;
-            case '6': level_number+=6; break;
-            case '7': level_number+=7; break;
-            case '8': level_number+=8; break;
-            case '9': level_number+=9; break;
-            case 'A': level_number+=10; break;
-            case 'B': level_number+=11; break;
-            case 'C': level_number+=12; break;
-            case 'D': level_number+=13; break;
-            case 'E': level_number+=14; break;
-            case 'F': level_number+=15; break;
+            case '1': levelNumber+=1; break;
+            case '2': levelNumber+=2; break;
+            case '3': levelNumber+=3; break;
+            case '4': levelNumber+=4; break;
+            case '5': levelNumber+=5; break;
+            case '6': levelNumber+=6; break;
+            case '7': levelNumber+=7; break;
+            case '8': levelNumber+=8; break;
+            case '9': levelNumber+=9; break;
+            case 'A': levelNumber+=10; break;
+            case 'B': levelNumber+=11; break;
+            case 'C': levelNumber+=12; break;
+            case 'D': levelNumber+=13; break;
+            case 'E': levelNumber+=14; break;
+            case 'F': levelNumber+=15; break;
             default:
-                //printf("\nERROR: Unknown cube type on face.");
+                System.out.println("Unknown cube type on face.");
                 return;
         } // switch
 
         cube.type = CubeTypeEnum.CubeIsInvisibleAndObstacle;
-        //printf("\nLevel Cube at: (%d,%d,%d)", pCube.x, pCube.y, pCube.z);
-        Creator.addLevelCube(level_number, face_type, face_id, cube.x, cube.y, cube.z);
+
+        Creator.addLevelCube(levelNumber, face_type, faceName, cube.x, cube.y, cube.z);
     }
 
     public static void setCubeTypeInvisible(CubePos cube_pos) {
@@ -790,7 +777,7 @@ public final class Game {
                 R, G, B, A,
         };
 
-        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
+        Engine.graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
     }
 
     // Scales a vector by a scalar
@@ -896,38 +883,40 @@ public final class Game {
         return false;
     }
 
-    public static int loadTutorTexture(final String name) {
-        if (Graphics.texture_id_tutor != 0) {
-            int[] arr = {Graphics.texture_id_tutor};
-            glDeleteTextures(arr.length, arr, 0);
+    public static Texture loadTutorTexture(final String name) {
+        Graphics graphics = Engine.graphics;
+
+        if (graphics.textureTutor != null) {
+            graphics.textureTutor.release();
+            graphics.textureTutor = null;
         }
 
         if (name.equals("tutor_swipe")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_swipe);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_swipe);
         } else if (name.equals("tutor_goal")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_goal);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_goal);
         } else if (name.equals("tutor_drag")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_drag);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_drag);
         } else if (name.equals("tutor_dead")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_dead);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_dead);
         } else if (name.equals("tutor_moving")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_moving);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_moving);
         } else if (name.equals("tutor_pusher")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_pusher);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_pusher);
         } else if (name.equals("tutor_plain")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_plain);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_plain);
         } else if (name.equals("tutor_menu_pause")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_pause);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_pause);
         } else if (name.equals("tutor_menu_undo")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_undo);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_undo);
         } else if (name.equals("tutor_menu_hint")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_hint);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_hint);
         } else if (name.equals("tutor_menu_solver")) {
-            Graphics.texture_id_tutor = graphics.loadTexture(R.drawable.tutor_menu_solver);
+            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_solver);
         } else {
             // bad!
         }
-        return Graphics.texture_id_tutor;
+        return graphics.textureTutor;
     }
 
     public static void initFontsBig() {
@@ -1365,35 +1354,28 @@ public final class Game {
                                         boolean z_plus,
                                         boolean z_minus) {
         if (z_minus) {
-            graphics.drawCubeFaceZ_Minus();
+            Engine.graphics.drawCubeFaceZ_Minus();
         }
 
         if (z_plus) {
-            graphics.drawCubeFaceZ_Plus();
+            Engine.graphics.drawCubeFaceZ_Plus();
         }
 
         if (x_plus) {
-            graphics.drawCubeFaceX_Plus();
+            Engine.graphics.drawCubeFaceX_Plus();
         }
 
         if (y_minus) {
-            graphics.drawCubeFaceY_Minus();
+            Engine.graphics.drawCubeFaceY_Minus();
         }
 
         if (x_minus) {
-            graphics.drawCubeFaceX_Minus();
+            Engine.graphics.drawCubeFaceX_Minus();
         }
 
         if (y_plus){
-            graphics.drawCubeFaceY_Plus();
+            Engine.graphics.drawCubeFaceY_Plus();
         }
-    }
-
-
-
-
-    public static void resetHelp() {
-        //printf("\nReset Help Here...\n");
     }
 
     public static float getTextWidth(final String text, float scale) {
@@ -1411,11 +1393,14 @@ public final class Game {
     }
 
     public static void drawFullScreenQuad(Color color) {
+        float w = Engine.graphics.width;
+        float h = Engine.graphics.height;
+
         final float[] verts = {
-            0.0f,              graphics.height,
-            0.0f,              0.0f,
-            graphics.width,    0.0f,
-            graphics.width,    graphics.height
+            0.0f, h,
+            0.0f, 0.0f,
+            w,    0.0f,
+            w,    h
         };
 
         final float[] colors = {

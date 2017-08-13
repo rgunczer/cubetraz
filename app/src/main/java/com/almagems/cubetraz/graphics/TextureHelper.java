@@ -6,13 +6,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+
+import com.almagems.cubetraz.game.Engine;
 //import android.util.Log;
 
 public final class TextureHelper {
 
 	//private static final String TAG = "TextureHelper";
 	
-	public static Texture loadTexture(Context context, int resourceId) {
+	public static Texture loadTexture(int resourceId) {
 		
 		final int[] textureObjectIds = new int[1];
 		glGenTextures(1, textureObjectIds, 0);
@@ -29,10 +31,10 @@ public final class TextureHelper {
 
         Texture texture = new Texture();
 
-		final Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+		final Bitmap bmp = BitmapFactory.decodeResource(Engine.getContext().getResources(), resourceId, options);
         final int w = bmp.getWidth();
         final int h = bmp.getHeight();
-        final String resourceName = context.getResources().getResourceEntryName(resourceId);
+        final String resourceName = Engine.getContext().getResources().getResourceEntryName(resourceId);
         //System.out.println("Texture info[" + resourceName + "], w:" + w + " h:" + h);
 
         texture.name = resourceName;
