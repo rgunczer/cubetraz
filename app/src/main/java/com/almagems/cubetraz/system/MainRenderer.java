@@ -32,8 +32,7 @@ public final class MainRenderer implements Renderer {
         System.out.println("MainRenderer.onSurfaceCreated");
         frameStartTimeMS = SystemClock.elapsedRealtime();
 
-        Engine.createGraphicsObject(gl);
-        Engine.initGraphicsObject();
+        Engine.createAndInitGraphicsObject(gl);
 
         try {
             Engine.graphics.loadStartupAssets();

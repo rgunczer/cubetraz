@@ -169,4 +169,22 @@ public final class FBO {
         m_FrameBuffer = frameBuffer[0];
     }
 
+    public void release() {
+        int[] arr = new int[1];
+
+        if (m_FrameBuffer != 0) {
+            arr[0] = m_FrameBuffer;
+            glDeleteFramebuffersOES(1, arr, 0);
+        }
+
+        if (m_ColorBuffer != 0) {
+            arr[0] = m_ColorBuffer;
+            glDeleteRenderbuffersOES(1, arr, 0);
+        }
+
+        if (m_DepthBuffer != 0) {
+            arr[0] = m_DepthBuffer;
+            glDeleteRenderbuffersOES(1, arr, 0);
+        }
+    }
 }

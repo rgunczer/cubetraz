@@ -76,9 +76,6 @@ public final class Graphics {
 
     public void initialSetup() {
 
-
-        //m_menu.SetupCameras(); TODO!
-
 //        m_banner_height = banner_height;
 //        m_scaleFactor = scaleFactor;
 //        this.device_type = device_type;
@@ -118,30 +115,28 @@ public final class Graphics {
 //
 //        int h = m_height - banner_height;
 
-
-
 //        m_fbo.createWithColorAndDepthStencilBuffer(width, height);
 //
 //        // make the OpenGL ModelView matrix the default
 //        glMatrixMode(GL_MODELVIEW);
 //
-        //glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        //glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        //glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+//        //glClearColor(0.4f, 0.4f, 0.4f, 0.0f);
+//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+////
+////        // setup material properties
+////        vec4 specular(1.0f, 1.0f, 1.0f, 1.0f);
+////        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
+////        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
+////
+//        glEnable(GL_COLOR_MATERIAL);
 //
-//        // setup material properties
-//        vec4 specular(1.0f, 1.0f, 1.0f, 1.0f);
-//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.Pointer());
-//        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 35.0f);
+//        glEnable(GL_CULL_FACE);
+//        glCullFace(GL_BACK);
 //
-        glEnable(GL_COLOR_MATERIAL);
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+//        glEnable(GL_DEPTH_TEST);
+//        glDepthFunc(GL_LEQUAL);
 
 //        // create frame buffer object
 //        glBindFramebufferOES(GL_FRAMEBUFFER_OES, m_framebuffer);
@@ -432,6 +427,53 @@ public final class Graphics {
         addVerticesCoordsNormalsColors(verts, coords, norms, colors);
 
         glBindTexture(GL_TEXTURE_2D, textureId);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+
+    public void drawFullScreenQuad(Color color) {
+//        float w = width;
+//        float h = height;
+//
+//        final float[] verts = {
+//                0.0f, h,
+//                0.0f, 0.0f,
+//                w,    0.0f,
+//                w,    h
+//        };
+//
+//        final float[] colors = {
+//                color.r, color.g, color.b, color.a,
+//                color.r, color.g, color.b, color.a,
+//                color.r, color.g, color.b, color.a,
+//                color.r, color.g, color.b, color.a
+//        };
+//
+//        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+//        glDisableClientState(GL_NORMAL_ARRAY);
+//
+//        //glVertexPointer(2, GL_FLOAT, 0, verts);
+//        //glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+//        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        final float verts[] = {
+                0f, height,
+                0f, 0f,
+                width, 0f,
+                width, height
+        };
+
+        final byte colors[] = {
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a,
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a,
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a,
+                (byte)color.r, (byte)color.g, (byte)color.b, (byte)color.a
+        };
+
+        final float coords[] = {};
+        final float norms[] = {};
+
+        addVerticesCoordsNormalsColors(verts, coords, norms, colors);
+
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
@@ -761,14 +803,25 @@ public final class Graphics {
             deviceScale = 1.25f;
         }
 
-        if (fbo == null) {
-            saveOriginalFBO();
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_COLOR_MATERIAL);
 
-            fbo = new FBO(width, height);
-            fbo.createWithColorAndDepthStencilBuffer();
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
-            restoreOriginalFBO();
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
+        if (fbo != null) {
+            fbo.release();
         }
+        saveOriginalFBO();
+
+        fbo = new FBO(width, height);
+        fbo.createWithColorAndDepthStencilBuffer();
+
+        restoreOriginalFBO();
     }
 
 //     inline void DumpVerticesBuffer(int count)

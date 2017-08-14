@@ -18,6 +18,7 @@ import com.almagems.cubetraz.scenes.anim.Animator;
 import com.almagems.cubetraz.scenes.Intro;
 import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.scenes.level.Level;
+import com.almagems.cubetraz.scenes.level.Solvers;
 import com.almagems.cubetraz.scenes.menu.Menu;
 import com.almagems.cubetraz.scenes.Outro;
 import com.almagems.cubetraz.scenes.Scene;
@@ -50,6 +51,7 @@ public final class Game {
     public static Menu menu;
     private static Animator animator;
     public static Level level;
+    private static Solvers solvers;
     private static Statistics statistics;
     private static Outro outro;
 
@@ -69,7 +71,7 @@ public final class Game {
     public static boolean canPlayLockedLevels = true;
 
     public static Color faceColor = new Color(191, 204, 191, 255);
-    public static Color baseColor = new Color(200, 255, 255, 255);
+    public static Color baseColor = new Color(230, 230, 230, 255);
     public static Color titleColor = new Color(100, 0, 0, 200);
     public static Color textColor = new Color(80, 0, 0, 130);
     public static Color fontColorOnMenuCube = new Color(80, 0, 0, 230);
@@ -267,10 +269,10 @@ public final class Game {
         resetCubesFonts();
     }
 
-    public static void showScene(int scene_id) {
+    public static void showScene(int sceneId) {
         Scene scene = null;
 
-        switch (scene_id) {
+        switch (sceneId) {
             case Scene_Intro:
                 intro = new Intro();
                 intro.init();
@@ -302,6 +304,14 @@ public final class Game {
                 scene = level;
                 break;
 
+            case Scene_Solvers:
+                if (solvers == null) {
+                    solvers = new Solvers();
+                }
+                solvers.init();
+                scene = solvers;
+                break;
+
             case Scene_Stat:
                 if (statistics == null) {
                     statistics = new Statistics();
@@ -316,6 +326,10 @@ public final class Game {
                 }
                 outro.init();
                 scene = outro;
+                break;
+
+            default:
+                System.out.println("ShowScene: SCENE NOT FOUND!");
                 break;
         }
         currentScene = scene;
@@ -397,10 +411,10 @@ public final class Game {
         graphics.saveOriginalFBO();
 
         graphics.fbo.bind();
-        //glClearColor(1f, 0f, 0f, 0f);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.renderToFBO();
-        //glClearColor(0f, 0f, 0f, 0f);
+
         graphics.restoreOriginalFBO();
     }
 
@@ -1392,31 +1406,7 @@ public final class Game {
         return width;
     }
 
-    public static void drawFullScreenQuad(Color color) {
-        float w = Engine.graphics.width;
-        float h = Engine.graphics.height;
 
-        final float[] verts = {
-            0.0f, h,
-            0.0f, 0.0f,
-            w,    0.0f,
-            w,    h
-        };
-
-        final float[] colors = {
-            color.r, color.g, color.b, color.a,
-            color.r, color.g, color.b, color.a,
-            color.r, color.g, color.b, color.a,
-            color.r, color.g, color.b, color.a
-        };
-
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-
-        // glVertexPointer(2, GL_FLOAT, 0, verts);
-        // glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    }
 
 
 

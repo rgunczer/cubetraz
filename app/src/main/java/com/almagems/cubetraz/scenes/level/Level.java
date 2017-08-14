@@ -1131,12 +1131,13 @@ public final class Level extends Scene {
         if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.isEmpty() && m_ad_base.lst_disappear.isEmpty()) {
             m_cube_rotation.degree = m_target_rotation_degree;
 
-//            if (DifficultyEnum.Hard == mDifficulty && 61 == mLevelNumber) {
-//                Game.showScene(Scene_Outro);
-//            } else {
-//                setupAppear();
-//            }
-            Game.showScene(Scene_Outro);
+            // TODO: later
+            if (DifficultyEnum.Hard == mDifficulty && 61 == mLevelNumber) {
+                Game.showScene(Scene_Outro);
+            } else {
+                setupAppear();
+            }
+//            Game.showScene(Scene_Outro);
         }
     }
     
@@ -2507,6 +2508,20 @@ public final class Level extends Scene {
 
         glDisable(GL_BLEND);
 
+        // draw key cube
+        graphics.resetBufferIndices();
+
+        glEnable(GL_LIGHTING);
+        Engine.graphics.textureKey.bind();
+
+        CubePos pos = m_cube_pos_key;
+        Cube keyCube = Game.cubes[pos.x][pos.y][pos.z];
+
+
+        graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE - 0.01f, Color.WHITE);
+        graphics.updateBuffers();
+        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+
         // draw player cube
         graphics.resetBufferIndices();
 
@@ -2615,27 +2630,28 @@ public final class Level extends Scene {
     }
 
     public void eventSolver() {
-//        if (LevelNextActionEnum.ShowSceneSolvers == m_next_action || LevelStateEnum.PrepareSolving == mState) {
-//            return;
-//        }
-//
-//        boolean solved = false;
-//
-//        switch (mDifficulty) {
-//            case Easy: solved = GameProgress.getSolvedEasy(mLevelNumber); break;
-//            case Normal: solved = GameProgress.getSolvedNormal(mLevelNumber); break;
-//            case Hard: solved = GameProgress.getSolvedHard(mLevelNumber); break;
-//        }
-//
+        if (LevelNextActionEnum.ShowSceneSolvers == m_next_action || LevelStateEnum.PrepareSolving == mState) {
+            return;
+        }
+
+        boolean solved = false;
+
+        switch (mDifficulty) {
+            case Easy: solved = Game.progress.getSolvedEasy(mLevelNumber); break;
+            case Normal: solved = Game.progress.getSolvedNormal(mLevelNumber); break;
+            case Hard: solved = Game.progress.getSolvedHard(mLevelNumber); break;
+        }
+
+        // TODO: uncomment later
 //        if (solved) {
 //            reset();
 //            mState = LevelStateEnum.PrepareSolving;
 //            m_timeout = 2.0f;
 //        } else {
-//            m_next_action = LevelNextActionEnum.ShowSceneSolvers;
+            m_next_action = LevelNextActionEnum.ShowSceneSolvers;
 //        }
-//
-//        mHud.setupDisappear();
+
+        mHud.setupDisappear();
     }
 
     public void eventQuit() {

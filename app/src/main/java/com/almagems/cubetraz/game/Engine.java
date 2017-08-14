@@ -88,12 +88,11 @@ public final class Engine {
     public static Graphics graphics;
     public static Game game;
 
-    public static void createGraphicsObject(GL10 gl) {
-        graphics = new Graphics(gl);
-    }
-
-    public static void initGraphicsObject() {
-        graphics.initialSetup();
+    public static void createAndInitGraphicsObject(GL10 gl) {
+        if (graphics == null) {
+            graphics = new Graphics(gl);
+            graphics.initialSetup();
+        }
     }
 
     public static void createGameObject() {

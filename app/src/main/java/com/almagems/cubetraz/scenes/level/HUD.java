@@ -682,10 +682,10 @@ public final class HUD {
 	    float hint_quad_y   = Engine.graphics.height * 0.38f;
 	    float solver_quad_y = Engine.graphics.height * 0.1f;
 
-        Color color_icon = new Color(139, 0, 0, (int)m_icons_alpha);
-        Color color_text = new Color(225,10,50,200);//220, 20, 60, 240);
-        Color color_hilite = new Color(255, 228, 225, m_icons_alpha);
-        Color color_shadow = new Color(0, 0, 0, (int)(m_icons_alpha / 2));
+        Color color_icon = new Color(200, 200, 200, 200);
+        Color color_text = new Color(160, 160, 160, 200);
+        Color color_hilite = new Color(240, 240, 240, m_icons_alpha);
+        Color color_shadow = new Color(80, 80, 80, (m_icons_alpha / 2));
     
         float shadow_offset_x = 2.5f * Engine.graphics.deviceScale;
         float shadow_offset_y = 2.5f * Engine.graphics.deviceScale;
@@ -777,8 +777,7 @@ public final class HUD {
             m_text_hint.emitt(pos, m_hilite_hint ? color_hilite : color_text);
         }
         
-        //if (m_text_solver.isVisible()) {
-        if (false) {
+        if (m_text_solver.isVisible()) {
             pos.x = m_pos_x_text_left + shadow_offset_x;
             pos.y = solver_quad_y - yOffset + shadow_offset_y;
             m_text_solver.emitt(pos, color_shadow);
@@ -866,12 +865,12 @@ public final class HUD {
         graphics.addQuad(ics, 5.0f * Engine.graphics.deviceScale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, color_shadow);
         graphics.addQuad(ics, 5.0f * Engine.graphics.deviceScale,                   hint_quad_y,                    tcoords, m_hilite_hint ? color_hilite : color_icon);
     
-//        tcoords.tx0 = m_symbol_solver.tx_lo_left;
-//        tcoords.tx1 = m_symbol_solver.tx_lo_right;
-//        tcoords.tx2 = m_symbol_solver.tx_up_right;
-//        tcoords.tx3 = m_symbol_solver.tx_up_left;
-//        graphics.addQuad(ics, 5.0f * Engine.graphics.deviceScale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
-//        graphics.addQuad(ics, 5.0f * Engine.graphics.deviceScale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
+        tcoords.tx0 = m_symbol_solver.tx_lo_left;
+        tcoords.tx1 = m_symbol_solver.tx_lo_right;
+        tcoords.tx2 = m_symbol_solver.tx_up_right;
+        tcoords.tx3 = m_symbol_solver.tx_up_left;
+        graphics.addQuad(ics, 5.0f * Engine.graphics.deviceScale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, color_shadow);
+        graphics.addQuad(ics, 5.0f * Engine.graphics.deviceScale, solver_quad_y, tcoords, m_hilite_solver ? color_hilite : color_icon);
 
         tcoords.tx0 = m_symbol_star.tx_lo_left;
         tcoords.tx1 = m_symbol_star.tx_lo_right;
