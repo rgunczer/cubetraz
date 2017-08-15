@@ -858,12 +858,14 @@ public final class Level extends Scene {
 
         mPlayerCube.moveOnAxis(movement);
 
-        UndoData ud = m_lst_undo.get( m_lst_undo.size() - 1);
-        ud.moving_cube = mPlayerCube.m_moving_cube; //m_lst_moving_cubes.front();
+        if (m_lst_undo.size() > 0) {
+            UndoData ud = m_lst_undo.get(m_lst_undo.size() - 1);
+            ud.moving_cube = mPlayerCube.m_moving_cube; //m_lst_moving_cubes.front();
 
-        if (ud.moving_cube != null) {
-            ud.moving_cube_move_dir = ud.moving_cube.getMovement();
-            ud.moving_cube_pos = ud.moving_cube.getCubePos();
+            if (ud.moving_cube != null) {
+                ud.moving_cube_move_dir = ud.moving_cube.getMovement();
+                ud.moving_cube_pos = ud.moving_cube.getCubePos();
+            }
         }
     }
     
@@ -2517,8 +2519,7 @@ public final class Level extends Scene {
         CubePos pos = m_cube_pos_key;
         Cube keyCube = Game.cubes[pos.x][pos.y][pos.z];
 
-
-        graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE - 0.01f, Color.WHITE);
+        graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE * 0.98f, Color.WHITE);
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 

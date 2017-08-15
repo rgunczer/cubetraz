@@ -66,9 +66,8 @@ public final class Statistics extends Scene {
 
     private boolean canDismiss() { return m_can_dismiss; }
 
+    private Vector2 rot = new Vector2(3f, 0f);
 
-
-    // ctor
     public Statistics() {
         mCameraCurrent.eye = new Vector(0.0f, 10.0f, 30.0f);
         mCameraCurrent.target = new Vector(0.0f, 0.0f, 0.0f);
@@ -149,7 +148,7 @@ public final class Statistics extends Scene {
         m_stars_y = Engine.graphics.height * 0.75f;
         m_rating_y = Engine.graphics.height * 0.5f;
 
-        m_title_y = Engine.graphics.height * 0.3f;
+        m_title_y = Engine.graphics.height * 0.33f;
         m_moves_y = Engine.graphics.height * 0.2f;
         m_tap_y = Engine.graphics.height * 0.017f;
     }
@@ -261,6 +260,7 @@ public final class Statistics extends Scene {
             case StatShow:
                 trans += 0.15f;
                 zoom = (float)(Math.sin(trans) * 22.0f);
+                rot.rotateRad(0.025f);
                 break;
 
             default:
@@ -347,7 +347,7 @@ public final class Statistics extends Scene {
         glPopMatrix();
     }
 
-    public boolean drawText(Color color) {
+    public boolean drawText(Color color, Color tapToContinueColor) {
         Graphics graphics = Engine.graphics;
         boolean shouldDraw = false;
         Vector2 pos = new Vector2();
@@ -391,7 +391,7 @@ public final class Statistics extends Scene {
             pos.x = graphics.halfWidth - mTextTap.getHalfWidth();
             pos.y = m_tap_y;
 
-            mTextTap.emitt(pos, color);
+            mTextTap.emitt(pos, tapToContinueColor);
             shouldDraw = true;
         }
         return shouldDraw;
@@ -415,7 +415,7 @@ public final class Statistics extends Scene {
 
         byte a = (byte)(int)(mStarAlpha * 255);
 
-        Color color_text = new Color(75, 75, 75, 240);
+        Color color_text = new Color(175, 0, 0, 200);
 
         final byte colors_red[] = {
             (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a,
@@ -529,19 +529,20 @@ public final class Statistics extends Scene {
 
         graphics.textureFontsBig.bind();
 
-        color = new Color(0, 0, 0, 225);
+        color = new Color(0, 0, 0, 200);
         boolean shouldDraw;
-        shouldDraw = drawText(color);
+        shouldDraw = drawText(color, color);
         if (shouldDraw) {
             glPushMatrix();
-                glTranslatef(-2.0f * graphics.deviceScale, -2.0f * graphics.deviceScale, 0.0f);
+                glTranslatef(rot.x * graphics.deviceScale, rot.y * graphics.deviceScale, 0.0f);
                 graphics.updateBuffers();
                 graphics.renderTriangles();
             glPopMatrix();
         }
 
-        color = new Color(120, 120, 120, 255);
-        shouldDraw = drawText(color);
+        Color colorTapToContinue = new Color(240, 200, 200, 250);
+        color = new Color(200, 0, 0, 250);
+        shouldDraw = drawText(color, colorTapToContinue);
         if (shouldDraw) {
             graphics.updateBuffers();
             graphics.renderTriangles();

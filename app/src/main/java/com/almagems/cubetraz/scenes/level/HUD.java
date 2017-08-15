@@ -303,7 +303,7 @@ public final class HUD {
         mTextSolver.init(str, true);
     }
 
-    public void showPrepareSolving(boolean value, int moves_count) {
+    public void showPrepareSolving(boolean value, int movesCount) {
         if (mShowPrepareSolving == value) {
             return;
         }
@@ -311,11 +311,9 @@ public final class HUD {
         if (value) {
             mShowPrepareSolving = value;
         }
-    
-        String str = "IN " + moves_count + " MOVES";
-        
+
         mArTextCenter[0].init("THE SOLUTION", true);
-        mArTextCenter[1].init(str, true);
+        mArTextCenter[1].init("IN " + movesCount + " MOVES", true);
     
         mCenterAlpha = (value ? 0.0f : 1.0f);
     
@@ -667,24 +665,20 @@ public final class HUD {
 
     public void render() {
         Graphics graphics = Engine.graphics;
-//        renderForPicking();
-//        if (true) {
-//            return;
-//        }
-    
+
         float scale;
 	    float pause_quad_y  = graphics.height * 0.91f;
         float undo_quad_y   = graphics.height * 0.67f;
 	    float hint_quad_y   = graphics.height * 0.38f;
 	    float solver_quad_y = graphics.height * 0.1f;
 
-        Color colorIcon = new Color(140, 140, 140, mIconsAlpha);
-        Color colorText = new Color(120, 120, 120, mIconsAlpha);
-        Color colorHilite = new Color(220, 220, 220, mIconsAlpha);
+        Color colorIcon = new Color(120, 100, 100, mIconsAlpha);
+        Color colorText = new Color(100, 100, 100, mIconsAlpha);
+        Color colorHilite = new Color(200, 200, 200, mIconsAlpha);
         Color colorShadow = new Color(80, 80, 80, (mIconsAlpha / 2));
     
-        float shadow_offset_x = 1.75f * graphics.deviceScale;
-        float shadow_offset_y = 1.75f * graphics.deviceScale;
+        float shadow_offset_x = 1.5f * graphics.deviceScale;
+        float shadow_offset_y = 1.5f * graphics.deviceScale;
     
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -782,7 +776,10 @@ public final class HUD {
             pos.y = solver_quad_y - yOffset;
             mTextSolver.emitt(pos, mHiliteSolver ? colorHilite : colorText);
         }
-    
+
+        graphics.updateBuffers();
+        graphics.renderTriangles();
+
         if (mShowPrepareSolving) {
             int a = (int) mCenterAlpha * 255;
         
@@ -794,7 +791,14 @@ public final class HUD {
             graphics.addQuad(0.0f, graphics.halfHeight - 20.0f * graphics.deviceScale, graphics.width, 75.0f * graphics.deviceScale, color_bg);
             graphics.updateBuffers();
             graphics.renderTriangles();
-        
+
+
+            graphics.setProjection2D();
+            graphics.setModelViewMatrix2D();
+            graphics.zeroBufferPositions();
+            graphics.resetBufferIndices();
+            graphics.bindStreamSources2d();
+
             glEnable(GL_TEXTURE_2D);
             graphics.textureFontsBig.bind();
         
@@ -827,10 +831,10 @@ public final class HUD {
             pos.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
             pos.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
             mArTextCenter[1].emitt(pos, color);
+
+            graphics.updateBuffers();
+            graphics.renderTriangles();
         }
-    
-        graphics.updateBuffers();
-        graphics.renderTriangles();
 
         graphics.textureSymbols.bind();
 
