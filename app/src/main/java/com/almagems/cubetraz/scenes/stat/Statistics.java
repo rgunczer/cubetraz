@@ -149,7 +149,7 @@ public final class Statistics extends Scene {
         m_stars_y = Engine.graphics.height * 0.75f;
         m_rating_y = Engine.graphics.height * 0.5f;
 
-        m_title_y = Engine.graphics.height * 0.33f;
+        m_title_y = Engine.graphics.height * 0.3f;
         m_moves_y = Engine.graphics.height * 0.2f;
         m_tap_y = Engine.graphics.height * 0.017f;
     }
@@ -259,8 +259,8 @@ public final class Statistics extends Scene {
                 break;
 
             case StatShow:
-                trans += 0.175f;
-                zoom = (float)(Math.sin(trans) * 12.0f);
+                trans += 0.15f;
+                zoom = (float)(Math.sin(trans) * 22.0f);
                 break;
 
             default:
@@ -348,15 +348,16 @@ public final class Statistics extends Scene {
     }
 
     public boolean drawText(Color color) {
+        Graphics graphics = Engine.graphics;
         boolean shouldDraw = false;
         Vector2 pos = new Vector2();
         float scale;
 
         if (m_DrawTitle) {
-            scale = Engine.graphics.deviceScale + m_text_scales[0];
-            mTextTitle.setScale(scale + (0.3f * Engine.graphics.deviceScale), scale + (0.6f * Engine.graphics.deviceScale));
+            scale = graphics.deviceScale + m_text_scales[0];
+            mTextTitle.setScale(scale + (0.3f * graphics.deviceScale), scale + (0.6f * graphics.deviceScale));
 
-            pos.x = Engine.graphics.halfWidth - mTextTitle.getHalfWidth();
+            pos.x = graphics.halfWidth - mTextTitle.getHalfWidth();
             pos.y = m_rating_y - mTextTitle.getHalfHeight();
             mTextTitle.emitt(pos, color);
             shouldDraw = true;
@@ -364,19 +365,19 @@ public final class Statistics extends Scene {
 
         if (m_DrawMoves) {
             // middle
-            scale = Engine.graphics.deviceScale * 0.9f;
-            mTextMiddle.setScale(scale, scale + (0.2f * Engine.graphics.deviceScale));
+            scale = graphics.deviceScale * 0.9f;
+            mTextMiddle.setScale(scale, scale + (0.2f * graphics.deviceScale));
 
-            pos.x = Engine.graphics.halfWidth - mTextMiddle.getHalfWidth();
+            pos.x = graphics.halfWidth - mTextMiddle.getHalfWidth();
             pos.y = m_title_y - mTextMiddle.getHalfHeight();
 
             mTextMiddle.emitt(pos, color);
 
             // moves
-            scale = Engine.graphics.deviceScale + m_text_scales[2] - (0.25f * Engine.graphics.deviceScale);
-            mTextMoves.setScale(scale + (0.1f * Engine.graphics.deviceScale), scale + (0.1f * Engine.graphics.deviceScale));
+            scale = graphics.deviceScale + m_text_scales[2] - (0.25f * graphics.deviceScale);
+            mTextMoves.setScale(scale + (0.1f * graphics.deviceScale), scale + (0.1f * graphics.deviceScale));
 
-            pos.x = Engine.graphics.halfWidth - mTextMoves.getHalfWidth();
+            pos.x = graphics.halfWidth - mTextMoves.getHalfWidth();
             pos.y = m_moves_y - mTextMoves.getHalfHeight();
 
             mTextMoves.emitt(pos, color);
@@ -384,10 +385,10 @@ public final class Statistics extends Scene {
         }
 
         if (m_DrawTap) {
-            scale = Engine.graphics.deviceScale * 0.25f;
-            mTextTap.setScale(scale + (0.3f * Engine.graphics.deviceScale), scale + (0.3f * Engine.graphics.deviceScale));
+            scale = graphics.deviceScale * 0.25f;
+            mTextTap.setScale(scale + (0.3f * graphics.deviceScale), scale + (0.3f * graphics.deviceScale));
 
-            pos.x = Engine.graphics.halfWidth - mTextTap.getHalfWidth();
+            pos.x = graphics.halfWidth - mTextTap.getHalfWidth();
             pos.y = m_tap_y;
 
             mTextTap.emitt(pos, color);
@@ -414,7 +415,7 @@ public final class Statistics extends Scene {
 
         byte a = (byte)(int)(mStarAlpha * 255);
 
-        Color color_text = new Color(220, 20, 60, 240);
+        Color color_text = new Color(75, 75, 75, 240);
 
         final byte colors_red[] = {
             (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a,
@@ -423,7 +424,7 @@ public final class Statistics extends Scene {
             (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a
         };
 
-        byte maxColor = (byte)255;
+        byte maxColor = (byte)200;
         final byte colors_yellow[] = {
             maxColor, maxColor, 0, a,
             maxColor, maxColor, 0, a,
@@ -433,18 +434,18 @@ public final class Statistics extends Scene {
 
         graphics.addVerticesCoordsColors(verts, coords, colors_red);
 
-        float s = Engine.graphics.width * 0.14f;
-        float w = Engine.graphics.width * 0.2f;
+        float s = graphics.width * 0.14f;
+        float w = graphics.width * 0.2f;
         float half_w = w / 2.0f;
-        float x = Engine.graphics.halfWidth - ((w * mStarCount) / 2.0f);
+        float x = graphics.halfWidth - ((w * mStarCount) / 2.0f);
         float y = m_stars_y;
-        float raise = 3.0f * Engine.graphics.deviceScale;
+        float raise = 3.0f * graphics.deviceScale;
 
         for (int i = 0; i < mStarCount; ++i) {
             glPushMatrix();
                 glTranslatef(x + (i * w) + half_w, y, 0.0f);
                 glRotatef(zoom, 0.0f, 0.0f, 1.0f);
-                glScalef(s + zoom, s + zoom, 1.0f);
+                glScalef(s, s, 1.0f);
                 glScalef(1.2f, 1.2f, 1.0f);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
             glPopMatrix();
@@ -459,7 +460,7 @@ public final class Statistics extends Scene {
             glPushMatrix();
                 glTranslatef(x + (i * w) + half_w, y, 0.0f);
                 glRotatef(zoom, 0.0f, 0.0f, 1.0f);
-                glScalef(s + zoom, s + zoom, 1.0f);
+                glScalef(s, s, 1.0f);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
             glPopMatrix();
             y += raise;
@@ -483,7 +484,7 @@ public final class Statistics extends Scene {
         graphics.setModelViewMatrix2D();
         graphics.bindStreamSources2d();
 
-        graphics.drawFullScreenTexture(Engine.graphics.fbo, Color.WHITE);
+        graphics.drawFullScreenTexture(graphics.fbo, Color.WHITE);
 
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(mCameraCurrent);
@@ -533,13 +534,13 @@ public final class Statistics extends Scene {
         shouldDraw = drawText(color);
         if (shouldDraw) {
             glPushMatrix();
-                glTranslatef(-2.0f * Engine.graphics.deviceScale, -2.0f * Engine.graphics.deviceScale, 0.0f);
+                glTranslatef(-2.0f * graphics.deviceScale, -2.0f * graphics.deviceScale, 0.0f);
                 graphics.updateBuffers();
                 graphics.renderTriangles();
             glPopMatrix();
         }
 
-        color = new Color(225, 10, 50, 255);
+        color = new Color(120, 120, 120, 255);
         shouldDraw = drawText(color);
         if (shouldDraw) {
             graphics.updateBuffers();

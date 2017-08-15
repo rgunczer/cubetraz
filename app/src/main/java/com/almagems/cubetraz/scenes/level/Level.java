@@ -2795,6 +2795,8 @@ public final class Level extends Scene {
 
             mPlayerCube.setCubePos(ud.player_pos);
 
+            mHud.setTextUndo(m_lst_undo.size());
+
             if (null != ud.moving_cube) {
                 ud.moving_cube.init(ud.moving_cube_pos, ud.moving_cube_move_dir);
             }
