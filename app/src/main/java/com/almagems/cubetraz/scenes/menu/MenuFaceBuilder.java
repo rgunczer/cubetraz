@@ -580,7 +580,7 @@ public final class MenuFaceBuilder {
 		"xxx     x" +
 		"xOPTIONSx" +
 		"xx     xx" +
-		"xEXTRA  x" +
+		"xSCORE  x" +
 		"xxxxxxx x";
 	    
 	   	final String easy2 =
@@ -629,13 +629,13 @@ public final class MenuFaceBuilder {
 	
 	    final String store =
 		"xxxxxxx x" +
-		"xx      x" +
-		"xHINT   x" +
-		"xx      x" +
-		"xSOLVER x" +
-		"xx      x" +
-		"xUNLOCK x" +
-		"xx      x" +
+		"x       x" +
+		"xSTARS  x" +
+		"xx540   x" +
+		"x       x" +
+		"xSOLVED x" +
+		"xx180   x" +
+		"x xx xx x" +
 		"xxxxxxxxx";
 			
 		final String easy1 =
@@ -813,7 +813,7 @@ public final class MenuFaceBuilder {
 		"xxxxxxx x";
 
 	    final String store =
-		"EXTRA   x" +
+		"SCORE   x" +
 		"x       x" +
 		"xx      x" +
 		"x       x" +
