@@ -672,10 +672,10 @@ public final class HUD {
 	    float hint_quad_y   = graphics.height * 0.38f;
 	    float solver_quad_y = graphics.height * 0.1f;
 
-        Color colorIcon = new Color(120, 100, 100, mIconsAlpha);
-        Color colorText = new Color(100, 100, 100, mIconsAlpha);
-        Color colorHilite = new Color(200, 200, 200, mIconsAlpha);
-        Color colorShadow = new Color(80, 80, 80, (mIconsAlpha / 2));
+        Color colorIcon = new Color(140, 0, 0, mIconsAlpha);
+        Color colorText = new Color(225, 10, 50, mIconsAlpha);
+        Color colorHilite = new Color(240, 240, 240, mIconsAlpha);
+        Color colorShadow = new Color(0, 0, 0, mIconsAlpha);
     
         float shadow_offset_x = 1.5f * graphics.deviceScale;
         float shadow_offset_y = 1.5f * graphics.deviceScale;

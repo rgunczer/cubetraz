@@ -415,7 +415,7 @@ public final class Statistics extends Scene {
 
         byte a = (byte)(int)(mStarAlpha * 255);
 
-        Color color_text = new Color(175, 0, 0, 200);
+        Color color_text = new Color(240, 0, 0, 255);
 
         final byte colors_red[] = {
             (byte)color_text.r, (byte)color_text.g, (byte)color_text.b, a,
@@ -540,8 +540,8 @@ public final class Statistics extends Scene {
             glPopMatrix();
         }
 
-        Color colorTapToContinue = new Color(240, 200, 200, 250);
-        color = new Color(200, 0, 0, 250);
+        Color colorTapToContinue = new Color(240, 240, 240, 250);
+        color = new Color(240, 0, 0, 255);
         shouldDraw = drawText(color, colorTapToContinue);
         if (shouldDraw) {
             graphics.updateBuffers();
