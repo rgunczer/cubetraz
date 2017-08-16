@@ -146,4 +146,20 @@ public final class GameProgress {
         return stars;
     }
 
+    public int getSolvedLevelCount() {
+        int solved = 0;
+        for(int i = 0; i < MAX_LEVELS - 1; ++i) {
+            if (ar_levels_easy[i].stars > 0) {
+                ++solved;
+            }
+            if (ar_levels_normal[i].stars > 0) {
+                ++solved;
+            }
+            if (ar_levels_hard[i].stars > 0) {
+                ++solved;
+            }
+        }
+        return solved;
+    }
+
 }

@@ -322,23 +322,6 @@ public final class Creator {
         menuCube = new MenuCube();
 	    menuCube.init(new CubePos(1, 8, 6), new Color(252, 255, 255, 255));
         menu.m_arOptionsCubes[3] = menuCube;
-    
-    
-        // store cubes
-        menuCube = new MenuCube();
-        menuCube.init(new CubePos(1,0,6), new Color(40, 255, 255, 255));
-        menuCube.setHiliteOffset(new CubePos(0,1,0));
-        menu.m_pStoreCubeNoAds = menuCube;
-    
-        menuCube = new MenuCube();
-        menuCube.init(new CubePos(1,0,4), new Color(50, 255, 255, 255));
-        menuCube.setHiliteOffset(new CubePos(0,1,0));
-        menu.m_pStoreCubeSolvers = menuCube;
-    
-        menuCube = new MenuCube();
-        menuCube.init(new CubePos(1,0,2), new Color(60, 255, 255, 255));
-        menuCube.setHiliteOffset(new CubePos(0,1,0));
-        menu.m_pStoreCubeRestore = menuCube;
 
         // credits
         menuCube = new MenuCube();

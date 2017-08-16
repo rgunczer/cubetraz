@@ -66,11 +66,6 @@ public final class Menu extends Scene {
 
     public final MenuCube[] m_arOptionsCubes = new MenuCube[4];
 
-    // store
-    public MenuCube m_pStoreCubeNoAds;
-    public MenuCube m_pStoreCubeSolvers;
-    public MenuCube m_pStoreCubeRestore;
-
     public MenuCube m_cubeCredits;
 
     private MenuCube m_menu_cube_hilite;
@@ -99,9 +94,6 @@ public final class Menu extends Scene {
             case 255: return mMenuCubePlay;
             case 200: return mMenuCubeOptions;
             case 100: return mMenuCubeStore;
-            case 40:  return m_pStoreCubeNoAds;
-            case 50:  return m_pStoreCubeSolvers;
-            case 60:  return m_pStoreCubeRestore;
             case 1:   return m_cubeCredits;
         }
         return null;
@@ -283,12 +275,6 @@ public final class Menu extends Scene {
         mMenuCubeStore.setHiliteOffset(offset);
     }
 
-    public void resetStoreCubes() {
-        m_pStoreCubeNoAds.setCubePos(1, 0, 6);
-        m_pStoreCubeSolvers.setCubePos(1, 0, 4);
-        m_pStoreCubeRestore.setCubePos(1, 0, 2);
-    }
-
     private void releaseCubeTextsOnFace(int face_type) {
         int size = mCubesBase.size();
         Cube cube;
@@ -323,21 +309,12 @@ public final class Menu extends Scene {
         }
 
         if (m_current_cube_face == CubeFaceNamesEnum.Face_Menu ||
-                m_current_cube_face == CubeFaceNamesEnum.Face_Store ||
+                m_current_cube_face == CubeFaceNamesEnum.Face_Score ||
                 mNavigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Store) ||
                 mNavigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Easy1)) {
             p = mMenuCubeStore;
             graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
-
-            p = m_pStoreCubeNoAds;
-            graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
-
-            p = m_pStoreCubeSolvers;
-            graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
-
-            p = m_pStoreCubeRestore;
-            graphics.addCubeSize(p.pos.x, p.pos.y, p.pos.z, HALF_CUBE_SIZE, color);
-        }
+     }
 
         graphics.updateBuffers();
         graphics.renderTriangles();
@@ -881,7 +858,7 @@ public final class Menu extends Scene {
         TexCoordsQuad coords = new TexCoordsQuad();
 
         // Draw CubeFonts on Red Cubes [P]lay [O]ptions [S]tore [U]nlock [R]estore
-        if (mNavigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Easy1) || m_current_cube_face == CubeFaceNamesEnum.Face_Menu || m_current_cube_face == CubeFaceNamesEnum.Face_Options || m_current_cube_face == CubeFaceNamesEnum.Face_Store) {
+        if (mNavigator.isCurrentNavigation(CubeFaceNavigationEnum.Menu_To_Easy1) || m_current_cube_face == CubeFaceNamesEnum.Face_Menu || m_current_cube_face == CubeFaceNamesEnum.Face_Options || m_current_cube_face == CubeFaceNamesEnum.Face_Score) {
 
             Color color = new Color(Game.fontColorOnMenuCube);
 
@@ -927,47 +904,20 @@ public final class Menu extends Scene {
                 }
             }
 
-            if (m_pStoreCubeNoAds.isDone() && m_pStoreCubeNoAds.m_cube_pos.x == 1) {
-                cubeFont = m_cubefont_noads;
-                font = cubeFont.getFont();
-
-                if (font != null) {
-                    coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
-                    coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
-                    coords.tx2 = new Vector2(font.tx_up_left.x, font.tx_up_left.y);
-                    coords.tx3 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
-
-                    graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
-                }
-            }
-
-            if (m_pStoreCubeSolvers.isDone() && m_pStoreCubeSolvers.m_cube_pos.x == 1) {
-                cubeFont = m_cubefont_solvers;
-                font = cubeFont.getFont();
-
-                if (font != null) {
-                    coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
-                    coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
-                    coords.tx2 = new Vector2(font.tx_up_left.x, font.tx_up_left.y);
-                    coords.tx3 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
-
-                    graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
-                }
-            }
-
-            if (m_pStoreCubeRestore.isDone() && m_pStoreCubeRestore.m_cube_pos.x == 1) {
-                cubeFont = m_cubefont_restore;
-                font = cubeFont.getFont();
-
-                if (font != null) {
-                    coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
-                    coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
-                    coords.tx2 = new Vector2(font.tx_up_left.x, font.tx_up_left.y);
-                    coords.tx3 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
-
-                    graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
-                }
-            }
+            // TODO: here
+//            if (m_pStoreCubeRestore.isDone() && m_pStoreCubeRestore.m_cube_pos.x == 1) {
+//                cubeFont = m_cubefont_restore;
+//                font = cubeFont.getFont();
+//
+//                if (font != null) {
+//                    coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
+//                    coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
+//                    coords.tx2 = new Vector2(font.tx_up_left.x, font.tx_up_left.y);
+//                    coords.tx3 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
+//
+//                    graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
+//                }
+//            }
         }
 
         graphics.updateBuffers();
@@ -1957,7 +1907,7 @@ public final class Menu extends Scene {
                 case Face_Menu:
                     if (mMenuCubeStore.m_cube_pos.y == 0) {
                         m_prev_face = CubeFaceNamesEnum.Face_Menu;
-                        m_current_cube_face = CubeFaceNamesEnum.Face_Store;
+                        m_current_cube_face = CubeFaceNamesEnum.Face_Score;
                         setCurrentCubeFaceType(Face_Y_Minus);
                         mMenuCubeStore.moveOnAxis(AxisMovement_Z_Minus);
 
@@ -1965,8 +1915,8 @@ public final class Menu extends Scene {
                     }
 
                     if (mMenuCubeStore.m_cube_pos.x == 7) {
-                        if (!mMenuCubeOptions.isDone() || !mMenuCubePlay.isDone() || m_prev_face == CubeFaceNamesEnum.Face_Store) {
-                            if (m_prev_face == CubeFaceNamesEnum.Face_Store) {
+                        if (!mMenuCubeOptions.isDone() || !mMenuCubePlay.isDone() || m_prev_face == CubeFaceNamesEnum.Face_Score) {
+                            if (m_prev_face == CubeFaceNamesEnum.Face_Score) {
                                 m_prev_face = CubeFaceNamesEnum.Face_Empty;
                             }
 
@@ -1975,9 +1925,9 @@ public final class Menu extends Scene {
                     }
                     break;
 
-                case Face_Store:
+                case Face_Score:
                     if (mMenuCubeStore.m_cube_pos.z == 8) {
-                        m_prev_face = CubeFaceNamesEnum.Face_Store;
+                        m_prev_face = CubeFaceNamesEnum.Face_Score;
                         m_current_cube_face = CubeFaceNamesEnum.Face_Menu;
                         setCurrentCubeFaceType(Face_Z_Plus);
                         mMenuCubeStore.moveOnAxis(AxisMovement_Y_Plus);
@@ -2182,25 +2132,7 @@ public final class Menu extends Scene {
                 animFontAppear();
                 break;
 
-            case Face_Store:
-                m_pStoreCubeNoAds.update();
-                m_pStoreCubeSolvers.update();
-                m_pStoreCubeRestore.update();
-
-                if (m_pStoreCubeNoAds.isDone() && m_pStoreCubeNoAds.m_cube_pos.x == 7) {
-                    //Game.purchaseRemoveAds();
-                    m_pStoreCubeNoAds.moveOnAxis(AxisMovement_X_Minus);
-                }
-
-                if (m_pStoreCubeSolvers.isDone() && m_pStoreCubeSolvers.m_cube_pos.x == 7) {
-                    //Game.purchaseSolvers();
-                    m_pStoreCubeSolvers.moveOnAxis(AxisMovement_X_Minus);
-                }
-
-                if (m_pStoreCubeRestore.isDone() && m_pStoreCubeRestore.m_cube_pos.x == 7) {
-                    //Game.purchaseRestore();
-                    m_pStoreCubeRestore.moveOnAxis(AxisMovement_X_Minus);
-                }
+            case Face_Score: // TODO: rename
                 break;
 
             default:
@@ -2237,20 +2169,6 @@ public final class Menu extends Scene {
             if (!mMenuCubeStore.lst_cubes_to_hilite.isEmpty()) {
                 Cube p = mMenuCubeStore.lst_cubes_to_hilite.get(0);
                 mMenuCubeStore.lst_cubes_to_hilite.remove(p);
-
-                p.colorCurrent = color;
-            }
-
-            if (!m_pStoreCubeNoAds.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = m_pStoreCubeNoAds.lst_cubes_to_hilite.get(0);
-                m_pStoreCubeNoAds.lst_cubes_to_hilite.remove(p);
-
-                p.colorCurrent = color;
-            }
-
-            if (!m_pStoreCubeRestore.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = m_pStoreCubeRestore.lst_cubes_to_hilite.get(0);
-                m_pStoreCubeRestore.lst_cubes_to_hilite.remove(p);
 
                 p.colorCurrent = color;
             }
@@ -2464,11 +2382,8 @@ public final class Menu extends Scene {
                         graphics.addCubeSize(mMenuCubeOptions.pos.x, mMenuCubeOptions.pos.y, mMenuCubeOptions.pos.z, HALF_CUBE_SIZE * 1.5f, mMenuCubeOptions.color);
                         break;
 
-                    case Face_Store:
+                    case Face_Score:
                         graphics.addCubeSize(mMenuCubeStore.pos.x, mMenuCubeStore.pos.y, mMenuCubeStore.pos.z, HALF_CUBE_SIZE * 1.5f, mMenuCubeStore.color);
-                        graphics.addCubeSize(m_pStoreCubeNoAds.pos.x, m_pStoreCubeNoAds.pos.y, m_pStoreCubeNoAds.pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeNoAds.color);
-                        graphics.addCubeSize(m_pStoreCubeRestore.pos.x, m_pStoreCubeRestore.pos.y, m_pStoreCubeRestore.pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeRestore.color);
-                        graphics.addCubeSize(m_pStoreCubeSolvers.pos.x, m_pStoreCubeSolvers.pos.y, m_pStoreCubeSolvers.pos.z, HALF_CUBE_SIZE * 1.5f, m_pStoreCubeSolvers.color);
                         break;
 
                     case Face_Menu:
@@ -2629,9 +2544,7 @@ public final class Menu extends Scene {
                 CubeFaceNavigationEnum.NoNavigation) &&
                 mMenuCubePlay.isDone() &&
                 mMenuCubeOptions.isDone() &&
-                mMenuCubeStore.isDone() &&
-                m_pStoreCubeRestore.isDone() &&
-                m_pStoreCubeNoAds.isDone()) {
+                mMenuCubeStore.isDone()) {
             mIsFingerDown = true;
 
             mPosDown.x = x;
@@ -2849,7 +2762,7 @@ public final class Menu extends Scene {
                         switch (m_current_cube_face) {
                             case Face_Menu:
                             case Face_Options:
-                            case Face_Store:
+                            case Face_Score:
                                 menuCube.moveOnAxis(AxisMovement_X_Minus);
                                 break;
 
@@ -2884,7 +2797,7 @@ public final class Menu extends Scene {
                         switch (m_current_cube_face) {
                             case Face_Menu:
                             case Face_Options:
-                            case Face_Store:
+                            case Face_Score:
                                 menuCube.moveOnAxis(AxisMovement_X_Plus);
                                 if (CubeFaceNamesEnum.Face_Menu == m_current_cube_face) {
                                     if (menuCube != mMenuCubeOptions) {
@@ -2924,7 +2837,7 @@ public final class Menu extends Scene {
 
                     case SwipeUp:
                         switch (m_current_cube_face) {
-                            case Face_Store: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
+                            case Face_Score: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
                             case Face_Options: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
                             case Face_Easy02: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
                             case Face_Easy03: menuCube.moveOnAxis(AxisMovement_Y_Minus); break;
@@ -2941,7 +2854,7 @@ public final class Menu extends Scene {
 
                     case SwipeDown:
                         switch (m_current_cube_face) {
-                            case Face_Store: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
+                            case Face_Score: menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
                             case Face_Options: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
                             case Face_Easy02: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
                             case Face_Easy03: menuCube.moveOnAxis(AxisMovement_Y_Plus); break;

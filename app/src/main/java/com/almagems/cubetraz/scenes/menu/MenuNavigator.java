@@ -63,7 +63,7 @@ public final class MenuNavigator
 	    MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Options, Face_Y_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
-        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Store, Face_Y_Minus);
+        MenuFaceBuilder.build(CubeFaceNamesEnum.Face_Score, Face_Y_Minus);
     }
 
     public void createEasyFaces() {
@@ -709,8 +709,6 @@ public final class MenuNavigator
                     m_cube_rotation.degree = 0.0f;
                     m_cube_rotation.axis = new Vector(0.0f, 1.0f, 0.0f);
                     m_navigation = CubeFaceNavigationEnum.NoNavigation;
-                
-                    m_menu.resetStoreCubes();
                 }            
 			    break;
 			

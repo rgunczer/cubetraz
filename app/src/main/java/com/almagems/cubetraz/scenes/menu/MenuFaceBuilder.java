@@ -1,7 +1,6 @@
 package com.almagems.cubetraz.scenes.menu;
 
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.game.Game;
@@ -9,6 +8,8 @@ import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.graphics.TexturedQuad;
+
+import java.util.Locale;
 
 import static com.almagems.cubetraz.game.Constants.*;
 
@@ -306,27 +307,6 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-//void cMenuFaceBuilder::DumpFace(char* ar)
-//{
-//	final int face_width = MAX_CUBE_COUNT - 1;
-//	final int face_size = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
-//	
-//	printf("\n");
-//	
-//	int cnt = 0;
-//	for (int i = 0; i < face_size; ++i)
-//	{
-//		printf("%c", ar[i]);
-//		++cnt;
-//		
-//		if (cnt > face_width)
-//		{
-//			cnt = 0;
-//			printf("\n");
-//		}
-//	}
-//}
-
     public static void build(CubeFaceNamesEnum faceId, int faceType) {
 	    buildCubeFaces(faceId, faceType);
 	    buildTitleTexts(faceId, faceType);
@@ -408,7 +388,7 @@ public final class MenuFaceBuilder {
 		    case Face_Y_Minus: {
 			    setupFontFaceY(arr, faceType, faceId, y + 1, color);
             
-                if ( CubeFaceNamesEnum.Face_Store == faceId) {
+                if ( CubeFaceNamesEnum.Face_Score == faceId) {
                     CubePos cp;
                     cp = new CubePos(1, 0, 6);
                     setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubePos(0, 1, 0), faceType);
@@ -549,7 +529,39 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-    private static String getFaceText(CubeFaceNamesEnum faceId) {
+	private static String getNumberIn3CharLongString(int number) {
+        String str = String.format(Locale.US, "%03d", number);
+        char[] chars = str.toCharArray();
+        for(int i = 0; i < chars.length - 1; ++i) {
+            if (chars[i] == '0') {
+                chars[i] = ' ';
+            }
+        }
+        str = new String(chars);
+        return str;
+    }
+
+	private static String getScoreFaceText() {
+         String score =
+            "xxxxxxx x" +
+            "x       x" +
+            "xSTARS  x" +
+            "x sss   x" +
+            "x       x" +
+            "xSOLVED x" +
+            "x ggg   x" +
+            "x       x" +
+            "xxxxxxxxx";
+
+        String stars = getNumberIn3CharLongString( Game.progress.getStarCount() ); //String.format(Locale.US, "%03d", Game.progress.getStarCount());
+        String solved = getNumberIn3CharLongString( Game.progress.getSolvedLevelCount() ); //String.format(Locale.US, "%03d", Game.progress.getSolvedLevelCount());
+
+        score = score.replace("sss", stars);
+        score = score.replace("ggg", solved);
+        return score;
+    }
+
+    private static String getFaceText(CubeFaceNamesEnum faceName) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -627,16 +639,16 @@ public final class MenuFaceBuilder {
 		"x       x" +
 		"xxxxxxx x";
 	
-	    final String store =
-		"xxxxxxx x" +
-		"x       x" +
-		"xSTARS  x" +
-		"xx540   x" +
-		"x       x" +
-		"xSOLVED x" +
-		"xx180   x" +
-		"x xx xx x" +
-		"xxxxxxxxx";
+//	    final String store =
+//		"xxxxxxx x" +
+//		"x       x" +
+//		"xSTARS  x" +
+//		"x sss   x" +
+//		"x       x" +
+//		"xSOLVED x" +
+//		"x ggg   x" +
+//		"x       x" +
+//		"xxxxxxxxx";
 			
 		final String easy1 =
 		"xxxxxx xx" +
@@ -737,14 +749,14 @@ public final class MenuFaceBuilder {
 	    "xo o ox x" +
 	    "xxxx xxxx";
 	
-		switch (faceId) {
+		switch (faceName) {
 			case Face_Empty:	return empty;
 				
 			case Face_Tutorial: return tutorial;
 				
 			case Face_Menu:		return menu;
 			case Face_Options:	return options;
-	        case Face_Store:	return store;
+	        case Face_Score:	return getScoreFaceText();
 				
 			case Face_Easy01:	return easy1;
 			case Face_Easy02:	return easy2;
@@ -962,7 +974,7 @@ public final class MenuFaceBuilder {
 			
 			case Face_Menu:		return menu;
 			case Face_Options:	return options;
-        	case Face_Store:	return store;
+        	case Face_Score:	return store;
 			
 			case Face_Easy01:	return easy1;
 			case Face_Easy02:	return easy2;
@@ -1032,13 +1044,13 @@ public final class MenuFaceBuilder {
     
 		final String store =
 		"xxxxxxx x" +
-		"xx      x" +
 		"x       x" +
-		"xx      x" +
 		"x       x" +
-		"xx      x" +
 		"x       x" +
-		"xx      x" +
+		"x xxxxx x" +
+		"x       x" +
+		"x       x" +
+		"x       x" +
 		"xxxxxxxxx";
     
 		final String easy1 =
@@ -1180,7 +1192,7 @@ public final class MenuFaceBuilder {
 		
 			case Face_Menu:		return menu;
 			case Face_Options:	return options;
-			case Face_Store:	return store;
+			case Face_Score:	return store;
 	
 			case Face_Easy01:	return easy1;
 			case Face_Easy02:	return easy2;

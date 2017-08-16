@@ -186,7 +186,7 @@ public final class Constants {
 
         Face_Menu,
         Face_Options,
-        Face_Store,
+        Face_Score,
 
         Face_Easy01,
         Face_Easy02,
