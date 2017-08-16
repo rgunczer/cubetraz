@@ -73,7 +73,7 @@ public final class Color {
     }
 
     public String toString() {
-        return "MyColor (" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
+        return "Color (" + this.r + ", " + this.g + ", " + this.b + ", " + this.a + ")";
     }
 
 }

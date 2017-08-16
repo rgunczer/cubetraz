@@ -189,20 +189,20 @@ public final class Outro extends Scene {
         for (int i = 0; i < size; ++i) {
             cube = mCubesBase.get(i);
 
-            cube.v = new Vector((-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120));
+            cube.velocity = new Vector((-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120));
 
-            if ( cube.v.x > 0.0f && cube.v.x <  30.0f ) cube.v.x = Utils.randInt(30, 50);
-            if ( cube.v.x < 0.0f && cube.v.x > -30.0f ) cube.v.x = Utils.randInt(30, 50) * -1.0f;
+            if ( cube.velocity.x > 0.0f && cube.velocity.x <  30.0f ) cube.velocity.x = Utils.randInt(30, 50);
+            if ( cube.velocity.x < 0.0f && cube.velocity.x > -30.0f ) cube.velocity.x = Utils.randInt(30, 50) * -1.0f;
 
-            if ( cube.v.y > 0.0f && cube.v.y <  30.0f ) cube.v.y = Utils.randInt(30, 50);
-            if ( cube.v.y < 0.0f && cube.v.y > -30.0f ) cube.v.y = Utils.randInt(30, 50) * -1.0f;
+            if ( cube.velocity.y > 0.0f && cube.velocity.y <  30.0f ) cube.velocity.y = Utils.randInt(30, 50);
+            if ( cube.velocity.y < 0.0f && cube.velocity.y > -30.0f ) cube.velocity.y = Utils.randInt(30, 50) * -1.0f;
 
-            if ( cube.v.z > 0.0f && cube.v.z <  30.0f ) cube.v.z = Utils.randInt(30, 50);
-            if ( cube.v.z < 0.0f && cube.v.z > -30.0f ) cube.v.z = Utils.randInt(30, 50) * -1.0f;
+            if ( cube.velocity.z > 0.0f && cube.velocity.z <  30.0f ) cube.velocity.z = Utils.randInt(30, 50);
+            if ( cube.velocity.z < 0.0f && cube.velocity.z > -30.0f ) cube.velocity.z = Utils.randInt(30, 50) * -1.0f;
 
-            cube.v.x *= 0.001f;
-            cube.v.y *= 0.001f;
-            cube.v.z *= 0.001f;
+            cube.velocity.x *= 0.001f;
+            cube.velocity.y *= 0.001f;
+            cube.velocity.z *= 0.001f;
         }
     }
 

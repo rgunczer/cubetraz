@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.R;
 import com.almagems.cubetraz.scenes.level.Level;
@@ -375,7 +374,7 @@ public final class Creator {
             cubeFont.colorCurrent.a = 0;
         }
 
-		cube.ar_fonts[faceType] = cubeFont;
+		cube.fonts[faceType] = cubeFont;
 	}
 
 	public static void addCubeFontSymbol(final int symbolId, CubePos cubePos, int faceType, CubeFaceNamesEnum faceName, Color color) {
@@ -385,6 +384,6 @@ public final class Creator {
 		cubeFont.init(symbolId, cubePos);
         cubeFont.setColor(color);
 
-		cube.ar_symbols[faceType] = cubeFont;
+		cube.symbols[faceType] = cubeFont;
 	}	
 }

@@ -348,7 +348,7 @@ public final class MenuFaceBuilder {
         TexturedQuad texturedQuad;
     
         cube = Game.cubes[cp.x + offset.x][cp.y + offset.y][cp.z + offset.z];
-        cubeFont = cube.ar_fonts[faceType];
+        cubeFont = cube.fonts[faceType];
 
         if (cubeFont != null) {
             texturedQuad = cubeFont.getFont();

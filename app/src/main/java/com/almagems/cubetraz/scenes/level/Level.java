@@ -1861,7 +1861,7 @@ public final class Level extends Scene {
         glEnable(GL_LIGHTING);
 
         glEnable(GL_TEXTURE_2D);
-        Engine.graphics.textureGrayConcrete.bind();
+        graphics.textureGrayConcrete.bind();
 
         Vector light = Utils.rotate3D_AroundYAxis(mPosLightCurrent.x, mPosLightCurrent.y, mPosLightCurrent.z, -m_cube_rotation.degree - m_user_rotation.current.y);
         Vector light_tmp = Utils.rotate3D_AroundXAxis(light.x, light.y, light.z, -m_user_rotation.current.x);
@@ -1874,8 +1874,7 @@ public final class Level extends Scene {
 
         int size;
         float[] shadowMat = new float[16];
-
-//    if (false)
+        
         for (int j = 0; j < 3; ++j) { // 3 times (1 floor + 2 walls)
             graphics.resetBufferIndices();
 

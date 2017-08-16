@@ -589,30 +589,30 @@ public final class Animator extends Scene {
 		    cube = m_list_cubes_base.get(i);
 		
 		    face_type = Face_X_Plus;
-		    if (null != cube.ar_fonts[face_type]) {
-			    m_lst_texts.get(face_type).add(cube.ar_fonts[face_type]);
+		    if (null != cube.fonts[face_type]) {
+			    m_lst_texts.get(face_type).add(cube.fonts[face_type]);
             }
 				
-            if (null != cube.ar_symbols[face_type]) {
-                m_lst_symbols.get(face_type).add(cube.ar_symbols[face_type]);
+            if (null != cube.symbols[face_type]) {
+                m_lst_symbols.get(face_type).add(cube.symbols[face_type]);
             }
         
 		    face_type = Face_Y_Plus;
-		    if (null != cube.ar_fonts[face_type]) {
-			    m_lst_texts.get(face_type).add(cube.ar_fonts[face_type]);
+		    if (null != cube.fonts[face_type]) {
+			    m_lst_texts.get(face_type).add(cube.fonts[face_type]);
             }
 
-            if (null != cube.ar_symbols[face_type]) {
-                m_lst_symbols.get(face_type).add(cube.ar_symbols[face_type]);
+            if (null != cube.symbols[face_type]) {
+                m_lst_symbols.get(face_type).add(cube.symbols[face_type]);
             }
         
 		    face_type = Face_Z_Plus;
-		    if (null != cube.ar_fonts[face_type]) {
-			    m_lst_texts.get(face_type).add(cube.ar_fonts[face_type]);
+		    if (null != cube.fonts[face_type]) {
+			    m_lst_texts.get(face_type).add(cube.fonts[face_type]);
             }
         
-            if (null != cube.ar_symbols[face_type]) {
-                m_lst_symbols.get(face_type).add(cube.ar_symbols[face_type]);
+            if (null != cube.symbols[face_type]) {
+                m_lst_symbols.get(face_type).add(cube.symbols[face_type]);
             }
 	    }
 
@@ -621,18 +621,18 @@ public final class Animator extends Scene {
 		    cube = m_list_cubes_face.get(i);
 				
 		    face_type = Face_X_Plus;
-		    if (null != cube.ar_fonts[face_type]) {
-			    m_lst_titles.get(face_type).add(cube.ar_fonts[face_type]);
+		    if (null != cube.fonts[face_type]) {
+			    m_lst_titles.get(face_type).add(cube.fonts[face_type]);
             }
 				
 		    face_type = Face_Y_Plus;
-		    if (null != cube.ar_fonts[face_type]) {
-			    m_lst_titles.get(face_type).add(cube.ar_fonts[face_type]);
+		    if (null != cube.fonts[face_type]) {
+			    m_lst_titles.get(face_type).add(cube.fonts[face_type]);
             }
 	
 		    face_type = Face_Z_Plus;
-		    if (null != cube.ar_fonts[face_type]) {
-			    m_lst_titles.get(face_type).add(cube.ar_fonts[face_type]);
+		    if (null != cube.fonts[face_type]) {
+			    m_lst_titles.get(face_type).add(cube.fonts[face_type]);
             }
 	    }
     }

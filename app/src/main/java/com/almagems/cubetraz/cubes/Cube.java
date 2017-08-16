@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
@@ -22,10 +21,10 @@ public final class Cube {
 
     public CubeTypeEnum type;
 
-    public CubeFont[] ar_fonts = new CubeFont[6];
-    public CubeFont[] ar_symbols = new CubeFont[6];
+    public CubeFont[] fonts = new CubeFont[6];
+    public CubeFont[] symbols = new CubeFont[6];
 
-    public Vector v;
+    public Vector velocity;
 
     public void setColor(Color color) {
         this.color.init(color);
@@ -38,23 +37,23 @@ public final class Cube {
     }
 
     public void update() {
-        tx += v.x;
-        ty += v.y;
-        tz += v.z;
+        tx += velocity.x;
+        ty += velocity.y;
+        tz += velocity.z;
     }
 
     public void warmFonts() {
-        for(int i = 0; i < ar_fonts.length; ++i) {
-            if (ar_fonts[i] != null) {
-                ar_fonts[i].warmByFactor( Utils.randInt(0, 12) );
+        for(int i = 0; i < fonts.length; ++i) {
+            if (fonts[i] != null) {
+                fonts[i].warmByFactor( Utils.randInt(0, 12) );
             }
         }
     }
 
     public void warmSymbols() {
-        for(int i = 0; i < ar_symbols.length; ++i) {
-            if (ar_symbols[i] != null) {
-                ar_symbols[i].warmByFactor( Utils.randInt(0, 12) );
+        for(int i = 0; i < symbols.length; ++i) {
+            if (symbols[i] != null) {
+                symbols[i].warmByFactor( Utils.randInt(0, 12) );
             }
         }
     }
@@ -67,34 +66,34 @@ public final class Cube {
 		tz = z * CUBE_SIZE;
 	
         resetColor();
-		resetFonts();
-        resetSymbols();
+		removeFonts();
+        removeSymbols();
 	}
 
     public void resetColor() {
         colorCurrent.init(color);
     }
 
-    public void resetFonts() {
-		ar_fonts[0] = null;
-		ar_fonts[1] = null;
+    public void removeFonts() {
+		fonts[0] = null;
+		fonts[1] = null;
 		
-		ar_fonts[2] = null;
-		ar_fonts[3] = null;
+		fonts[2] = null;
+		fonts[3] = null;
 		
-		ar_fonts[4] = null;
-		ar_fonts[5] = null;
+		fonts[4] = null;
+		fonts[5] = null;
 	}
 
-    public void resetSymbols() {
-		ar_symbols[0] = null;
-		ar_symbols[1] = null;
+    public void removeSymbols() {
+		symbols[0] = null;
+		symbols[1] = null;
 		
-		ar_symbols[2] = null;
-		ar_symbols[3] = null;
+		symbols[2] = null;
+		symbols[3] = null;
 		
-		ar_symbols[4] = null;
-		ar_symbols[5] = null;
+		symbols[4] = null;
+		symbols[5] = null;
     }
 
     public void warmByFactor(int factor) {
@@ -146,6 +145,5 @@ public final class Cube {
             }
         }        
     }
-    
 }
 

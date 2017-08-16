@@ -255,8 +255,8 @@ public final class Game {
                 for(int z = 0; z < MAX_CUBE_COUNT; ++z) {
                     cube = cubes[x][y][z];
 
-                    cube.resetFonts();
-                    cube.resetSymbols();
+                    cube.removeFonts();
+                    cube.removeSymbols();
                 }
             }
         }

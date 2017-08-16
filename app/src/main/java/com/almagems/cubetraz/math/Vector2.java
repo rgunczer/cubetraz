@@ -247,7 +247,7 @@ public final class Vector2 {
                 // Throw a GdxRuntimeException
             }
         }
-        //throw new Exception("Malformed Vector2: " + v);
+        //throw new Exception("Malformed Vector2: " + velocity);
         return null;
     }
 

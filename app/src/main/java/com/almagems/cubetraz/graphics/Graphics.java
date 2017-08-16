@@ -741,7 +741,7 @@ public final class Graphics {
 //        float x = (rc.w / width) * scale;
 //        float y = (rc.h / width) * scale;
 //        float[] vertexData = {
-//                // x, y, z, 	                u, v,
+//                // x, y, z, 	                u, velocity,
 //                -x, -y, 0.0f,   r, g, b, a,     tx0, ty0,
 //                 x, -y, 0.0f,   r, g, b, a,     tx1, ty0,
 //                 x,  y, 0.0f,   r, g, b, a,     tx1, ty1,

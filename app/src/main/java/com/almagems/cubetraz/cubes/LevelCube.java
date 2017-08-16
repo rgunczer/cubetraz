@@ -27,7 +27,7 @@ public final class LevelCube {
 	public CubeFaceNamesEnum face_id;
     public int face_type;
 
-    // ctor
+
     public LevelCube() {
     }
 
@@ -50,8 +50,8 @@ public final class LevelCube {
         font_pos = pos;
     }
 
-    public void setStars(int star_count) {
-        switch (star_count) {
+    public void setStars(int starCount) {
+        switch (starCount) {
             case -1: pStars = Game.getSymbol(SymbolLock); break;
             case 0: pStars = null; break;            
             case 1: pStars = Game.getSymbol(Symbol1Star); break;            

@@ -29,16 +29,14 @@ public final class DeadCube {
     public CubePos getCubePos() { 
         return m_cube_pos; 
     }
-    
     public void hiLite() { 
         m_color_symbol_current.init(new Color(255, 25, 25, 204));
     }
-    
     public void noHilite() { 
         m_color_symbol_current.init(m_color_symbol);
     }
- 
-    // ctor
+
+
     public DeadCube() {
         for (int i = 0; i < 6; ++i) {
             m_ar_cube_textures[i] = null;
