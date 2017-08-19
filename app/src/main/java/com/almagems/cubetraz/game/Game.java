@@ -1,5 +1,7 @@
 package com.almagems.cubetraz.game;
 
+import android.content.Context;
+
 import com.almagems.cubetraz.R;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Vector;
@@ -26,19 +28,335 @@ import com.almagems.cubetraz.scenes.stat.StatInitData;
 import com.almagems.cubetraz.scenes.stat.Statistics;
 import com.almagems.cubetraz.scenes.level.LevelInitData;
 import com.almagems.cubetraz.scenes.menu.MenuInitData;
+import com.almagems.cubetraz.system.MainActivity;
+import com.almagems.cubetraz.system.MainRenderer;
+import com.almagems.cubetraz.utils.SwipeInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Constants.*;
 
 public final class Game {
+
+    public static final int MAX_TUTOR_COUNT = 11;
+
+    public static final float EPSILON_SMALL = 0.001f;
+
+    public static final int MAX_SOLUTION_MOVES = 16;
+    public static final int MAX_HINT_CUBES = 48;
+    public static final float UNDO_TIMEOUT = 0.2f;
+
+    public static final byte WARM_FACTOR = (byte)5;
+
+    public static final int KILOBYTE = 1024;
+    public static final int BUF_SIZE = 64;
+
+    public static final int BYTES_PER_SHORT = 2;
+    public static final int BYTES_PER_FLOAT = 4;
+    public static final float EPSILON = 0.01f;
+
+    public static final float CUBE_SIZE = 1.1f;
+    public static final float HALF_CUBE_SIZE = CUBE_SIZE / 2.0f;
+
+    public static final int MAX_CUBE_COUNT = 9;
+    public static final int MAX_STARS = 1024;
+
+    public static final float DIRTY_ALPHA = 60f;
+
+    public static final int MAX_FACE_TRANSFORM_COUNT = 8;
+
+    public static final float FONT_OVERLAY_OFFSET = 0.01f;
+    public static final int LEVEL_LOCKED = -1;
+    public static final int LEVEL_UNLOCKED = 0;
+
+    public static final int Face_X_Plus = 0;
+    public static final int Face_X_Minus = 1;
+    public static final int Face_Y_Plus = 2;
+    public static final int Face_Y_Minus = 3;
+    public static final int Face_Z_Plus = 4;
+    public static final int Face_Z_Minus = 5;
+
+    public static final int AxisMovement_Y_Plus = 1;
+    public static final int AxisMovement_Y_Minus = 2;
+    public static final int AxisMovement_X_Plus = 3;
+    public static final int AxisMovement_X_Minus = 4;
+    public static final int AxisMovement_Z_Plus = 5;
+    public static final int AxisMovement_Z_Minus = 6;
+    public static final int AxisMovement_No_Move = 7;
+
+    public static final int Scene_Intro = 0;
+    public static final int Scene_Menu = 1;
+    public static final int Scene_Anim = 2;
+    public static final int Scene_Level = 3;
+    public static final int Scene_Stat = 4;
+    public static final int Scene_Solvers = 5;
+    public static final int Scene_Outro = 6;
+
+    public static final int SymbolInfo = 0;
+    public static final int SymbolLock = 1;
+    public static final int SymbolPlus = 2;
+    public static final int SymbolMinus = 3;
+    public static final int SymbolQuestionmark = 4;
+    public static final int SymbolGoLeft = 5;
+    public static final int SymbolGoRight = 6;
+    public static final int SymbolGoUp = 7;
+    public static final int SymbolGoDown = 8;
+    public static final int SymbolUndo = 9;
+    public static final int SymbolSolver = 10;
+    public static final int SymbolPause = 11;
+    public static final int Symbol3Star = 12;
+    public static final int Symbol2Star = 13;
+    public static final int Symbol1Star = 14;
+    public static final int SymbolStar = 15;
+    public static final int SymbolTriangleUp = 16;
+    public static final int SymbolTriangleDown = 17;
+    public static final int SymbolHilite = 18;
+    public static final int SymbolSolved = 19;
+    public static final int SymbolDeath = 20;
+    public static final int SymbolLightning = 21;
+    public static final int SymbolCracks = 22;
+    public static final int SymbolTriangleLeft = 23;
+    public static final int SymbolTriangleRight = 24;
+    public static final int SymbolEmpty = 25;
+
+
+    public static final int Tutor_Dead = 0;
+    public static final int Tutor_Swipe = 1;
+    public static final int Tutor_Goal = 2;
+    public static final int Tutor_Moving = 3;
+    public static final int Tutor_Mover = 4;
+    public static final int Tutor_Drag = 5;
+    public static final int Tutor_Plain = 6;
+    public static final int Tutor_MenuPause = 7;
+    public static final int Tutor_MenuUndo = 8;
+    public static final int Tutor_MenuHint = 9;
+    public static final int Tutor_MenuSolvers = 10;
+
+    public static final int FACE_SIZE = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
+
+    public static final int MAX_TEXT_LINES = 4;
+
+    public static final int MoveDir_MoveNone = 0;
+    public static final int MoveDir_MoveY = 1;
+    public static final int MoveDir_MoveX = 2;
+    public static final int MoveDir_MoveZ = 3;
+
+
+    public static final int X_Plus = 3;
+    public static final int X_Minus = 4;
+    public static final int Y_Plus = 1;
+    public static final int Y_Minus = 2;
+    public static final int Z_Plus = 5;
+    public static final int Z_Minus = 6;
+
+
+    public enum TextAlignEnum {
+        LeftAlign,
+        CenterAlign,
+        RightAlign
+    }
+
+    public enum TutorStateEnum {
+        TutorAppear,
+        TutorDisappear,
+        TutorDone
+    }
+
+    public enum HUDStateEnum {
+        AppearHUD,
+        DisappearHUD,
+        DoneHUD,
+    }
+
+    public enum LevelInitActionEnum {
+        FullInit,
+        JustContinue,
+        ShowSolution
+    }
+
+    public enum DifficultyEnum {
+        Easy,
+        Normal,
+        Hard
+    }
+
+    public enum AnimTypeEnum {
+        AnimToLevel,
+        AnimToMenuFromPaused,
+        AnimToMenuFromCompleted
+    }
+
+    public enum LevelCubeDecalTypeEnum {
+        LevelCubeDecalNumber,
+        LevelCubeDecalStars,
+        LevelCubeDecalSolver
+    }
+
+    public enum SwipeDirEnums {
+        SwipeNone,
+        SwipeUp,
+        SwipeDown,
+        SwipeUpLeft,
+        SwipeUpRight,
+        SwipeDownLeft,
+        SwipeDownRight,
+        SwipeLeft,
+        SwipeRight,
+    }
+
+    public enum CubeTypeEnum {
+        CubeIsNotSet,
+
+        CubeIsInvisible,
+        CubeIsInvisibleAndObstacle,
+
+        CubeIsVisibleAndObstacle,
+        CubeIsVisibleAndObstacleAndLevel
+    }
+
+    public enum CubeFaceNamesEnum {
+        Face_Empty,
+
+        Face_Tutorial,
+
+        Face_Menu,
+        Face_Options,
+        Face_Score,
+
+        Face_Easy01,
+        Face_Easy02,
+        Face_Easy03,
+        Face_Easy04,
+
+        Face_Normal01,
+        Face_Normal02,
+        Face_Normal03,
+        Face_Normal04,
+
+        Face_Hard01,
+        Face_Hard02,
+        Face_Hard03,
+        Face_Hard04
+    }
+
+    public enum PickRenderTypeEnum {
+        RenderAll,
+        RenderOnlyMovingCubes,
+        RenderOnlyLevelCubes,
+        RenderOnlyMovingCubePlay,
+        RenderOnlyMovingCubeOptions,
+        RenderOnlyMovingCubeStore,
+        RenderOnlyOptions,
+        RenderOnlyCubeCredits,
+        RenderOnlyHUD
+    }
+
+    public enum AxisEnum {
+        X_Axis,
+        Y_Axis,
+        Z_Axis
+    }
+
+    public enum CompletedFaceNextActionEnum {
+        Finish,
+        Next,
+        Buy_Full_Version,
+    }
+
+    public enum FaceTransformsEnum {
+        NoTransform,
+        MirrorHoriz,
+        MirrorVert,
+        RotateCW90,
+        RotateCCW90
+    }
+
+    public enum CubeFaceNavigationEnum {
+        NoNavigation,
+
+        Tutorial_To_Menu,
+
+        Menu_To_Options,
+        Options_To_Menu,
+
+        Menu_To_Store,
+        Store_To_Menu,
+
+        Menu_To_Easy1,
+        Easy1_To_Menu,
+
+        Easy1_To_Easy2,
+        Easy2_To_Easy1,
+
+        Easy2_To_Easy3,
+        Easy3_To_Easy2,
+
+        Easy3_To_Easy4,
+        Easy4_To_Easy3,
+
+        Easy4_To_Easy1,
+        Easy1_To_Easy4,
+
+        Easy1_To_Normal1,
+        Normal1_To_Easy1,
+
+        Normal1_To_Normal2,
+        Normal2_To_Normal1,
+
+        Normal2_To_Normal3,
+        Normal3_To_Normal2,
+
+        Normal3_To_Normal4,
+        Normal4_To_Normal3,
+
+        Normal4_To_Normal1,
+        Normal1_To_Normal4,
+
+        Normal1_To_Hard1,
+        Hard1_To_Normal1,
+
+        Hard1_To_Hard2,
+        Hard2_To_Hard1,
+
+        Hard2_To_Hard3,
+        Hard3_To_Hard2,
+
+        Hard3_To_Hard4,
+        Hard4_To_Hard3,
+
+        Hard4_To_Hard1,
+        Hard1_To_Hard4,
+
+        Hard1_To_Menu,
+    }
+
+    private static Game instance;
+    private MainRenderer renderer;
+    public static Graphics graphics;
+
+    public static Game getInstance() {
+        if (instance == null) {
+            instance = new Game();
+        }
+        return instance;
+    }
+
+    public void setRenderer(MainRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public static Context getContext() {
+        return instance.renderer.context;
+    }
+
 
     public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
 
     public static GameOptions options;
     public static GameProgress progress;
+
+    public static boolean fboLost = false;
 
     // audio
     public static Audio audio;
@@ -89,12 +407,6 @@ public final class Game {
         for (int i = 0; i < 6; ++i) {
             ar_cubefacedata[i] = new CubeFaceData();
         }
-
-        options = new GameOptions();
-        options.load();
-
-        progress = new GameProgress();
-        progress.load();
     }
 
     public Game() {
@@ -109,6 +421,12 @@ public final class Game {
         }
 
         initialized = true;
+
+        options = new GameOptions();
+        options.load();
+
+        progress = new GameProgress();
+        progress.load();
 
         audio = new Audio();
         audio.init(options.getMusicVolume(), options.getSoundVolume());
@@ -140,8 +458,8 @@ public final class Game {
         LevelBuilder.level = level;
     }
 
-    public void onSurfaceChanged(int width, int height) {
-        minSwipeLength = Engine.graphics.height / 10;
+    public void onSurfaceChanged() {
+        minSwipeLength = graphics.height / 10;
 
         if (currentScene == null) {
             showScene(Scene_Intro);
@@ -179,10 +497,6 @@ public final class Game {
         }
     }
 
-    public static int getSolverCount() {
-        return 12;
-    }
-
     public static boolean isObstacle(CubePos cube_pos) {
         Cube cube = cubes[cube_pos.x][cube_pos.y][cube_pos.z];
 
@@ -202,10 +516,10 @@ public final class Game {
         return m_symbols.get(key);
     }
 
-    public static Map<String, TexturedQuad> m_fonts = new HashMap<String, TexturedQuad>();
-    public static Map<String, TexturedQuad> m_fonts_big = new HashMap<String, TexturedQuad>();
-    public static Map<Integer, TexturedQuad> m_numbers = new HashMap<Integer, TexturedQuad>();
-    public static Map<Integer, TexturedQuad> m_symbols = new HashMap<Integer, TexturedQuad>();
+    public static Map<String, TexturedQuad> m_fonts = new HashMap<>();
+    public static Map<String, TexturedQuad> m_fonts_big = new HashMap<>();
+    public static Map<Integer, TexturedQuad> m_numbers = new HashMap<>();
+    public static Map<Integer, TexturedQuad> m_symbols = new HashMap<>();
 
     public static TexturedQuad getFont(char ch) {
         //printf("\nNumber of Fonts:%lu", m_fonts.size());
@@ -220,9 +534,6 @@ public final class Game {
         return m_fonts_big.get(ch);
     }
 
-    public boolean isPlaying() {
-        return currentScene == level;
-    }
 
     public static ArrayList<Cube> createBaseCubesList() {
         ArrayList<Cube> lst = new ArrayList<>();
@@ -406,7 +717,7 @@ public final class Game {
     }
 
     public static void renderToFBO(Scene scene) {
-        Graphics graphics = Engine.graphics;
+        fboLost = false;
 
         graphics.saveOriginalFBO();
 
@@ -437,6 +748,61 @@ public final class Game {
 	public void handleTouchRelease(float normalizedX, float normalizedY) {
         currentScene.onFingerUp(normalizedX, normalizedY, 1);
     }
+
+    public static void showAd() {
+        MainActivity act = (MainActivity)getContext();
+        act.showAd();
+    }
+
+    public static SwipeInfo getSwipeDirAndLength(Vector2 pos_down, Vector2 pos_up) {
+        SwipeInfo swipeInfo = new SwipeInfo();
+
+        swipeInfo.swipeDir = SwipeDirEnums.SwipeNone;
+
+        float up_x = pos_up.x;
+        float up_y = pos_up.y;
+
+        float down_x = pos_down.x;
+        float down_y = pos_down.y;
+
+        up_y = -up_y;
+        down_y = -down_y;
+
+        Vector2 dir = new Vector2();
+        dir.x = up_x - down_x;
+        dir.y = up_y - down_y;
+
+        swipeInfo.length = dir.len();
+
+        float diff_x = pos_up.x - pos_down.x;
+        float diff_y = pos_up.y - pos_down.y;
+
+//    printf("\ndiff x:%.2f, y:%.2f", diff_x, diff_y);
+
+        if ( Math.abs(diff_x) > Math.abs(diff_y) ) {
+            if (diff_x < 0.0f) {
+//            printf("\nSwipe Down");
+                swipeInfo.swipeDir = SwipeDirEnums.SwipeLeft; // SwipeDown;
+            }
+
+            if (diff_x > 0.0f) {
+//            printf("\nSwipe Up");
+                swipeInfo.swipeDir = SwipeDirEnums.SwipeRight; // SwipeUp;
+            }
+        } else {
+            if (diff_y < 0.0f) {
+//            printf("\nSwipe Left");
+                swipeInfo.swipeDir = SwipeDirEnums.SwipeUp;
+            }
+
+            if (diff_y > 0.0f) {
+//            printf("\nSwipe Right");
+                swipeInfo.swipeDir = SwipeDirEnums.SwipeDown;
+            }
+        }
+        return swipeInfo;
+    }
+
 
     public static void setupHollowCube() {
         int number_of_visible_cubes = 0;
@@ -547,25 +913,6 @@ public final class Game {
         } else {
             return false;
         }
-    }
-
-    public static boolean isCubeOnAList(Cube cube, ArrayList<Cube> lst) {
-        return lst.contains(cube);
-    }
-
-    public static int countOnAList(Cube theCube, ArrayList<Cube> lst) {
-        int count = 0;
-        int size = lst.size();
-        Cube cube;
-
-        for (int i = 0; i < size; ++i) {
-            cube = lst.get(i);
-
-            if (cube == theCube) {
-                ++count;
-            }
-        }
-        return count;
     }
 
     public static void bindCubeGLData() {
@@ -791,7 +1138,7 @@ public final class Game {
                 R, G, B, A,
         };
 
-        Engine.graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
+        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
     }
 
     // Scales a vector by a scalar
@@ -889,51 +1236,33 @@ public final class Game {
         destMat[15] =  dot - vLightPos[3] * vPlaneEquation[3];
     }
 
-    public static void showFullScreenAd() {
-        //m_resourceManager.ShowFullScreenAd();
-    }
-
-    public static boolean getAdsFlag() {
-        return false;
-    }
-
     public static Texture loadTutorTexture(final String name) {
-        Graphics graphics = Engine.graphics;
-
         if (graphics.textureTutor != null) {
             graphics.textureTutor.release();
             graphics.textureTutor = null;
         }
 
-        if (name.equals("tutor_swipe")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_swipe);
-        } else if (name.equals("tutor_goal")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_goal);
-        } else if (name.equals("tutor_drag")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_drag);
-        } else if (name.equals("tutor_dead")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_dead);
-        } else if (name.equals("tutor_moving")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_moving);
-        } else if (name.equals("tutor_pusher")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_pusher);
-        } else if (name.equals("tutor_plain")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_plain);
-        } else if (name.equals("tutor_menu_pause")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_pause);
-        } else if (name.equals("tutor_menu_undo")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_undo);
-        } else if (name.equals("tutor_menu_hint")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_hint);
-        } else if (name.equals("tutor_menu_solver")) {
-            graphics.textureTutor = graphics.loadTexture(R.drawable.tutor_menu_solver);
-        } else {
-            // bad!
+        int resourceId = -1;
+        switch (name) {
+            case "tutor_swipe": resourceId = R.drawable.tutor_swipe; break;
+            case "tutor_goal": resourceId = R.drawable.tutor_goal; break;
+            case "tutor_drag": resourceId = R.drawable.tutor_drag; break;
+            case "tutor_dead": resourceId = R.drawable.tutor_dead; break;
+            case "tutor_moving": resourceId = R.drawable.tutor_moving; break;
+            case "tutor_pusher": resourceId = R.drawable.tutor_pusher; break;
+            case "tutor_plain": resourceId = R.drawable.tutor_plain; break;
+            case "tutor_menu_pause": resourceId = R.drawable.tutor_menu_pause; break;
+            case "tutor_menu_undo": resourceId = R.drawable.tutor_menu_undo; break;
+            case "tutor_menu_hint": resourceId = R.drawable.tutor_menu_hint; break;
+            case "tutor_menu_solver": resourceId = R.drawable.tutor_menu_solver; break;
+        }
+        if (resourceId != -1) {
+            graphics.textureTutor = graphics.loadTexture(resourceId);
         }
         return graphics.textureTutor;
     }
 
-    public static void initFontsBig() {
+    private static void initFontsBig() {
         FontStruct[] a = {
             new FontStruct(' ', new Rectangle(1,      0, 30,  82) ),
             new FontStruct('!', new Rectangle(31,     0, 49,  82) ),
@@ -1281,25 +1610,14 @@ public final class Game {
     }
 
     public static void updateDisplayedSolvers() {
-//        if (null != m_solvers) {
-//            //m_solvers.UpdateSolversCount();
-//        }
-//
-//        if (null != m_level) {
-//            level.setSolversCount();
-//        }
-    }
+        if (solvers != null) {
+            int solver = options.getSolverCount();
+            solvers.updateSolversCount(solver);
+        }
 
-    public static void setTextureID(int id) {
-        //m_texture_id = id;
-    }
-
-    public static void setSolverCount(int count) {
-        //return m_resourceManager.SetSolvers(count);
-    }
-
-    public static void decSolverCount() {
-        //m_resourceManager.SetSolvers(m_resourceManager.GetSolvers() - 1);
+        if (level != null) {
+            level.setSolversCount();
+        }
     }
 
     public static void musicVolumeUp() {
@@ -1348,19 +1666,6 @@ public final class Game {
         options.setSoundVolume(volume);
     }
 
-    public static void enteredBackground() {
-        if (currentScene != null) {
-            //currentScene.enteredBackground();
-        }
-    }
-
-    public static void enteredForeground() {
-        if (currentScene != null) {
-            //m_scene.enteredForeground();
-        }
-    }
-
-
     public static void drawCubeNoFace(  boolean x_plus,
                                         boolean x_minus,
                                         boolean y_plus,
@@ -1368,47 +1673,27 @@ public final class Game {
                                         boolean z_plus,
                                         boolean z_minus) {
         if (z_minus) {
-            Engine.graphics.drawCubeFaceZ_Minus();
+            graphics.drawCubeFaceZ_Minus();
         }
 
         if (z_plus) {
-            Engine.graphics.drawCubeFaceZ_Plus();
+            graphics.drawCubeFaceZ_Plus();
         }
 
         if (x_plus) {
-            Engine.graphics.drawCubeFaceX_Plus();
+            graphics.drawCubeFaceX_Plus();
         }
 
         if (y_minus) {
-            Engine.graphics.drawCubeFaceY_Minus();
+            graphics.drawCubeFaceY_Minus();
         }
 
         if (x_minus) {
-            Engine.graphics.drawCubeFaceX_Minus();
+            graphics.drawCubeFaceX_Minus();
         }
 
         if (y_plus){
-            Engine.graphics.drawCubeFaceY_Plus();
+            graphics.drawCubeFaceY_Plus();
         }
     }
-
-    public static float getTextWidth(final String text, float scale) {
-        float width = 0.0f;
-
-        int len = text.length();
-        TexturedQuad pFont;
-
-        for (int i = 0; i < len; ++i) {
-            pFont = getFont(text.charAt(i));
-            width += (pFont.w * scale);
-        }
-
-        return width;
-    }
-
-
-
-
-
-
 }

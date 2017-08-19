@@ -2,12 +2,12 @@ package com.almagems.cubetraz.graphics;
 
 import static android.opengl.GLES10.*;
 import static android.opengl.GLUtils.texImage2D;
-import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
-import com.almagems.cubetraz.game.Engine;
+import com.almagems.cubetraz.game.Game;
 //import android.util.Log;
 
 public final class TextureHelper {
@@ -31,10 +31,10 @@ public final class TextureHelper {
 
         Texture texture = new Texture();
 
-		final Bitmap bmp = BitmapFactory.decodeResource(Engine.getContext().getResources(), resourceId, options);
+		final Bitmap bmp = BitmapFactory.decodeResource(Game.getContext().getResources(), resourceId, options);
         final int w = bmp.getWidth();
         final int h = bmp.getHeight();
-        final String resourceName = Engine.getContext().getResources().getResourceEntryName(resourceId);
+        final String resourceName = Game.getContext().getResources().getResourceEntryName(resourceId);
         //System.out.println("Texture info[" + resourceName + "], w:" + w + " h:" + h);
 
         texture.name = resourceName;

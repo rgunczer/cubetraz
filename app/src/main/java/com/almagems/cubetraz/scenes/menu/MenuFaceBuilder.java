@@ -11,7 +11,7 @@ import com.almagems.cubetraz.graphics.TexturedQuad;
 
 import java.util.Locale;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class MenuFaceBuilder {
@@ -531,13 +531,13 @@ public final class MenuFaceBuilder {
 
 	private static String getNumberIn3CharLongString(int number) {
         String str = String.format(Locale.US, "%03d", number);
-        char[] chars = str.toCharArray();
-        for(int i = 0; i < chars.length - 1; ++i) {
-            if (chars[i] == '0') {
-                chars[i] = ' ';
-            }
-        }
-        str = new String(chars);
+//        char[] chars = str.toCharArray();
+//        for(int i = 0; i < chars.length - 1; ++i) {
+//            if (chars[i] == '0') {
+//                chars[i] = ' ';
+//            }
+//        }
+//        str = new String(chars);
         return str;
     }
 
@@ -545,11 +545,11 @@ public final class MenuFaceBuilder {
          String score =
             "xxxxxxx x" +
             "x       x" +
-            "xSTARS  x" +
-            "x sss   x" +
+            "xSTARS: x" +
+            "xsss/540x" +
             "x       x" +
-            "xSOLVED x" +
-            "x ggg   x" +
+            "xSOLVED:x" +
+            "xggg/180x" +
             "x       x" +
             "xxxxxxxxx";
 

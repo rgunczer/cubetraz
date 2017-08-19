@@ -9,22 +9,30 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 import android.widget.Toast;
 
-import com.almagems.cubetraz.game.Engine;
+import com.almagems.cubetraz.game.Audio;
+import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.game.GameOptions;
+import com.almagems.cubetraz.graphics.Graphics;
 
 
 public final class MainRenderer implements Renderer {
 
 	private long frameStartTimeMS;
     public final Context context;
-    public String sceneName;
+
+    public static Audio audio;
+    public static Graphics graphics;
+    public static Game game;
 
 	MainRenderer(Context context) {
         System.out.println("MainRenderer.ctor");
 		this.context = context;
-        Engine engine = Engine.getInstance();
-        engine.setRenderer(this);
 
-
+        if (game == null) {
+            game = new Game();
+            Game game = Game.getInstance();
+            game.setRenderer(this);
+        }
 	}
 
 	@Override
@@ -32,10 +40,10 @@ public final class MainRenderer implements Renderer {
         System.out.println("MainRenderer.onSurfaceCreated");
         frameStartTimeMS = SystemClock.elapsedRealtime();
 
-        Engine.createAndInitGraphicsObject(gl);
+        createAndInitGraphicsObject(gl);
 
         try {
-            Engine.graphics.loadStartupAssets();
+            graphics.loadStartupAssets();
         } catch (final Exception ex) {
             Activity activity = (Activity) context;
             activity.runOnUiThread(new Runnable() {
@@ -46,19 +54,21 @@ public final class MainRenderer implements Renderer {
             return;
         }
 
-        Engine.createGameObject();
-        Engine.initGameObject();
+        game.init();
+        audio = Game.audio;
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        Engine.onSurfaceChanged(width, height);
+        graphics.onSurfaceChanged(width, height);
+        game.onSurfaceChanged();
     }
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		Engine.update();
-		Engine.draw();
+		game.update();
+        graphics.prepareFrame();
+        game.draw();
 
         // limit frame rate
         final int framesPerSecond = 30;
@@ -73,15 +83,44 @@ public final class MainRenderer implements Renderer {
     }
 
     void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
-		Engine.handleTouchPress(normalizedX, normalizedY, fingerCount);
-	}
+        game.handleTouchPress(normalizedX, normalizedY, fingerCount);
+    }
 	
 	void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
-		Engine.handleTouchDrag(normalizedX, normalizedY, fingerCount);
-	}
+        game.handleTouchDrag(normalizedX, normalizedY, fingerCount);
+    }
 	
 	void handleTouchRelease(float normalizedX, float normalizedY) {
-		Engine.handleTouchRelease(normalizedX, normalizedY);
-	}
+        game.handleTouchRelease(normalizedX, normalizedY);
+    }
 
+	void pause() {
+        if (audio != null) {
+            audio.release();
+        }
+        Game.fboLost = true;
+    }
+
+    void resume() {
+        if (audio != null) {
+            audio.reInit();
+        }
+    }
+
+    void incrementSolverCount() {
+        GameOptions options = Game.options;
+        if (options != null) {
+            int currentSolverCount = options.getSolverCount();
+            options.setSolverCount(currentSolverCount + 1);
+        }
+        Game.updateDisplayedSolvers();
+    }
+
+    private void createAndInitGraphicsObject(GL10 gl) {
+        if (graphics == null) {
+            graphics = new Graphics(gl);
+            graphics.initialSetup();
+            Game.graphics = graphics;
+        }
+    }
 }

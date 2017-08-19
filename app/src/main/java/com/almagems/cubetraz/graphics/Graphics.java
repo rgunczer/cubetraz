@@ -6,7 +6,7 @@ import static android.opengl.GLU.*;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 import com.almagems.cubetraz.utils.PositionInfo;
 import com.almagems.cubetraz.R;
@@ -824,56 +824,6 @@ public final class Graphics {
         restoreOriginalFBO();
     }
 
-//     inline void DumpVerticesBuffer(int count)
-//    {
-//		printf("\nDumpVerticesBuffer: %d", count);
-//
-//        for (int i = 0; i < count*2; i+=2)
-//        {
-//            printf("\nx:%.2f, y:%.2f", _vertices[i], _vertices[i+1]);
-//        }
-//    }
-//
-//     inline void DumpNormalsBuffer(int count)
-//    {
-//		printf("\nDumpNormalsBuffer: %d", count);
-//
-//        for (int i = 0; i < count*3; i+=3)
-//        {
-//            printf("\nx:%.2f, y:%.2f z:%.2f", _normals[i], _normals[i+1], _normals[i+2]);
-//        }
-//    }
-//
-//	 inline void DumpCoordsFloatBuffer(int count)
-//	{
-//		printf("\nDumpCoordsFloatBuffer: %d", count);
-//
-//        for (int i = 0; i < count*2; i+=2)
-//        {
-//            printf("\nx:%.2f, y:%.2f", _coords[i], _coords[i+1]);
-//        }
-//	}
-//
-//	 inline void DumpCoordsByteBuffer(int count)
-//	{
-//		printf("\nDumpCoordsByteBuffer: %d", count);
-//
-//        for (int i = 0; i < count*2; i+=2)
-//        {
-//            printf("\nx:%d, y:%d", _coords_byte[i], _coords_byte[i+1]);
-//        }
-//	}
-//
-//	 inline void DumpColorsBuffer(int count)
-//	{
-//		printf("\nDumpColorsBuffer: %d", count);
-//
-//        for (int i = 0; i < count*4; i+=4)
-//        {
-//            printf("\nr:%d, g:%d, b:%d, a:%d", _colors[i], _colors[i+1], _colors[i+2], _colors[i+3]);
-//        }
-//	}
-
     public void renderTriangles() {
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
     }
@@ -886,8 +836,6 @@ public final class Graphics {
     }
 
     public void addCubeSize(float tx, float ty, float tz, float size, Color color) {
-        //printf("\nColor: %d %d %d %d", color.r, color.g, color.b, color.a);
-
         float xp = size + tx;
         float yp = size + ty;
         float zp = size + tz;

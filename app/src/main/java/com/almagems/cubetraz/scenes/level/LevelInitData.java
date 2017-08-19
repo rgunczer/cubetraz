@@ -1,6 +1,6 @@
 package com.almagems.cubetraz.scenes.level;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class LevelInitData {

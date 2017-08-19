@@ -8,7 +8,6 @@ import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.cubes.LevelCube;
 import com.almagems.cubetraz.utils.SwipeInfo;
@@ -22,7 +21,7 @@ import com.almagems.cubetraz.scenes.Scene;
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class Menu extends Scene {
 
@@ -160,8 +159,8 @@ public final class Menu extends Scene {
 
         mCameraMenu.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        mCameraMenu.eye = mCameraMenu.eye.scale(Engine.graphics.aspectRatio);
-        mCameraCredits.eye = mCameraCredits.eye.scale(Engine.graphics.aspectRatio);
+        mCameraMenu.eye = mCameraMenu.eye.scale(Game.graphics.aspectRatio);
+        mCameraCredits.eye = mCameraCredits.eye.scale(Game.graphics.aspectRatio);
 
         mPosLightCurrent = mPosLight;
         mCameraCurrent.init(mCameraMenu);
@@ -247,7 +246,7 @@ public final class Menu extends Scene {
         update();
 
 
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(mCameraCurrent);
 
@@ -288,7 +287,7 @@ public final class Menu extends Scene {
     }
 
     private void drawMenuCubes() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
@@ -321,7 +320,7 @@ public final class Menu extends Scene {
     }
 
     private void drawLevelCubes() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
@@ -344,7 +343,7 @@ public final class Menu extends Scene {
                                          ArrayList<LevelCube> lst_level_cubes_y_plus,
                                          ArrayList<LevelCube> lst_level_cubes_y_minus,
                                          LevelCubeDecalTypeEnum decal_type) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         LevelCube levelCube;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad p;
@@ -485,7 +484,7 @@ public final class Menu extends Scene {
                                            ArrayList<LevelCube> lst_level_cubes_y_plus,
                                            ArrayList<LevelCube> lst_level_cubes_y_minus,
                                            LevelCubeDecalTypeEnum decal_type) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         LevelCube levelCube;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad p;
@@ -626,7 +625,7 @@ public final class Menu extends Scene {
                                          ArrayList<LevelCube> lst_level_cubes_y_plus,
                                          ArrayList<LevelCube> lst_level_cubes_y_minus,
                                          LevelCubeDecalTypeEnum decal_type) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         LevelCube levelCube;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad p;
@@ -763,7 +762,7 @@ public final class Menu extends Scene {
     }
 
     private void drawLevelNumbers() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
 
@@ -809,7 +808,7 @@ public final class Menu extends Scene {
     }
 
     private void drawTexts() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.resetBufferIndices();
 
         if (Math.abs(mNavigator.m_cube_rotation_secondary.degree) < EPSILON) {
@@ -925,7 +924,7 @@ public final class Menu extends Scene {
     }
 
     private void drawTextsTitles() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.resetBufferIndices();
 
         if (Math.abs(mNavigator.m_cube_rotation_secondary.degree) < EPSILON) {
@@ -975,7 +974,7 @@ public final class Menu extends Scene {
                                             ArrayList<CubeFont> lst_y_minus,
                                             ArrayList<CubeFont> lst_z_plus,
                                             ArrayList<CubeFont> lst_z_minus) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         CubeFont cubeFont;
         TexturedQuad font;
         TexCoordsQuad coords = new TexCoordsQuad();
@@ -1066,7 +1065,7 @@ public final class Menu extends Scene {
                                ArrayList<CubeFont> lst_y_minus,
                                ArrayList<CubeFont> lst_z_plus,
                                ArrayList<CubeFont> lst_z_minus) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         CubeFont cubeFont;
         TexturedQuad font;
         TexCoordsQuad coords = new TexCoordsQuad();
@@ -1135,7 +1134,7 @@ public final class Menu extends Scene {
                                  ArrayList<CubeFont> lst_y_minus,
                                  ArrayList<CubeFont> lst_z_plus,
                                  ArrayList<CubeFont> lst_z_minus) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         CubeFont cubeFont;
         TexturedQuad font;
         TexCoordsQuad coords = new TexCoordsQuad();
@@ -1204,7 +1203,7 @@ public final class Menu extends Scene {
                                ArrayList<CubeFont> lst_y_minus,
                                ArrayList<CubeFont> lst_z_plus,
                                ArrayList<CubeFont> lst_z_minus) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         CubeFont cubeFont;
         TexturedQuad font;
         TexCoordsQuad coords = new TexCoordsQuad();
@@ -1268,7 +1267,7 @@ public final class Menu extends Scene {
     }
 
     private void drawSymbols() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
 
@@ -1284,7 +1283,7 @@ public final class Menu extends Scene {
     }
 
     private void drawCubeFaceOptions() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         Cube p = Game.cubes[2][7][3];
 
         float x = p.tx - HALF_CUBE_SIZE;
@@ -1351,7 +1350,7 @@ public final class Menu extends Scene {
     }
 
     private void drawLevelCubeSymbols() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.resetBufferIndices();
         graphics.bindStreamSources3d();
 
@@ -1415,7 +1414,7 @@ public final class Menu extends Scene {
     }
 
     private void drawCredits() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         final float verts[] = {
             -0.5f, -0.5f, 0.0f,
              0.5f, -0.5f, 0.0f,
@@ -1471,7 +1470,7 @@ public final class Menu extends Scene {
     }
 
     private void drawTheCube() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         int size;
         Cube cube;
 
@@ -1497,7 +1496,7 @@ public final class Menu extends Scene {
     }
 
     private void drawCubeHiLite(Color color) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         TexCoordsQuad coords = new TexCoordsQuad();
 
         TexturedQuad p = m_font_hilite.getFont();
@@ -2333,7 +2332,7 @@ public final class Menu extends Scene {
     }
 
     private void renderForPicking(PickRenderTypeEnum type) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glDisable(GL_LIGHTING);
@@ -2426,7 +2425,7 @@ public final class Menu extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 //        renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubePlay);
 //        if (true) {
 //            return;
@@ -2444,7 +2443,7 @@ public final class Menu extends Scene {
         glEnable(GL_TEXTURE_2D);
 
         Color color = new Color(255, 255, 255, (int) Game.dirtyAlpha);
-        graphics.drawFullScreenTexture(Engine.graphics.textureDirty, color);
+        graphics.drawFullScreenTexture(Game.graphics.textureDirty, color);
 
         glDepthMask(true);
 
@@ -2552,7 +2551,7 @@ public final class Menu extends Scene {
 
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
-            m_color_down = Engine.graphics.getColorFromScreen(mPosDown);
+            m_color_down = Game.graphics.getColorFromScreen(mPosDown);
             MenuCube menuCube = getMovingCubeFromColor(m_color_down.r);
 
             if (menuCube != null) {
@@ -2574,7 +2573,7 @@ public final class Menu extends Scene {
             float dist = Utils.getDistance2D(mPosDown, mPosMove);
             //System.out.println("OnFingerMove: distance " + dist);
 
-            if (dist > 20.0f * Engine.graphics.deviceScale) {
+            if (dist > 20.0f * Game.graphics.deviceScale) {
                 mIsSwipe = true;
             }
         }
@@ -2644,8 +2643,8 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFaceOptions() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyOptions);
-        m_color_down = Engine.graphics.getColorFromScreen(mPosDown);
-        m_color_up = Engine.graphics.getColorFromScreen(mPosUp);
+        m_color_down = Game.graphics.getColorFromScreen(mPosDown);
+        m_color_up = Game.graphics.getColorFromScreen(mPosUp);
 
         int downR = m_color_down.r;
         int upR = m_color_up.r;
@@ -2680,8 +2679,8 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFacesEasy() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyLevelCubes);
-        m_color_down = Engine.graphics.getColorFromScreen(mPosDown);
-        m_color_up = Engine.graphics.getColorFromScreen(mPosUp);
+        m_color_down = Game.graphics.getColorFromScreen(mPosDown);
+        m_color_up = Game.graphics.getColorFromScreen(mPosUp);
 
         if (m_color_down.r == m_color_up.r) {
             int level_number = 255 - m_color_up.r;
@@ -2694,8 +2693,8 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFacesNormal() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyLevelCubes);
-        m_color_down = Engine.graphics.getColorFromScreen(mPosDown);
-        m_color_up = Engine.graphics.getColorFromScreen(mPosUp);
+        m_color_down = Game.graphics.getColorFromScreen(mPosDown);
+        m_color_up = Game.graphics.getColorFromScreen(mPosUp);
 
         if (m_color_down.r == m_color_up.r) {
             int level_number = 255 - m_color_up.r;
@@ -2708,8 +2707,8 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFacesHard() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyLevelCubes);
-        m_color_down = Engine.graphics.getColorFromScreen(mPosDown);
-        m_color_up = Engine.graphics.getColorFromScreen(mPosUp);
+        m_color_down = Game.graphics.getColorFromScreen(mPosDown);
+        m_color_up = Game.graphics.getColorFromScreen(mPosUp);
 
         if (m_color_down.r == m_color_up.r) {
             int level_number = 255 - m_color_up.r;
@@ -2722,8 +2721,8 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFaceMenu() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-        m_color_down = Engine.graphics.getColorFromScreen(mPosDown);
-        m_color_up = Engine.graphics.getColorFromScreen(mPosUp);
+        m_color_down = Game.graphics.getColorFromScreen(mPosDown);
+        m_color_up = Game.graphics.getColorFromScreen(mPosUp);
 
         if (m_color_down.r == m_color_up.r) {
             MenuCube menuCube = getMovingCubeFromColor(m_color_up.r);
@@ -2746,12 +2745,12 @@ public final class Menu extends Scene {
     }
 
     private void handleSwipe() {
-        Graphics graphics = Engine.graphics;
-        SwipeInfo swipeInfo = Engine.getSwipeDirAndLength(mPosDown, mPosUp);
+        Graphics graphics = Game.graphics;
+        SwipeInfo swipeInfo = Game.getSwipeDirAndLength(mPosDown, mPosUp);
 
         if (swipeInfo.length > (30.0f * graphics.scaleFactor)) {
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = Engine.graphics.getColorFromScreen(mPosDown);
+            Color down_color = Game.graphics.getColorFromScreen(mPosDown);
             //printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", m_down_color.r, m_down_color.g, m_down_color.b, m_down_color.a);
 
             MenuCube menuCube = getMovingCubeFromColor(down_color.r);

@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
@@ -11,8 +10,7 @@ import com.almagems.cubetraz.graphics.TexCoordsQuad;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
 import static com.almagems.cubetraz.game.Audio.SOUND_CUBE_HIT;
-import static com.almagems.cubetraz.game.Constants.*;
-
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class MovingCube {
 	private boolean m_done;
@@ -334,11 +332,11 @@ public final class MovingCube {
     }
 
     public void renderCube() {
-        Engine.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        Game.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         

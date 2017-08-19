@@ -37,6 +37,7 @@ public final class Audio {
 
     private int soundStreamId;
     private int musicTrackPos = 0;
+    private String currentMusicKey;
 
     public Audio() {
         mResources.clear();
@@ -82,7 +83,7 @@ public final class Audio {
 
     private void createMediaPlayer(String key) {
         int resourceId = getResourceIdFromKey(key);
-        mediaPlayer = MediaPlayer.create(Engine.getContext(), resourceId);
+        mediaPlayer = MediaPlayer.create(Game.getContext(), resourceId);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
@@ -95,7 +96,7 @@ public final class Audio {
 
     private void loadToSoundPool(String key) {
         int resourceId = Integer.parseInt(mResources.get(key));
-        int id = soundPool.load(Engine.getContext(), resourceId, 1);
+        int id = soundPool.load(Game.getContext(), resourceId, 1);
         mSounds.put(key, id);
     }
 
@@ -124,8 +125,20 @@ public final class Audio {
         createSoundPool();
     }
 
+    public void reInit() {
+        init(this.musicVolume, this.soundVolume);
+        if (currentMusicKey != null) {
+            createMediaPlayer(currentMusicKey);
+            mediaPlayer.setVolume(musicVolume, musicVolume);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.seekTo(musicTrackPos);
+            mediaPlayer.start();
+        }
+    }
+
     public void playMusic(String key) {
         if (key != null) {
+            currentMusicKey = key;
             createMediaPlayer(key);
         }
 

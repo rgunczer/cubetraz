@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes.stat;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.graphics.Graphics;
@@ -12,7 +11,7 @@ import com.almagems.cubetraz.scenes.Scene;
 
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class Statistics extends Scene {
@@ -139,18 +138,18 @@ public final class Statistics extends Scene {
         // texts
         mTextTitle.setVSPace(1.0f);
 
-        mTextTitle.init(sid.str_title, true);
-        mTextMiddle.init("MOVES", true);
-        mTextMoves.init(sid.str_moves, true);
-        mTextTap.init("TAP TO CONTINUE", true);
+        mTextTitle.init(sid.str_title);
+        mTextMiddle.init("MOVES");
+        mTextMoves.init(sid.str_moves);
+        mTextTap.init("TAP TO CONTINUE");
 
         // pre calc y positions
-        m_stars_y = Engine.graphics.height * 0.75f;
-        m_rating_y = Engine.graphics.height * 0.5f;
+        m_stars_y = Game.graphics.height * 0.75f;
+        m_rating_y = Game.graphics.height * 0.5f;
 
-        m_title_y = Engine.graphics.height * 0.33f;
-        m_moves_y = Engine.graphics.height * 0.2f;
-        m_tap_y = Engine.graphics.height * 0.017f;
+        m_title_y = Game.graphics.height * 0.33f;
+        m_moves_y = Game.graphics.height * 0.2f;
+        m_tap_y = Game.graphics.height * 0.017f;
     }
 
     public void updateFallingCubes() {
@@ -174,7 +173,7 @@ public final class Statistics extends Scene {
             case StatWait:
                 if (State.StatNone != mStateNext) {
                     m_pulse += 0.3f;
-                    float mTextScale = (float)( Math.sin(m_pulse) / 5.0f) * Engine.graphics.deviceScale;
+                    float mTextScale = (float)( Math.sin(m_pulse) / 5.0f) * Game.graphics.deviceScale;
 
                     switch (mStateNext) {
                         case StatAppearTitle:
@@ -282,7 +281,7 @@ public final class Statistics extends Scene {
     }
 
     public void drawFallingCubes() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         Game.bindCubeGLData();
         graphics.resetBufferIndices();
         graphics.zeroBufferPositions();
@@ -310,8 +309,8 @@ public final class Statistics extends Scene {
     }
 
     public void drawBackground() {
-        Graphics graphics = Engine.graphics;
-        float dim = Math.max(Engine.graphics.width, Engine.graphics.height) * 1.25f;
+        Graphics graphics = Game.graphics;
+        float dim = Math.max(Game.graphics.width, Game.graphics.height) * 1.25f;
         float q = dim / 2.0f;
 
         final float verts[] = {
@@ -341,14 +340,14 @@ public final class Statistics extends Scene {
         graphics.addVerticesCoordsColors(verts, coords, colors);
 
         glPushMatrix();
-            glTranslatef(Engine.graphics.halfWidth, Engine.graphics.halfHeight, 0.0f);
+            glTranslatef(Game.graphics.halfWidth, Game.graphics.halfHeight, 0.0f);
             glRotatef(mBackgroundRotDegree, 0.0f, 0.0f, 1.0f);
             glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         glPopMatrix();
     }
 
     public boolean drawText(Color color, Color tapToContinueColor) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         boolean shouldDraw = false;
         Vector2 pos = new Vector2();
         float scale;
@@ -398,7 +397,7 @@ public final class Statistics extends Scene {
     }
 
     public void drawStars() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         final float verts[] = {
             -0.5f, -0.5f,
              0.5f, -0.5f,
@@ -469,7 +468,7 @@ public final class Statistics extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         Color color;
 
         glEnable(GL_TEXTURE_2D);

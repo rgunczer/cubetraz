@@ -6,13 +6,11 @@ import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.cubes.MoverCube;
 import com.almagems.cubetraz.cubes.MovingCube;
-import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.level.Level;
 
 import java.util.ArrayList;
 
-import static com.almagems.cubetraz.game.Constants.*;
-
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class LevelBuilder {
         

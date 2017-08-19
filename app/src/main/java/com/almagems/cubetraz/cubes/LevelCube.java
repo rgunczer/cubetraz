@@ -5,7 +5,7 @@ import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class LevelCube {

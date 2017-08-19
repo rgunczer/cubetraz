@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import android.content.Context;
 import android.content.res.Resources;
 
-import com.almagems.cubetraz.game.Engine;
+import com.almagems.cubetraz.game.Game;
 
 public final class TextResourceReader {
 
@@ -16,7 +15,7 @@ public final class TextResourceReader {
 		StringBuilder body = new StringBuilder();
 		
 		try {
-			InputStream inputStream = Engine.getContext().getResources().openRawResource(resourceId);
+			InputStream inputStream = Game.getContext().getResources().openRawResource(resourceId);
 			InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			

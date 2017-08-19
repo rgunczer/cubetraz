@@ -11,7 +11,6 @@ import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.builder.LevelBuilder;
 import com.almagems.cubetraz.builder.LevelBuilderEasy;
@@ -34,8 +33,8 @@ import com.almagems.cubetraz.scenes.Scene;
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Constants.*;
 
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class Level extends Scene {
 
@@ -79,7 +78,7 @@ public final class Level extends Scene {
 
     private int m_tutor_index;
     private CompletedFaceNextActionEnum m_completed_face_next_action;
-    private LevelNextActionEnum m_next_action;
+    private LevelNextActionEnum mNextAction;
     private float m_timeout_undo;
     private final ArrayList<UndoData> m_lst_undo = new ArrayList<>();
 
@@ -138,7 +137,7 @@ public final class Level extends Scene {
     private int m_solution_pointer;
     public int[] m_ar_solution = new int[MAX_SOLUTION_MOVES];
 
-    private int m_moves_counter;
+    private int mMovesCounter;
     public int m_min_solution_steps;
     private float m_timeout;
 
@@ -238,182 +237,6 @@ public final class Level extends Scene {
         return mDifficulty;
     }
 
-/*
-    void cLevel::ReportAchievementEasy()
-    {
-        float number_of_solved_levels = 0.0f;
-        int star_count = 0;
-
-        if (mLevelNumber >= 1 && mLevelNumber <= 15)
-        {
-            for (int i = 1; i <= 15; ++i)
-            {
-                star_count = cCubetraz::GetStarsEasy(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.easy01facesolved", percent);
-        }
-
-        if (mLevelNumber >= 16 && mLevelNumber <= 30)
-        {
-            for (int i = 16; i <= 30; ++i)
-            {
-                star_count = cCubetraz::GetStarsEasy(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.easy02facesolved", percent);
-        }
-
-        if (mLevelNumber >= 31 && mLevelNumber <= 45)
-        {
-            for (int i = 31; i <= 45; ++i)
-            {
-                star_count = cCubetraz::GetStarsEasy(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.easy03facesolved", percent);
-        }
-
-        if (mLevelNumber >= 46 && mLevelNumber <= 60)
-        {
-            for (int i = 46; i <= 60; ++i)
-            {
-                star_count = cCubetraz::GetStarsEasy(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.easy04facesolved", percent);
-        }
-    }
-
-    void cLevel::ReportAchievementNormal()
-    {
-        float number_of_solved_levels = 0.0f;
-        int star_count = 0;
-
-        if (mLevelNumber >= 1 && mLevelNumber <= 15)
-        {
-            for (int i = 1; i <= 15; ++i)
-            {
-                star_count = cCubetraz::GetStarsNormal(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.normal01facesolved", percent);
-        }
-
-        if (mLevelNumber >= 16 && mLevelNumber <= 30)
-        {
-            for (int i = 16; i <= 30; ++i)
-            {
-                star_count = cCubetraz::GetStarsNormal(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.normal02facesolved", percent);
-        }
-
-        if (mLevelNumber >= 31 && mLevelNumber <= 45)
-        {
-            for (int i = 31; i <= 45; ++i)
-            {
-                star_count = cCubetraz::GetStarsNormal(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.normal03facesolved", percent);
-        }
-
-        if (mLevelNumber >= 46 && mLevelNumber <= 60)
-        {
-            for (int i = 46; i <= 60; ++i)
-            {
-                star_count = cCubetraz::GetStarsNormal(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.normal04facesolved", percent);
-        }
-    }
-
-    void cLevel::ReportAchievementHard()
-    {
-        float number_of_solved_levels = 0.0f;
-        int star_count = 0;
-
-        if (mLevelNumber >= 1 && mLevelNumber <= 15)
-        {
-            for (int i = 1; i <= 15; ++i)
-            {
-                star_count = cCubetraz::GetStarsHard(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.hard01facesolved", percent);
-        }
-
-        if (mLevelNumber >= 16 && mLevelNumber <= 30)
-        {
-            for (int i = 16; i <= 30; ++i)
-            {
-                star_count = cCubetraz::GetStarsHard(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.hard02facesolved", percent);
-        }
-
-        if (mLevelNumber >= 31 && mLevelNumber <= 45)
-        {
-            for (int i = 31; i <= 45; ++i)
-            {
-                star_count = cCubetraz::GetStarsHard(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.hard03facesolved", percent);
-        }
-
-        if (mLevelNumber >= 46 && mLevelNumber <= 60)
-        {
-            for (int i = 46; i <= 60; ++i)
-            {
-                star_count = cCubetraz::GetStarsHard(i);
-                if (star_count > 0)
-                    number_of_solved_levels += 1.0f;
-            }
-
-            float percent = (number_of_solved_levels / 15.0f) * 100.0f;
-            engine.ReportAchievement("com.almagems.cubetraz.hard04facesolved", percent);
-        }
-    }
-*/
-
     @Override
     public void init() {
         Game.dirtyAlpha = 60f;
@@ -429,7 +252,7 @@ public final class Level extends Scene {
         //Game.level_init_data.level_number = 10;
 
         m_tutor_index = 0;
-        m_next_action = LevelNextActionEnum.NoNextAction;
+        mNextAction = LevelNextActionEnum.NoNextAction;
         
         switch (lid.init_action) {
             case FullInit: {
@@ -451,11 +274,11 @@ public final class Level extends Scene {
                 m_lst_mover_cubes.clear();
                 m_lst_dead_cubes.clear();
 
-                m_moves_counter = 0;
+                mMovesCounter = 0;
                 m_lst_undo.clear();
 
                 mHud.set1stHint();
-                mHud.setTextMoves(m_moves_counter);
+                mHud.setTextMoves(mMovesCounter);
                 mHud.setTextUndo(m_lst_undo.size());
 
                 mIsFingerDown = false;
@@ -499,7 +322,7 @@ public final class Level extends Scene {
                 break;
         }
 
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(mCameraCurrent);
 
@@ -511,37 +334,37 @@ public final class Level extends Scene {
 
         StatInitData sid = Game.stat_init_data;
 
-        if (m_moves_counter < m_min_solution_steps) {
+        if (mMovesCounter < m_min_solution_steps) {
             sign = "<";
             sid.str_title = "EXPERT";
             sid.stars = 3;
         }
 
-        if (m_moves_counter == m_min_solution_steps) {
+        if (mMovesCounter == m_min_solution_steps) {
             sign = "=";
             sid.str_title = "PERFECT";
             sid.stars = 3;
         }
 
-        if (m_moves_counter > m_min_solution_steps && m_moves_counter <= m_min_solution_steps + 1) {
+        if (mMovesCounter > m_min_solution_steps && mMovesCounter <= m_min_solution_steps + 1) {
             sign = ">";
             sid.str_title = "EXCELLENT";
             sid.stars = 3;
         }
 
-        if (m_moves_counter > m_min_solution_steps + 1 && m_moves_counter <= m_min_solution_steps + 4) {
+        if (mMovesCounter > m_min_solution_steps + 1 && mMovesCounter <= m_min_solution_steps + 4) {
             sign = ">";
             sid.str_title = "GREAT";
             sid.stars = 2;
         }
 
-        if (m_moves_counter > m_min_solution_steps + 4) {
+        if (mMovesCounter > m_min_solution_steps + 4) {
             sign = ">";
             sid.str_title = "GOOD";
             sid.stars = 1;
         }
 
-        sid.str_moves = "PLAYER:" + m_moves_counter + " " + sign + " BEST:" + m_min_solution_steps;
+        sid.str_moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + m_min_solution_steps;
     }
     
     public void showTutor(int index) {
@@ -870,7 +693,7 @@ public final class Level extends Scene {
     }
     
     public void setSolversCount() {
-        mHud.setTextSolver(Game.getSolverCount());
+        mHud.setTextSolver(Game.options.getSolverCount());
     }
     
     public void setAnimToCompleted() {
@@ -1407,13 +1230,13 @@ public final class Level extends Scene {
 
         mHud.update();
 
-        if (LevelNextActionEnum.NoNextAction != m_next_action) {
+        if (LevelNextActionEnum.NoNextAction != mNextAction) {
             if (HUDStateEnum.DoneHUD == mHud.getState() ) {
-                switch (m_next_action) {
+                switch (mNextAction) {
                     case ShowSceneSolvers:
                         Game.renderToFBO(this);
                         Game.showScene(Scene_Solvers);
-                        m_next_action = LevelNextActionEnum.NoNextAction;
+                        mNextAction = LevelNextActionEnum.NoNextAction;
                         break;
 
                     default:
@@ -1634,8 +1457,8 @@ public final class Level extends Scene {
                     mState = LevelStateEnum.MovingPlayer;
                     m_timeout = 0.0f;
 
-                    ++m_moves_counter;
-                    mHud.setTextMoves(m_moves_counter);
+                    ++mMovesCounter;
+                    mHud.setTextMoves(mMovesCounter);
                 }
             }
         }
@@ -1852,7 +1675,7 @@ public final class Level extends Scene {
     }
 
     public void drawTheCube() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         glClear(GL_STENCIL_BUFFER_BIT);
 
@@ -1973,7 +1796,7 @@ public final class Level extends Scene {
             {
                 graphics.addCubeSize(Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tx + Game.cube_offset.x,
                                      Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].ty + Game.cube_offset.y,
-                                     Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + Game.cube_offset.z, HALF_CUBE_SIZE*0.98f, shadow_color);
+                                     Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + Game.cube_offset.z, HALF_CUBE_SIZE * 0.95f, shadow_color);
             }
 
             glEnable(GL_BLEND);
@@ -2088,7 +1911,7 @@ public final class Level extends Scene {
     }
 
     public void drawTextsCompleted() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         CubeFont cubeFont;
         TexCoordsQuad coords = new TexCoordsQuad();
@@ -2151,7 +1974,7 @@ public final class Level extends Scene {
     }
 
     public void drawTextsPaused() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         CubeFont cubeFont;
         TexCoordsQuad coords = new TexCoordsQuad();
@@ -2213,7 +2036,7 @@ public final class Level extends Scene {
     }
 
     public void draw() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         Color color = new Color(255, 255, 255, (int)(m_fade_value * 255));
         graphics.bindStreamSources3d();
 
@@ -2225,7 +2048,7 @@ public final class Level extends Scene {
         glEnable(GL_LIGHTING);
 
         if (m_draw_menu_cubes || 0 != mPlayerCube.m_cube_pos.x) {
-            Engine.graphics.texturePlayer.bind();
+            Game.graphics.texturePlayer.bind();
 
             graphics.resetBufferIndices();
 
@@ -2243,12 +2066,12 @@ public final class Level extends Scene {
         }
 
         if (0 != m_cube_pos_key.x && !isPlayerAndKeyInSamePosition()) {
-            Engine.graphics.textureKey.bind();
+            Game.graphics.textureKey.bind();
 
             Cube pCube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
 
             graphics.resetBufferIndices();
-            graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.98f, color);
+            graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.95f, color);
             graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
@@ -2287,13 +2110,13 @@ public final class Level extends Scene {
             glDisable(GL_LIGHTING);
             glEnable(GL_BLEND);
             graphics.bindStreamSources3d();
-            Engine.graphics.textureSymbols.bind();
+            Game.graphics.textureSymbols.bind();
             graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
 
         if (m_menu_cube_hilite != null) {
-            Engine.graphics.textureSymbols.bind();
+            Game.graphics.textureSymbols.bind();
             color.init( new Color(color.r, color.g, color.b, (int)(m_hilite_alpha * 255)));
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_CULL_FACE);
@@ -2337,7 +2160,7 @@ public final class Level extends Scene {
             glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glEnable(GL_TEXTURE_2D);
-            Engine.graphics.textureFonts.bind();
+            Game.graphics.textureFonts.bind();
 
             glEnable(GL_BLEND);
             glDisable(GL_LIGHTING);
@@ -2354,7 +2177,7 @@ public final class Level extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 //        if (mState == LevelStateEnum.Completed) {
 //            renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 //            if (true) {
@@ -2417,7 +2240,7 @@ public final class Level extends Scene {
     }
 
     public void renderForPicking(PickRenderTypeEnum type) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glDisable(GL_LIGHTING);
@@ -2462,7 +2285,7 @@ public final class Level extends Scene {
 
     @Override
     public void renderToFBO() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
 
@@ -2492,16 +2315,16 @@ public final class Level extends Scene {
         glEnable(GL_BLEND);
 
         graphics.bindStreamSources3d();
-        Engine.graphics.textureKey.bind();
+        Game.graphics.textureKey.bind();
 
         if (0 != m_cube_pos_key.x) {
             glEnable(GL_LIGHTING);
-            Engine.graphics.textureKey.bind();
+            Game.graphics.textureKey.bind();
 
             Cube cube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
 
             graphics.resetBufferIndices();
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.99f, Color.WHITE);
+            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.95f, Color.WHITE);
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
             glDisable(GL_LIGHTING);
@@ -2513,12 +2336,12 @@ public final class Level extends Scene {
         graphics.resetBufferIndices();
 
         glEnable(GL_LIGHTING);
-        Engine.graphics.textureKey.bind();
+        Game.graphics.textureKey.bind();
 
         CubePos pos = m_cube_pos_key;
         Cube keyCube = Game.cubes[pos.x][pos.y][pos.z];
 
-        graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE * 0.98f, Color.WHITE);
+        graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE * 0.95f, Color.WHITE);
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
@@ -2526,7 +2349,7 @@ public final class Level extends Scene {
         graphics.resetBufferIndices();
 
         glEnable(GL_LIGHTING);
-        Engine.graphics.texturePlayer.bind();
+        Game.graphics.texturePlayer.bind();
         graphics.addCubeSize(mPlayerCube.pos.x, mPlayerCube.pos.y, mPlayerCube.pos.z, HALF_CUBE_SIZE, Color.WHITE);
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
@@ -2563,7 +2386,7 @@ public final class Level extends Scene {
             glEnable(GL_BLEND);
 
             graphics.bindStreamSources3d();
-            Engine.graphics.textureSymbols.bind();
+            Game.graphics.textureSymbols.bind();
             graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
@@ -2609,8 +2432,8 @@ public final class Level extends Scene {
     }
 
     public void eventShowHint() {
-        if (0 == m_moves_counter) {
-            mHud.showHint(m_ar_solution[0]); // show first hint
+        if (0 == mMovesCounter) {
+            mHud.showHintToBegin(m_ar_solution[0]);
         } else {
             m_show_hint_2nd = true;
             m_hint_index = 0;
@@ -2630,26 +2453,24 @@ public final class Level extends Scene {
     }
 
     public void eventSolver() {
-        if (LevelNextActionEnum.ShowSceneSolvers == m_next_action || LevelStateEnum.PrepareSolving == mState) {
+        if (LevelNextActionEnum.ShowSceneSolvers == mNextAction || LevelStateEnum.PrepareSolving == mState) {
             return;
         }
 
         boolean solved = false;
-
         switch (mDifficulty) {
             case Easy: solved = Game.progress.getSolvedEasy(mLevelNumber); break;
             case Normal: solved = Game.progress.getSolvedNormal(mLevelNumber); break;
             case Hard: solved = Game.progress.getSolvedHard(mLevelNumber); break;
         }
 
-        // TODO: uncomment later
-//        if (solved) {
-//            reset();
-//            mState = LevelStateEnum.PrepareSolving;
-//            m_timeout = 2.0f;
-//        } else {
-            m_next_action = LevelNextActionEnum.ShowSceneSolvers;
-//        }
+        if (solved) {
+            reset();
+            mState = LevelStateEnum.PrepareSolving;
+            m_timeout = 2.0f;
+        } else {
+            mNextAction = LevelNextActionEnum.ShowSceneSolvers;
+        }
 
         mHud.setupDisappear();
     }
@@ -2699,7 +2520,7 @@ public final class Level extends Scene {
         switch (mDifficulty) {
             case Easy:
                 Game.progress.setStarsEasy(mLevelNumber, sid.stars);
-                Game.progress.setMovesEasy(mLevelNumber, m_moves_counter);
+                Game.progress.setMovesEasy(mLevelNumber, mMovesCounter);
 
                 if (mLevelNumber < 60) {
                     if (LEVEL_LOCKED == Game.progress.getStarsEasy(mLevelNumber + 1))
@@ -2711,7 +2532,7 @@ public final class Level extends Scene {
 
             case Normal:
                 Game.progress.setStarsNormal(mLevelNumber, sid.stars);
-                Game.progress.setMovesNormal(mLevelNumber, m_moves_counter);
+                Game.progress.setMovesNormal(mLevelNumber, mMovesCounter);
 
                 if (mLevelNumber < 60) {
                     if (LEVEL_LOCKED == Game.progress.getStarsNormal(mLevelNumber + 1)) {
@@ -2724,7 +2545,7 @@ public final class Level extends Scene {
 
             case Hard:
                 Game.progress.setStarsHard(mLevelNumber, sid.stars);
-                Game.progress.setMovesHard(mLevelNumber, m_moves_counter);
+                Game.progress.setMovesHard(mLevelNumber, mMovesCounter);
 
                 if (mLevelNumber < 60) {
                     if (LEVEL_LOCKED == Game.progress.getStarsHard(mLevelNumber + 1)) {
@@ -2744,11 +2565,11 @@ public final class Level extends Scene {
 
     public void reset() {
         int size;
-        m_moves_counter = 0;
+        mMovesCounter = 0;
         m_lst_undo.clear();
 
         mHud.set1stHint();
-        mHud.setTextMoves(m_moves_counter);
+        mHud.setTextMoves(mMovesCounter);
         mHud.setTextUndo( m_lst_undo.size() );
 
         mPlayerCube.setCubePos(LevelBuilder.player);
@@ -2786,9 +2607,9 @@ public final class Level extends Scene {
     public void eventUndo() {
         m_timeout_undo = UNDO_TIMEOUT;
 
-        if (m_moves_counter > 0) {
-            --m_moves_counter;
-            mHud.setTextMoves(m_moves_counter);
+        if (mMovesCounter > 0) {
+            --mMovesCounter;
+            mHud.setTextMoves(mMovesCounter);
 
             UndoData ud = m_lst_undo.get(m_lst_undo.size() - 1);
             m_lst_undo.remove(ud);
@@ -2801,7 +2622,7 @@ public final class Level extends Scene {
                 ud.moving_cube.init(ud.moving_cube_pos, ud.moving_cube_move_dir);
             }
 
-            if (0 == m_moves_counter) {
+            if (0 == mMovesCounter) {
                 mHud.set1stHint();
             }
 
@@ -2824,7 +2645,7 @@ public final class Level extends Scene {
                     if (HUDStateEnum.DoneHUD == mHud.getState() ) {
                         renderForPicking(PickRenderTypeEnum.RenderOnlyHUD);
 
-                        down_color = Engine.graphics.getColorFromScreen(mPosDown);
+                        down_color = Game.graphics.getColorFromScreen(mPosDown);
                         switch (down_color.b) {
                             case 200: mHud.setHilitePause(true); break;
                             case 150: mHud.setHiliteUndo(true); break;
@@ -2840,7 +2661,7 @@ public final class Level extends Scene {
                 case Completed: {
                     renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
-                    down_color = Engine.graphics.getColorFromScreen(mPosDown);
+                    down_color = Game.graphics.getColorFromScreen(mPosDown);
                     MenuCube menuCube = getMovingCubeFromColor(down_color.b);
                     if (menuCube != null) {
                         m_hilite_alpha = 0.0f;
@@ -2931,8 +2752,8 @@ public final class Level extends Scene {
         if (2 == finger_count) {
             if (mState == LevelStateEnum.Playing) {
                 Vector2 dir = new Vector2();
-                dir.x = (mPosDown.x - cur_x) / Engine.graphics.deviceScale;
-                dir.y = (mPosDown.y - cur_y) / Engine.graphics.deviceScale;
+                dir.x = (mPosDown.x - cur_x) / Game.graphics.deviceScale;
+                dir.y = (mPosDown.y - cur_y) / Game.graphics.deviceScale;
 
                 m_alter_view = true;
 
@@ -2952,10 +2773,10 @@ public final class Level extends Scene {
         if (mIsSwipe) {
             mIsSwipe = false;
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = Engine.graphics.getColorFromScreen(mPosDown);
-            SwipeInfo swipeInfo = Engine.getSwipeDirAndLength(mPosDown, mPosUp);
+            Color down_color = Game.graphics.getColorFromScreen(mPosDown);
+            SwipeInfo swipeInfo = Game.getSwipeDirAndLength(mPosDown, mPosUp);
 
-            if (swipeInfo.length > 30.0f * Engine.graphics.scaleFactor) {
+            if (swipeInfo.length > 30.0f * Game.graphics.scaleFactor) {
                 MenuCube menuCube = null;
                 switch (down_color.b) {
                     case 200: menuCube = m_menu_cube_up; break;
@@ -2983,15 +2804,15 @@ public final class Level extends Scene {
             mIsSwipe = false;
 
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = Engine.graphics.getColorFromScreen(mPosDown);
+            Color down_color = Game.graphics.getColorFromScreen(mPosDown);
 
 //		printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", down_color.r, down_color.g, down_color.b, down_color.a);
 
             SwipeDirEnums swipeDir = SwipeDirEnums.SwipeDown;
             float length = 1f;
-            SwipeInfo swipeInfo = Engine.getSwipeDirAndLength(mPosDown, mPosUp);
+            SwipeInfo swipeInfo = Game.getSwipeDirAndLength(mPosDown, mPosUp);
 
-            if (swipeInfo.length > 30.0f * Engine.graphics.scaleFactor) {
+            if (swipeInfo.length > 30.0f * Game.graphics.scaleFactor) {
                 MenuCube menuCube = null;
                 switch (down_color.b) {
                     case 200: menuCube = m_menu_cube_up; break;
@@ -3035,7 +2856,7 @@ public final class Level extends Scene {
             if (mState == LevelStateEnum.Playing) {
                 renderForPicking(PickRenderTypeEnum.RenderOnlyHUD);
                 Vector2 pos = new Vector2(x,y);
-                Color color = Engine.graphics.getColorFromScreen(pos);
+                Color color = Game.graphics.getColorFromScreen(pos);
                 switch (color.b) {
                     case 200: eventLevelPause(); break;
                     case 150: eventUndo(); break;
@@ -3122,10 +2943,10 @@ public final class Level extends Scene {
     }
 
     public void addMove() {
-        ++m_moves_counter;
-        mHud.setTextMoves(m_moves_counter);
+        ++mMovesCounter;
+        mHud.setTextMoves(mMovesCounter);
 
-        if (1 == m_moves_counter) {
+        if (1 == mMovesCounter) {
             mHud.set2ndHint();
         }
 

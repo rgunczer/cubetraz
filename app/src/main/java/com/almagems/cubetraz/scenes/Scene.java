@@ -4,8 +4,7 @@ import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 
-import static com.almagems.cubetraz.game.Constants.*;
-
+import static com.almagems.cubetraz.game.Game.*;
 
 public abstract class Scene {
 

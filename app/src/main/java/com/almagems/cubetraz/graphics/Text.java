@@ -1,11 +1,10 @@
 package com.almagems.cubetraz.graphics;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Vector2;
 
 import java.util.ArrayList;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class Text {
@@ -53,8 +52,7 @@ public final class Text {
         }
     }
 
-    public void init(final String text, boolean visible) {
-        setVisible(visible);
+    public void init(final String text) {
         cleanUp();
 
         m_lines_count = 0;
@@ -153,7 +151,7 @@ public final class Text {
             size = m_ar_lines.get(i).size();
             for (int j = 0; j < size; ++j) {
                 pFont = m_ar_lines.get(i).get(j);
-                Engine.graphics.addFont(tmp, scale, color, pFont);
+                Game.graphics.addFont(tmp, scale, color, pFont);
                 tmp.x += (pFont.w * m_vspace) * scale.x;
             }
 

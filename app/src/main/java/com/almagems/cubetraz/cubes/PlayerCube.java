@@ -3,9 +3,7 @@ package com.almagems.cubetraz.cubes;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
-
-import static com.almagems.cubetraz.game.Constants.*;
-
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class PlayerCube {
         

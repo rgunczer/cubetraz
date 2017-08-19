@@ -1,12 +1,13 @@
 package com.almagems.cubetraz.scenes.anim;
 
+import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.graphics.Camera;
 
 import java.util.ArrayList;
-import static com.almagems.cubetraz.game.Constants.*;
 
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class AnimInitData {
 
@@ -31,7 +32,7 @@ public final class AnimInitData {
     public FaceTransformsEnum[] transforms_y_plus = new FaceTransformsEnum[MAX_FACE_TRANSFORM_COUNT];
     public FaceTransformsEnum[] transforms_z_plus = new FaceTransformsEnum[MAX_FACE_TRANSFORM_COUNT];
     
-	public void setFaces(CubeFaceNamesEnum face_id_x, CubeFaceNamesEnum face_id_y, CubeFaceNamesEnum face_id_z) {
+	public void setFaces(Game.CubeFaceNamesEnum face_id_x, CubeFaceNamesEnum face_id_y, CubeFaceNamesEnum face_id_z) {
 		face_name_x_plus = face_id_x;
 		face_name_y_plus = face_id_y;
 		face_name_z_plus = face_id_z;

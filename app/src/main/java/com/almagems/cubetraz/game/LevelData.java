@@ -2,7 +2,7 @@ package com.almagems.cubetraz.game;
 
 import java.io.Serializable;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public class LevelData implements Serializable {

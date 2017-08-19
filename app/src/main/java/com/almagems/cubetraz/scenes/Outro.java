@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class Outro extends Scene {
@@ -83,8 +82,8 @@ public final class Outro extends Scene {
     @Override
     public void init() {
         mTick = 0;
-        mTextCenter[0].init("CONGRATULATIONS", true);
-        mTextCenter[1].init("CUBETRAZ IS SOLVED", true);
+        mTextCenter[0].init("CONGRATULATIONS");
+        mTextCenter[1].init("CUBETRAZ IS SOLVED");
 
         mCenterAlpha = 0.0f;
         mCubeTrazAlpha = 255;
@@ -179,7 +178,7 @@ public final class Outro extends Scene {
 
         mPosCubePlayer = Game.getCubePosAt(Game.level.mPlayerCube.getCubePos());
 
-        Engine.graphics.setLightPosition(mPosLightCurrent);
+        Game.graphics.setLightPosition(mPosLightCurrent);
     }
 
     private void setupExplosion() {
@@ -360,7 +359,7 @@ public final class Outro extends Scene {
     }
 
     private void drawTheCube() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.bindStreamSources3d();
         graphics.resetBufferIndices();
 
@@ -386,7 +385,7 @@ public final class Outro extends Scene {
     }
 
     private void drawText() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
@@ -403,7 +402,7 @@ public final class Outro extends Scene {
 
         graphics.bindStreamSources2dNoTextures();
         graphics.resetBufferIndices();
-        graphics.addQuad(0.0f, Engine.graphics.halfHeight - 20.0f * Engine.graphics.deviceScale, Engine.graphics.width, 75.0f * Engine.graphics.deviceScale, color_bg);
+        graphics.addQuad(0.0f, Game.graphics.halfHeight - 20.0f * Game.graphics.deviceScale, Game.graphics.width, 75.0f * Game.graphics.deviceScale, color_bg);
         graphics.updateBuffers();
         graphics.renderTriangles();
 
@@ -411,7 +410,7 @@ public final class Outro extends Scene {
         glEnable(GL_TEXTURE_2D);
         graphics.textureFontsBig.bind();
 
-        float scale = 0.75f * Engine.graphics.deviceScale;
+        float scale = 0.75f * Game.graphics.deviceScale;
         mTextCenter[0].setScale(scale, scale);
         mTextCenter[1].setScale(scale, scale);
 
@@ -420,16 +419,16 @@ public final class Outro extends Scene {
         graphics.resetBufferIndices();
 
         Vector2 pos = new Vector2();
-        pos.x = Engine.graphics.halfWidth - mTextCenter[0].getHalfWidth();
-        pos.y = Engine.graphics.halfHeight + mTextCenter[0].getHalfHeight();
+        pos.x = Game.graphics.halfWidth - mTextCenter[0].getHalfWidth();
+        pos.y = Game.graphics.halfHeight + mTextCenter[0].getHalfHeight();
         mTextCenter[0].emitt(pos, color);
 
-        pos.x = Engine.graphics.halfWidth - mTextCenter[1].getHalfWidth();
-        pos.y = Engine.graphics.halfHeight - mTextCenter[1].getHalfHeight();
+        pos.x = Game.graphics.halfWidth - mTextCenter[1].getHalfWidth();
+        pos.y = Game.graphics.halfHeight - mTextCenter[1].getHalfHeight();
         mTextCenter[1].emitt(pos, color);
 
         glPushMatrix();
-        glTranslatef(Engine.graphics.deviceScale, Engine.graphics.deviceScale, 0.0f);
+        glTranslatef(Game.graphics.deviceScale, Game.graphics.deviceScale, 0.0f);
         graphics.updateBuffers();
         graphics.renderTriangles();
         glPopMatrix();
@@ -438,12 +437,12 @@ public final class Outro extends Scene {
 
         graphics.resetBufferIndices();
 
-        pos.x = Engine.graphics.halfWidth - mTextCenter[0].getHalfWidth();
-        pos.y = Engine.graphics.halfHeight + mTextCenter[0].getHalfHeight();
+        pos.x = Game.graphics.halfWidth - mTextCenter[0].getHalfWidth();
+        pos.y = Game.graphics.halfHeight + mTextCenter[0].getHalfHeight();
         mTextCenter[0].emitt(pos, color);
 
-        pos.x = Engine.graphics.halfWidth - mTextCenter[1].getHalfWidth();
-        pos.y = Engine.graphics.halfHeight - mTextCenter[1].getHalfHeight();
+        pos.x = Game.graphics.halfWidth - mTextCenter[1].getHalfWidth();
+        pos.y = Game.graphics.halfHeight - mTextCenter[1].getHalfHeight();
         mTextCenter[1].emitt(pos, color);
 
         graphics.updateBuffers();
@@ -454,7 +453,7 @@ public final class Outro extends Scene {
     }
 
     public void render() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
@@ -472,7 +471,7 @@ public final class Outro extends Scene {
             glEnable(GL_TEXTURE_2D);
 
             Color color_dirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-            graphics.drawFullScreenTexture(Engine.graphics.textureDirty, color_dirty);
+            graphics.drawFullScreenTexture(Game.graphics.textureDirty, color_dirty);
 
             glDepthMask(true);
             glEnable(GL_LIGHTING);

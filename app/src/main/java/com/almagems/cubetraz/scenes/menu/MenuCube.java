@@ -10,8 +10,7 @@ import com.almagems.cubetraz.graphics.Color;
 import java.util.ArrayList;
 
 import static com.almagems.cubetraz.game.Audio.SOUND_CUBE_HIT;
-import static com.almagems.cubetraz.game.Constants.*;
-
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class MenuCube {
     

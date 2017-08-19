@@ -8,7 +8,7 @@ import com.almagems.cubetraz.math.Vector;
 
 import static android.opengl.GLES10.*;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class MenuNavigator

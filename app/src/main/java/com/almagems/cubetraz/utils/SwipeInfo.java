@@ -1,10 +1,11 @@
 package com.almagems.cubetraz.utils;
 
-import static com.almagems.cubetraz.game.Constants.*;
+
+import com.almagems.cubetraz.game.Game;
 
 public class SwipeInfo {
 
-    public SwipeDirEnums swipeDir;
+    public Game.SwipeDirEnums swipeDir;
     public float length;
 
 }

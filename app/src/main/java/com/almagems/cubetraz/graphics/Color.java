@@ -62,6 +62,13 @@ public final class Color {
         this.a = from.a;
     }
 
+    public void init(int r, int g, int b, int a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
     public void randomize() {
         this.r = Utils.rand.nextInt(255);
         this.g = Utils.rand.nextInt(255);

@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.game.Game;
@@ -15,7 +14,7 @@ import static android.opengl.GLES10.*;
 import java.util.ArrayList;
 
 import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class Intro extends Scene {
@@ -64,8 +63,8 @@ public final class Intro extends Scene {
         m_camera_end.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
         m_camera_end.target = new Vector(0.0f, 0.0f, 0.0f);
 
-        m_camera_begin.eye = m_camera_begin.eye.scale(Engine.graphics.aspectRatio);
-        m_camera_end.eye = m_camera_end.eye.scale(Engine.graphics.aspectRatio);
+        m_camera_begin.eye = m_camera_begin.eye.scale(Game.graphics.aspectRatio);
+        m_camera_end.eye = m_camera_end.eye.scale(Game.graphics.aspectRatio);
 
         mCameraCurrent.eye.init(m_camera_begin.eye);
         mCameraCurrent.target.init(m_camera_begin.target);
@@ -621,7 +620,7 @@ public final class Intro extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         glDisable(GL_BLEND);
         glEnable(GL_LIGHT0);

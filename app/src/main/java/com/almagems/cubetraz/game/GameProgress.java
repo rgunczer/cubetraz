@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class GameProgress {
@@ -68,7 +68,7 @@ public final class GameProgress {
 
     private void saveArray(String fileName, LevelData[] array) {
         try {
-            FileOutputStream fos = Engine.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream fos = Game.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(array);
 
@@ -97,7 +97,7 @@ public final class GameProgress {
         ar[0].stars = LEVEL_UNLOCKED; // unlock first level
 
         try {
-            FileInputStream fis = Engine.getContext().openFileInput(fileName);
+            FileInputStream fis = Game.getContext().openFileInput(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
             Object obj = ois.readObject();
             ar = (LevelData[])(obj);

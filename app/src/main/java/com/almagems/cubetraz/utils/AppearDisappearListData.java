@@ -3,8 +3,7 @@ package com.almagems.cubetraz.utils;
 import com.almagems.cubetraz.cubes.Cube;
 
 import java.util.ArrayList;
-import static com.almagems.cubetraz.game.Constants.*;
-
+import static com.almagems.cubetraz.game.Game.*;
 
 public final class AppearDisappearListData {
 

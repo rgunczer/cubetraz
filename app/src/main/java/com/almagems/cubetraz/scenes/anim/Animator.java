@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes.anim;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.AppearDisappearListData;
 import com.almagems.cubetraz.graphics.Camera;
@@ -23,7 +22,7 @@ import com.almagems.cubetraz.math.Vector2;
 
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class Animator extends Scene {
@@ -656,7 +655,7 @@ public final class Animator extends Scene {
     }
 
     public void drawTheCube() {
-		Graphics graphics = Engine.graphics;
+		Graphics graphics = Game.graphics;
 	    glEnable(GL_LIGHTING);
 	    glEnable(GL_TEXTURE_2D);
 		graphics.textureGrayConcrete.bind();
@@ -686,7 +685,7 @@ public final class Animator extends Scene {
     }
 
     private void drawLevelCubes() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 	    graphics.resetBufferIndices();
 	    graphics.bindStreamSources3d();
 	
@@ -710,14 +709,14 @@ public final class Animator extends Scene {
         }
 	
 	    if (graphics._vertices_count > 0) {
-			Engine.graphics.textureLevelCubes.bind();
+			Game.graphics.textureLevelCubes.bind();
             graphics.updateBuffers();
 		    graphics.renderTriangles();
 	    }
     }
 
     public void drawLevelCubeDecals(LevelCubeDecalTypeEnum decal_type) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 	    graphics.resetBufferIndices();
 	
 	    TexCoordsQuad coords = new TexCoordsQuad();
@@ -830,7 +829,7 @@ public final class Animator extends Scene {
     }
 
     public void drawTexts(ArrayList<CubeFont> lst_face_x_plus, ArrayList<CubeFont> lst_face_y_plus, ArrayList<CubeFont> lst_face_z_plus, Color color) {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 	    int size;
         CubeFont cubeFont;
 	    TexturedQuad font;
@@ -882,7 +881,7 @@ public final class Animator extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
         graphics.bindStreamSources2d();
@@ -897,7 +896,7 @@ public final class Animator extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
     
         Color color = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-        graphics.drawFullScreenTexture(Engine.graphics.textureDirty, color);
+        graphics.drawFullScreenTexture(Game.graphics.textureDirty, color);
     
         glDepthMask(true); //GL_TRUE);
     

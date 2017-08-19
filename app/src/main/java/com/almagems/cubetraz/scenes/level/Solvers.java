@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes.level;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
@@ -9,17 +8,16 @@ import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.scenes.Scene;
 
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class Solvers extends Scene {
 
-    private static int MAX_SOLVER_MENU_ITEMS = 5;
+    private static int MAX_MENU_ITEMS = 4;
 
     private enum SolverMenuItemsEnum {
-        MenuItemNull,
-        MenuItemBuy5,
-        MenuItemBuy15,
+        MenuItemNone,
+        MenuItemEarn,
         MenuItemSolve,
         MenuItemDismiss
     }
@@ -32,20 +30,19 @@ public final class Solvers extends Scene {
     }
 
     private SolverMenuItemsEnum m_action;
-    private SolverStateEnum m_state;
+    private SolverStateEnum mState;
 
     private Text m_text_title = new Text();
     private Text m_text_avail = new Text();
 
     private Text m_text_buy_pack_of = new Text();
     private Text m_text_buy_5_solver = new Text();
-    private Text m_text_buy_15_solver = new Text();
 
     private Text m_text_show_the_solution = new Text();
     private Text m_text_for_one_solver = new Text();
     private Text m_text_dismiss = new Text();
 
-    private float[] m_y = new float[5];
+    private float[] m_y = new float[MAX_MENU_ITEMS];
     private float m_w;
     private float m_h;
     private float m_x;
@@ -53,25 +50,29 @@ public final class Solvers extends Scene {
 
     private float m_alpha;
 
-    private boolean m_show_buy_some;
+    private boolean mShowBuySome;
     private float m_timeout;
+    private boolean[] mOver = new boolean[MAX_MENU_ITEMS];
 
-    private boolean[] m_ar_over = new boolean[MAX_SOLVER_MENU_ITEMS];
-
-    
     public Solvers() {
     }
 
+    private void resetOverArray() {
+        for (int i = 0; i < MAX_MENU_ITEMS; ++i) {
+            mOver[i] = false;
+        }
+    }
+
+
     @Override
     public void init() {
-        final float scale = Engine.graphics.deviceScale;
+        final float scale = Game.graphics.deviceScale;
 
         m_text_title.setScale(0.9f * scale, 0.9f * scale);
         m_text_avail.setScale(0.5f * scale, 0.5f * scale);
 
         m_text_buy_pack_of.setScale(0.5f * scale, 0.5f * scale);
         m_text_buy_5_solver.setScale(0.5f * scale, 0.5f * scale);
-        m_text_buy_15_solver.setScale(0.5f * scale, 0.5f * scale);
 
         m_text_show_the_solution.setScale(0.5f * scale, 0.5f * scale);
         m_text_for_one_solver.setScale(0.5f * scale, 0.5f * scale);
@@ -82,56 +83,48 @@ public final class Solvers extends Scene {
 
         m_text_buy_pack_of.setVSPace(0.8f);
         m_text_buy_5_solver.setVSPace(0.8f);
-        m_text_buy_15_solver.setVSPace(0.8f);
 
         m_text_show_the_solution.setVSPace(0.8f);
         m_text_for_one_solver.setVSPace(0.8f);
         m_text_dismiss.setVSPace(0.8f);
 
-        m_action = SolverMenuItemsEnum.MenuItemNull;
-        m_show_buy_some = false;
-        m_state = SolverStateEnum.SolverAppear;
+        m_action = SolverMenuItemsEnum.MenuItemNone;
+        mShowBuySome = false;
+        mState = SolverStateEnum.SolverAppear;
         m_alpha = 0.0f;
 
-        m_text_title.init("SOLVERS", true);
+        m_text_title.init("SOLVERS");
+        m_text_avail.init("AVAILABLE: " + Game.options.getSolverCount());
+        m_text_buy_pack_of.init("EARN");
+        m_text_buy_5_solver.init("ONE SOLVER");
+        m_text_show_the_solution.init("SHOW THE SOLUTION");
+        m_text_for_one_solver.init("FOR ONE SOLVER");
+        m_text_dismiss.init("DISMISS");
 
-        String str = "AVAILABLE: " + Game.getSolverCount();
+        final float h = Game.graphics.height;
 
-        m_text_avail.init(str, true);
+        m_gap = 0.02f * h;
 
-        m_text_buy_pack_of.init("BUY PACK OF", true);
-        m_text_buy_5_solver.init("5 SOLVERS", true);
-        m_text_buy_15_solver.init("15 SOLVERS", true);
-
-        m_text_show_the_solution.init("SHOW THE SOLUTION", true);
-        m_text_for_one_solver.init("FOR ONE SOLVER", true);
-        m_text_dismiss.init("DISMISS", true);
-
-        m_gap = 0.01f * Engine.graphics.height;
-
-        m_y[0] = Engine.graphics.height * 0.8f + m_gap;
-        m_y[1] = Engine.graphics.height * 0.6f + m_gap;
-        m_y[2] = Engine.graphics.height * 0.4f + m_gap;
-        m_y[3] = Engine.graphics.height * 0.2f + m_gap;
-        m_y[4] = Engine.graphics.height * 0.0f + m_gap;
+        m_y[0] = h * 0.8f; // title
+        m_y[1] = h * 0.5f + m_gap;
+        m_y[2] = h * 0.3f + m_gap;
+        m_y[3] = h * 0.1f + m_gap;
 
         m_w = 300.0f * scale;
-        m_h = Engine.graphics.height / 5.5f;
-        m_x = Engine.graphics.halfWidth - (m_w / 2.0f);
+        m_h = h / 5.5f;
+        m_x = Game.graphics.halfWidth - (m_w / 2.0f);
 
-        for(int i = 0; i < MAX_SOLVER_MENU_ITEMS; ++i) {
-            m_ar_over[i] = false;
-        }
+        resetOverArray();
     }
 
     @Override
     public void update() {
-        switch (m_state) {
+        switch (mState) {
             case SolverAppear:
                 m_alpha += 0.075f;
                 if (m_alpha >= 1.0f) {
                     m_alpha = 1.0f;
-                    m_state = SolverStateEnum.SolverReady;
+                    mState = SolverStateEnum.SolverReady;
                 }
                 break;
 
@@ -139,7 +132,7 @@ public final class Solvers extends Scene {
                 m_alpha -= 0.2f;
                 if (m_alpha <= 0.0f) {
                     m_alpha = 0.0f;
-                    m_state = SolverStateEnum.SolverDone;
+                    mState = SolverStateEnum.SolverDone;
                 }
                 break;
 
@@ -154,55 +147,60 @@ public final class Solvers extends Scene {
                 break;
 
             case SolverReady:
-                if (m_show_buy_some) {
+                if (mShowBuySome) {
                     m_timeout -= 0.3f;
                     if (m_timeout <= 0.0f) {
-                        m_show_buy_some = false;
-                        m_text_show_the_solution.init("SHOW THE SOLUTION", true);
-                        m_text_for_one_solver.init("FOR ONE SOLVER", true);
+                        mShowBuySome = false;
+                        m_text_show_the_solution.init("SHOW THE SOLUTION");
+                        m_text_for_one_solver.init("FOR ONE SOLVER");
                     }
                 }
                 break;
         }
     }
 
-    public void emit(Color color, Color color_hi) {
-        float x;
-        float halfWidth = Engine.graphics.halfWidth;
+    private void drawText(Color color, Color colorHi) {
+        Vector2 pos = new Vector2();
+        float halfWidth = Game.graphics.halfWidth;
 
-        x = halfWidth -  m_text_title.getHalfWidth();
-        m_text_title.emitt(new Vector2(x, m_y[0] + m_h * 0.3f + m_gap), color);
+        pos.x = halfWidth - m_text_title.getHalfWidth();
+        pos.y = m_y[0] + m_h * 0.3f + m_gap;
+        m_text_title.emitt(pos, color);
 
-        x = halfWidth - m_text_avail.getHalfWidth();
-        m_text_avail.emitt(new Vector2(x, m_y[0] + m_gap), color);
+        pos.x = halfWidth - m_text_avail.getHalfWidth();
+        pos.y = m_y[0] + m_gap;
+        m_text_avail.emitt(pos, color);
 
-        x = halfWidth - m_text_show_the_solution.getHalfWidth();
-        m_text_show_the_solution.emitt(new Vector2(x, m_y[1] + m_h * 0.4f + m_gap), color_hi);
+        pos.x = halfWidth - m_text_show_the_solution.getHalfWidth();
+        pos.y = m_y[1] + m_h * 0.3f + m_gap;
+        m_text_show_the_solution.emitt(pos, colorHi);
 
-        x = halfWidth - m_text_for_one_solver.getHalfWidth();
-        m_text_for_one_solver.emitt(new Vector2(x, m_y[1] + m_h * 0.1f + m_gap), color_hi);
+        pos.x = halfWidth - m_text_for_one_solver.getHalfWidth();
+        pos.y = m_y[1] - m_h * 0.01f + m_gap;
+        m_text_for_one_solver.emitt(pos, colorHi);
 
-        x = halfWidth - m_text_buy_pack_of.getHalfWidth();
-        m_text_buy_pack_of.emitt(new Vector2(x, m_y[2] + m_h * 0.4f + m_gap), color);
+        pos.x = halfWidth - m_text_buy_pack_of.getHalfWidth();
+        pos.y = m_y[2] + m_h * 0.3f + m_gap;
+        m_text_buy_pack_of.emitt(pos, color);
 
-        x = halfWidth - m_text_buy_5_solver.getHalfWidth();
-        m_text_buy_5_solver.emitt(new Vector2(x, m_y[2] + m_h * 0.1f + m_gap), color);
+        pos.x = halfWidth - m_text_buy_5_solver.getHalfWidth();
+        pos.y = m_y[2] - m_h * 0.01f + m_gap;
+        m_text_buy_5_solver.emitt(pos, color);
 
-        x = halfWidth - m_text_buy_pack_of.getHalfWidth();
-        m_text_buy_pack_of.emitt(new Vector2(x, m_y[3] + m_h * 0.4f + m_gap), color);
-
-        x = halfWidth - m_text_buy_15_solver.getHalfWidth();
-        m_text_buy_15_solver.emitt(new Vector2(x, m_y[3] + m_h * 0.1f + m_gap), color);
-
-        x = halfWidth - m_text_dismiss.getHalfWidth();
-        m_text_dismiss.emitt(new Vector2(x, m_y[4] + m_h * 0.25f + m_gap), color);
+        pos.x = halfWidth - m_text_dismiss.getHalfWidth();
+        pos.y = m_y[3] + m_h * 0.18f + m_gap;
+        m_text_dismiss.emitt(pos, color);
     }
 
     @Override
     public void render() {
+        if (Game.fboLost) {
+            Game.renderToFBO(Game.level);
+        }
+
         Color color;
         Color colorHilite;
-        Graphics graphics = Engine.graphics;
+        Graphics graphics = Game.graphics;
 
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
@@ -236,10 +234,9 @@ public final class Solvers extends Scene {
         float x = m_x;
 
         graphics.addQuad(x_title, m_y[0], w_title, m_h, color);
-        graphics.addQuad(x, m_y[1], m_w, m_h, m_ar_over[3] ? colorHilite : color);
-        graphics.addQuad(x, m_y[2], m_w, m_h, m_ar_over[1] ? colorHilite : color);
-        graphics.addQuad(x, m_y[3], m_w, m_h, m_ar_over[2] ? colorHilite : color);
-        graphics.addQuad(x, m_y[4], m_w, m_h, m_ar_over[4] ? colorHilite : color);
+        graphics.addQuad(x, m_y[1], m_w, m_h, mOver[1] ? colorHilite : color);
+        graphics.addQuad(x, m_y[2], m_w, m_h, mOver[2] ? colorHilite : color);
+        graphics.addQuad(x, m_y[3], m_w, m_h, mOver[3] ? colorHilite : color);
         graphics.updateBuffers();
         graphics.renderTriangles();
 
@@ -251,7 +248,7 @@ public final class Solvers extends Scene {
         graphics.textureFontsBig.bind();
 
         Color colorShadow = new Color(0, 0, 0, 255 * (int)m_alpha);
-        emit(colorShadow, colorShadow);
+        drawText(colorShadow, colorShadow);
 
         glPushMatrix();
         glTranslatef(graphics.deviceScale, graphics.deviceScale, 0.0f);
@@ -261,13 +258,13 @@ public final class Solvers extends Scene {
 
         color = new Color(210, 210, 210, 240 * (int)m_alpha);
 
-        if (m_show_buy_some) {
+        if (mShowBuySome) {
             colorHilite = new Color(225, 10, 50, 255 * (int)m_alpha);
         } else {
             colorHilite = new Color(255, 255, 0, 255 * (int)m_alpha);
         }
 
-        emit(color, colorHilite);
+        drawText(color, colorHilite);
         graphics.updateBuffers();
         graphics.renderTriangles();
     }
@@ -277,30 +274,20 @@ public final class Solvers extends Scene {
             mPosDown.x = x;
             mPosDown.y = y;
 
-            for (int i = 0; i < MAX_SOLVER_MENU_ITEMS; ++i) {
-                m_ar_over[i] = false;
-            }
+            resetOverArray();
 
             SolverMenuItemsEnum index = getMenuItem(x, y);
             switch (index) {
-                case MenuItemNull:
-                    //m_ar_over[0] = true;
-                    break;
-
-                case MenuItemBuy5:
-                    m_ar_over[1] = true;
-                    break;
-
-                case MenuItemBuy15:
-                    m_ar_over[2] = true;
+                case MenuItemEarn:
+                    mOver[2] = true;
                     break;
 
                 case MenuItemSolve:
-                    m_ar_over[3] = true;
+                    mOver[1] = true;
                     break;
 
                 case MenuItemDismiss:
-                    m_ar_over[4] = true;
+                    mOver[3] = true;
                     break;
             }
         }
@@ -311,33 +298,25 @@ public final class Solvers extends Scene {
             return;
         }
 
-        for (int i = 0; i < MAX_SOLVER_MENU_ITEMS; ++i) {
-            m_ar_over[i] = false;
-        }
+        resetOverArray();
 
         SolverMenuItemsEnum index_down = getMenuItem(mPosDown.x, mPosDown.y);
         SolverMenuItemsEnum index_up = getMenuItem(x, y);
 
         if (index_down == index_up) {
             switch (index_down) {
-                case MenuItemNull:
-                    break;
-
-                case MenuItemBuy5:
-                    //engine->BuyPackOfSolvers(5);
-                    break;
-
-                case MenuItemBuy15:
-                    //engine->BuyPackOfSolvers(15);
+                case MenuItemEarn:
+                    //engine->BuyPackOfSolvers(5)
+                    Game.showAd();
                     break;
 
                 case MenuItemSolve:
-                    if (Game.getSolverCount() > 0) {
+                    int solverCount = Game.options.getSolverCount();
+                    if (solverCount > 0) {
                         m_action = SolverMenuItemsEnum.MenuItemSolve;
-                        m_state = SolverStateEnum.SolverDisappear;
+                        mState = SolverStateEnum.SolverDisappear;
                         int levelNumber = Game.level.getLevelNumber();
-                        Game.decSolverCount();
-
+                        Game.options.setSolverCount(solverCount - 1);
                         Game.updateDisplayedSolvers();
 
                         switch(Game.level.getDifficulty()) {
@@ -355,21 +334,18 @@ public final class Solvers extends Scene {
                         }
                         Game.progress.save();
                     } else {
-                        m_text_show_the_solution.init("NO AVAILABLE", true);
-                        m_text_for_one_solver.init("SOLVERS", true);
-                        m_timeout = 5.0f;
-                        m_show_buy_some = true;
-
-                        m_text_show_the_solution.init("NO AVAILABLE SOLVERS", true);
-                        m_text_for_one_solver.init("BUY SOME FROM BELOW", true);
-                        m_timeout = 5.0f;
-                        m_show_buy_some = true;
+                        if (!mShowBuySome) {
+                            m_text_show_the_solution.init("NO AVAILABLE SOLVERS");
+                            m_text_for_one_solver.init("EARN SOME FROM BELOW");
+                            m_timeout = 50.0f;
+                            mShowBuySome = true;
+                        }
                     }
                     break;
 
                 case MenuItemDismiss:
                     m_action = SolverMenuItemsEnum.MenuItemDismiss;
-                    m_state = SolverStateEnum.SolverDisappear;
+                    mState = SolverStateEnum.SolverDisappear;
                     break;
             }
         }
@@ -377,30 +353,25 @@ public final class Solvers extends Scene {
 
     private SolverMenuItemsEnum getMenuItem(float x, float y) {
         if (x > m_x && x < m_x + m_w) {
-            float y_gl = Engine.graphics.height - y;
+            float y_gl = Game.graphics.height - y;
 
-            if (y_gl > m_y[4] && y_gl < m_y[4] + m_h) {
+            if (y_gl > m_y[3] && y_gl < m_y[3] + m_h) {
                 return SolverMenuItemsEnum.MenuItemDismiss;
             }
 
-            if (y_gl > m_y[3] && y_gl < m_y[3] + m_h) {
-                return SolverMenuItemsEnum.MenuItemBuy15;
-            }
-
             if (y_gl > m_y[2] && y_gl < m_y[2] + m_h) {
-                return SolverMenuItemsEnum.MenuItemBuy5;
+                return SolverMenuItemsEnum.MenuItemEarn;
             }
 
             if (y_gl > m_y[1] && y_gl < m_y[1] + m_h) {
                 return SolverMenuItemsEnum.MenuItemSolve;
             }
         }
-        return SolverMenuItemsEnum.MenuItemNull;
+        return SolverMenuItemsEnum.MenuItemNone;
     }
 
-    public void updateSolversCount() {
-        String str = "AVAILABLE: " + Game.getSolverCount();
-        m_text_avail.init(str, true);
+    public void updateSolversCount(int solver) {
+        m_text_avail.init("AVAILABLE: " + solver);
     }
 
 }

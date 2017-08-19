@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes.level;
 
-import com.almagems.cubetraz.game.Engine;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Utils;
@@ -15,9 +14,9 @@ import static android.opengl.GLES10.*;
 
 import java.util.Stack;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
-public final class HUD {
+final class HUD {
 
     private final boolean[] mArrTutorDisplayed = new boolean[MAX_TUTOR_COUNT];
     
@@ -40,14 +39,14 @@ public final class HUD {
     private Text mTextLevel = new Text();
     private Text mTextMoves = new Text();
     private Text mTextStars = new Text();
-    
+
+    private TexCoordsQuad tcoords = new TexCoordsQuad();
+
     private Text[] mArTextCenter = new Text[2];
 
 	private float mPosXTextLeft;
 	private float mPosXTextLeftStart;
 	private float mPosXTextLeftEnd;
-
-	private float m_motto_height;
 
     private float mPosXTextRight;
     private float mPosXTextRightStart;
@@ -65,10 +64,7 @@ public final class HUD {
     private boolean mHiliteSolver;
 
 	private boolean mShowHint;
-	private int mHintType;
-	private float m_hint_timeout;
     private float m_t;
-	private int m_hint_index;
     
     private boolean mShowPrepareSolving;
     private boolean mShowAppear;
@@ -84,6 +80,12 @@ public final class HUD {
     private boolean mTutorActive;
     private int mTutorAlpha;
     private Texture mTutorTexture;
+
+    private Color colorIcon = new Color(140, 0, 0, mIconsAlpha);
+    private Color colorText = new Color(225, 10, 50, mIconsAlpha);
+    private Color colorHilite = new Color(240, 240, 240, mIconsAlpha);
+    private Color colorShadow = new Color(0, 0, 0, mIconsAlpha);
+
 
     public HUD() {
         mArTextCenter[0] = new Text();
@@ -130,13 +132,13 @@ public final class HUD {
         }
     }
 
-    public void clearTutors() {
+    void clearTutors() {
         while ( !mTutors.isEmpty() ) {
             mTutors.pop();
         }
     }
 
-    public void showTutorSwipeAndGoal() {
+    void showTutorSwipeAndGoal() {
         if (!mArrTutorDisplayed[Tutor_Swipe]) {
             mTutors.push(Tutor_Goal);
             mTutors.push(Tutor_Swipe);
@@ -148,7 +150,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorGoal() {
+    void showTutorGoal() {
         if (!mArrTutorDisplayed[Tutor_Goal]) {
             mTutorActive = true;
             mTutorAlpha = 0;
@@ -158,7 +160,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorDrag() {
+    void showTutorDrag() {
         if (!mArrTutorDisplayed[Tutor_Drag]) {
             mTutors.push(Tutor_Drag);
             mTutorActive = true;
@@ -169,7 +171,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorDead() {
+    void showTutorDead() {
         if (!mArrTutorDisplayed[Tutor_Dead]) {
             mTutors.push(Tutor_Dead);
             mTutorActive = true;
@@ -180,7 +182,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorMoving() {
+    void showTutorMoving() {
         if (!mArrTutorDisplayed[Tutor_Moving]) {
             mTutors.push(Tutor_Moving);
             mTutorActive = true;
@@ -191,7 +193,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorMover() {
+    void showTutorMover() {
         if (!mArrTutorDisplayed[Tutor_Mover]) {
             mTutors.push(Tutor_Mover);
             mTutorActive = true;
@@ -202,7 +204,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorPlain() {
+    void showTutorPlain() {
         if (!mArrTutorDisplayed[Tutor_Plain]) {
             mTutors.push(Tutor_Plain);
             mTutorActive = true;
@@ -213,7 +215,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorMenuPause() {
+    void showTutorMenuPause() {
         if (!mArrTutorDisplayed[Tutor_MenuPause]) {
             mTutors.push(Tutor_MenuUndo);
             mTutors.push(Tutor_MenuPause);
@@ -226,7 +228,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorMenuUndo() {
+    void showTutorMenuUndo() {
         if (!mArrTutorDisplayed[Tutor_MenuUndo]) {
             mTutorActive = true;
             mTutorAlpha = 0;
@@ -236,7 +238,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorMenuHint() {
+    void showTutorMenuHint() {
         if (!mArrTutorDisplayed[Tutor_MenuHint]) {
             mTutors.push(Tutor_MenuSolvers);
             mTutors.push(Tutor_MenuHint);
@@ -248,7 +250,7 @@ public final class HUD {
         }
     }
 
-    public void showTutorMenuSolvers() {
+    void showTutorMenuSolvers() {
         if (!mArrTutorDisplayed[Tutor_MenuSolvers]) {
             mTutorActive = true;
             mTutorAlpha = 0;
@@ -258,69 +260,57 @@ public final class HUD {
         }
     }
 
-    public void hideTutor() {
+    void hideTutor() {
         if (mTutorActive && TutorStateEnum.TutorDone == mTutorState) {
             mTutorState = TutorStateEnum.TutorDisappear;
         }
     }
 
-    public void setTextMotto(final String str) {
-        mTextMotto.init(str, true);
-	    m_motto_height = mTextMotto.getHeight();
+    void setTextMotto(final String str) {
+        mTextMotto.init(str);
     }
 
-    public void setTextLevel(final String str) {
-        String buf = "LEVEL\n" + str;
-        mTextLevel.init(buf, true);
+    void setTextLevel(final String str) {
+        mTextLevel.init("LEVEL\n" + str);
     }
 
-    public void setTextMoves(final int moves_count) {
-        String buf = "MOVES\n" + moves_count;
-        mTextMoves.init(buf, true);
+    void setTextMoves(final int moves) {
+        mTextMoves.init("MOVES\n" + moves);
     }
 
-    public void setTextStars(final int stars) {
-        String buf = "STARS\n" + stars;
-        mTextStars.init(buf, true);
+    void setTextStars(final int stars) {
+        mTextStars.init("STARS\n" + stars);
     }
 
-    public void set1stHint() {
-	    mTextHint.init("HINT\nTO\nBEGIN", true);
-	    m_hint_index = 1;
+    void set1stHint() {
+	    mTextHint.init("HINT\nTO\nBEGIN");
     }
 
-    public void set2ndHint() {
-	    mTextHint.init("HINT\nTO\nPATH", true);
-	    m_hint_index = 2;
+    void set2ndHint() {
+	    mTextHint.init("HINT\nTO\nPATH");
     }
 
-    public void setTextUndo(final int count) {
-        mTextUndo.init("UNDO\n" + count, true);
+    void setTextUndo(final int count) {
+        mTextUndo.init("UNDO\n" + count);
     }
 
-    public void setTextSolver(final int count) {
-        String str = "SOLVERS\n" + count;
-        mTextSolver.init(str, true);
+    void setTextSolver(final int count) {
+        mTextSolver.init("SOLVERS\n" + count);
     }
 
-    public void showPrepareSolving(boolean value, int movesCount) {
-        if (mShowPrepareSolving == value) {
-            return;
+    void showPrepareSolving(boolean show, int moves) {
+        if (mShowPrepareSolving != show) {
+            mShowPrepareSolving = show;
+
+            mArTextCenter[0].init("THE SOLUTION");
+            mArTextCenter[1].init("IN " + moves + " MOVES");
+
+            mCenterAlpha = (show ? 0.0f : 1.0f);
+            mShowAppear = show;
         }
-    
-        if (value) {
-            mShowPrepareSolving = value;
-        }
-
-        mArTextCenter[0].init("THE SOLUTION", true);
-        mArTextCenter[1].init("IN " + movesCount + " MOVES", true);
-    
-        mCenterAlpha = (value ? 0.0f : 1.0f);
-    
-        mShowAppear = value;
     }
 
-    public void setupAppear() {
+    void setupAppear() {
 	    mState = HUDStateEnum.AppearHUD;
     
 	    mIconsAlpha = 0;
@@ -341,7 +331,7 @@ public final class HUD {
 	    mTextMotto.setVisible(true);
     }
 
-    public void setupDisappear() {
+    void setupDisappear() {
 	    mState = HUDStateEnum.DisappearHUD;
 	
 	    mIconsAlpha = 255;
@@ -352,59 +342,58 @@ public final class HUD {
         mPosYMotto = mPosYMottoEnd;
     }
 
-    public void showHint(int hint_type) {
+    void showHintToBegin(int hintType) {
         float degree = 0.0f;
         float rad;
+        float deviceScale = Game.graphics.deviceScale;
     
 	    mShowHint = true;
-	    mHintType = hint_type;
-	    m_hint_timeout = 2.0f;
         m_t = 0.0f;
-        mRadius = 10.0f * Engine.graphics.deviceScale;
+        mRadius = 10.0f * deviceScale;
 
-        mStart = new Vector2(0.0f, -40.0f * Engine.graphics.deviceScale);
-        mEnd = new Vector2(0.0f, 40.0f * Engine.graphics.deviceScale);
+        mStart = new Vector2(0.0f, -40.0f * deviceScale);
+        mEnd = new Vector2(0.0f, 40.0f * deviceScale);
 
-        switch (mHintType) {
+        switch (hintType) {
             case AxisMovement_X_Plus:
                 degree = -120.0f;
                 rad = (float)Math.toRadians(degree);
-                mStart.rotateRad(rad); // =  engine.Rotate(mStart, degree);
-                mEnd.rotateRad(rad); //  = engine.Rotate(mEnd, degree);
+                mStart.rotateRad(rad);
+                mEnd.rotateRad(rad);
                 break;
             
             case AxisMovement_X_Minus:
                 degree = 60.0f;
                 rad = (float)Math.toRadians(degree);
-                mStart.rotateRad(rad); //= engine.Rotate(mStart, degree);
-                mEnd.rotateRad(rad); // = engine.Rotate(mEnd, degree);
+                mStart.rotateRad(rad);
+                mEnd.rotateRad(rad);
                 break;
             
             case AxisMovement_Y_Plus:
                 rad = (float)Math.toRadians(degree);
-                mStart.rotateRad(rad); // = engine.Rotate(mStart, degree);
-                mEnd.rotateRad(rad); //  = engine.Rotate(mEnd, degree);
+                mStart.rotateRad(rad);
+                mEnd.rotateRad(rad);
                 break;
             
             case AxisMovement_Y_Minus:
                 degree = 180.0f;
                 rad = (float)Math.toRadians(degree);
-                mStart.rotateRad(rad); // = engine.Rotate(mStart, degree);
-                mEnd.rotateRad(rad); //  = engine.Rotate(mEnd, degree);
+                mStart.rotateRad(rad);
+                mEnd.rotateRad(rad);
                 break;
             
             case AxisMovement_Z_Plus:
                 degree = 120.0f;
                 rad = (float)Math.toRadians(degree);
-                mStart.rotateRad(rad); // = engine.Rotate(mStart, degree);
-                mEnd.rotateRad(rad); // = engine.Rotate(mEnd, degree);
+                mStart.rotateRad(rad);
+                mEnd.rotateRad(rad);
                 break;
             
             case AxisMovement_Z_Minus:
                 degree = -60.0f;
                 rad = (float)Math.toRadians(degree);
-                mStart.rotateRad(rad); // = engine.Rotate(mStart, degree);
-                mEnd.rotateRad(rad); //  = engine.Rotate(mEnd, degree);
+                mStart.rotateRad(rad);
+                mEnd.rotateRad(rad);
                 break;
             
             default:
@@ -413,28 +402,23 @@ public final class HUD {
     }
 
     public void init() {
+        float deviceScale = Game.graphics.deviceScale;
         mTutorActive = false;
-    
-        mPosCenter = new Vector2(Engine.graphics.halfWidth, Engine.graphics.halfHeight);
-    
-	    m_hint_index = 1;
+        mPosCenter = new Vector2(Game.graphics.halfWidth, Game.graphics.halfHeight);
         mShowPrepareSolving = false;
-    
         mHilitePause = mHiliteUndo = mHiliteHint = mHiliteSolver = false;
 	
-        mTextPause.init("PAUSE", false);
-        mTextUndo.init("UNDO\nLAST\nMOVE", false);
-        mTextHint.init("HINT\nFIRST\nMOVE", false);
+        mTextPause.init("PAUSE");
+        mTextUndo.init("UNDO\nLAST\nMOVE");
+        mTextHint.init("HINT\nFIRST\nMOVE");
+        mTextSolver.init("SOLVERS\n" + Game.options.getSolverCount());
     
-        String str = "SOLVERS\n" + Game.getSolverCount();
-        mTextSolver.init(str, false);
+        mTextLevel.init("LEVEL\nEASY-01");
+        mTextStars.init("STARS\n0");
+        mTextMoves.init("MOVES\n0");
+        mTextMotto.init("MOTTO\n0\n0");
     
-        mTextLevel.init("LEVEL\nEASY-01", false);
-        mTextStars.init("STARS\n0", false);
-        mTextMoves.init("MOVES\n0", false);
-        mTextMotto.init("MOTTO\n0\n0", false);
-    
-        final float scale = 0.3f * Engine.graphics.deviceScale;
+        final float scale = 0.3f * deviceScale;
         mTextLevel.setScale(scale, scale);
         mTextStars.setScale(scale, scale);
         mTextMoves.setScale(scale, scale);
@@ -445,8 +429,8 @@ public final class HUD {
         mTextHint.setScale(scale, scale);
         mTextSolver.setScale(scale, scale);
     
-        mArTextCenter[0].init("THE SOLUTION IS...", true);
-        mArTextCenter[1].init("THE SOLUTION IS...", true);
+        mArTextCenter[0].init("THE SOLUTION IS...");
+        mArTextCenter[1].init("THE SOLUTION IS...");
     
         mSymbolPause = Game.getSymbol(SymbolPause);
         mSymbolUndo = Game.getSymbol(SymbolUndo);
@@ -455,14 +439,14 @@ public final class HUD {
         mSymbolStar = Game.getSymbol(SymbolStar);
 	    mSymbolDeath = Game.getSymbol(SymbolDeath);
     
-	    mPosXTextLeftStart = -100.0f * Engine.graphics.deviceScale;
-	    mPosXTextLeftEnd = 5.0f * Engine.graphics.deviceScale;
+	    mPosXTextLeftStart = -100.0f * deviceScale;
+	    mPosXTextLeftEnd = 5.0f * deviceScale;
 
-	    mPosYMottoStart = -10.0f * Engine.graphics.deviceScale;
-	    mPosYMottoEnd = 30.0f * Engine.graphics.deviceScale;
+	    mPosYMottoStart = -10.0f * deviceScale;
+	    mPosYMottoEnd = 30.0f * deviceScale;
 	
-        mPosXTextRightStart = Engine.graphics.width + (75.0f * Engine.graphics.deviceScale);
-	    mPosXTextRightEnd = Engine.graphics.width - (6.0f * Engine.graphics.deviceScale);
+        mPosXTextRightStart = Game.graphics.width + (75.0f * deviceScale);
+	    mPosXTextRightEnd = Game.graphics.width - (6.0f * deviceScale);
 
 	    mState = HUDStateEnum.DoneHUD;
 	    mShowHint = false;
@@ -515,8 +499,8 @@ public final class HUD {
     
 	    if (mState == HUDStateEnum.DisappearHUD) {
 		    final int icon_alpha_speed = -40;
-		    final float text_anim_speed = -10.0f * Engine.graphics.deviceScale;
-            final float text_anim_speed_motto = -10.0f * Engine.graphics.deviceScale;
+		    final float text_anim_speed = -10.0f * Game.graphics.deviceScale;
+            final float text_anim_speed_motto = -10.0f * Game.graphics.deviceScale;
 		
 		    mIconsAlpha += icon_alpha_speed;
 
@@ -557,8 +541,8 @@ public final class HUD {
 		    int done_counter = 0;
 		
             final int icon_alpha_speed = 20;
-		    final float text_anim_speed = 8.0f * Engine.graphics.deviceScale;
-            final float text_anim_speed_motto = 3.0f * Engine.graphics.deviceScale;
+		    final float text_anim_speed = 8.0f * Game.graphics.deviceScale;
+            final float text_anim_speed_motto = 3.0f * Game.graphics.deviceScale;
 				
             mIconsAlpha += icon_alpha_speed;
 		
@@ -599,7 +583,6 @@ public final class HUD {
             if (m_t > 1.0f) {
                 m_t = 1.0f;
 			    mShowHint = false;
-                m_hint_timeout = 0.0f;
 		    }
 	    }
     
@@ -622,16 +605,16 @@ public final class HUD {
     }
 
     public void renderForPicking() {
-        Graphics graphics = Engine.graphics;
-	    float solver_quad_y = Engine.graphics.height * 0.09f;
-	    float hint_quad_y   = Engine.graphics.height * 0.37f;
-        float undo_quad_y   = Engine.graphics.height * 0.65f;
-	    float pause_quad_y  = Engine.graphics.height * 0.93f;
+        Graphics graphics = Game.graphics;
+	    float solver_quad_y = graphics.height * 0.09f;
+	    float hint_quad_y   = graphics.height * 0.37f;
+        float undo_quad_y   = graphics.height * 0.65f;
+	    float pause_quad_y  = graphics.height * 0.93f;
 
-	    solver_quad_y -= 0.1f * Engine.graphics.height;
-	    hint_quad_y   -= 0.1f * Engine.graphics.height;
-        undo_quad_y   -= 0.1f * Engine.graphics.height;
-	    pause_quad_y  -= 0.1f * Engine.graphics.height;
+	    solver_quad_y -= 0.1f * graphics.height;
+	    hint_quad_y   -= 0.1f * graphics.height;
+        undo_quad_y   -= 0.1f * graphics.height;
+	    pause_quad_y  -= 0.1f * graphics.height;
     
         graphics.setProjection2D();
         graphics.setModelViewMatrix2D();
@@ -650,8 +633,8 @@ public final class HUD {
         Color color_hint = new Color(0, 0, 100, 255);
 	    Color color_solver = new Color(0, 0, 50, 255);
     
-        float x = 5.0f * Engine.graphics.deviceScale;
-        float size = 60.0f * Engine.graphics.deviceScale;
+        float x = 5.0f * graphics.deviceScale;
+        float size = 60.0f * graphics.deviceScale;
 
         graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
         graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
@@ -664,22 +647,22 @@ public final class HUD {
     }
 
     public void render() {
-        Graphics graphics = Engine.graphics;
-
+        Graphics graphics = Game.graphics;
+        Color color = new Color();
+        Vector2 vec = new Vector2();
         float scale;
 	    float pause_quad_y  = graphics.height * 0.91f;
         float undo_quad_y   = graphics.height * 0.67f;
 	    float hint_quad_y   = graphics.height * 0.38f;
 	    float solver_quad_y = graphics.height * 0.1f;
-
-        Color colorIcon = new Color(140, 0, 0, mIconsAlpha);
-        Color colorText = new Color(225, 10, 50, mIconsAlpha);
-        Color colorHilite = new Color(240, 240, 240, mIconsAlpha);
-        Color colorShadow = new Color(0, 0, 0, mIconsAlpha);
-    
         float shadow_offset_x = 1.5f * graphics.deviceScale;
         float shadow_offset_y = 1.5f * graphics.deviceScale;
-    
+
+        colorIcon.a = mIconsAlpha;
+        colorText.a = mIconsAlpha;
+        colorHilite.a = mIconsAlpha;
+        colorShadow.a = mIconsAlpha;
+
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
@@ -693,88 +676,86 @@ public final class HUD {
 
         graphics.textureFontsClear.bind();
 
-        Vector2 pos = new Vector2();
-
         if (mTextLevel.isVisible()) {
-            pos.x = mPosXTextRight - shadow_offset_x;
-            pos.y = (pause_quad_y + 9.0f * graphics.deviceScale) - shadow_offset_y;
-            mTextLevel.emitt(pos, colorShadow);
+            vec.x = mPosXTextRight - shadow_offset_x;
+            vec.y = (pause_quad_y + 9.0f * graphics.deviceScale) - shadow_offset_y;
+            mTextLevel.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextRight;
-            pos.y = pause_quad_y + 9.0f * graphics.deviceScale;
-            mTextLevel.emitt(pos, colorText);
+            vec.x = mPosXTextRight;
+            vec.y = pause_quad_y + 9.0f * graphics.deviceScale;
+            mTextLevel.emitt(vec, colorText);
         }
     
         if (mTextStars.isVisible()) {
-            pos.x = mPosXTextRight - shadow_offset_x;
-            pos.y = (undo_quad_y - 12.5f * graphics.deviceScale) - shadow_offset_y;
-            mTextStars.emitt(pos, colorShadow);
+            vec.x = mPosXTextRight - shadow_offset_x;
+            vec.y = (undo_quad_y - 12.5f * graphics.deviceScale) - shadow_offset_y;
+            mTextStars.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextRight;
-            pos.y = undo_quad_y - 12.5f * graphics.deviceScale;
-            mTextStars.emitt(pos, colorText);
+            vec.x = mPosXTextRight;
+            vec.y = undo_quad_y - 12.5f * graphics.deviceScale;
+            mTextStars.emitt(vec, colorText);
         }
     
         if (mTextMoves.isVisible()) {
-            pos.x = mPosXTextRight - shadow_offset_x;
-            pos.y = (hint_quad_y - 10.0f * graphics.deviceScale) + shadow_offset_y;
-            mTextMoves.emitt(pos, colorShadow);
+            vec.x = mPosXTextRight - shadow_offset_x;
+            vec.y = (hint_quad_y - 10.0f * graphics.deviceScale) + shadow_offset_y;
+            mTextMoves.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextRight;
-            pos.y = hint_quad_y - 10.0f * graphics.deviceScale;
-            mTextMoves.emitt(pos, colorText);
+            vec.x = mPosXTextRight;
+            vec.y = hint_quad_y - 10.0f * graphics.deviceScale;
+            mTextMoves.emitt(vec, colorText);
         }
     
         if (mTextMotto.isVisible()) {
-            pos.x = (graphics.width - 5.0f * graphics.deviceScale) - shadow_offset_x;
-            pos.y = mPosYMotto + shadow_offset_y;
-            mTextMotto.emitt(pos, colorShadow);
+            vec.x = (graphics.width - 5.0f * graphics.deviceScale) - shadow_offset_x;
+            vec.y = mPosYMotto + shadow_offset_y;
+            mTextMotto.emitt(vec, colorShadow);
 
-            pos.x = graphics.width - 5.0f * graphics.deviceScale;
-            pos.y = mPosYMotto;
-            mTextMotto.emitt(pos, colorText);
+            vec.x = graphics.width - 5.0f * graphics.deviceScale;
+            vec.y = mPosYMotto;
+            mTextMotto.emitt(vec, colorText);
         }
     
         float yOffset = 14.0f * graphics.deviceScale;
         
         if (mTextPause.isVisible()) {
-            pos.x = mPosXTextLeft + shadow_offset_x;
-            pos.y = pause_quad_y - yOffset - shadow_offset_y;
-            mTextPause.emitt(pos, colorShadow);
+            vec.x = mPosXTextLeft + shadow_offset_x;
+            vec.y = pause_quad_y - yOffset - shadow_offset_y;
+            mTextPause.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextLeft;
-            pos.y = pause_quad_y - yOffset;
-            mTextPause.emitt(pos, mHilitePause ? colorHilite : colorText);
+            vec.x = mPosXTextLeft;
+            vec.y = pause_quad_y - yOffset;
+            mTextPause.emitt(vec, mHilitePause ? colorHilite : colorText);
         }
         
         if (mTextUndo.isVisible()) {
-            pos.x = mPosXTextLeft + shadow_offset_x;
-            pos.y = undo_quad_y - yOffset - shadow_offset_y;
-            mTextUndo.emitt(pos, colorShadow);
+            vec.x = mPosXTextLeft + shadow_offset_x;
+            vec.y = undo_quad_y - yOffset - shadow_offset_y;
+            mTextUndo.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextLeft;
-            pos.y = undo_quad_y - yOffset;
-            mTextUndo.emitt(pos, mHiliteUndo ? colorHilite : colorText);
+            vec.x = mPosXTextLeft;
+            vec.y = undo_quad_y - yOffset;
+            mTextUndo.emitt(vec, mHiliteUndo ? colorHilite : colorText);
         }
         
         if (mTextHint.isVisible()) {
-            pos.x = mPosXTextLeft + shadow_offset_x;
-            pos.y = hint_quad_y - yOffset + shadow_offset_y;
-            mTextHint.emitt(pos, colorShadow);
+            vec.x = mPosXTextLeft + shadow_offset_x;
+            vec.y = hint_quad_y - yOffset + shadow_offset_y;
+            mTextHint.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextLeft;
-            pos.y = hint_quad_y - yOffset;
-            mTextHint.emitt(pos, mHiliteHint ? colorHilite : colorText);
+            vec.x = mPosXTextLeft;
+            vec.y = hint_quad_y - yOffset;
+            mTextHint.emitt(vec, mHiliteHint ? colorHilite : colorText);
         }
         
         if (mTextSolver.isVisible()) {
-            pos.x = mPosXTextLeft + shadow_offset_x;
-            pos.y = solver_quad_y - yOffset + shadow_offset_y;
-            mTextSolver.emitt(pos, colorShadow);
+            vec.x = mPosXTextLeft + shadow_offset_x;
+            vec.y = solver_quad_y - yOffset + shadow_offset_y;
+            mTextSolver.emitt(vec, colorShadow);
 
-            pos.x = mPosXTextLeft;
-            pos.y = solver_quad_y - yOffset;
-            mTextSolver.emitt(pos, mHiliteSolver ? colorHilite : colorText);
+            vec.x = mPosXTextLeft;
+            vec.y = solver_quad_y - yOffset;
+            mTextSolver.emitt(vec, mHiliteSolver ? colorHilite : colorText);
         }
 
         graphics.updateBuffers();
@@ -784,14 +765,13 @@ public final class HUD {
             int a = (int) mCenterAlpha * 255;
         
             glDisable(GL_TEXTURE_2D);
-            Color color_bg = new Color(30, 30, 15, (int)(150 * mCenterAlpha));
+            color.init(30, 30, 15, (int)(150 * mCenterAlpha));
         
             graphics.bindStreamSources2dNoTextures();
             graphics.resetBufferIndices();
-            graphics.addQuad(0.0f, graphics.halfHeight - 20.0f * graphics.deviceScale, graphics.width, 75.0f * graphics.deviceScale, color_bg);
+            graphics.addQuad(0.0f, graphics.halfHeight - 20.0f * graphics.deviceScale, graphics.width, 75.0f * graphics.deviceScale, color);
             graphics.updateBuffers();
             graphics.renderTriangles();
-
 
             graphics.setProjection2D();
             graphics.setModelViewMatrix2D();
@@ -806,15 +786,15 @@ public final class HUD {
             mArTextCenter[0].setScale(scale, scale);
             mArTextCenter[1].setScale(scale, scale);
 
-		    Color color = new Color(0, 0, 0, a);
+		    color.init(0, 0, 0, a);
 
-            pos.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
-            pos.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
-            mArTextCenter[0].emitt(pos, color);
+            vec.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
+            vec.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
+            mArTextCenter[0].emitt(vec, color);
 
-            pos.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
-            pos.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
-            mArTextCenter[1].emitt(pos, color);
+            vec.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
+            vec.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
+            mArTextCenter[1].emitt(vec, color);
 
             glPushMatrix();
             glTranslatef(graphics.deviceScale, graphics.deviceScale, 0.0f);
@@ -822,15 +802,15 @@ public final class HUD {
             graphics.renderTriangles();
             glPopMatrix();
     
-		    color = new Color(255, 255, 0, a);
+		    color.init(255, 255, 0, a);
 
-            pos.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
-            pos.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
-            mArTextCenter[0].emitt(pos, color);
+            vec.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
+            vec.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
+            mArTextCenter[0].emitt(vec, color);
 
-            pos.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
-            pos.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
-            mArTextCenter[1].emitt(pos, color);
+            vec.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
+            vec.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
+            mArTextCenter[1].emitt(vec, color);
 
             graphics.updateBuffers();
             graphics.renderTriangles();
@@ -842,7 +822,7 @@ public final class HUD {
     
         graphics.resetBufferIndices();
 
-        TexCoordsQuad tcoords = new TexCoordsQuad();
+
         tcoords.tx0 = mSymbolPause.tx_lo_left;
         tcoords.tx1 = mSymbolPause.tx_lo_right;
         tcoords.tx2 = mSymbolPause.tx_up_right;
@@ -890,13 +870,13 @@ public final class HUD {
             tcoords.tx2 = new Vector2(1,0);
             tcoords.tx3 = new Vector2(0,0);
 
-            Color col = new Color(255, 255, 255, mTutorAlpha);
+            color.init(255, 255, 255, mTutorAlpha);
             float sz = 160.0f * graphics.deviceScale;
             float x = graphics.halfWidth - sz / 2.0f;
             float y = graphics.halfHeight - sz / 2.0f;
 
             graphics.resetBufferIndices();
-            graphics.addQuad(sz, x, y, tcoords, col);
+            graphics.addQuad(sz, x, y, tcoords, color);
             graphics.updateBuffers();
             graphics.renderTriangles();
         }
@@ -904,7 +884,7 @@ public final class HUD {
         if (Level.LevelStateEnum.DeadAnim == Game.level.mState) {
             graphics.resetBufferIndices();
         
-		    Color color = new Color(200, 0, 0, Game.level.dead_alpha);
+		    color.init(200, 0, 0, Game.level.dead_alpha);
 		
             tcoords.tx0 = mSymbolDeath.tx_lo_left;
             tcoords.tx1 = mSymbolDeath.tx_lo_right;
@@ -922,7 +902,8 @@ public final class HUD {
         glDisable(GL_TEXTURE_2D);
 
 	    if (mShowHint) {
-            Vector2 dir = new Vector2(Utils.lerp(mStart.x, mEnd.x, m_t), Utils.lerp(mStart.y, mEnd.y, m_t));
+            vec.x = Utils.lerp(mStart.x, mEnd.x, m_t);
+            vec.y = Utils.lerp(mStart.y, mEnd.y, m_t);
 
 		    final float verts[] = {
 			    mPosCenter.x + mStart.x, mPosCenter.y + mStart.y,
@@ -948,18 +929,16 @@ public final class HUD {
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(1.0f);
 
-            Color color_circle = new Color(255, 255, 0, 255);
-            graphics.drawCircleAt(mPosCenter.x + dir.x, mPosCenter.y + dir.y, mRadius * 0.5f, color_circle);
+            color.init(255, 255, 0, 255);
+            graphics.drawCircleAt(mPosCenter.x + vec.x, mPosCenter.y + vec.y, mRadius * 0.5f, color);
 
-            color_circle = new Color(255, 0, 0, 255);
-            graphics.drawCircleAt(mPosCenter.x + dir.x, mPosCenter.y + dir.y, mRadius * 0.25f, color_circle);
+            color.init(255, 0, 0, 255);
+            graphics.drawCircleAt(mPosCenter.x + vec.x, mPosCenter.y + vec.y, mRadius * 0.25f, color);
         }
         
         glDisable(GL_BLEND);
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
-
-        graphics.setProjection3D();
     }
 
     public void setHilitePause(boolean hilite) {

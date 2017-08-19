@@ -7,7 +7,7 @@ import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 import com.almagems.cubetraz.scenes.menu.MenuCube;
 
-import static com.almagems.cubetraz.game.Constants.*;
+import static com.almagems.cubetraz.game.Game.*;
 
 
 public final class CubeFont {
