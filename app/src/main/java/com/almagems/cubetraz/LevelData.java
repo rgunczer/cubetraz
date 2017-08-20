@@ -1,8 +1,6 @@
-package com.almagems.cubetraz.game;
+package com.almagems.cubetraz;
 
 import java.io.Serializable;
-
-import static com.almagems.cubetraz.game.Game.*;
 
 
 class LevelData implements Serializable {
@@ -12,7 +10,7 @@ class LevelData implements Serializable {
     boolean solved;
 
     public void reset() {
-        stars = LEVEL_LOCKED;
+        stars = Game.LEVEL_LOCKED;
         moves = 0;
         solved = false;
     }

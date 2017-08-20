@@ -4,14 +4,14 @@ package com.almagems.cubetraz.scenes.menu;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.Creator;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
 import java.util.Locale;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class MenuFaceBuilder {
@@ -263,7 +263,7 @@ public final class MenuFaceBuilder {
 			    cube = Game.cubes[x][y][z];
 			    symbol_id = a[counter];
 			
-			    if (SymbolEmpty != symbol_id) {
+			    if (Symbol_Empty != symbol_id) {
 				    Creator.addCubeFontSymbol(symbol_id, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
@@ -281,7 +281,7 @@ public final class MenuFaceBuilder {
 			    cube = Game.cubes[x][y][z];
 			    symbol_id = a[counter];
 			
-			    if (SymbolEmpty != symbol_id) {
+			    if (Symbol_Empty != symbol_id) {
 				    Creator.addCubeFontSymbol(symbol_id, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
@@ -299,7 +299,7 @@ public final class MenuFaceBuilder {
 			    cube = Game.cubes[x][y][z];
 			    symbol_id = a[counter];
 			
-			    if (SymbolEmpty != symbol_id) {
+			    if (Symbol_Empty != symbol_id) {
 				    Creator.addCubeFontSymbol(symbol_id, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
@@ -501,12 +501,12 @@ public final class MenuFaceBuilder {
                 return
                     "xxxxxxxxx" +
                     "x>>>>>>> " +
+                    "xGREAT  x" +
                     "xNOW    x" +
                     "xSLIDE  x" +
                     "xRIGHT  x" +
                     "xTO     x" +
-                    "xSTART  x" +
-                    "xGAME   x" +
+                    "xBEGIN  x" +
                     "xxxxxxxxx";
 
             
@@ -792,9 +792,9 @@ public final class MenuFaceBuilder {
 		"xxxxxxxxx";
 
 		final String tutorial =
-		"BEGINNING" +
-		"x        " +
-		"xxxxxxx x" +
+        "WELCOME x" +
+		"x       x" +
+		"x       x" +
 		"x       x" +
 		"x       x" +
 		"x       x" +
@@ -1219,28 +1219,28 @@ public final class MenuFaceBuilder {
 		switch (faceId) {
 			case Face_Menu:
                 return new int[]{
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolInfo,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Info,
                 };
 
 			default:
                 return new int[]{
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                        SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
                 };
         }
     }
@@ -1250,54 +1250,54 @@ public final class MenuFaceBuilder {
 		switch (faceId) {
 			case Face_Menu:
                 return new int[] {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,      SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoRight,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoDown,    SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_GoUp, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_GoRight, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_GoDown, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
                 };
 
 			case Face_Options:
                 return new int[] {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolMinus, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolPlus,      SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolMinus, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolPlus,      SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,     SymbolEmpty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Minus, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Plus, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Minus, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Plus, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
                 };
 
 			case Face_Easy01:
                 return new int[] {
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolGoUp,  SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolGoLeft, SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolGoDown, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty,  SymbolEmpty,  SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,   SymbolEmpty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_GoUp, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_GoLeft, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_GoDown, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
                 };
             
 			default:
                 return new int[] {
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
-                    SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty, SymbolEmpty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
+						Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty, Symbol_Empty,
                 };
         }
 	}

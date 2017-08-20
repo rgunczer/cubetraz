@@ -4,7 +4,7 @@ import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class Cube {
 

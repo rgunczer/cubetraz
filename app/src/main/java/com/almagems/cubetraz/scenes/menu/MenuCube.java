@@ -2,15 +2,15 @@ package com.almagems.cubetraz.scenes.menu;
 
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeLocation;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 
 import java.util.ArrayList;
 
-import static com.almagems.cubetraz.game.Audio.SOUND_CUBE_HIT;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Audio.SOUND_CUBE_HIT;
+import static com.almagems.cubetraz.Game.*;
 
 public final class MenuCube {
     

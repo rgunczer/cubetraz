@@ -1,8 +1,7 @@
-package com.almagems.cubetraz.game;
+package com.almagems.cubetraz;
 
 import android.content.Context;
 
-import com.almagems.cubetraz.R;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Vector;
@@ -28,8 +27,6 @@ import com.almagems.cubetraz.scenes.stat.StatInitData;
 import com.almagems.cubetraz.scenes.stat.Statistics;
 import com.almagems.cubetraz.scenes.level.LevelInitData;
 import com.almagems.cubetraz.scenes.menu.MenuInitData;
-import com.almagems.cubetraz.system.MainActivity;
-import com.almagems.cubetraz.system.MainRenderer;
 import com.almagems.cubetraz.utils.SwipeInfo;
 
 import java.util.ArrayList;
@@ -65,7 +62,7 @@ public final class Game {
 
     public static final int MAX_FACE_TRANSFORM_COUNT = 8;
 
-    public static final float FONT_OVERLAY_OFFSET = 0.01f;
+    public static final float FONT_OVERLAY_OFFSET = 0.02f;
     public static final int LEVEL_LOCKED = -1;
     public static final int LEVEL_UNLOCKED = 0;
 
@@ -92,32 +89,32 @@ public final class Game {
     public static final int Scene_Solvers = 5;
     public static final int Scene_Outro = 6;
 
-    public static final int SymbolInfo = 0;
-    public static final int SymbolLock = 1;
-    public static final int SymbolPlus = 2;
-    public static final int SymbolMinus = 3;
-    public static final int SymbolQuestionmark = 4;
-    public static final int SymbolGoLeft = 5;
-    public static final int SymbolGoRight = 6;
-    public static final int SymbolGoUp = 7;
-    public static final int SymbolGoDown = 8;
-    public static final int SymbolUndo = 9;
-    public static final int SymbolSolver = 10;
-    public static final int SymbolPause = 11;
-    public static final int Symbol3Star = 12;
-    public static final int Symbol2Star = 13;
-    public static final int Symbol1Star = 14;
-    public static final int SymbolStar = 15;
-    public static final int SymbolTriangleUp = 16;
-    public static final int SymbolTriangleDown = 17;
-    public static final int SymbolHilite = 18;
-    public static final int SymbolSolved = 19;
-    public static final int SymbolDeath = 20;
-    public static final int SymbolLightning = 21;
-    public static final int SymbolCracks = 22;
-    public static final int SymbolTriangleLeft = 23;
-    public static final int SymbolTriangleRight = 24;
-    public static final int SymbolEmpty = 25;
+    public static final int Symbol_Info = 0;
+    public static final int Symbol_Lock = 1;
+    public static final int Symbol_Plus = 2;
+    public static final int Symbol_Minus = 3;
+    public static final int Symbol_Questionmark = 4;
+    public static final int Symbol_GoLeft = 5;
+    public static final int Symbol_GoRight = 6;
+    public static final int Symbol_GoUp = 7;
+    public static final int Symbol_GoDown = 8;
+    public static final int Symbol_Undo = 9;
+    public static final int Symbol_Solver = 10;
+    public static final int Symbol_Pause = 11;
+    public static final int Symbol_3Star = 12;
+    public static final int Symbol_2Star = 13;
+    public static final int Symbol_1Star = 14;
+    public static final int Symbol_Star = 15;
+    public static final int Symbol_TriangleUp = 16;
+    public static final int Symbol_TriangleDown = 17;
+    public static final int Symbol_Hilite = 18;
+    public static final int Symbol_Solved = 19;
+    public static final int Symbol_Death = 20;
+    public static final int Symbol_Lightning = 21;
+    public static final int Symbol_Cracks = 22;
+    public static final int Symbol_TriangleLeft = 23;
+    public static final int Symbol_TriangleRight = 24;
+    public static final int Symbol_Empty = 25;
 
 
     public static final int Tutor_Dead = 0;
@@ -157,15 +154,15 @@ public final class Game {
     }
 
     public enum TutorStateEnum {
-        TutorAppear,
-        TutorDisappear,
-        TutorDone
+        Appear,
+        Disappear,
+        Done
     }
 
     public enum HUDStateEnum {
-        AppearHUD,
-        DisappearHUD,
-        DoneHUD,
+        Appear,
+        Disappear,
+        Done,
     }
 
     public enum LevelInitActionEnum {
@@ -349,7 +346,6 @@ public final class Game {
         return instance.renderer.context;
     }
 
-
     public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
 
     public static GameOptions options;
@@ -461,10 +457,10 @@ public final class Game {
         minSwipeLength = graphics.height / 10;
 
         if (currentScene == null) {
-            //showScene(Scene_Intro);
+            showScene(Scene_Intro);
             //showScene(Scene_Menu);
             //showScene(Scene_Anim);
-            showScene(Scene_Level);
+            //showScene(Scene_Level);
             //showScene(Scene_Stat);
             //showScene(Scene_Outro);
         }
@@ -480,12 +476,12 @@ public final class Game {
         }
     }
 
-    public static String getLevelTypeAndNumberString(DifficultyEnum difficulty, int level_number) {
+    public static String getLevelTypeAndNumberString(DifficultyEnum difficulty, int levelNumber) {
         String str = "";
         switch (difficulty) {
-            case Easy: str = "EASY-" + level_number + " " + (progress.getSolvedEasy(level_number) ? "\nSOLVED" : ""); break;
-            case Normal: str = "NORMAL-" + level_number + " " + (progress.getSolvedNormal(level_number) ? "\nSOLVED" : ""); break;
-            case Hard: str = "HARD-" + level_number + " " + (progress.getSolvedHard(level_number) ? "\nSOLVED" : ""); break;
+            case Easy: str = "EASY-" + levelNumber + " " + (progress.isSolvedEasy(levelNumber) ? "\nSOLVED" : ""); break;
+            case Normal: str = "NORMAL-" + levelNumber + " " + (progress.isSolvedNormal(levelNumber) ? "\nSOLVED" : ""); break;
+            case Hard: str = "HARD-" + levelNumber + " " + (progress.isSolvedHard(levelNumber) ? "\nSOLVED" : ""); break;
         }
         return str;
     }
@@ -1235,25 +1231,25 @@ public final class Game {
         destMat[15] =  dot - vLightPos[3] * vPlaneEquation[3];
     }
 
-    public static Texture loadTutorTexture(final String name) {
+    public static Texture loadTutorTexture(final int tutorId) {
         if (graphics.textureTutor != null) {
             graphics.textureTutor.release();
             graphics.textureTutor = null;
         }
 
         int resourceId = -1;
-        switch (name) {
-            case "tutor_swipe": resourceId = R.drawable.tutor_swipe; break;
-            case "tutor_goal": resourceId = R.drawable.tutor_goal; break;
-            case "tutor_drag": resourceId = R.drawable.tutor_drag; break;
-            case "tutor_dead": resourceId = R.drawable.tutor_dead; break;
-            case "tutor_moving": resourceId = R.drawable.tutor_moving; break;
-            case "tutor_pusher": resourceId = R.drawable.tutor_pusher; break;
-            case "tutor_plain": resourceId = R.drawable.tutor_plain; break;
-            case "tutor_menu_pause": resourceId = R.drawable.tutor_menu_pause; break;
-            case "tutor_menu_undo": resourceId = R.drawable.tutor_menu_undo; break;
-            case "tutor_menu_hint": resourceId = R.drawable.tutor_menu_hint; break;
-            case "tutor_menu_solver": resourceId = R.drawable.tutor_menu_solver; break;
+        switch (tutorId) {
+            case Tutor_Swipe: resourceId = R.drawable.tutor_swipe; break;
+            case Tutor_Goal: resourceId = R.drawable.tutor_goal; break;
+            case Tutor_Drag: resourceId = R.drawable.tutor_drag; break;
+            case Tutor_Dead: resourceId = R.drawable.tutor_dead; break;
+            case Tutor_Moving: resourceId = R.drawable.tutor_moving; break;
+            case Tutor_Mover: resourceId = R.drawable.tutor_pusher; break;
+            case Tutor_Plain: resourceId = R.drawable.tutor_plain; break;
+            case Tutor_MenuPause: resourceId = R.drawable.tutor_menu_pause; break;
+            case Tutor_MenuUndo: resourceId = R.drawable.tutor_menu_undo; break;
+            case Tutor_MenuHint: resourceId = R.drawable.tutor_menu_hint; break;
+            case Tutor_MenuSolvers: resourceId = R.drawable.tutor_menu_solver; break;
         }
         if (resourceId != -1) {
             graphics.textureTutor = graphics.loadTexture(resourceId);
@@ -1556,31 +1552,31 @@ public final class Game {
 
         Rectangle[] a = new Rectangle[max_symbols];
 
-        a[SymbolMinus]          = new Rectangle(  0,   0, 170, 170);
-        a[SymbolPlus]           = new Rectangle(170,   0, 170, 170);
-        a[SymbolInfo]           = new Rectangle(340,   0, 170, 170);
-        a[SymbolLock]           = new Rectangle(  0, 170, 170, 170);
-        a[SymbolQuestionmark]   = new Rectangle(170, 170, 170, 170);
-        a[SymbolGoLeft]         = new Rectangle(340, 340, 170, 170);
-        a[SymbolGoRight]        = new Rectangle(340, 170, 170, 170);
-        a[SymbolGoUp]           = new Rectangle(  0, 340, 170, 170);
-        a[SymbolGoDown]         = new Rectangle(170, 340, 170, 170);
-        a[SymbolUndo]           = new Rectangle(510,   0, 170, 170);
-        a[SymbolSolver]         = new Rectangle(510, 170, 170, 170);
-        a[SymbolPause]          = new Rectangle(510, 340, 170, 170);
-        a[Symbol1Star]          = new Rectangle(680, 340, 170, 170);
-        a[Symbol2Star]          = new Rectangle(680, 170, 170, 170);
-        a[Symbol3Star]          = new Rectangle(680,   0, 170, 170);
-        a[SymbolStar]           = new Rectangle(850,   0, 170, 170);
-        a[SymbolTriangleUp]     = new Rectangle(  0, 510, 170, 170);
-        a[SymbolTriangleDown]   = new Rectangle(170, 510, 170, 170);
-        a[SymbolHilite]         = new Rectangle(510, 510, 170, 170);
-        a[SymbolDeath]          = new Rectangle(680, 510, 170, 170);
-        a[SymbolLightning]      = new Rectangle(850, 510, 170, 170);
-        a[SymbolCracks]         = new Rectangle(  0, 680, 170, 170);
-        a[SymbolTriangleLeft]   = new Rectangle(170, 680, 170, 170);
-        a[SymbolTriangleRight]  = new Rectangle(340, 680, 170, 170);
-        a[SymbolSolved]         = new Rectangle(850, 170, 170, 170);
+        a[Symbol_Minus]          = new Rectangle(  0,   0, 170, 170);
+        a[Symbol_Plus]           = new Rectangle(170,   0, 170, 170);
+        a[Symbol_Info]           = new Rectangle(340,   0, 170, 170);
+        a[Symbol_Lock]           = new Rectangle(  0, 170, 170, 170);
+        a[Symbol_Questionmark]   = new Rectangle(170, 170, 170, 170);
+        a[Symbol_GoLeft]         = new Rectangle(340, 340, 170, 170);
+        a[Symbol_GoRight]        = new Rectangle(340, 170, 170, 170);
+        a[Symbol_GoUp]           = new Rectangle(  0, 340, 170, 170);
+        a[Symbol_GoDown]         = new Rectangle(170, 340, 170, 170);
+        a[Symbol_Undo]           = new Rectangle(510,   0, 170, 170);
+        a[Symbol_Solver]         = new Rectangle(510, 170, 170, 170);
+        a[Symbol_Pause]          = new Rectangle(510, 340, 170, 170);
+        a[Symbol_1Star]          = new Rectangle(680, 340, 170, 170);
+        a[Symbol_2Star]          = new Rectangle(680, 170, 170, 170);
+        a[Symbol_3Star]          = new Rectangle(680,   0, 170, 170);
+        a[Symbol_Star]           = new Rectangle(850,   0, 170, 170);
+        a[Symbol_TriangleUp]     = new Rectangle(  0, 510, 170, 170);
+        a[Symbol_TriangleDown]   = new Rectangle(170, 510, 170, 170);
+        a[Symbol_Hilite]         = new Rectangle(510, 510, 170, 170);
+        a[Symbol_Death]          = new Rectangle(680, 510, 170, 170);
+        a[Symbol_Lightning]      = new Rectangle(850, 510, 170, 170);
+        a[Symbol_Cracks]         = new Rectangle(  0, 680, 170, 170);
+        a[Symbol_TriangleLeft]   = new Rectangle(170, 680, 170, 170);
+        a[Symbol_TriangleRight]  = new Rectangle(340, 680, 170, 170);
+        a[Symbol_Solved]         = new Rectangle(850, 170, 170, 170);
 
         final float tw = 1024.0f;
         final float th = 1024.0f;

@@ -1,13 +1,13 @@
 package com.almagems.cubetraz.utils;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public class Starfield {
     public float speed;

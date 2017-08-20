@@ -10,7 +10,7 @@ import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.cubes.LevelCube;
 import com.almagems.cubetraz.scenes.menu.MenuFaceBuilder;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
@@ -19,27 +19,25 @@ import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 
-
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class Animator extends Scene {
 
-    private float m_t;
+    private float mElapsed;
 	private float m_t_camera;
-	private float m_timeout;
-	private float m_target_rotation_degree;
+	private float mTimeout;
+	private float mTargetRotationDegree;
 	
 	private int m_anim_to_menu_phase;
 
-	private final Vector m_pos_light_from = new Vector();
-	private final Vector m_pos_light_to = new Vector();
+	private final Vector mPosLightFrom = new Vector();
+	private final Vector mPosLightTo = new Vector();
 	
-	private final Camera m_camera_from = new Camera();
-	private final Camera m_camera_to = new Camera();
-	private final Camera m_camera_current = new Camera();
+	private final Camera mCameraFrom = new Camera();
+	private final Camera mCameraTo = new Camera();
 	
 	private CubeFaceNamesEnum m_face_name_x_plus;
 	private CubeFaceNamesEnum m_face_name_y_plus;
@@ -48,10 +46,8 @@ public final class Animator extends Scene {
 	private AnimTypeEnum m_type;
 	
 	private LevelCube m_level_cube_hilite;
-	private float m_hilite_alpha;
     
     private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
-    //private final EaseOutDivideInterpolation[] m_interpolators = new EaseOutDivideInterpolation[6];
 
 	private final CubeRotation m_cube_rotation = new CubeRotation();
 	
@@ -72,7 +68,6 @@ public final class Animator extends Scene {
 	private final AppearDisappearListData m_ad_face = new AppearDisappearListData();
 
 
-    // ctor   
     public Animator() {
 	    m_face_name_x_plus = CubeFaceNamesEnum.Face_Empty;
 	    m_face_name_y_plus = CubeFaceNamesEnum.Face_Empty;
@@ -154,7 +149,7 @@ public final class Animator extends Scene {
 	    lst.add(Game.cubes[1][6][1]);
     }
 
-    public void createMenuFaces() {
+    private void createMenuFaces() {
         Game.resetCubesFonts();
 	
         Creator.fillPools();
@@ -182,7 +177,7 @@ public final class Animator extends Scene {
 		}
 	}
 
-    public void localCopyLevelCubes() {
+    private void localCopyLevelCubes() {
         int len;
         LevelCube cube;
         
@@ -211,11 +206,9 @@ public final class Animator extends Scene {
 	    Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.clear();
     }
 
-    public void setupAnimToMenu() {
-	    //printf("\nAnim To Menu...");
-
-	    m_t = 0.0f;
-	    m_timeout = 0.0f;
+    private void setupAnimToMenu() {
+	    mElapsed = 0.0f;
+	    mTimeout = 0.0f;
 	    m_anim_to_menu_phase = 0;
 	
 	    AnimInitData aid = Game.anim_init_data;
@@ -223,7 +216,7 @@ public final class Animator extends Scene {
 	    createMenuFaces();
 	
 	    m_ad_face.clear();
-	    Game.buildVisibleCubesListOnlyOnFaces(m_ad_face.lst_appear);
+	    Game.buildVisibleCubesListOnlyOnFaces(m_ad_face.appear);
 	    m_list_cubes_face.clear();
 
 	    createListOfLevelCubes(m_list_cubes_base);
@@ -253,37 +246,35 @@ public final class Animator extends Scene {
 	    localCopyLevelCubes();
 	
 	    m_cube_rotation.degree = aid.cube_rotation_degree;
-	    m_target_rotation_degree = -45.0f;
+	    mTargetRotationDegree = -45.0f;
 	
-	    m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 9);
+	    m_interpolator.setup(m_cube_rotation.degree, mTargetRotationDegree, 9);
 		
-	    m_camera_from.init(Game.level.getCameraCurrent());
-	    m_camera_to.init(Game.level.mCameraLevel);
-	    m_camera_current.init(m_camera_from);
+	    mCameraFrom.init(Game.level.getCameraCurrent());
+	    mCameraTo.init(Game.level.mCameraLevel);
+	    mCameraCurrent.init(mCameraFrom);
 	
-	    m_pos_light_from.init(Game.level.getLightPositionCurrent());
-	    m_pos_light_to.init(Game.menu.getLightPositionCurrent());
-	    mPosLightCurrent.init(m_pos_light_from);
+	    mPosLightFrom.init(Game.level.getLightPositionCurrent());
+	    mPosLightTo.init(Game.menu.getLightPositionCurrent());
+	    mPosLightCurrent.init(mPosLightFrom);
 
 	    m_ad_face.setLevelAndDirection(0, 1);
 	    m_ad_base_appear.setLevelAndDirection(0, 1);
 	    m_ad_base_disappear.setLevelAndDirection(0, 1);
     }
 
-    public void setupAnimToLevel() {
-	    //printf("\nSetup Anim To Level...");
+    private void setupAnimToLevel() {
 	    AnimInitData aid = Game.anim_init_data;
 
-	    m_hilite_alpha = 0f;
-	    m_t = 0f;
-	    m_timeout = 0.1f;
+	    mElapsed = 0f;
+	    mTimeout = 0.1f;
 
 	    m_cube_rotation.degree = -90.0f;
 	    m_cube_rotation.axis = new Vector(0.0f, 1.0f, 0.0f);
 	
-        m_target_rotation_degree = m_cube_rotation.degree + 45.0f;
+        mTargetRotationDegree = m_cube_rotation.degree + 45.0f;
     
-        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 15);
+        m_interpolator.setup(m_cube_rotation.degree, mTargetRotationDegree, 15);
 
 	    m_face_name_x_plus = aid.face_name_x_plus;
 	    m_face_name_y_plus = aid.face_name_y_plus;
@@ -305,13 +296,13 @@ public final class Animator extends Scene {
 	
 	    aid.list_cubes_base.clear();
 	
-	    m_camera_from.init(aid.camera_from);
-	    m_camera_to.init(aid.camera_to);
-	    m_camera_current.init(m_camera_from);
+	    mCameraFrom.init(aid.camera_from);
+	    mCameraTo.init(aid.camera_to);
+	    mCameraCurrent.init(mCameraFrom);
 	
-	    m_pos_light_from.init(aid.pos_light_from);
-        m_pos_light_to.init(aid.pos_light_to);
-	    mPosLightCurrent.init(m_pos_light_from);
+	    mPosLightFrom.init(aid.pos_light_from);
+        mPosLightTo.init(aid.pos_light_to);
+	    mPosLightCurrent.init(mPosLightFrom);
 	
 	    m_ad_base_disappear.clear();
 	        
@@ -375,7 +366,7 @@ public final class Animator extends Scene {
         if (m_t_camera > 1f) {
             m_t_camera = 1f;
         }
-	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t_camera, m_camera_current);
+	    Utils.lerpCamera(mCameraFrom, mCameraTo, m_t_camera, mCameraCurrent);
 	
 	    Cube cube;    
         cube = m_ad_face.getCubeFromAppearList();
@@ -393,9 +384,9 @@ public final class Animator extends Scene {
 		    m_list_cubes_face.add(cube);
 	    }
     
-        float diff = Math.abs( Math.abs(m_target_rotation_degree) - Math.abs(m_interpolator.getValue()));
+        float diff = Math.abs( Math.abs(mTargetRotationDegree) - Math.abs(m_interpolator.getValue()));
 	
-        if (diff < EPSILON && Math.abs(1.0f - m_t) < EPSILON && Math.abs(1.0f - m_t_camera) < EPSILON && m_ad_face.lst_appear.isEmpty()) {
+        if (diff < EPSILON && Math.abs(1.0f - mElapsed) < EPSILON && Math.abs(1.0f - m_t_camera) < EPSILON && m_ad_face.appear.isEmpty()) {
 		    Game.menu_init_data.reappear = true;
 		    Game.showScene(Scene_Menu);
         }
@@ -405,12 +396,12 @@ public final class Animator extends Scene {
         m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
 
-        m_t += 0.04f;
-        if (m_t > 1f) {
-            m_t = 1f;
+        mElapsed += 0.04f;
+        if (mElapsed > 1f) {
+            mElapsed = 1f;
         }
-        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, mPosLightCurrent);
-	    Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
+        Utils.lerpVector3(mPosLightFrom, mPosLightTo, mElapsed, mPosLightCurrent);
+	    Utils.lerpCamera(mCameraFrom, mCameraTo, mElapsed, mCameraCurrent);
 		
         Cube cube;    
 	    boolean done_base = true;
@@ -434,9 +425,9 @@ public final class Animator extends Scene {
         }
  
 	    if (done_base) {
-            m_timeout -= 0.01f;
+            mTimeout -= 0.01f;
         
-            if (m_timeout <= 0.0f) {
+            if (mTimeout <= 0.0f) {
                 LevelCube levelCube;
             
                 levelCube = getLevelCubeFrom(m_lst_level_cubes_x_plus);
@@ -471,19 +462,19 @@ public final class Animator extends Scene {
 		    m_anim_to_menu_phase = 1;
 		
 		    m_t_camera = 0.0f;
-		    m_camera_from.init(m_camera_current);
-		    m_camera_to.init(Game.menu.mCameraMenu);
+		    mCameraFrom.init(mCameraCurrent);
+		    mCameraTo.init(Game.menu.mCameraMenu);
 		
 		    m_cube_rotation.degree = -45.0f;
-		    m_target_rotation_degree = -90.0f;
-		    m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 6);
+		    mTargetRotationDegree = -90.0f;
+		    m_interpolator.setup(m_cube_rotation.degree, mTargetRotationDegree, 6);
 	    }
     }
 
     public void updateAnimToLevel() {
-	    m_timeout -= 0.04f;
+	    mTimeout -= 0.04f;
 	
-	    if (m_timeout <= 0f) {
+	    if (mTimeout <= 0f) {
 		    LevelCube levelCube;
 		
 		    levelCube = getLevelCubeFrom(Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes);
@@ -506,11 +497,9 @@ public final class Animator extends Scene {
 		    if (levelCube != null) {
 			    Game.ar_cubefacedata[Face_Z_Plus].lst_level_cubes.remove(levelCube);
             }
-		    m_timeout = 0.03f;
+		    mTimeout = 0.03f;
 	    }
 
-        m_hilite_alpha += 0.01f;
-	
 	    boolean done = true;
 	    Cube cube;
 	
@@ -556,20 +545,20 @@ public final class Animator extends Scene {
             }
 	    }
 	
-        m_t += 0.04f;
-        if (m_t > 1f) {
-            m_t = 1f;
+        mElapsed += 0.04f;
+        if (mElapsed > 1f) {
+            mElapsed = 1f;
         }
     
-        Utils.lerpCamera(m_camera_from, m_camera_to, m_t, m_camera_current);
-        Utils.lerpVector3(m_pos_light_from, m_pos_light_to, m_t, mPosLightCurrent);
+        Utils.lerpCamera(mCameraFrom, mCameraTo, mElapsed, mCameraCurrent);
+        Utils.lerpVector3(mPosLightFrom, mPosLightTo, mElapsed, mPosLightCurrent);
 
 	    m_interpolator.interpolate();
         m_cube_rotation.degree = m_interpolator.getValue();
 
-        float diff = m_target_rotation_degree - m_interpolator.getValue();
-        if (diff < 0.1f && (1.0f - m_t) < EPSILON && m_ad_base_appear.lst_appear.isEmpty()) {
-            m_cube_rotation.degree = m_target_rotation_degree;
+        float diff = mTargetRotationDegree - m_interpolator.getValue();
+        if (diff < 0.1f && (1.0f - mElapsed) < EPSILON && m_ad_base_appear.appear.isEmpty()) {
+            m_cube_rotation.degree = mTargetRotationDegree;
 		    Game.showScene(Scene_Level);
         }
     }
@@ -901,7 +890,7 @@ public final class Animator extends Scene {
         glDepthMask(true); //GL_TRUE);
     
         graphics.setProjection3D();
-        graphics.setModelViewMatrix3D(m_camera_current);
+        graphics.setModelViewMatrix3D(mCameraCurrent);
         graphics.bindStreamSources3d();
         graphics.resetBufferIndices();
 
@@ -956,12 +945,12 @@ public final class Animator extends Scene {
     }    
 
 	@Override
-    public void onFingerDown(float x, float y, int finger_count) {}
+    public void onFingerDown(float x, float y, int fingerCount) {}
 
     @Override
-    public void onFingerUp(float x, float y, int finger_count) {}
+    public void onFingerUp(float x, float y, int fingerCount) {}
 
     @Override
-    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
+    public void onFingerMove(float prevX, float prevY, float curX, float curY, int fingerCount) {}
 
 }

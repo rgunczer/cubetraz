@@ -1,6 +1,6 @@
 package com.almagems.cubetraz.scenes.level;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class LevelBuilderEasy {

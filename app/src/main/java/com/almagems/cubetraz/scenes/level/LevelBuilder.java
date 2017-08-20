@@ -1,7 +1,7 @@
 package com.almagems.cubetraz.scenes.level;
 
 import com.almagems.cubetraz.cubes.CubeLocation;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.cubes.MoverCube;
@@ -9,7 +9,7 @@ import com.almagems.cubetraz.cubes.MovingCube;
 
 import java.util.ArrayList;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class LevelBuilder {
         
@@ -99,7 +99,7 @@ public final class LevelBuilder {
         recycleMovingCubes();
 	    recycleMoverCubes();
 	    recycleDeadCubes();
-	    level.hintCubes.clear();
+	    level.cubesHint.clear();
     }
 
     public static void setup(int arr[]) {
@@ -170,7 +170,7 @@ public final class LevelBuilder {
 	    Cube cube;
 	    for (int i = 0; i < arr.length; i+=3) {
 		    cube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
-		    level.hintCubes.add(cube);
+		    level.cubesHint.add(cube);
 	    }
     }
 

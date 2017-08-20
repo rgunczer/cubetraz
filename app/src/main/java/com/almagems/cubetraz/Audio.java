@@ -1,6 +1,4 @@
-package com.almagems.cubetraz.game;
-
-import com.almagems.cubetraz.R;
+package com.almagems.cubetraz;
 
 import java.util.HashMap;
 import java.util.Map;

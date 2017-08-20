@@ -2,7 +2,7 @@ package com.almagems.cubetraz.scenes;
 
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.cubes.Cube;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.Starfield;
 import com.almagems.cubetraz.math.Utils;
@@ -13,13 +13,13 @@ import static android.opengl.GLES10.*;
 
 import java.util.ArrayList;
 
-import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Audio.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class Intro extends Scene {
 
-    enum IntroStateEnum {
+    private enum State {
         AppearStarfield,
         ShowStarfield,
         BuildCubetraz,
@@ -27,11 +27,11 @@ public final class Intro extends Scene {
         BuildCubetrazFace,
     }
 
-    private IntroStateEnum mState;
+    private State mState;
     private Starfield mStarfield = new Starfield();
 
-    private Camera m_camera_begin = new Camera();
-    private Camera m_camera_end = new Camera();
+    private Camera mCameraBegin = new Camera();
+    private Camera mCameraEnd = new Camera();
 
     private float m_t_camera;
 
@@ -43,11 +43,10 @@ public final class Intro extends Scene {
     private float m_offset_y;
     private float m_stars_alpha;
 
-    private ArrayList<Cube> m_list_cubes_base = new ArrayList<>();
-    private ArrayList<Cube> m_list_cubes_face = new ArrayList<>();
+    private ArrayList<Cube> mCubesBase = new ArrayList<>();
+    private ArrayList<Cube> mCubesFace = new ArrayList<>();
 
 
-    // ctor
     public Intro() {
         m_build_phase = 0;
         m_build_to = 1;
@@ -56,20 +55,21 @@ public final class Intro extends Scene {
         m_stars_alpha = 1.0f;
     }
 
-    public void setupCameras() {
-        m_camera_begin.eye = new Vector(0.0f, 0.0f, 40.0f / 1.5f);
-        m_camera_begin.target = new Vector(0.0f, 0.0f, 0.0f);
+    private void setupCameras() {
+        mCameraBegin.setEye(0.0f, 0.0f, 40.0f / 1.5f);
+        mCameraBegin.setTarget(0.0f, 0.0f, 0.0f);
 
-        m_camera_end.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
-        m_camera_end.target = new Vector(0.0f, 0.0f, 0.0f);
+        mCameraEnd.setEye(0.0f, 0.0f, 35.0f / 1.5f);
+        mCameraEnd.setTarget(0.0f, 0.0f, 0.0f);
 
-        m_camera_begin.eye = m_camera_begin.eye.scale(Game.graphics.aspectRatio);
-        m_camera_end.eye = m_camera_end.eye.scale(Game.graphics.aspectRatio);
+        mCameraBegin.eye.scaled(Game.graphics.aspectRatio);
+        mCameraEnd.eye.scaled(Game.graphics.aspectRatio);
 
-        mCameraCurrent.eye.init(m_camera_begin.eye);
-        mCameraCurrent.target.init(m_camera_begin.target);
+        mCameraCurrent.setEye(mCameraBegin.eye);
+        mCameraCurrent.setTarget(mCameraBegin.target);
     }
 
+    @Override
     public void init() {
         setupCameras();
         mStarfield.speed = 0.2f;
@@ -89,7 +89,7 @@ public final class Intro extends Scene {
         setupCubetraz();
         
         mCanSkipIntro = Game.options.getCanSkipIntro();
-        mState = IntroStateEnum.AppearStarfield;
+        mState = State.AppearStarfield;
     }
 
     private Cube setCubeVisible(int x, int y, int z) {
@@ -105,10 +105,10 @@ public final class Intro extends Scene {
     private void setCubeVisibleAndBuild(int x, int y, int z) {
         Cube cube = setCubeVisible(x, y, z);
 
-        if (IntroStateEnum.BuildCubetrazFace == mState)
-            m_list_cubes_face.add(cube);
+        if (State.BuildCubetrazFace == mState)
+            mCubesFace.add(cube);
         else
-            m_list_cubes_base.add(cube);
+            mCubesBase.add(cube);
     }
 
     private void setupCubetraz() {
@@ -276,14 +276,14 @@ public final class Intro extends Scene {
             break;
         } // switch
 
-        Game.buildVisibleCubesList(m_list_cubes_base);
+        Game.buildVisibleCubesList(mCubesBase);
     }
 
     @Override
     public void update() {
         //System.out.println("Intro.update...");
 
-        if (mState != IntroStateEnum.AppearStarfield) {
+        if (mState != State.AppearStarfield) {
             ++mTick;
         }
         //printf("\nCounter: %d", mTick);
@@ -298,7 +298,7 @@ public final class Intro extends Scene {
 
                 if (m_stars_alpha >= 1.0f) {
                     m_stars_alpha = 1.0f;
-                    mState = IntroStateEnum.ShowStarfield;
+                    mState = State.ShowStarfield;
 
                     //m_dirty_alpha = engine->dirtyAlpha;
                 }
@@ -308,7 +308,7 @@ public final class Intro extends Scene {
             case ShowStarfield:
                 if (mTick > 200) {
                     mTick = 400;
-                    mState = IntroStateEnum.BuildCubetraz;
+                    mState = State.BuildCubetraz;
                     m_offset_y = 0.0f;
                     Game.audio.playMusic(MUSIC_VECTORS);
                     //mStarfield.speed = 0.25f;
@@ -407,7 +407,7 @@ public final class Intro extends Scene {
                     m_degree = 0.0f;
 
                     if (4 == m_build_phase) {
-                        mState = IntroStateEnum.FinalizeBuild;
+                        mState = State.FinalizeBuild;
                         mTick = 0;
                     }
                 }
@@ -463,7 +463,7 @@ public final class Intro extends Scene {
 
                     case 60:
                         setCubeVisibleAndBuild(4, 4, 7);
-                        mState = IntroStateEnum.BuildCubetrazFace;
+                        mState = State.BuildCubetrazFace;
                         Game.audio.stopMusic();
                         break;
                 } // switch
@@ -487,7 +487,7 @@ public final class Intro extends Scene {
                     m_t_camera = 1.0f;
                 }
 
-                Utils.lerpCamera(m_camera_begin, m_camera_end, m_t_camera, mCameraCurrent);
+                Utils.lerpCamera(mCameraBegin, mCameraEnd, m_t_camera, mCameraCurrent);
 
                 switch (mTick) {
                     case 90:
@@ -685,9 +685,9 @@ public final class Intro extends Scene {
         int size;
         Cube cube;
 
-        size = m_list_cubes_base.size();
+        size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_list_cubes_base.get(i);
+            cube = mCubesBase.get(i);
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
         }
 
@@ -695,9 +695,9 @@ public final class Intro extends Scene {
 
         Color color = new Color(Game.faceColor);
 
-        size = m_list_cubes_face.size();
+        size = mCubesFace.size();
         for (int i = 0; i < size; ++i) {
-            cube = m_list_cubes_face.get(i);
+            cube = mCubesFace.get(i);
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
 
@@ -729,7 +729,7 @@ public final class Intro extends Scene {
     }
 
     @Override
-    public void onFingerUp(float x, float y, int finger_count) {
+    public void onFingerUp(float x, float y, int fingerCount) {
         if (mCanSkipIntro) {
             Game.dirtyAlpha = DIRTY_ALPHA;
             Game.audio.stopMusic();

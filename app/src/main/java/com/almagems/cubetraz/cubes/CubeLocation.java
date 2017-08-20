@@ -11,6 +11,12 @@ public final class CubeLocation {
         this.reset();
     }
 
+    public CubeLocation(CubeLocation another) {
+        this.x = another.x;
+        this.y = another.y;
+        this.z = another.z;
+    }
+
     public CubeLocation(int x, int y, int z) {
         this.x = x;
         this.y = y;

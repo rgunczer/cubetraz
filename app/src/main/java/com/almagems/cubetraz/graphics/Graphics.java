@@ -6,11 +6,11 @@ import static android.opengl.GLU.*;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 import com.almagems.cubetraz.utils.PositionInfo;
 import com.almagems.cubetraz.R;
-import com.almagems.cubetraz.system.TextResourceReader;
+import com.almagems.cubetraz.TextResourceReader;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 

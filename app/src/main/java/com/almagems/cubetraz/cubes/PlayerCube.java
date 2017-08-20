@@ -1,9 +1,9 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class PlayerCube {
         

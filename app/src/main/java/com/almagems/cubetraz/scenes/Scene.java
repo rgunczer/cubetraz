@@ -4,7 +4,7 @@ import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public abstract class Scene {
 
@@ -25,20 +25,12 @@ public abstract class Scene {
     public abstract void init();
     public abstract void update();
     public abstract void render();
-    public void renderForPicking() {}
     public void renderToFBO() {}
 
     // input
-    public void onFingerDown(float x, float y, int finger_count) {}
-    public void onFingerUp(float x, float y, int finger_count) {}
-    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
-
-    public void onSwipe(SwipeDirEnums swipeDir) {}
-
-    public void EnteredBackground() {}
-    public void EnteredForeground() {}
-    public void SetupCameras() {}
-
+    public void onFingerDown(float x, float y, int fingerCount) {}
+    public void onFingerUp(float x, float y, int fingerCount) {}
+    public void onFingerMove(float prevX, float prevY, float curX, float curY, int fingerCount) {}
 
     public Camera getCameraCurrent() { return mCameraCurrent; }
     public Vector getLightPositionCurrent() { return mPosLightCurrent; }

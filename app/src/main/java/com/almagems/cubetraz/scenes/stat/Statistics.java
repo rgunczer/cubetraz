@@ -1,7 +1,7 @@
 package com.almagems.cubetraz.scenes.stat;
 
 import com.almagems.cubetraz.graphics.Color;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.Text;
 import com.almagems.cubetraz.math.Utils;
@@ -11,7 +11,7 @@ import com.almagems.cubetraz.scenes.Scene;
 
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class Statistics extends Scene {
@@ -113,9 +113,9 @@ public final class Statistics extends Scene {
         m_DrawStars = false;
         m_DrawTap = false;
 
-        m_text_scales[0] = 0f;   // title
-        m_text_scales[1] = 0f;   // time
-        m_text_scales[2] = 0f;   // moves
+        m_text_scales[0] = 0f;
+        m_text_scales[1] = 0f;
+        m_text_scales[2] = 0f;
 
         initFallingCubes();
 
@@ -551,13 +551,13 @@ public final class Statistics extends Scene {
     }
 
     @Override
-    public void onFingerDown(float x, float y, int finger_count) {}
+    public void onFingerDown(float x, float y, int fingerCount) {}
 
     @Override
-    public  void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {}
+    public  void onFingerMove(float prevX, float prevY, float curX, float curY, int fingerCount) {}
 
     @Override
-    public void onFingerUp(float x, float y, int finger_count) {
+    public void onFingerUp(float x, float y, int fingerCount) {
         if (State.StatShow == mState) {
             Game.levelInitData.initAction = LevelInitActionEnum.JustContinue;
             Game.showScene(Scene_Level);

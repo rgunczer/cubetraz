@@ -1,13 +1,13 @@
 package com.almagems.cubetraz.cubes;
 
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 import com.almagems.cubetraz.scenes.menu.MenuCube;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class CubeFont {

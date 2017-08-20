@@ -1,6 +1,6 @@
 package com.almagems.cubetraz.scenes.level;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.Text;
@@ -8,7 +8,7 @@ import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.scenes.Scene;
 
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class Solvers extends Scene {

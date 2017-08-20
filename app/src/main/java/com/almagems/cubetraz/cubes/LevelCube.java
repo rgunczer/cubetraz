@@ -1,11 +1,11 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class LevelCube {
@@ -41,7 +41,7 @@ public final class LevelCube {
         pos = Game.getCubePosAt(cube_pos);
     
         pNumber = Game.getNumberFont(level_number);
-        pStars = Game.getSymbol(SymbolLock);
+        pStars = Game.getSymbol(Symbol_Lock);
         pSolver = null;
     
         color_number = new Color(Game.levelNumberColor);
@@ -52,18 +52,18 @@ public final class LevelCube {
 
     public void setStars(int starCount) {
         switch (starCount) {
-            case -1: pStars = Game.getSymbol(SymbolLock); break;
+            case -1: pStars = Game.getSymbol(Symbol_Lock); break;
             case 0: pStars = null; break;            
-            case 1: pStars = Game.getSymbol(Symbol1Star); break;            
-            case 2: pStars = Game.getSymbol(Symbol2Star); break;            
-            case 3: pStars = Game.getSymbol(Symbol3Star); break;
+            case 1: pStars = Game.getSymbol(Symbol_1Star); break;
+            case 2: pStars = Game.getSymbol(Symbol_2Star); break;
+            case 3: pStars = Game.getSymbol(Symbol_3Star); break;
             default: pStars = null; break;
         }
     }
 
     public void setSolver(boolean solved) {
         if (solved) {
-            pSolver = Game.getSymbol(SymbolSolved);
+            pSolver = Game.getSymbol(Symbol_Solved);
         }
     }
  

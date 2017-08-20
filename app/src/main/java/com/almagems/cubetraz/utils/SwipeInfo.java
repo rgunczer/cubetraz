@@ -1,7 +1,7 @@
 package com.almagems.cubetraz.utils;
 
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 
 public class SwipeInfo {
 

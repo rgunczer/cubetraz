@@ -1,13 +1,13 @@
 package com.almagems.cubetraz.scenes.anim;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.graphics.Camera;
 
 import java.util.ArrayList;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class AnimInitData {
 

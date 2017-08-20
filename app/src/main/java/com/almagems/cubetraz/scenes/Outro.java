@@ -5,7 +5,7 @@ import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.CubeRotation;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.utils.Starfield;
 import com.almagems.cubetraz.graphics.Text;
 import com.almagems.cubetraz.math.Utils;
@@ -15,8 +15,8 @@ import com.almagems.cubetraz.math.Vector2;
 import java.util.ArrayList;
 
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Audio.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class Outro extends Scene {
@@ -119,33 +119,33 @@ public final class Outro extends Scene {
         int size;
         Cube cube;
 
-        size = Game.level.m_list_cubes_level.size();
+        size = Game.level.cubesLevel.size();
         for (int i = 0; i < size; ++i) {
-            cube = Game.level.m_list_cubes_level.get(i);
+            cube = Game.level.cubesLevel.get(i);
             mCubesLevel.add(cube);
         }
 
-        size = Game.level.m_list_cubes_wall_y_minus.size();
+        size = Game.level.cubesWallYminus.size();
         for (int i = 0; i < size; ++i) {
-            cube = Game.level.m_list_cubes_wall_y_minus.get(i);
+            cube = Game.level.cubesWallYminus.get(i);
             mCubesBase.add(cube);
         }
 
-        size = Game.level.m_list_cubes_wall_x_minus.size();
+        size = Game.level.cubesWallXminus.size();
         for (int i = 0; i < size; ++i) {
-            cube = Game.level.m_list_cubes_wall_x_minus.get(i);
+            cube = Game.level.cubesWallXminus.get(i);
             mCubesBase.add(cube);
         }
 
-        size = Game.level.m_list_cubes_wall_z_minus.size();
+        size = Game.level.cubesWallZminus.size();
         for (int i = 0; i < size; ++i) {
-            cube = Game.level.m_list_cubes_wall_z_minus.get(i);
+            cube = Game.level.cubesWallZminus.get(i);
             mCubesBase.add(cube);
         }
 
-        size = Game.level.m_list_cubes_edges.size();
+        size = Game.level.cubesEdge.size();
         for (int i = 0; i < size; ++i) {
-            cube = Game.level.m_list_cubes_edges.get(i);
+            cube = Game.level.cubesEdge.get(i);
             mCubesBase.add(cube);
         }
 

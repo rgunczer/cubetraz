@@ -1,4 +1,4 @@
-package com.almagems.cubetraz.system;
+package com.almagems.cubetraz;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-import com.almagems.cubetraz.R;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;

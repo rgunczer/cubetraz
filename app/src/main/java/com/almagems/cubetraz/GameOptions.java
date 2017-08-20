@@ -1,10 +1,8 @@
-package com.almagems.cubetraz.game;
+package com.almagems.cubetraz;
 
 import com.almagems.cubetraz.external.SecurePreferences;
 
 public class GameOptions {
-
-    //private static final String SAVE_OPTIONS_FILE = "options.dat";
 
     private static String keyMusic = "MUSIC";
     private static String keySound = "SOUND";

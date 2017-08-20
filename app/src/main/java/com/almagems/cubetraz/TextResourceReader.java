@@ -1,4 +1,4 @@
-package com.almagems.cubetraz.system;
+package com.almagems.cubetraz;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 import android.content.res.Resources;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 
 public final class TextResourceReader {
 

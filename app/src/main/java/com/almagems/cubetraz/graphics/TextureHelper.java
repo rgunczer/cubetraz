@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 //import android.util.Log;
 
 public final class TextureHelper {

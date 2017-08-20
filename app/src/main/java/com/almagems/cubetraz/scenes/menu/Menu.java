@@ -8,7 +8,7 @@ import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.cubes.LevelCube;
 import com.almagems.cubetraz.utils.SwipeInfo;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
@@ -20,8 +20,8 @@ import com.almagems.cubetraz.scenes.Scene;
 
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
-import static com.almagems.cubetraz.game.Audio.*;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Audio.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class Menu extends Scene {
 
@@ -902,21 +902,6 @@ public final class Menu extends Scene {
                     graphics.addCubeFace_Z_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
                 }
             }
-
-            // TODO: here
-//            if (m_pStoreCubeRestore.isDone() && m_pStoreCubeRestore.cubeLocation.x == 1) {
-//                cubeFont = m_cubefont_restore;
-//                font = cubeFont.getFont();
-//
-//                if (font != null) {
-//                    coords.tx0 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
-//                    coords.tx1 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
-//                    coords.tx2 = new Vector2(font.tx_up_left.x, font.tx_up_left.y);
-//                    coords.tx3 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
-//
-//                    graphics.addCubeFace_Y_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
-//                }
-//            }
         }
 
         graphics.updateBuffers();
@@ -969,11 +954,11 @@ public final class Menu extends Scene {
     }
 
     private void drawTextsDefaultOrientation(ArrayList<CubeFont> lst_x_plus,
-                                            ArrayList<CubeFont> lst_x_minus,
-                                            ArrayList<CubeFont> lst_y_plus,
-                                            ArrayList<CubeFont> lst_y_minus,
-                                            ArrayList<CubeFont> lst_z_plus,
-                                            ArrayList<CubeFont> lst_z_minus) {
+                                             ArrayList<CubeFont> lst_x_minus,
+                                             ArrayList<CubeFont> lst_y_plus,
+                                             ArrayList<CubeFont> lst_y_minus,
+                                             ArrayList<CubeFont> lst_z_plus,
+                                             ArrayList<CubeFont> lst_z_minus) {
         Graphics graphics = Game.graphics;
         CubeFont cubeFont;
         TexturedQuad font;
@@ -1060,11 +1045,11 @@ public final class Menu extends Scene {
     }
 
     private void drawEasyTitles(ArrayList<CubeFont> lst_x_plus,
-                               ArrayList<CubeFont> lst_x_minus,
-                               ArrayList<CubeFont> lst_y_plus,
-                               ArrayList<CubeFont> lst_y_minus,
-                               ArrayList<CubeFont> lst_z_plus,
-                               ArrayList<CubeFont> lst_z_minus) {
+                                ArrayList<CubeFont> lst_x_minus,
+                                ArrayList<CubeFont> lst_y_plus,
+                                ArrayList<CubeFont> lst_y_minus,
+                                ArrayList<CubeFont> lst_z_plus,
+                                ArrayList<CubeFont> lst_z_minus) {
         Graphics graphics = Game.graphics;
         CubeFont cubeFont;
         TexturedQuad font;
@@ -2536,7 +2521,7 @@ public final class Menu extends Scene {
     }
 
     @Override
-    public void onFingerDown(float x, float y, int finger_count) {
+    public void onFingerDown(float x, float y, int fingerCount) {
         //System.out.println("Menu::OnFingerDown " + x + ", y:" + y);
 
         if (mNavigator.isCurrentNavigation(
@@ -2558,17 +2543,17 @@ public final class Menu extends Scene {
                 m_hilite_alpha = 0.0f;
                 m_menu_cube_hilite = menuCube;
                 CubeLocation cp = m_menu_cube_hilite.cubeLocation;
-                m_font_hilite.init(SymbolHilite, cp);
+                m_font_hilite.init(Symbol_Hilite, cp);
             }
         }
     }
 
     @Override
-    public void onFingerMove(float prev_x, float prev_y, float cur_x, float cur_y, int finger_count) {
+    public void onFingerMove(float prevX, float prevY, float curX, float curY, int fingerCount) {
         if (mIsFingerDown) {
             //System.out.println("Menu::OnFingerMove " + cur_x + ", " + cur_y);
-            mPosMove.x = cur_x;
-            mPosMove.y = cur_y;
+            mPosMove.x = curX;
+            mPosMove.y = curY;
 
             float dist = Utils.getDistance2D(mPosDown, mPosMove);
             //System.out.println("OnFingerMove: distance " + dist);
@@ -2580,7 +2565,7 @@ public final class Menu extends Scene {
     }
 
     @Override
-    public void onFingerUp(float x, float y, int finger_count) {
+    public void onFingerUp(float x, float y, int fingerCount) {
         mIsFingerDown = false;
 
         if (!mMenuCubePlay.isDone() || !mMenuCubeOptions.isDone() || !mMenuCubeStore.isDone()) {

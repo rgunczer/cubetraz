@@ -1,12 +1,12 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
 import com.almagems.cubetraz.graphics.TexturedQuad;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class DeadCube {
 
@@ -51,8 +51,8 @@ public final class DeadCube {
     public void init(CubeLocation cubePos) {
         setCubePos(cubePos);
     
-        mCubeFaceTextures[Face_Z_Plus] = Game.getSymbol(SymbolDeath);
-        mCubeFaceTextures[Face_X_Plus] = Game.getSymbol(SymbolDeath);
+        mCubeFaceTextures[Face_Z_Plus] = Game.getSymbol(Symbol_Death);
+        mCubeFaceTextures[Face_X_Plus] = Game.getSymbol(Symbol_Death);
     
         mColorCurrent.init( Game.faceColor );
         mColor.init( Game.faceColor );

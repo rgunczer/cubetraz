@@ -1,13 +1,13 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
 import com.almagems.cubetraz.graphics.TexturedQuad;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class MoverCube {
     private CubeLocation m_cube_pos_starting = new CubeLocation();
@@ -48,33 +48,33 @@ public final class MoverCube {
     
         switch (m_move_dir) {
             case AxisMovement_X_Plus:
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoLeft);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoLeft);
+                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoLeft);
+                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoLeft);
                 break;
             
             case AxisMovement_X_Minus:
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoRight);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoRight);
+                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoRight);
+                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoRight);
                 break;
             
             case AxisMovement_Y_Plus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoUp);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoUp);
+                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoUp);
+                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoUp);
                 break;
             
             case AxisMovement_Y_Minus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoDown);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(SymbolGoDown);
+                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoDown);
+                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoDown);
                 break;
             
             case AxisMovement_Z_Plus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoRight);
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoDown);
+                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoRight);
+                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoDown);
                 break;
             
             case AxisMovement_Z_Minus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(SymbolGoLeft);
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(SymbolGoUp);
+                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoLeft);
+                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoUp);
                 break;
             
             default:

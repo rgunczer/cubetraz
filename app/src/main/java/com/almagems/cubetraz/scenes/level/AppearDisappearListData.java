@@ -3,19 +3,19 @@ package com.almagems.cubetraz.scenes.level;
 import com.almagems.cubetraz.cubes.Cube;
 
 import java.util.ArrayList;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 public final class AppearDisappearListData {
 
     public int level;
     public int direction;
 
-    public final ArrayList<Cube> lst_appear = new ArrayList<>();
-    public final ArrayList<Cube> lst_disappear = new ArrayList<>();
+    public final ArrayList<Cube> appear = new ArrayList<>();
+    public final ArrayList<Cube> disappear = new ArrayList<>();
 
     public void clear() {
-        lst_appear.clear();
-        lst_disappear.clear();
+        appear.clear();
+        disappear.clear();
     }
 
     public void setLevelAndDirection(int level, int direction) {
@@ -24,7 +24,7 @@ public final class AppearDisappearListData {
     }
 
     public void initAppearListFrom(ArrayList<Cube> lst) {
-        lst_appear.clear();
+        appear.clear();
         int size = lst.size();
         Cube cube;
         for (int i = 0; i < size; ++i) {
@@ -34,7 +34,7 @@ public final class AppearDisappearListData {
     }
 
     public void initDisappearListFrom(ArrayList<Cube> lst) {
-        lst_disappear.clear();
+        disappear.clear();
         int size = lst.size();
         Cube cube;
         for (int i = 0; i < size; ++i) {
@@ -43,15 +43,15 @@ public final class AppearDisappearListData {
         }
     }
 
-    public void addAppear(Cube theCube) {
-        if (!lst_appear.contains(theCube)) {
-            lst_appear.add(theCube);
+    public void addAppear(Cube cube) {
+        if (!appear.contains(cube)) {
+            appear.add(cube);
         }
     }
 
-    public void addDisappear(Cube theCube) {
-        if (!lst_disappear.contains(theCube)) {
-            lst_disappear.add(theCube);
+    public void addDisappear(Cube cube) {
+        if (!disappear.contains(cube)) {
+            disappear.add(cube);
         }
     }
 
@@ -60,12 +60,12 @@ public final class AppearDisappearListData {
         Cube cube;
 
         while (level > -1 && level < MAX_CUBE_COUNT) {
-            size = lst_appear.size();
+            size = appear.size();
             for(int i = 0; i < size; ++i) {
-                cube = lst_appear.get(i);
+                cube = appear.get(i);
                 if (cube.y == level) {
-                    lst_disappear.add(cube);
-                    lst_appear.remove(cube);
+                    disappear.add(cube);
+                    appear.remove(cube);
                     return cube;
                 }
             }
@@ -79,13 +79,13 @@ public final class AppearDisappearListData {
         Cube cube;
 
         while (level > -1 && level < MAX_CUBE_COUNT) {
-            size = lst_disappear.size();
+            size = disappear.size();
             for(int i = 0; i < size; ++i) {
-                cube = lst_disappear.get(i);
+                cube = disappear.get(i);
 
                 if (cube.y == level) {
-                    lst_appear.add(cube);
-                    lst_disappear.remove(cube);
+                    appear.add(cube);
+                    disappear.remove(cube);
                     return cube;
                 }
             }

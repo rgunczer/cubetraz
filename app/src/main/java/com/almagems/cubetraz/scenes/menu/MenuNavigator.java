@@ -3,12 +3,12 @@ package com.almagems.cubetraz.scenes.menu;
 import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 
 import static android.opengl.GLES10.*;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class MenuNavigator

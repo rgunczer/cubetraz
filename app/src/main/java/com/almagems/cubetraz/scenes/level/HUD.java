@@ -1,6 +1,6 @@
 package com.almagems.cubetraz.scenes.level;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector2;
@@ -14,7 +14,7 @@ import static android.opengl.GLES10.*;
 
 import java.util.Stack;
 
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 final class HUD {
 
@@ -64,7 +64,7 @@ final class HUD {
     private boolean mHiliteSolver;
 
 	private boolean mShowHint;
-    private float m_t;
+    private float mElapsed;
     
     private boolean mShowPrepareSolving;
     private boolean mShowAppear;
@@ -88,7 +88,7 @@ final class HUD {
 
     private DeadAnim mDeadAnim;
 
-    public HUD(DeadAnim deadAnim) {
+    HUD(DeadAnim deadAnim) {
         mDeadAnim = deadAnim;
         mArTextCenter[0] = new Text();
         mArTextCenter[1] = new Text();
@@ -105,7 +105,7 @@ final class HUD {
         mTextHint.setScale(1.2f, 1.0f);
         mTextSolver.setScale(1.2f, 1.0f);
     
-        mTextLevel.setScale(1.0f, 1.0f);
+        mTextLevel.setScale(2.6f, 2.3f);
         mTextStars.setScale(1.0f, 1.0f);
         mTextMoves.setScale(1.0f, 1.0f);
         mTextMotto.setScale(1.0f, 1.0f);
@@ -140,162 +140,123 @@ final class HUD {
         }
     }
 
-    void showTutorSwipeAndGoal() {
+    void showTutor(final int tutorId) {
+        switch (tutorId) {
+            case Tutor_Swipe:
+                showTutorSwipeAndGoal();
+                break;
+
+            case Tutor_MenuPause:
+                showTutorMenuPause();
+                break;
+
+            case Tutor_MenuHint:
+                showTutorMenuHint();
+                break;
+
+            default:
+                if (!mArrTutorDisplayed[tutorId]) {
+                    mTutors.push(tutorId);
+                    mTutorActive = true;
+                    mTutorAlpha = 0;
+                    mTutorState = TutorStateEnum.Appear;
+                    mTutorTexture = Game.loadTutorTexture(tutorId);
+                    mArrTutorDisplayed[tutorId] = true;
+                }
+        }
+    }
+
+    private void showTutorSwipeAndGoal() {
         if (!mArrTutorDisplayed[Tutor_Swipe]) {
             mTutors.push(Tutor_Goal);
             mTutors.push(Tutor_Swipe);
             mTutorActive = true;
             mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_swipe");
+            mTutorState = TutorStateEnum.Appear;
+            mTutorTexture = Game.loadTutorTexture(Tutor_Swipe);
             mArrTutorDisplayed[Tutor_Swipe] = true;
         }
     }
 
-    void showTutorGoal() {
+    private void showTutorGoal() {
         if (!mArrTutorDisplayed[Tutor_Goal]) {
             mTutorActive = true;
             mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_goal");
+            mTutorState = TutorStateEnum.Appear;
+            mTutorTexture = Game.loadTutorTexture(Tutor_Goal);
             mArrTutorDisplayed[Tutor_Goal] = true;
         }
     }
 
-    void showTutorDrag() {
-        if (!mArrTutorDisplayed[Tutor_Drag]) {
-            mTutors.push(Tutor_Drag);
-            mTutorActive = true;
-            mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_drag");
-            mArrTutorDisplayed[Tutor_Drag] = true;
-        }
-    }
-
-    void showTutorDead() {
-        if (!mArrTutorDisplayed[Tutor_Dead]) {
-            mTutors.push(Tutor_Dead);
-            mTutorActive = true;
-            mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_dead");
-            mArrTutorDisplayed[Tutor_Dead] = true;
-        }
-    }
-
-    void showTutorMoving() {
-        if (!mArrTutorDisplayed[Tutor_Moving]) {
-            mTutors.push(Tutor_Moving);
-            mTutorActive = true;
-            mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_moving");
-            mArrTutorDisplayed[Tutor_Moving] = true;
-        }
-    }
-
-    void showTutorMover() {
-        if (!mArrTutorDisplayed[Tutor_Mover]) {
-            mTutors.push(Tutor_Mover);
-            mTutorActive = true;
-            mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_pusher");
-            mArrTutorDisplayed[Tutor_Mover] = true;
-        }
-    }
-
-    void showTutorPlain() {
-        if (!mArrTutorDisplayed[Tutor_Plain]) {
-            mTutors.push(Tutor_Plain);
-            mTutorActive = true;
-            mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_plain");
-            mArrTutorDisplayed[Tutor_Plain] = true;
-        }
-    }
-
-    void showTutorMenuPause() {
+    private void showTutorMenuPause() {
         if (!mArrTutorDisplayed[Tutor_MenuPause]) {
             mTutors.push(Tutor_MenuUndo);
             mTutors.push(Tutor_MenuPause);
             mTutorActive = true;
             mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_menu_pause");
+            mTutorState = TutorStateEnum.Appear;
+            mTutorTexture = Game.loadTutorTexture(Tutor_MenuPause);
             mArrTutorDisplayed[Tutor_MenuPause] = true;
-            //printf("\ntutors %lu", mTutors.size());
         }
     }
 
-    void showTutorMenuUndo() {
+    private void showTutorMenuUndo() {
         if (!mArrTutorDisplayed[Tutor_MenuUndo]) {
             mTutorActive = true;
             mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_menu_undo");
+            mTutorState = TutorStateEnum.Appear;
+            mTutorTexture = Game.loadTutorTexture(Tutor_MenuUndo);
             mArrTutorDisplayed[Tutor_MenuUndo] = true;
         }
     }
 
-    void showTutorMenuHint() {
+    private void showTutorMenuHint() {
         if (!mArrTutorDisplayed[Tutor_MenuHint]) {
             mTutors.push(Tutor_MenuSolvers);
             mTutors.push(Tutor_MenuHint);
             mTutorActive = true;
             mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_menu_hint");
+            mTutorState = TutorStateEnum.Appear;
+            mTutorTexture = Game.loadTutorTexture(Tutor_MenuHint);
             mArrTutorDisplayed[Tutor_MenuHint] = true;
         }
     }
 
-    void showTutorMenuSolvers() {
+    private void showTutorMenuSolvers() {
         if (!mArrTutorDisplayed[Tutor_MenuSolvers]) {
             mTutorActive = true;
             mTutorAlpha = 0;
-            mTutorState = TutorStateEnum.TutorAppear;
-            mTutorTexture = Game.loadTutorTexture("tutor_menu_solver");
+            mTutorState = TutorStateEnum.Appear;
+            mTutorTexture = Game.loadTutorTexture(Tutor_MenuSolvers);
             mArrTutorDisplayed[Tutor_MenuSolvers] = true;
         }
     }
 
     void hideTutor() {
-        if (mTutorActive && TutorStateEnum.TutorDone == mTutorState) {
-            mTutorState = TutorStateEnum.TutorDisappear;
+        if (mTutorActive && (TutorStateEnum.Done == mTutorState)) {
+            mTutorState = TutorStateEnum.Disappear;
         }
     }
 
     void setTextMotto(final String str) {
         mTextMotto.init(str);
     }
-
     void setTextLevel(final String str) {
         mTextLevel.init("LEVEL\n" + str);
     }
-
     void setTextMoves(final int moves) {
         mTextMoves.init("MOVES\n" + moves);
     }
-
     void setTextStars(final int stars) {
         mTextStars.init("STARS\n" + stars);
     }
-
     void set1stHint() {
 	    mTextHint.init("HINT\nTO\nBEGIN");
     }
-
-    void set2ndHint() {
-	    mTextHint.init("HINT\nTO\nPATH");
-    }
-
+    void set2ndHint() { mTextHint.init("HINT\nTO\nFINISH");}
     void setTextUndo(final int count) {
         mTextUndo.init("UNDO\n" + count);
     }
-
     void setTextSolver(final int count) {
         mTextSolver.init("SOLVERS\n" + count);
     }
@@ -313,7 +274,7 @@ final class HUD {
     }
 
     void setupAppear() {
-	    mState = HUDStateEnum.AppearHUD;
+	    mState = HUDStateEnum.Appear;
     
 	    mIconsAlpha = 0;
         mHilitePause = mHiliteUndo = mHiliteHint = mHiliteSolver = false;
@@ -334,7 +295,7 @@ final class HUD {
     }
 
     void setupDisappear() {
-	    mState = HUDStateEnum.DisappearHUD;
+	    mState = HUDStateEnum.Disappear;
 	
 	    mIconsAlpha = 255;
         mHilitePause = mHiliteUndo = mHiliteHint = mHiliteSolver = false;
@@ -350,7 +311,7 @@ final class HUD {
         float deviceScale = Game.graphics.deviceScale;
     
 	    mShowHint = true;
-        m_t = 0.0f;
+        mElapsed = 0.0f;
         mRadius = 10.0f * deviceScale;
 
         mStart = new Vector2(0.0f, -40.0f * deviceScale);
@@ -420,7 +381,7 @@ final class HUD {
         mTextMoves.init("MOVES\n0");
         mTextMotto.init("MOTTO\n0\n0");
     
-        final float scale = 0.3f * deviceScale;
+        float scale = 0.33f * deviceScale;
         mTextLevel.setScale(scale, scale);
         mTextStars.setScale(scale, scale);
         mTextMoves.setScale(scale, scale);
@@ -434,12 +395,12 @@ final class HUD {
         mArTextCenter[0].init("THE SOLUTION IS...");
         mArTextCenter[1].init("THE SOLUTION IS...");
     
-        mSymbolPause = Game.getSymbol(SymbolPause);
-        mSymbolUndo = Game.getSymbol(SymbolUndo);
-        mSymbolHint = Game.getSymbol(SymbolQuestionmark);
-        mSymbolSolver = Game.getSymbol(SymbolSolver);
-        mSymbolStar = Game.getSymbol(SymbolStar);
-	    mSymbolDeath = Game.getSymbol(SymbolDeath);
+        mSymbolPause = Game.getSymbol(Symbol_Pause);
+        mSymbolUndo = Game.getSymbol(Symbol_Undo);
+        mSymbolHint = Game.getSymbol(Symbol_Questionmark);
+        mSymbolSolver = Game.getSymbol(Symbol_Solver);
+        mSymbolStar = Game.getSymbol(Symbol_Star);
+	    mSymbolDeath = Game.getSymbol(Symbol_Death);
     
 	    mPosXTextLeftStart = -100.0f * deviceScale;
 	    mPosXTextLeftEnd = 5.0f * deviceScale;
@@ -450,38 +411,34 @@ final class HUD {
         mPosXTextRightStart = Game.graphics.width + (75.0f * deviceScale);
 	    mPosXTextRightEnd = Game.graphics.width - (6.0f * deviceScale);
 
-	    mState = HUDStateEnum.DoneHUD;
+	    mState = HUDStateEnum.Done;
 	    mShowHint = false;
     }
 
     public void update() {
         if (mTutorActive) {
             switch(mTutorState) {
-                case TutorAppear:
+                case Appear:
                     mTutorAlpha += 10;
             
                     if (mTutorAlpha > 255) {
                         mTutorAlpha = 255;
-                        mTutorState = TutorStateEnum.TutorDone;
+                        mTutorState = TutorStateEnum.Done;
                     }                
                     break;
         
-                case TutorDisappear:
+                case Disappear:
                     mTutorAlpha -= 30;
             
                     if (mTutorAlpha < 0) {
-                        //printf("\ntutors: %lu", mTutors.size());
-                                        
                         if (!mTutors.empty()) {
                             mTutors.pop();
                         }
 
-                        //printf("\ntutors: %lu", mTutors.size());
-                    
                         if (!mTutors.isEmpty()) {
-                            int tutor_id = mTutors.pop();
+                            int nextTutorId = mTutors.pop();
                         
-                            switch(tutor_id) {
+                            switch(nextTutorId) {
                                 case Tutor_Goal: showTutorGoal(); break;
                                 case Tutor_MenuUndo: showTutorMenuUndo(); break;
                                 case Tutor_MenuHint: showTutorMenuHint(); break;
@@ -489,17 +446,17 @@ final class HUD {
                             }
                         } else {
                             mTutorActive = false;
-                            mTutorState = TutorStateEnum.TutorDone;
+                            mTutorState = TutorStateEnum.Done;
                         }
                     }                
                     break;
                 
-                case TutorDone:
+                case Done:
                     break;
             }
         }
     
-	    if (mState == HUDStateEnum.DisappearHUD) {
+	    if (mState == HUDStateEnum.Disappear) {
 		    final int icon_alpha_speed = -40;
 		    final float text_anim_speed = -10.0f * Game.graphics.deviceScale;
             final float text_anim_speed_motto = -10.0f * Game.graphics.deviceScale;
@@ -535,11 +492,11 @@ final class HUD {
 		    }        
 		
 		    if (4 == done_counter) {
-			    mState = HUDStateEnum.DoneHUD;
+			    mState = HUDStateEnum.Done;
             }
 	    }
 
-	    if (HUDStateEnum.AppearHUD == mState) {
+	    if (HUDStateEnum.Appear == mState) {
 		    int done_counter = 0;
 		
             final int icon_alpha_speed = 20;
@@ -575,15 +532,15 @@ final class HUD {
 		    }
 		
 		    if (4 == done_counter) {
-			    mState = HUDStateEnum.DoneHUD;
+			    mState = HUDStateEnum.Done;
             }
 	    }
 	
 	    if (mShowHint) {
-            m_t += 0.03f;
+            mElapsed += 0.03f;
         
-            if (m_t > 1.0f) {
-                m_t = 1.0f;
+            if (mElapsed > 1.0f) {
+                mElapsed = 1.0f;
 			    mShowHint = false;
 		    }
 	    }
@@ -606,7 +563,7 @@ final class HUD {
         }
     }
 
-    public void renderForPicking() {
+    void renderForPicking() {
         Graphics graphics = Game.graphics;
 	    float solver_quad_y = graphics.height * 0.09f;
 	    float hint_quad_y   = graphics.height * 0.37f;
@@ -883,7 +840,7 @@ final class HUD {
             graphics.renderTriangles();
         }
     
-        if (Level.LevelStateEnum.DeadAnim == Game.level.mState) {
+        if (Level.State.DeadAnim == Game.level.mState) {
             graphics.resetBufferIndices();
         
 		    color.init(200, 0, 0, mDeadAnim.alpha);
@@ -904,8 +861,8 @@ final class HUD {
         glDisable(GL_TEXTURE_2D);
 
 	    if (mShowHint) {
-            vec.x = Utils.lerp(mStart.x, mEnd.x, m_t);
-            vec.y = Utils.lerp(mStart.y, mEnd.y, m_t);
+            vec.x = Utils.lerp(mStart.x, mEnd.x, mElapsed);
+            vec.y = Utils.lerp(mStart.y, mEnd.y, mElapsed);
 
 		    final float verts[] = {
 			    mPosCenter.x + mStart.x, mPosCenter.y + mStart.y,
@@ -943,28 +900,28 @@ final class HUD {
         glEnable(GL_DEPTH_TEST);
     }
 
-    public void setHilitePause(boolean hilite) {
+    void setHilitePause(boolean hilite) {
         mHilitePause = hilite;
     }
-    public void setHiliteUndo(boolean hilite) {
+    void setHiliteUndo(boolean hilite) {
         mHiliteUndo = hilite;
     }
-    public void setHiliteHint(boolean hilite) {
+    void setHiliteHint(boolean hilite) {
         mHiliteHint = hilite;
     }
-    public void setHiliteSolver(boolean hilite) {
+    void setHiliteSolver(boolean hilite) {
         mHiliteSolver = hilite;
     }
-    public boolean isAnythingHilited() { 
+    boolean isAnythingHilited() {
         return (mHilitePause || mHiliteUndo || mHiliteHint || mHiliteSolver);
     }
-    public boolean isTutorDisplaying() { 
+    boolean isTutorDisplaying() {
         return mTutorActive;
     }
-    public HUDStateEnum getState() {
+    HUDStateEnum getState() {
         return mState;
     }
-    public boolean getShowHint() {
+    boolean getShowHint() {
         return mShowHint;
     }        
 }

@@ -1,10 +1,10 @@
 package com.almagems.cubetraz.graphics;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector2;
 
 import java.util.ArrayList;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Game.*;
 
 
 public final class Text {

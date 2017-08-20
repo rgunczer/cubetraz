@@ -1,4 +1,4 @@
-package com.almagems.cubetraz.system;
+package com.almagems.cubetraz;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -9,9 +9,9 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 import android.widget.Toast;
 
-import com.almagems.cubetraz.game.Audio;
-import com.almagems.cubetraz.game.Game;
-import com.almagems.cubetraz.game.GameOptions;
+import com.almagems.cubetraz.Audio;
+import com.almagems.cubetraz.Game;
+import com.almagems.cubetraz.GameOptions;
 import com.almagems.cubetraz.graphics.Graphics;
 
 

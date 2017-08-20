@@ -1,10 +1,8 @@
 package com.almagems.cubetraz.math;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.external.RandomXS128;
-import com.almagems.cubetraz.math.Vector;
-import com.almagems.cubetraz.math.Vector2;
 
 public final class Utils {
 

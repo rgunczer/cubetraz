@@ -1,6 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
-import com.almagems.cubetraz.game.Game;
+import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
@@ -9,8 +9,8 @@ import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
-import static com.almagems.cubetraz.game.Audio.SOUND_CUBE_HIT;
-import static com.almagems.cubetraz.game.Game.*;
+import static com.almagems.cubetraz.Audio.SOUND_CUBE_HIT;
+import static com.almagems.cubetraz.Game.*;
 
 public final class MovingCube {
 	private boolean m_done;
@@ -82,33 +82,33 @@ public final class MovingCube {
 	
 	    switch (m_move_dir) {
 		    case AxisMovement_X_Plus:
-			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleLeft);
-			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleLeft);
+			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(Symbol_TriangleLeft);
+			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(Symbol_TriangleLeft);
 			    break;
 			
 		    case AxisMovement_X_Minus:
-                ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleRight);
-			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleRight);
+                ar_cube_textures[Face_Z_Plus] = Game.getSymbol(Symbol_TriangleRight);
+			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(Symbol_TriangleRight);
 			    break;
 			
 		    case AxisMovement_Y_Plus:
-			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleUp);
-			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleUp);
+			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(Symbol_TriangleUp);
+			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(Symbol_TriangleUp);
 			    break;
 			
 		    case AxisMovement_Y_Minus:
-			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleDown);
-			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(SymbolTriangleDown);
+			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(Symbol_TriangleDown);
+			    ar_cube_textures[Face_Z_Plus] = Game.getSymbol(Symbol_TriangleDown);
 			    break;
 			
 		    case AxisMovement_Z_Plus:
-			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleDown);
-			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleRight);
+			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(Symbol_TriangleDown);
+			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(Symbol_TriangleRight);
 			    break;
 
 		    case AxisMovement_Z_Minus:
-			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(SymbolTriangleUp);
-			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(SymbolTriangleLeft);
+			    ar_cube_textures[Face_Y_Plus] = Game.getSymbol(Symbol_TriangleUp);
+			    ar_cube_textures[Face_X_Plus] = Game.getSymbol(Symbol_TriangleLeft);
 			    break;
 			
 		    default:
