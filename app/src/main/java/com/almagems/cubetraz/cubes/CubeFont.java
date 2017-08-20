@@ -13,7 +13,7 @@ import static com.almagems.cubetraz.game.Game.*;
 public final class CubeFont {
     
     private TexturedQuad m_pFont = new TexturedQuad();
-    private CubePos m_cube_pos = new CubePos();
+    private CubeLocation m_cube_pos = new CubeLocation();
     private MenuCube m_pTriggerCube = new MenuCube();
     private AxisEnum m_trigger_axis;
     private AxisEnum m_align_axis;
@@ -108,18 +108,18 @@ public final class CubeFont {
 //
 //        switch (m_align_axis) {
 //            case X_Axis:
-//                m_align_axis_value = &m_pTriggerCube->m_cube_pos.x;
-//                m_align_value = &m_cube_pos.x;
+//                m_align_axis_value = &m_pTriggerCube->cubeLocation.x;
+//                m_align_value = &cubeLocation.x;
 //                break;
 //
 //            case Y_Axis:
-//                m_align_axis_value = &m_pTriggerCube->m_cube_pos.y;
-//                m_align_value = &m_cube_pos.y;
+//                m_align_axis_value = &m_pTriggerCube->cubeLocation.y;
+//                m_align_value = &cubeLocation.y;
 //                break;
 //
 //            case Z_Axis:
-//                m_align_axis_value = &m_pTriggerCube->m_cube_pos.z;
-//                m_align_value = &m_cube_pos.z;
+//                m_align_axis_value = &m_pTriggerCube->cubeLocation.z;
+//                m_align_value = &cubeLocation.z;
 //                break;
 //        }
     }
@@ -132,7 +132,7 @@ public final class CubeFont {
         return m_pFont; 
     }
 
-    public void init(CubePos cube_pos) {    
+    public void init(CubeLocation cube_pos) {
         m_trigger_axis = AxisEnum.X_Axis;
         m_pTriggerCube = null;
 
@@ -143,7 +143,7 @@ public final class CubeFont {
         pos.init(v);
     }
 
-    public void init(char ch, CubePos cube_pos) {
+    public void init(char ch, CubeLocation cube_pos) {
         m_pFont = Game.getFont(ch);
         if (m_pFont == null) {
             System.out.println("m_pFont is null");
@@ -152,7 +152,7 @@ public final class CubeFont {
         init(cube_pos);
     }
 
-    public void init(int type, CubePos cube_pos) {
+    public void init(int type, CubeLocation cube_pos) {
         m_pFont = Game.getSymbol(type);    
         init(cube_pos);
     }

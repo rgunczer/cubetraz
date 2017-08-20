@@ -86,8 +86,10 @@ final class HUD {
     private Color colorHilite = new Color(240, 240, 240, mIconsAlpha);
     private Color colorShadow = new Color(0, 0, 0, mIconsAlpha);
 
+    private DeadAnim mDeadAnim;
 
-    public HUD() {
+    public HUD(DeadAnim deadAnim) {
+        mDeadAnim = deadAnim;
         mArTextCenter[0] = new Text();
         mArTextCenter[1] = new Text();
 
@@ -884,14 +886,14 @@ final class HUD {
         if (Level.LevelStateEnum.DeadAnim == Game.level.mState) {
             graphics.resetBufferIndices();
         
-		    color.init(200, 0, 0, Game.level.dead_alpha);
+		    color.init(200, 0, 0, mDeadAnim.alpha);
 		
             tcoords.tx0 = mSymbolDeath.tx_lo_left;
             tcoords.tx1 = mSymbolDeath.tx_lo_right;
             tcoords.tx2 = mSymbolDeath.tx_up_right;
             tcoords.tx3 = mSymbolDeath.tx_up_left;
         
-            float size = Game.level.dead_size * graphics.deviceScale;
+            float size = mDeadAnim.size * graphics.deviceScale;
             graphics.addQuad(size, graphics.halfWidth - (size / 2.0f), graphics.halfHeight - (size / 2.0f), tcoords, color);
         
             graphics.bindStreamSources2d();

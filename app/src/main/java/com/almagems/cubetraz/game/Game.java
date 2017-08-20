@@ -3,13 +3,13 @@ package com.almagems.cubetraz.game;
 import android.content.Context;
 
 import com.almagems.cubetraz.R;
+import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
-import com.almagems.cubetraz.builder.LevelBuilder;
+import com.almagems.cubetraz.scenes.level.LevelBuilder;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFaceData;
-import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.FontStruct;
 import com.almagems.cubetraz.graphics.Graphics;
@@ -43,7 +43,6 @@ public final class Game {
 
     public static final float EPSILON_SMALL = 0.001f;
 
-    public static final int MAX_SOLUTION_MOVES = 16;
     public static final int MAX_HINT_CUBES = 48;
     public static final float UNDO_TIMEOUT = 0.2f;
 
@@ -377,11 +376,11 @@ public final class Game {
     public static float minSwipeLength;
     public static TexturedQuad m_newlinefont = new TexturedQuad();
 
-    public static StatInitData stat_init_data = new StatInitData();
+    public static StatInitData statInitData = new StatInitData();
 
     public static final MenuInitData menu_init_data = new MenuInitData();
     public static final AnimInitData anim_init_data = new AnimInitData();
-    public static final LevelInitData level_init_data = new LevelInitData();
+    public static final LevelInitData levelInitData = new LevelInitData();
 
     public static final Vector cube_offset = new Vector();
     public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
@@ -462,10 +461,10 @@ public final class Game {
         minSwipeLength = graphics.height / 10;
 
         if (currentScene == null) {
-            showScene(Scene_Intro);
+            //showScene(Scene_Intro);
             //showScene(Scene_Menu);
             //showScene(Scene_Anim);
-            //showScene(Scene_Level);
+            showScene(Scene_Level);
             //showScene(Scene_Stat);
             //showScene(Scene_Outro);
         }
@@ -497,7 +496,7 @@ public final class Game {
         }
     }
 
-    public static boolean isObstacle(CubePos cube_pos) {
+    public static boolean isObstacle(CubeLocation cube_pos) {
         Cube cube = cubes[cube_pos.x][cube_pos.y][cube_pos.z];
 
         if (cube.type == CubeTypeEnum.CubeIsVisibleAndObstacle ||
@@ -702,7 +701,7 @@ public final class Game {
         }
     }
 
-    public static Vector getCubePosAt(CubePos pos) {
+    public static Vector getCubePosAt(CubeLocation pos) {
         return getCubePosAt(pos.x, pos.y, pos.z);
     }
 
@@ -892,13 +891,13 @@ public final class Game {
         Creator.addLevelCube(levelNumber, face_type, faceName, cube.x, cube.y, cube.z);
     }
 
-    public static void setCubeTypeInvisible(CubePos cube_pos) {
+    public static void setCubeTypeInvisible(CubeLocation cube_pos) {
         //printf("\nSet Cube Type Invisible (%d, %d, %d)", cube_pos.x, cube_pos.y, cube_pos.z);
         cubes[cube_pos.x][cube_pos.y][cube_pos.z].type = CubeTypeEnum.CubeIsInvisible;
     }
 
-    public static boolean isPlayerCube(CubePos cube_pos) {
-        CubePos cp = level.mPlayerCube.getCubePos();
+    public static boolean isPlayerCube(CubeLocation cube_pos) {
+        CubeLocation cp = level.mPlayerCube.getLocation();
         if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
             return true;
         } else {
@@ -906,8 +905,8 @@ public final class Game {
         }
     }
 
-    public static boolean isKeyCube(CubePos cube_pos) {
-        CubePos cp = level.getKeyPos();
+    public static boolean isKeyCube(CubeLocation cube_pos) {
+        CubeLocation cp = level.getKeyPos();
         if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
             return true;
         } else {

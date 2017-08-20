@@ -1,12 +1,12 @@
 package com.almagems.cubetraz.scenes.menu;
 
 
+import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
-import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.graphics.TexturedQuad;
 
 import java.util.Locale;
@@ -210,7 +210,7 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 			
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType, faceName, color);
+				    Creator.addCubeFont(ch, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -228,7 +228,7 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 			
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x,y,z), faceType, faceName, color);
+				    Creator.addCubeFont(ch, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -246,7 +246,7 @@ public final class MenuFaceBuilder {
                 ch = (char)arr[counter];
 	
 			    if (' ' != ch && 'x' != ch && 'o' != ch) {
-				    Creator.addCubeFont(ch, new CubePos(x, y, z), faceType, faceName, color);
+				    Creator.addCubeFont(ch, new CubeLocation(x, y, z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -264,7 +264,7 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType, faceName, color);
+				    Creator.addCubeFontSymbol(symbol_id, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -282,7 +282,7 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType, faceName, color);
+				    Creator.addCubeFontSymbol(symbol_id, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -300,7 +300,7 @@ public final class MenuFaceBuilder {
 			    symbol_id = a[counter];
 			
 			    if (SymbolEmpty != symbol_id) {
-				    Creator.addCubeFontSymbol(symbol_id, new CubePos(x,y,z), faceType, faceName, color);
+				    Creator.addCubeFontSymbol(symbol_id, new CubeLocation(x,y,z), faceType, faceName, color);
 			    }
 			    ++counter;
 		    }
@@ -341,7 +341,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setFontFromCube(CubeFont cubeFontTarget, CubePos cp, CubePos offset, int faceType) {
+    private static void setFontFromCube(CubeFont cubeFontTarget, CubeLocation cp, CubeLocation offset, int faceType) {
         char ch;
         Cube cube;
         CubeFont cubeFont;
@@ -389,17 +389,17 @@ public final class MenuFaceBuilder {
 			    setupFontFaceY(arr, faceType, faceId, y + 1, color);
             
                 if ( CubeFaceNamesEnum.Face_Score == faceId) {
-                    CubePos cp;
-                    cp = new CubePos(1, 0, 6);
-                    setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubePos(0, 1, 0), faceType);
+                    CubeLocation cp;
+                    cp = new CubeLocation(1, 0, 6);
+                    setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubeLocation(0, 1, 0), faceType);
                     Game.menu.m_cubefont_noads.pos.y -= FONT_OVERLAY_OFFSET;
 
-                    cp = new CubePos(1, 0, 4);
-                    setFontFromCube(Game.menu.m_cubefont_solvers, cp, new CubePos(0, 1, 0), faceType);
+                    cp = new CubeLocation(1, 0, 4);
+                    setFontFromCube(Game.menu.m_cubefont_solvers, cp, new CubeLocation(0, 1, 0), faceType);
                     Game.menu.m_cubefont_solvers.pos.y -= FONT_OVERLAY_OFFSET;
                 
-                    cp = new CubePos(1, 0, 2);
-                    setFontFromCube(Game.menu.m_cubefont_restore, cp, new CubePos(0, 1, 0), faceType);
+                    cp = new CubeLocation(1, 0, 2);
+                    setFontFromCube(Game.menu.m_cubefont_restore, cp, new CubeLocation(0, 1, 0), faceType);
                     Game.menu.m_cubefont_restore.pos.y -= FONT_OVERLAY_OFFSET;
                 }
             }
@@ -409,17 +409,17 @@ public final class MenuFaceBuilder {
 				setupFontFaceZ(arr, faceType, faceId, z - 1, color);
             
             	if (CubeFaceNamesEnum.Face_Menu == faceId) {
-                	CubePos cp;
-                	cp = new CubePos(1, 5, 8);
-                	setFontFromCube(Game.menu.m_cubefont_play, cp, new CubePos(0, 0, -1), faceType);
+                	CubeLocation cp;
+                	cp = new CubeLocation(1, 5, 8);
+                	setFontFromCube(Game.menu.m_cubefont_play, cp, new CubeLocation(0, 0, -1), faceType);
                 	Game.menu.m_cubefont_play.pos.z += FONT_OVERLAY_OFFSET;
                 
-                	cp = new CubePos(1, 3, 8);
-                	setFontFromCube(Game.menu.m_cubefont_options, cp, new CubePos(0, 0, -1), faceType);
+                	cp = new CubeLocation(1, 3, 8);
+                	setFontFromCube(Game.menu.m_cubefont_options, cp, new CubeLocation(0, 0, -1), faceType);
                 	Game.menu.m_cubefont_options.pos.z += FONT_OVERLAY_OFFSET;
                 
-                	cp = new CubePos(1, 1, 8);
-                	setFontFromCube(Game.menu.m_cubefont_store, cp, new CubePos(0, 0, -1), faceType);
+                	cp = new CubeLocation(1, 1, 8);
+                	setFontFromCube(Game.menu.m_cubefont_store, cp, new CubeLocation(0, 0, -1), faceType);
                 	Game.menu.m_cubefont_store.pos.z += FONT_OVERLAY_OFFSET;                
             	}
         	}

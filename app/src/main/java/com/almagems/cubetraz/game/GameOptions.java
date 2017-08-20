@@ -45,7 +45,8 @@ public class GameOptions {
     }
 
     public int getSolverCount() {
-        return mSolverCount;
+        return 1; // TODO: remove
+        //return mSolverCount;
     }
 
     public GameOptions() {

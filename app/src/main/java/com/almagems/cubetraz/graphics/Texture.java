@@ -31,7 +31,7 @@ public final class Texture {
             return newRect;
         }
 
-        //System.out.println("Frame with key: [" + key + "]. Not found!" );
+        //System.out.println("Frame with locationKey: [" + locationKey + "]. Not found!" );
         return null;
     }
 

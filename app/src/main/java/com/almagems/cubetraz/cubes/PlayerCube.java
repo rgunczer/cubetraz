@@ -7,57 +7,58 @@ import static com.almagems.cubetraz.game.Game.*;
 
 public final class PlayerCube {
         
-	private boolean m_done;
+	private boolean mDone;
     private float m_t;
     private float m_step_t;
-	private float m_start_value;
-    private float m_end_value;
+	private float mStartValue;
+    private float mEndValue;
 
     private int m_moveType;
 
     private Vector position;
-	
-    private int m_prev_movement;
-    private CubePos m_cube_pos_key = new CubePos();
 
-	public CubePos m_cube_pos = new CubePos();
-	public CubePos m_cube_pos_destination = new CubePos();
+    private CubeLocation m_cube_pos_key = new CubeLocation();
+
+	public CubeLocation location = new CubeLocation();
+	public CubeLocation destination = new CubeLocation();
     
-	public MovingCube m_moving_cube; // pointer (java)
-    public MoverCube m_mover_cube; // pointer (java)
-    public DeadCube m_dead_cube; // pointer (java)
+	public MovingCube movingCube;
+    public MoverCube moverCube;
+    public DeadCube deadCube;
 		    
 	public Vector pos = new Vector();
 	
-    
-    // ctor
+
     public PlayerCube() {
     }
-    
-        
-    public void setCubePos(CubePos cube_pos) {
-	    m_cube_pos.init(cube_pos);
-	    pos = Game.getCubePosAt(cube_pos);
-	    m_done = true;
+
+    public void setLocation(CubeLocation location) {
+        setLocation(location.x, location.y, location.z);
     }
 
-    public void init(CubePos cube_pos) {
-	    setCubePos(cube_pos);
+    public void setLocation(int x, int y, int z) {
+	    this.location.init(x, y, z);
+	    pos = Game.getCubePosAt(location);
+	    mDone = true;
+    }
 
-        m_moving_cube = null;
-        m_mover_cube = null;
-        m_dead_cube = null;
+    public void init(CubeLocation location) {
+	    setLocation(location);
+
+        movingCube = null;
+        moverCube = null;
+        deadCube = null;
     }
     
     public void update() {
-	    if (!m_done) {
+	    if (!mDone) {
 		    m_t += m_step_t;
 		
 		    if (m_t >= 1.0f) {
 			    m_t = 1.0f;
-			    setCubePos(m_cube_pos_destination);
+			    setLocation(destination);
 		    } else {
-			    float value = Utils.lerp(m_start_value, m_end_value, m_t);
+			    float value = Utils.lerp(mStartValue, mEndValue, m_t);
                 switch (m_moveType) {
                     case AxisMovement_X_Plus:
                     case AxisMovement_X_Minus:
@@ -78,21 +79,21 @@ public final class PlayerCube {
 	    }
     }
 
-    public boolean isKeyCube(CubePos cube_pos) {
-	    if (cube_pos.x == m_cube_pos_key.x && cube_pos.y == m_cube_pos_key.y && cube_pos.z == m_cube_pos_key.z) {
+    private boolean isKeyCube(CubeLocation location) {
+	    if (location.x == m_cube_pos_key.x && location.y == m_cube_pos_key.y && location.z == m_cube_pos_key.z) {
 		    return true;
         } else {
             return false;
         }
     }
 
-    public void calcMovement(CubePos cube_pos, int type, boolean set) {
+    public void calcMovement(CubeLocation cube_pos, int type, boolean set) {
         boolean is_obstacle;
         boolean is_moving;
         boolean is_mover;
         boolean is_dead;
 
-        CubePos prev = new CubePos();
+        CubeLocation prev = new CubeLocation();
         prev.init(cube_pos);
 
         switch(type) {
@@ -234,40 +235,40 @@ public final class PlayerCube {
     }
 
     public boolean moveOnAxis(int type) {
-	    if (m_done) {
-		    m_moving_cube = null;
-            m_mover_cube = null;
-            m_dead_cube = null;
+	    if (mDone) {
+		    movingCube = null;
+            moverCube = null;
+            deadCube = null;
 		
-		    CubePos cube_pos = new CubePos();
-            cube_pos.init(m_cube_pos);
+		    CubeLocation cube_pos = new CubeLocation();
+            cube_pos.init(location);
 		    calcMovement(cube_pos, type, true);
 		
-		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {            
-			    m_cube_pos_destination = cube_pos;
+		    if (location.x != cube_pos.x || location.y != cube_pos.y || location.z != cube_pos.z) {
+			    destination = cube_pos;
 			    Vector pos_destination = Game.getCubePosAt(cube_pos);
                 m_moveType = type;
 			
 			    switch (type) {
 				    case AxisMovement_X_Plus:
 				    case AxisMovement_X_Minus:
-					    m_start_value = pos.x;
-					    m_end_value = pos_destination.x;
-					    position = pos; //.x;
+					    mStartValue = pos.x;
+					    mEndValue = pos_destination.x;
+					    position = pos;
 					    break;
 					
 				    case AxisMovement_Y_Plus:
 				    case AxisMovement_Y_Minus:
-					    m_start_value = pos.y;
-					    m_end_value = pos_destination.y;
-					    position = pos; //.y;
+					    mStartValue = pos.y;
+					    mEndValue = pos_destination.y;
+					    position = pos;
 					    break;
 					
 				    case AxisMovement_Z_Plus:
 				    case AxisMovement_Z_Minus:
-					    m_start_value = pos.z;
-					    m_end_value = pos_destination.z;
-					    position = pos; //.z;
+					    mStartValue = pos.z;
+					    mEndValue = pos_destination.z;
+					    position = pos;
 					    break;
                     
                     default:
@@ -275,52 +276,39 @@ public final class PlayerCube {
 			    }
 			
 			    final float speed = 0.5f;
-			    float distance = Math.abs(m_start_value - m_end_value);
+			    float distance = Math.abs(mStartValue - mEndValue);
 			    float step = distance / speed;
 			    m_t = 0.0f;
 			    m_step_t = 1.0f / step;
-			    m_done = false;
+			    mDone = false;
 			    return true;
 		    }
 	    }
         return false;
     }
             
-    public void setKeyCubePos(CubePos cube_pos) { 
-        m_cube_pos_key.init(cube_pos);
+    public void setKeyCubePos(CubeLocation location) {
+        m_cube_pos_key.init(location);
     }
-    
-    public void setKeyCubePos(int x, int y, int z) { 
-        m_cube_pos_key = new CubePos(x, y, z); 
+
+	public CubeLocation getLocation() {
+        return location;
     }
-	    
-    public int getPrevMovement() {
-        return m_prev_movement; 
-    }
-    
-	public CubePos getCubePos() {
-        return m_cube_pos; 
-    }
-    
-    public boolean isLevelCompleted(int x, int y, int z) {
-        CubePos cp = new CubePos(x, y, z);
-        return isKeyCube(cp);
-    }
-	
+
 	public boolean isDone() { 
-        return m_done; 
+        return mDone;
     }
 	        
     public void setMovingCube(MovingCube cube) { 
-        m_moving_cube = cube; 
+        movingCube = cube;
     }
     
     public void setMoverCube(MoverCube cube) { 
-        m_mover_cube = cube; 
+        moverCube = cube;
     }
     
     public void setDeadCube(DeadCube cube) { 
-        m_dead_cube = cube; 
+        deadCube = cube;
     }
 
 }

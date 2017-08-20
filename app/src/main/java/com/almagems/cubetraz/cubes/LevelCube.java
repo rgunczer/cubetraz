@@ -23,7 +23,7 @@ public final class LevelCube {
     
     public Vector font_pos;
     
-    public CubePos cube_pos;
+    public CubeLocation cube_pos;
 	public CubeFaceNamesEnum face_id;
     public int face_type;
 
@@ -31,7 +31,7 @@ public final class LevelCube {
     public LevelCube() {
     }
 
-    public void init(int level_number, int face_type, CubeFaceNamesEnum face_id, CubePos cube_pos) {
+    public void init(int level_number, int face_type, CubeFaceNamesEnum face_id, CubeLocation cube_pos) {
         this.face_type = face_type;
         this.face_id = face_id;
         this.color = new Color(255 - level_number, 0, 0, 255);

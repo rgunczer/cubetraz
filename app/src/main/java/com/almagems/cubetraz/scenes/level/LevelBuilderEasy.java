@@ -1,4 +1,4 @@
-package com.almagems.cubetraz.builder;
+package com.almagems.cubetraz.scenes.level;
 
 import static com.almagems.cubetraz.game.Game.*;
 

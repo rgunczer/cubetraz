@@ -138,10 +138,10 @@ public final class Solvers extends Scene {
 
             case SolverDone:
                 if (SolverMenuItemsEnum.MenuItemSolve == m_action) {
-                    Game.level_init_data.init_action = LevelInitActionEnum.ShowSolution;
+                    Game.levelInitData.initAction = LevelInitActionEnum.ShowSolution;
                     Game.showScene(Scene_Level);
                 } else if (SolverMenuItemsEnum.MenuItemDismiss == m_action) {
-                    Game.level_init_data.init_action = LevelInitActionEnum.JustContinue;
+                    Game.levelInitData.initAction = LevelInitActionEnum.JustContinue;
                     Game.showScene(Scene_Level);
                 }
                 break;

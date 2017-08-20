@@ -129,7 +129,7 @@ public final class Statistics extends Scene {
         mTextMoves.setVSPace(0.8f);
         mTextTap.setVSPace(0.7f);
 
-        setup(Game.stat_init_data);
+        setup(Game.statInitData);
     }
 
     public void setup(StatInitData sid) {
@@ -138,9 +138,9 @@ public final class Statistics extends Scene {
         // texts
         mTextTitle.setVSPace(1.0f);
 
-        mTextTitle.init(sid.str_title);
+        mTextTitle.init(sid.title);
         mTextMiddle.init("MOVES");
-        mTextMoves.init(sid.str_moves);
+        mTextMoves.init(sid.moves);
         mTextTap.init("TAP TO CONTINUE");
 
         // pre calc y positions
@@ -559,7 +559,7 @@ public final class Statistics extends Scene {
     @Override
     public void onFingerUp(float x, float y, int finger_count) {
         if (State.StatShow == mState) {
-            Game.level_init_data.init_action = LevelInitActionEnum.JustContinue;
+            Game.levelInitData.initAction = LevelInitActionEnum.JustContinue;
             Game.showScene(Scene_Level);
         }
     }

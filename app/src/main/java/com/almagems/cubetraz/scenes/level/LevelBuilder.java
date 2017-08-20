@@ -1,12 +1,11 @@
-package com.almagems.cubetraz.builder;
+package com.almagems.cubetraz.scenes.level;
 
+import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.cubes.Cube;
-import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.cubes.MoverCube;
 import com.almagems.cubetraz.cubes.MovingCube;
-import com.almagems.cubetraz.scenes.level.Level;
 
 import java.util.ArrayList;
 
@@ -15,8 +14,8 @@ import static com.almagems.cubetraz.game.Game.*;
 public final class LevelBuilder {
         
     public static Level level;
-    public static final CubePos player = new CubePos();
-    public static final CubePos key = new CubePos();
+    public static final CubeLocation locationPlayer = new CubeLocation();
+    public static final CubeLocation locationKey = new CubeLocation();
 
     public static final ArrayList<MovingCube> movingCubes = new ArrayList<>();
     public static final ArrayList<MoverCube> moverCubes = new ArrayList<>();
@@ -90,7 +89,7 @@ public final class LevelBuilder {
         int len = deadCubes.size();
         for (int i = 0; i < len; ++i) {
             cube = deadCubes.get(i);
-            Game.setCubeTypeInvisible( cube.getCubePos() );
+            Game.setCubeTypeInvisible( cube.getLocation() );
             poolDeadCubes.add(cube);
         }
         deadCubes.clear();
@@ -100,19 +99,19 @@ public final class LevelBuilder {
         recycleMovingCubes();
 	    recycleMoverCubes();
 	    recycleDeadCubes();
-	    level.m_list_cubes_hint.clear();
+	    level.hintCubes.clear();
     }
 
     public static void setup(int arr[]) {
-        player.x = arr[0];
-        player.y = arr[1];
-        player.z = arr[2];
+        locationPlayer.x = arr[0];
+        locationPlayer.y = arr[1];
+        locationPlayer.z = arr[2];
     
-        key.x = arr[3];
-        key.y = arr[4];
-        key.z = arr[5];
+        locationKey.x = arr[3];
+        locationKey.y = arr[4];
+        locationKey.z = arr[5];
     
-        level.m_ad_level.clear();
+        level.appearDisappear.level.clear();
 
         Cube cube;
 	    int x, y, z;
@@ -127,25 +126,15 @@ public final class LevelBuilder {
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel;
 		    cube.setColor(Game.baseColor);
         
-            level.m_ad_level.addAppear(cube);
+            level.appearDisappear.level.addAppear(cube);
         }
     }
 
-    public static void setupSolution(int arr[]) {
-        int i;
-        int size = arr.length;
-        for (i = 0; i < MAX_SOLUTION_MOVES; ++i) {
-            level.m_ar_solution[i] = AxisMovement_No_Move;
-        }
-	
-        for (i = 0; i < size; ++i) {
-            level.m_ar_solution[i] = arr[i];
-        }
-	
-	    level.m_min_solution_steps = size;
+    static void setupSolution(int arr[]) {
+        level.solution.init(arr);
     }
 
-    public static void setupMovingCubes(int arr[]) {
+    static void setupMovingCubes(int arr[]) {
         MovingCube cube;
         int x, y, z, moveDir;
         for (int i = 0; i < arr.length; i+=4) {
@@ -154,7 +143,7 @@ public final class LevelBuilder {
             z = arr[i+2];
             moveDir = arr[i+3];
             cube = getNewMovingCube();
-            cube.init(new CubePos(x, y, z), moveDir);
+            cube.init(new CubeLocation(x, y, z), moveDir);
             movingCubes.add(cube);
         }
     }
@@ -163,7 +152,7 @@ public final class LevelBuilder {
 	    MoverCube cube;
 	    for (int i = 0; i < arr.length; i+=4) {
 		    cube = getNewMoverCube();
-		    cube.init(new CubePos(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
+		    cube.init(new CubeLocation(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
             moverCubes.add(cube);
 	    }
     }
@@ -172,7 +161,7 @@ public final class LevelBuilder {
 	    DeadCube cube;
 	    for (int i = 0; i < arr.length; i+=3) {
 		    cube = getNewDeadCube();
-		    cube.init(new CubePos(arr[i], arr[i+1], arr[i+2]));
+		    cube.init(new CubeLocation(arr[i], arr[i+1], arr[i+2]));
             deadCubes.add(cube);
 	    }
     }
@@ -181,7 +170,7 @@ public final class LevelBuilder {
 	    Cube cube;
 	    for (int i = 0; i < arr.length; i+=3) {
 		    cube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
-		    level.m_list_cubes_hint.add(cube);
+		    level.hintCubes.add(cube);
 	    }
     }
 

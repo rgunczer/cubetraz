@@ -1,7 +1,7 @@
 package com.almagems.cubetraz.scenes.menu;
 
 import com.almagems.cubetraz.cubes.Cube;
-import com.almagems.cubetraz.cubes.CubePos;
+import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.game.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
@@ -14,7 +14,7 @@ import static com.almagems.cubetraz.game.Game.*;
 
 public final class MenuCube {
     
-    private CubePos m_cube_hilite_offset;
+    private CubeLocation m_cube_hilite_offset;
     
     private boolean m_done;
     private float m_t;
@@ -34,32 +34,32 @@ public final class MenuCube {
 	public Color color;
 	public boolean visible;
     
-    public CubePos m_cube_pos = new CubePos();
-    public CubePos m_cube_pos_destination = new CubePos();
-    
-    // ctor    
+    public CubeLocation cubeLocation = new CubeLocation();
+    public CubeLocation m_cube_pos_destination = new CubeLocation();
+
+
     public MenuCube() {
         color = new Color();
         speed = 0.5f;
-        m_cube_hilite_offset = new CubePos(0,0,0);
+        m_cube_hilite_offset = new CubeLocation(0,0,0);
     }
 
-    public void init(CubePos cube_pos, Color color) {
+    public void init(CubeLocation location, Color color) {
         lst_cubes_to_hilite.clear();
         this.color.init(color);
 	    visible = true;
-        setCubePos(cube_pos.x, cube_pos.y, cube_pos.z);
+        setCubePos(location.x, location.y, location.z);
     }
 
     public void setCubePos(int x, int y, int z) {
 	    m_done = true;
-        m_cube_pos.x = x;
-        m_cube_pos.y = y;
-        m_cube_pos.z = z;
-        pos = Game.getCubePosAt(m_cube_pos);
+        cubeLocation.x = x;
+        cubeLocation.y = y;
+        cubeLocation.z = z;
+        pos = Game.getCubePosAt(cubeLocation);
     }
 
-    public void setHiliteOffset(CubePos offset) {
+    public void setHiliteOffset(CubeLocation offset) {
         m_cube_hilite_offset = offset;
     }
     
@@ -93,8 +93,8 @@ public final class MenuCube {
         }
 	}
 
-    public void calcMove(CubePos cube_pos, int type) {
-        CubePos prev = new CubePos();
+    public void calcMove(CubeLocation cube_pos, int type) {
+        CubeLocation prev = new CubeLocation();
         prev.init(cube_pos);
 	
         switch(type) {
@@ -177,11 +177,11 @@ public final class MenuCube {
 
     public void moveOnAxis(int type) {
         if (m_done) {
-            CubePos cube_pos = new CubePos();
-            cube_pos.init(m_cube_pos);
+            CubeLocation cube_pos = new CubeLocation();
+            cube_pos.init(cubeLocation);
             calcMove(cube_pos, type);
 
-            if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {
+            if (cubeLocation.x != cube_pos.x || cubeLocation.y != cube_pos.y || cubeLocation.z != cube_pos.z) {
                 Game.menu.dontHiliteMenuCube();
                 m_cube_pos_destination = cube_pos;
                 Vector pos_destination = Game.getCubePosAt(cube_pos);
@@ -225,10 +225,10 @@ public final class MenuCube {
                     switch (type) {
                         case AxisMovement_X_Plus: {
                             int y, z;
-                            y = m_cube_pos.y + m_cube_hilite_offset.y;
-                            z = m_cube_pos.z + m_cube_hilite_offset.z;
+                            y = cubeLocation.y + m_cube_hilite_offset.y;
+                            z = cubeLocation.z + m_cube_hilite_offset.z;
 
-                            for (int i = m_cube_pos.x; i <= m_cube_pos_destination.x; ++i) {
+                            for (int i = cubeLocation.x; i <= m_cube_pos_destination.x; ++i) {
                                 lst_cubes_to_hilite.add(Game.cubes[i][y][z]);
                             }
                         }
@@ -236,10 +236,10 @@ public final class MenuCube {
 
                         case AxisMovement_X_Minus: {
                             int y, z;
-                            y = m_cube_pos.y + m_cube_hilite_offset.y;
-                            z = m_cube_pos.z + m_cube_hilite_offset.z;
+                            y = cubeLocation.y + m_cube_hilite_offset.y;
+                            z = cubeLocation.z + m_cube_hilite_offset.z;
 
-                            for (int i = m_cube_pos.x; i >= m_cube_pos_destination.x; --i) {
+                            for (int i = cubeLocation.x; i >= m_cube_pos_destination.x; --i) {
                                 lst_cubes_to_hilite.add(Game.cubes[i][y][z]);
                             }
                         }
@@ -247,10 +247,10 @@ public final class MenuCube {
 
                         case AxisMovement_Y_Plus: {
                             int x, z;
-                            x = m_cube_pos.x + m_cube_hilite_offset.x;
-                            z = m_cube_pos.z + m_cube_hilite_offset.z;
+                            x = cubeLocation.x + m_cube_hilite_offset.x;
+                            z = cubeLocation.z + m_cube_hilite_offset.z;
 
-                            for (int i = m_cube_pos.y; i <= m_cube_pos_destination.y; ++i) {
+                            for (int i = cubeLocation.y; i <= m_cube_pos_destination.y; ++i) {
                                 lst_cubes_to_hilite.add(Game.cubes[x][i][z]);
                             }
                         }
@@ -258,10 +258,10 @@ public final class MenuCube {
 
                         case AxisMovement_Y_Minus: {
                             int x, z;
-                            x = m_cube_pos.x + m_cube_hilite_offset.x;
-                            z = m_cube_pos.z + m_cube_hilite_offset.z;
+                            x = cubeLocation.x + m_cube_hilite_offset.x;
+                            z = cubeLocation.z + m_cube_hilite_offset.z;
 
-                            for (int i = m_cube_pos.y; i >= m_cube_pos_destination.y; --i) {
+                            for (int i = cubeLocation.y; i >= m_cube_pos_destination.y; --i) {
                                 lst_cubes_to_hilite.add(Game.cubes[x][i][z]);
                             }
                         }
@@ -269,10 +269,10 @@ public final class MenuCube {
 
                         case AxisMovement_Z_Plus: {
                             int x, y;
-                            x = m_cube_pos.x + m_cube_hilite_offset.x;
-                            y = m_cube_pos.y + m_cube_hilite_offset.y;
+                            x = cubeLocation.x + m_cube_hilite_offset.x;
+                            y = cubeLocation.y + m_cube_hilite_offset.y;
 
-                            for (int i = m_cube_pos.z; i <= m_cube_pos_destination.z; ++i) {
+                            for (int i = cubeLocation.z; i <= m_cube_pos_destination.z; ++i) {
                                 lst_cubes_to_hilite.add(Game.cubes[x][y][i]);
                             }
                         }
@@ -280,10 +280,10 @@ public final class MenuCube {
 
                         case AxisMovement_Z_Minus: {
                             int x, y;
-                            x = m_cube_pos.x + m_cube_hilite_offset.x;
-                            y = m_cube_pos.y + m_cube_hilite_offset.y;
+                            x = cubeLocation.x + m_cube_hilite_offset.x;
+                            y = cubeLocation.y + m_cube_hilite_offset.y;
 
-                            for (int i = m_cube_pos.z; i >= m_cube_pos_destination.z; --i) {
+                            for (int i = cubeLocation.z; i >= m_cube_pos_destination.z; --i) {
                                 lst_cubes_to_hilite.add(Game.cubes[x][y][i]);
                             }
                         }

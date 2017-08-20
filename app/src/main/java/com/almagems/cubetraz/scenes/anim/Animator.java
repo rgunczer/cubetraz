@@ -1,7 +1,7 @@
 package com.almagems.cubetraz.scenes.anim;
 
 import com.almagems.cubetraz.graphics.Graphics;
-import com.almagems.cubetraz.utils.AppearDisappearListData;
+import com.almagems.cubetraz.scenes.level.AppearDisappearListData;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.Scene;
@@ -258,7 +258,7 @@ public final class Animator extends Scene {
 	    m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 9);
 		
 	    m_camera_from.init(Game.level.getCameraCurrent());
-	    m_camera_to.init(Game.level.m_camera_level);
+	    m_camera_to.init(Game.level.mCameraLevel);
 	    m_camera_current.init(m_camera_from);
 	
 	    m_pos_light_from.init(Game.level.getLightPositionCurrent());
@@ -346,7 +346,7 @@ public final class Animator extends Scene {
     }
 
     public void locateLevelCube() {
-	    int level_number = Game.level_init_data.level_number;
+	    int level_number = Game.levelInitData.levelNumber;
         int size = Game.ar_cubefacedata[Face_X_Plus].lst_level_cubes.size();
 	    LevelCube levelCube;
 	    for(int i = 0; i < size; ++i) {

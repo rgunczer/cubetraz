@@ -3,7 +3,6 @@ package com.almagems.cubetraz.scenes;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
-import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.game.Game;
@@ -44,13 +43,13 @@ public final class Outro extends Scene {
     private float m_t;
     private float mDegreePlayerCube;
 
-    private Vector mPosLightOutro;
-    private Vector mPosLightMenu;
-
-    private Vector mPosCubePlayer;
+    private Vector mPosLightOutro = new Vector();
+    private Vector mPosLightMenu = new Vector();
+    private Vector mPosCubePlayer = new Vector();
 
     private boolean mDrawStarfield;
     private float mCubeRotSpeed;
+    private float mCenterAlpha;
 
     private CubeRotation mCubeRotation = new CubeRotation();
 
@@ -58,8 +57,6 @@ public final class Outro extends Scene {
     private ArrayList<Cube> mCubesLevel = new ArrayList<>();
     private ArrayList<Cube> mCubesBaseAppear = new ArrayList<>();
     private ArrayList<Cube> mCubesBaseDisappear = new ArrayList<>();
-
-    private float mCenterAlpha;
 
     public void onFingerDown(float x, float y, int fingerCount) {}
     public void onFingerMove(float prevX, float prevY, float curX, float curY, int fingerCount) {}
@@ -95,20 +92,20 @@ public final class Outro extends Scene {
             mStarfield.update();
         }
 
-        mCameraOutro = Game.level.m_camera_level;
-        mCameraMenu = Game.menu.getCamera();
-        mCameraCurrent = mCameraOutro;
+        mCameraOutro.init(Game.level.mCameraLevel);
+        mCameraMenu.init(Game.menu.getCamera());
+        mCameraCurrent.init(mCameraOutro);
 
-        mPosLightOutro = Game.level.mPosLightCurrent;
-        mPosLightMenu = Game.menu.getLightPositon();
-        mPosLightCurrent = mPosLightOutro;
+        mPosLightOutro.init(Game.level.mPosLightCurrent);
+        mPosLightMenu.init(Game.menu.getLightPositon());
+        mPosLightCurrent.init(mPosLightOutro);
 
         mCubeRotation.degree = -45.0f;
         mCubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
 
         mDrawStarfield = false;
         mStarsAlpha = 0.0f;
-        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.alpha = mStarsAlpha * 255f;
 
         mCubeRotSpeed = 0.1f;
 
@@ -176,7 +173,7 @@ public final class Outro extends Scene {
             }
         }
 
-        mPosCubePlayer = Game.getCubePosAt(Game.level.mPlayerCube.getCubePos());
+        mPosCubePlayer.init(Game.getCubePosAt(Game.level.mPlayerCube.getLocation()));
 
         Game.graphics.setLightPosition(mPosLightCurrent);
     }
@@ -188,7 +185,9 @@ public final class Outro extends Scene {
         for (int i = 0; i < size; ++i) {
             cube = mCubesBase.get(i);
 
-            cube.velocity = new Vector((-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120), (-60 + Utils.rand.nextInt()%120));
+            cube.velocity.x = -60 + Utils.rand.nextInt()%120;
+            cube.velocity.y = -60 + Utils.rand.nextInt()%120;
+            cube.velocity.z = -60 + Utils.rand.nextInt()%120;
 
             if ( cube.velocity.x > 0.0f && cube.velocity.x <  30.0f ) cube.velocity.x = Utils.randInt(30, 50);
             if ( cube.velocity.x < 0.0f && cube.velocity.x > -30.0f ) cube.velocity.x = Utils.randInt(30, 50) * -1.0f;
@@ -296,13 +295,13 @@ public final class Outro extends Scene {
         if (mStarsAlpha > 1.0f) {
             mState = OutroStateEnum.OutroExplosion;
             mStarsAlpha = 1.0f;
-            mPosCubePlayer = Game.getCubePosAt(new CubePos(4, 4, 4));
+            mPosCubePlayer.init(Game.getCubePosAt(4, 4, 4));
             mDegreePlayerCube = 0.0f;
             setupExplosion();
             Game.audio.playMusic(MUSIC_VECTORS);
         }
 
-        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.alpha = mStarsAlpha * 255f;
         mStarfield.update();
     }
 
@@ -328,7 +327,7 @@ public final class Outro extends Scene {
             mCubeRotation.degree += 0.5f;
         }
 
-        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.alpha = mStarsAlpha * 255f;
         mStarfield.update();
     }
 
@@ -350,7 +349,7 @@ public final class Outro extends Scene {
             cube.update();
         }
 
-        mStarfield.alpha = mStarsAlpha * 255;
+        mStarfield.alpha = mStarsAlpha * 255f;
         mStarfield.update();
 
         if (mStarfield.speed > 1.2f && mCubeTrazAlpha == 0) {
@@ -454,6 +453,7 @@ public final class Outro extends Scene {
 
     public void render() {
         Graphics graphics = Game.graphics;
+        Color color = new Color();
 
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
@@ -470,8 +470,8 @@ public final class Outro extends Scene {
             glDepthMask(false);
             glEnable(GL_TEXTURE_2D);
 
-            Color color_dirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-            graphics.drawFullScreenTexture(Game.graphics.textureDirty, color_dirty);
+            color.init(255, 255, 255, (int)Game.dirtyAlpha);
+            graphics.drawFullScreenTexture(Game.graphics.textureDirty, color);
 
             glDepthMask(true);
             glEnable(GL_LIGHTING);

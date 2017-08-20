@@ -1,21 +1,16 @@
 package com.almagems.cubetraz.scenes.level;
 
+import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.scenes.Creator;
-import com.almagems.cubetraz.utils.AppearDisappearListData;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
-import com.almagems.cubetraz.cubes.CubePos;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
 import com.almagems.cubetraz.game.Game;
-import com.almagems.cubetraz.builder.LevelBuilder;
-import com.almagems.cubetraz.builder.LevelBuilderEasy;
-import com.almagems.cubetraz.builder.LevelBuilderHard;
-import com.almagems.cubetraz.builder.LevelBuilderNormal;
 import com.almagems.cubetraz.scenes.menu.MenuCube;
 import com.almagems.cubetraz.cubes.MoverCube;
 import com.almagems.cubetraz.cubes.MovingCube;
@@ -76,30 +71,28 @@ public final class Level extends Scene {
         SubAppearWaitAgain,
     }
 
-    private int m_tutor_index;
     private CompletedFaceNextActionEnum m_completed_face_next_action;
     private LevelNextActionEnum mNextAction;
-    private float m_timeout_undo;
-    private final ArrayList<UndoData> m_lst_undo = new ArrayList<>();
+    private float mTimeoutUndo;
+    private final ArrayList<UndoData> mUndoList = new ArrayList<>();
 
     public LevelStateEnum mState;
-    private LevelStateEnum m_state_to_restore;
+    private LevelStateEnum mStateToRestore;
 
     private SubAppearStateEnum m_appear_state;
 
-    private HUD mHud = new HUD();
+    private DeadAnim mDeadAnim = new DeadAnim();
+    private HUD mHud = new HUD(mDeadAnim);
 
-    private UserRotation m_user_rotation = new UserRotation();
+    AppearDisappear appearDisappear = new AppearDisappear();
+
+    private UserRotation mUserRotation = new UserRotation();
 
     private MenuCube m_menu_cube_hilite;
     private CubeFont m_font_hilite = new CubeFont();
+
     private float m_hilite_alpha;
-
     private float m_hilite_timeout;
-
-    public float dead_size;
-    public int dead_alpha;
-    private int dead_alpha_step;
 
     public ArrayList<Cube> m_list_cubes_level = new ArrayList<>();
     public ArrayList<Cube> m_list_cubes_wall_y_minus = new ArrayList<>();
@@ -108,24 +101,20 @@ public final class Level extends Scene {
     public ArrayList<Cube> m_list_cubes_edges = new ArrayList<>();
     public ArrayList<Cube> m_list_cubes_base = new ArrayList<>();
     public ArrayList<Cube> m_list_cubes_face = new ArrayList<>();
-    public ArrayList<Cube> m_list_cubes_hint = new ArrayList<>();
+    public ArrayList<Cube> hintCubes = new ArrayList<>();
 
-    private Cube[] m_ar_hint_cubes = new Cube[MAX_HINT_CUBES];
+    private Cube[] mHintCubes = new Cube[MAX_HINT_CUBES];
     private boolean m_show_hint_2nd;
     private int m_hint_index;
     private float m_hint_timeout;
 
-    public final AppearDisappearListData m_ad_level = new AppearDisappearListData();
-    public final AppearDisappearListData m_ad_base = new AppearDisappearListData();
-    public final AppearDisappearListData m_ad_face = new AppearDisappearListData();
-
-    public final Camera m_camera_level = new Camera();
-    public final Camera m_camera_level_completed = new Camera();
-    public final Camera m_camera_level_paused = new Camera();
+    public final Camera mCameraLevel = new Camera();
+    private final Camera mCameraLevelCompleted = new Camera();
+    private final Camera mCameraLevelPaused = new Camera();
 
     private float m_target_rotation_degree;
 
-    private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
+    private final EaseOutDivideInterpolation mInterpolator = new EaseOutDivideInterpolation();
 
     private boolean m_alter_view;
     private boolean m_reposition_view;
@@ -134,101 +123,77 @@ public final class Level extends Scene {
     private DifficultyEnum mDifficulty;
     private int mLevelNumber;
 
-    private int m_solution_pointer;
-    public int[] m_ar_solution = new int[MAX_SOLUTION_MOVES];
+    Solution solution = new Solution();
 
     private int mMovesCounter;
-    public int m_min_solution_steps;
-    private float m_timeout;
+    private float mTimeout;
 
-    private CubePos m_cube_pos_key = new CubePos();
+    private CubeLocation mLocationKeyCube = new CubeLocation();
 
 // CubeFonts
-    public CubeFont m_cubefont_up = new CubeFont();
-    public CubeFont m_cubefont_mid = new CubeFont();
-    public CubeFont m_cubefont_low = new CubeFont();
+    public CubeFont mCubefontUp = new CubeFont();
+    public CubeFont mCubefontMid = new CubeFont();
+    public CubeFont mCubefontLow = new CubeFont();
 
-    private final ArrayList<CubeFont> m_list_fonts_pool = new ArrayList<>();
     public final ArrayList<CubeFont> m_list_fonts = new ArrayList<>();
 
 // spec cubes
-    private final ArrayList<MovingCube> m_lst_moving_cubes = new ArrayList<>();
-    private final ArrayList<MoverCube> m_lst_mover_cubes = new ArrayList<>();
-    private final ArrayList<DeadCube> m_lst_dead_cubes = new ArrayList<>();
+    private final ArrayList<MovingCube> movingCubes = new ArrayList<>();
+    private final ArrayList<MoverCube> moverCubes = new ArrayList<>();
+    private final ArrayList<DeadCube> deadCubes = new ArrayList<>();
 
     private float m_fade_value;
 
-    private final CubeRotation m_cube_rotation_current = new CubeRotation();
-    private final CubeRotation m_cube_rotation = new CubeRotation();
+    private final CubeRotation mCubeRotation = new CubeRotation();
 
-    private MovingCube m_moving_cube;
-    private MoverCube m_mover_cube;
-    private DeadCube m_dead_cube;
+    private MovingCube mMovingCube;
+    private MoverCube mMoverCube;
+    private DeadCube mDeadCube;
 
-// MenuCubes
-    private MenuCube m_menu_cube_up;
-    private MenuCube m_menu_cube_mid;
-    private MenuCube m_menu_cube_low;
+    private LevelMenu mLevelMenu = new LevelMenu();
 
-    private boolean m_draw_menu_cubes;
+    private boolean mDrawMenuCubes;
 
     private float m_t;
 
     public PlayerCube mPlayerCube;
 
 
-    // ctor
     public Level() {
         mLevelNumber = 1;
         
         mPosLightCurrent = new Vector(3.0f, 5.0f, 20.0f);
         
-        m_camera_level.eye = new Vector(0.0f, 20.0f, 31.0f);
-        m_camera_level.target = new Vector(0.0f, -1.6f, 0.0f);
+        mCameraLevel.eye = new Vector(0.0f, 20.0f, 31.0f);
+        mCameraLevel.target = new Vector(0.0f, -1.6f, 0.0f);
 
-        m_camera_level_completed.eye = new Vector(0.0f, 5.0f, 34.0f);
-        m_camera_level_completed.target = new Vector(0.0f, -1.7f, 0.0f);
+        mCameraLevelCompleted.eye = new Vector(0.0f, 5.0f, 34.0f);
+        mCameraLevelCompleted.target = new Vector(0.0f, -1.7f, 0.0f);
 
-        m_camera_level_paused.eye = new Vector(0.0f, 5.0f, 34.0f);
-        m_camera_level_paused.target = new Vector(0.0f, -1.7f, 0.0f);
+        mCameraLevelPaused.eye = new Vector(0.0f, 5.0f, 34.0f);
+        mCameraLevelPaused.target = new Vector(0.0f, -1.7f, 0.0f);
 
         float d = 1.2f;
 
-        m_camera_level.eye.scaled(d);
+        mCameraLevel.eye.scaled(d);
 
-        m_camera_level_completed.eye.scaled(d);
-        m_camera_level_completed.target.scaled(d);
+        mCameraLevelCompleted.eye.scaled(d);
+        mCameraLevelCompleted.target.scaled(d);
 
-        m_camera_level_paused.eye.scaled(d);
-        m_camera_level_paused.target.scaled(d);
+        mCameraLevelPaused.eye.scaled(d);
+        mCameraLevelPaused.target.scaled(d);
 
         mPlayerCube = new PlayerCube();
-        mPlayerCube.init(new CubePos(4, 4, 4));
+        mPlayerCube.init(new CubeLocation(4, 4, 4));
 
-        m_menu_cube_up = new MenuCube();
-        m_menu_cube_up.init(new CubePos(0, 0, 0), new Color(0, 0, 200, 255));
-
-        m_menu_cube_mid = new MenuCube();
-        m_menu_cube_mid.init(new CubePos(0, 0, 0), new Color(0, 0, 150, 255));
-
-        m_menu_cube_low = new MenuCube();
-        m_menu_cube_low.init(new CubePos(0, 0, 0), new Color(0, 0, 100, 255));
+        mLevelMenu.init();
 
         m_reposition_view = false;
         m_show_hint_2nd = false;
     }
 
-    private MenuCube getMovingCubeFromColor(int color) {
-        switch (color) {
-            case 200: return m_menu_cube_up;
-            case 150: return m_menu_cube_mid;
-            case 100: return m_menu_cube_low;
-        }
-        return null;
-    }
-
-    public CubePos getKeyPos() {
-        return m_cube_pos_key;
+    public CubeLocation getKeyPos() {
+        return mLocationKeyCube;
     }
     public int getLevelNumber() {
         return mLevelNumber;
@@ -241,55 +206,54 @@ public final class Level extends Scene {
     public void init() {
         Game.dirtyAlpha = 60f;
 
-        m_moving_cube = null;
-        m_mover_cube = null;
-        m_dead_cube = null;
+        mMovingCube = null;
+        mMoverCube = null;
+        mDeadCube = null;
 
-        LevelInitData lid = Game.level_init_data;
+        LevelInitData levelInitData = Game.levelInitData;
 
         // uncomment to load alternative level
-        //Game.level_init_data.difficulty = DifficultyEnum.Easy;
-        //Game.level_init_data.level_number = 10;
+        Game.levelInitData.difficulty = DifficultyEnum.Hard;
+        Game.levelInitData.levelNumber = 49;
 
-        m_tutor_index = 0;
         mNextAction = LevelNextActionEnum.NoNextAction;
         
-        switch (lid.init_action) {
+        switch (levelInitData.initAction) {
             case FullInit: {
                 m_menu_cube_hilite = null;
                 m_show_hint_2nd = false;
 
                 m_hilite_timeout = 0.0f;
 
-                mDifficulty = lid.difficulty;
-                mLevelNumber = lid.level_number;
+                mDifficulty = levelInitData.difficulty;
+                mLevelNumber = levelInitData.levelNumber;
 
                 setupMusic();
 
-                CubePos zero = new CubePos(0, 0, 0);
+                CubeLocation zero = new CubeLocation(0, 0, 0);
                 mPlayerCube.init(zero);
-                m_cube_pos_key = zero;
+                mLocationKeyCube = zero;
 
-                m_lst_moving_cubes.clear();
-                m_lst_mover_cubes.clear();
-                m_lst_dead_cubes.clear();
+                movingCubes.clear();
+                moverCubes.clear();
+                deadCubes.clear();
 
                 mMovesCounter = 0;
-                m_lst_undo.clear();
+                mUndoList.clear();
 
                 mHud.set1stHint();
                 mHud.setTextMoves(mMovesCounter);
-                mHud.setTextUndo(m_lst_undo.size());
+                mHud.setTextUndo(mUndoList.size());
 
                 mIsFingerDown = false;
                 mIsSwipe = false;
 
-                m_cube_rotation.degree = -45.0f;
-                m_cube_rotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+                mCubeRotation.degree = -45.0f;
+                mCubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
 
-                m_user_rotation.reset();
+                mUserRotation.reset();
 
-                mCameraCurrent.init(m_camera_level);
+                mCameraCurrent.init(mCameraLevel);
 
                 m_list_cubes_level.clear();
                 m_list_cubes_wall_y_minus.clear();
@@ -298,7 +262,7 @@ public final class Level extends Scene {
                 m_list_cubes_edges.clear();
                 m_list_cubes_base.clear();
                 m_list_cubes_face.clear();
-                m_list_cubes_hint.clear();
+                hintCubes.clear();
 
                 mHud.init();
 
@@ -318,7 +282,7 @@ public final class Level extends Scene {
             case ShowSolution:
                 reset();
                 mState = LevelStateEnum.PrepareSolving;
-                m_timeout = 3.5f;
+                mTimeout = 3.5f;
                 break;
         }
 
@@ -329,45 +293,45 @@ public final class Level extends Scene {
         graphics.setLightPosition(mPosLightCurrent);
     }
 
-    public void getRatings() {
+    private void getRatings() {
         String sign = "-";
+        int minSolutionSteps = solution.getStepsCount();
+        StatInitData statInitData = Game.statInitData;
 
-        StatInitData sid = Game.stat_init_data;
-
-        if (mMovesCounter < m_min_solution_steps) {
+        if (mMovesCounter < minSolutionSteps) {
             sign = "<";
-            sid.str_title = "EXPERT";
-            sid.stars = 3;
+            statInitData.title = "EXPERT";
+            statInitData.stars = 3;
         }
 
-        if (mMovesCounter == m_min_solution_steps) {
+        if (mMovesCounter == minSolutionSteps) {
             sign = "=";
-            sid.str_title = "PERFECT";
-            sid.stars = 3;
+            statInitData.title = "PERFECT";
+            statInitData.stars = 3;
         }
 
-        if (mMovesCounter > m_min_solution_steps && mMovesCounter <= m_min_solution_steps + 1) {
+        if (mMovesCounter > minSolutionSteps && mMovesCounter <= minSolutionSteps + 1) {
             sign = ">";
-            sid.str_title = "EXCELLENT";
-            sid.stars = 3;
+            statInitData.title = "EXCELLENT";
+            statInitData.stars = 3;
         }
 
-        if (mMovesCounter > m_min_solution_steps + 1 && mMovesCounter <= m_min_solution_steps + 4) {
+        if (mMovesCounter > minSolutionSteps + 1 && mMovesCounter <= minSolutionSteps + 4) {
             sign = ">";
-            sid.str_title = "GREAT";
-            sid.stars = 2;
+            statInitData.title = "GREAT";
+            statInitData.stars = 2;
         }
 
-        if (mMovesCounter > m_min_solution_steps + 4) {
+        if (mMovesCounter > minSolutionSteps + 4) {
             sign = ">";
-            sid.str_title = "GOOD";
-            sid.stars = 1;
+            statInitData.title = "GOOD";
+            statInitData.stars = 1;
         }
 
-        sid.str_moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + m_min_solution_steps;
+        statInitData.moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + minSolutionSteps;
     }
     
-    public void showTutor(int index) {
+    private void showTutor(int index) {
         mState = LevelStateEnum.Tutorial;
         mHud.clearTutors();
 
@@ -387,12 +351,12 @@ public final class Level extends Scene {
         }
     }
     
-    public boolean isMovingCube(CubePos cube_pos, boolean set) {
+    public boolean isMovingCube(CubeLocation cube_pos, boolean set) {
         MovingCube movingCube;
-        int size = m_lst_moving_cubes.size();
+        int size = movingCubes.size();
         for (int i = 0; i < size; ++i) {
-            movingCube = m_lst_moving_cubes.get(i);
-            CubePos cp = movingCube.getCubePos();
+            movingCube = movingCubes.get(i);
+            CubeLocation cp = movingCube.getCubePos();
 
             if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                 if (set) {
@@ -404,16 +368,16 @@ public final class Level extends Scene {
         return false;
     }
 
-    public boolean isMoverCube(CubePos cube_pos, boolean set) {
+    public boolean isMoverCube(CubeLocation cube_pos, boolean set) {
         MoverCube moverCube;
-        int size = m_lst_mover_cubes.size();
+        int size = moverCubes.size();
         for(int i = 0; i < size; ++i) {
-            moverCube = m_lst_mover_cubes.get(i);
-            CubePos cp = moverCube.getCubePos();
+            moverCube = moverCubes.get(i);
+            CubeLocation cp = moverCube.getCubePos();
 
             if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                 if (set) {
-                    if (m_mover_cube != moverCube) { // bugfix! when player hits the mover cube from behind!
+                    if (mMoverCube != moverCube) { // bugfix! when locationPlayer hits the mover cube from behind!
                         mPlayerCube.setMoverCube(moverCube);
                     }
                 }
@@ -423,17 +387,17 @@ public final class Level extends Scene {
         return false;
     }
 
-    public boolean isDeadCube(CubePos cube_pos, boolean set) {
-        DeadCube deadCube;
-        CubePos cp;
-        int len = m_lst_dead_cubes.size();        
+    public boolean isDeadCube(CubeLocation cubeLocation, boolean set) {
+        DeadCube cube;
+        CubeLocation location;
+        int len = deadCubes.size();
         for(int i = 0; i < len; ++i) {
-            deadCube = m_lst_dead_cubes.get(i);
-            cp = deadCube.getCubePos();
+            cube = deadCubes.get(i);
+            location = cube.getLocation();
 
-            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+            if (location.x == cubeLocation.x && location.y == cubeLocation.y && location.z == cubeLocation.z) {
                 if (set) {
-                    mPlayerCube.setDeadCube(deadCube);
+                    mPlayerCube.setDeadCube(cube);
                 }
                 return true;
             }
@@ -441,19 +405,19 @@ public final class Level extends Scene {
         return false;
     }
 
-    public boolean isSpecCubeObstacle(CubePos cube_pos,
+    public boolean isSpecCubeObstacle(CubeLocation cube_pos,
                                       MovingCube ignore_moving_cube,
                                       MoverCube ignore_mover_cube,
                                       DeadCube ignore_dead_cube) {
-        CubePos cp;
+        CubeLocation cp;
         int size;
-        if (!m_lst_dead_cubes.isEmpty()) {
-            size = m_lst_dead_cubes.size();
+        if (!deadCubes.isEmpty()) {
+            size = deadCubes.size();
             DeadCube deadCube;
             for(int i = 0; i < size; ++i) {
-                deadCube = m_lst_dead_cubes.get(i);
+                deadCube = deadCubes.get(i);
                 if (deadCube != ignore_dead_cube) {
-                    cp = deadCube.getCubePos();
+                    cp = deadCube.getLocation();
                     if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                         return true;
                     }
@@ -461,11 +425,11 @@ public final class Level extends Scene {
             }
         }
 
-        if (!m_lst_mover_cubes.isEmpty()) {
-            size = m_lst_mover_cubes.size();
+        if (!moverCubes.isEmpty()) {
+            size = moverCubes.size();
             MoverCube moverCube;
             for(int i = 0; i < size; ++i) {
-                moverCube = m_lst_mover_cubes.get(i);
+                moverCube = moverCubes.get(i);
                 if (moverCube != ignore_mover_cube) {
                     cp = moverCube.getCubePos();
                     if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
@@ -475,11 +439,11 @@ public final class Level extends Scene {
             }
         }
 
-        if (!m_lst_moving_cubes.isEmpty()) {
-            size = m_lst_moving_cubes.size();
+        if (!movingCubes.isEmpty()) {
+            size = movingCubes.size();
             MovingCube movingCube;
             for(int i = 0; i < size; ++i) {
-                movingCube = m_lst_moving_cubes.get(i);
+                movingCube = movingCubes.get(i);
                 if (movingCube != ignore_moving_cube) {
                     cp = movingCube.getCubePos();
                     if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
@@ -491,7 +455,7 @@ public final class Level extends Scene {
         return false;
     }
 
-    public void setupMusic() {
+    private void setupMusic() {
         switch (mDifficulty) {
             case Easy:
                 if (mLevelNumber >= 1 && mLevelNumber <= 15) {
@@ -549,23 +513,23 @@ public final class Level extends Scene {
         }
     }
 
-    public void setupAppear() {
+    private void setupAppear() {
         mState = LevelStateEnum.Appear;
         m_appear_state = SubAppearStateEnum.SubAppearWait;
-        m_draw_menu_cubes = false;
+        mDrawMenuCubes = false;
         m_draw_texts = false;
-        m_timeout = 0.0f;
+        mTimeout = 0.0f;
         m_alter_view = false;
 
         if (Utils.rand.nextBoolean()) {
-            m_ad_level.setLevelAndDirection(0, 1);
+            appearDisappear.level.setLevelAndDirection(0, 1);
         } else {
-            m_ad_level.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+            appearDisappear.level.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
         }
-        m_cube_pos_key.reset();
+        mLocationKeyCube.reset();
     }
 
-    public void setupCubesForLevel() {
+    private void setupCubesForLevel() {
         m_list_cubes_wall_y_minus.clear();
         m_list_cubes_wall_x_minus.clear();
         m_list_cubes_wall_z_minus.clear();
@@ -649,45 +613,43 @@ public final class Level extends Scene {
         }
     }
 
-    public void setupDeadCube(DeadCube deadCube) {
+    private void setupDeadCube(DeadCube deadCube) {
         mState = LevelStateEnum.DeadAnim;
-        m_timeout = 1.5f;
+        mTimeout = 1.5f;
 
-        dead_size = 60.0f;
-        dead_alpha = 0;
-        dead_alpha_step = 4;
+        mDeadAnim.init();
 
-        m_dead_cube = deadCube;
-        m_dead_cube.hiLite();
+        mDeadCube = deadCube;
+        mDeadCube.hiLite();
     }
 
-    public void setupMoveCube(MovingCube movingCube) {
-        m_state_to_restore = mState;
+    private void setupMoveCube(MovingCube movingCube) {
+        mStateToRestore = mState;
         mState = LevelStateEnum.MovingCube;
-        m_timeout = 0.1f;
+        mTimeout = 0.1f;
 
-        m_moving_cube = movingCube;
-        m_moving_cube.move();
+        mMovingCube = movingCube;
+        mMovingCube.move();
     }
 
-    public void setupMoverCube(MoverCube moverCube) {
+    private void setupMoverCube(MoverCube moverCube) {
         int movement = moverCube.getMoveDir();
-        m_state_to_restore = mState;
+        mStateToRestore = mState;
         mState = LevelStateEnum.MovingPlayer;
-        m_timeout = 0.15f;
+        mTimeout = 0.15f;
 
-        m_mover_cube = moverCube;
-        m_mover_cube.hiLite();
+        mMoverCube = moverCube;
+        mMoverCube.hiLite();
 
         mPlayerCube.moveOnAxis(movement);
 
-        if (m_lst_undo.size() > 0) {
-            UndoData ud = m_lst_undo.get(m_lst_undo.size() - 1);
-            ud.moving_cube = mPlayerCube.m_moving_cube; //m_lst_moving_cubes.front();
+        if (mUndoList.size() > 0) {
+            UndoData ud = mUndoList.get(mUndoList.size() - 1);
+            ud.movingCube = mPlayerCube.movingCube; //movingCubes.front();
 
-            if (ud.moving_cube != null) {
-                ud.moving_cube_move_dir = ud.moving_cube.getMovement();
-                ud.moving_cube_pos = ud.moving_cube.getCubePos();
+            if (ud.movingCube != null) {
+                ud.movingCubeMoveDir = ud.movingCube.getMovement();
+                ud.movingCubeLocation = ud.movingCube.getCubePos();
             }
         }
     }
@@ -696,17 +658,17 @@ public final class Level extends Scene {
         mHud.setTextSolver(Game.options.getSolverCount());
     }
     
-    public void setAnimToCompleted() {
+    private void setAnimToCompleted() {
         mState = LevelStateEnum.AnimToCompleted;
 
-        m_draw_menu_cubes = true;
+        mDrawMenuCubes = true;
         m_draw_texts = true;
 
         m_list_cubes_base.clear();
         m_list_cubes_face.clear();
 
-        m_ad_face.clear();
-        m_ad_base.clear();
+        appearDisappear.face.clear();
+        appearDisappear.base.clear();
 
         Cube cube;
 
@@ -726,45 +688,45 @@ public final class Level extends Scene {
             cube = Game.cubes[8][i][0];
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
             cube.setColor( Game.baseColor );
-            m_ad_face.addAppear(cube);
+            appearDisappear.base.addAppear(cube);
         }
 
         for (int i = 0; i < 7; ++i) {
             cube = Game.cubes[0][i][1];
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
             cube.setColor( Game.baseColor );
-            m_ad_base.addAppear(cube);
+            appearDisappear.base.addAppear(cube);
         }
 
         for (int i = 0; i < MAX_CUBE_COUNT; ++i) {
             cube = Game.cubes[i][0][1];
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
             cube.setColor( Game.baseColor );
-            m_ad_base.addAppear(cube);
+            appearDisappear.base.addAppear(cube);
         }
 
         cube = Game.cubes[7][0][0];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
         cube = Game.cubes[7][2][0];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
         cube = Game.cubes[7][4][0];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
         cube = Game.cubes[7][6][0];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor( Game.faceColor );
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
-        m_ad_face.setLevelAndDirection(0, 1);
-        m_ad_base.setLevelAndDirection(0, 1);
+        appearDisappear.face.setLevelAndDirection(0, 1);
+        appearDisappear.base.setLevelAndDirection(0, 1);
 
         m_t = 0.0f;
 
@@ -784,41 +746,28 @@ public final class Level extends Scene {
         }
 
         Color color = new Color(20, 0, 0, 255);
-        m_cubefont_up.setColor(color);
-        m_cubefont_mid.setColor(color);
-        m_cubefont_low.setColor(color);
+        mCubefontUp.setColor(color);
+        mCubefontMid.setColor(color);
+        mCubefontLow.setColor(color);
 
-        m_target_rotation_degree = m_cube_rotation.degree - 90.0f - 45.0f;
+        m_target_rotation_degree = mCubeRotation.degree - 90.0f - 45.0f;
 
-        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
+        mInterpolator.setup(mCubeRotation.degree, m_target_rotation_degree, 5.0f);
 
-        m_menu_cube_up.setCubePos(0, 5, 0);
-        m_menu_cube_mid.setCubePos(0, 3, 0);
-        m_menu_cube_low.setCubePos(0, 1, 0);
-
-        CubePos offset = new CubePos(0,0,1);
-        m_menu_cube_up.setHiliteOffset(offset);
-        m_menu_cube_mid.setHiliteOffset(offset);
-        m_menu_cube_low.setHiliteOffset(offset);
-
-        m_menu_cube_up.moveOnAxis(AxisMovement_X_Plus);
-        m_menu_cube_mid.moveOnAxis(AxisMovement_X_Plus);
-        m_menu_cube_low.moveOnAxis(AxisMovement_X_Plus);
+        mLevelMenu.setupForAnimCompleted();
     }
 
-    public void updateAnimToCompleted() {
-        m_menu_cube_up.update();
-        m_menu_cube_mid.update();
-        m_menu_cube_low.update();
+    private void updateAnimToCompleted() {
+        mLevelMenu.update();
 
         Cube cube;
 
-        cube = m_ad_base.getCubeFromAppearList();
+        cube = appearDisappear.base.getCubeFromAppearList();
         if (cube != null) {
             m_list_cubes_base.add(cube);
         }
 
-        cube = m_ad_face.getCubeFromAppearList();
+        cube = appearDisappear.face.getCubeFromAppearList();
         if (cube != null) {
             m_list_cubes_face.add(cube);
         }
@@ -828,42 +777,40 @@ public final class Level extends Scene {
             m_t = 1f;
         }
 
-        Utils.lerpCamera(m_camera_level, m_camera_level_completed, m_t, mCameraCurrent);
+        Utils.lerpCamera(mCameraLevel, mCameraLevelCompleted, m_t, mCameraCurrent);
 
-        m_interpolator.interpolate();
-        m_cube_rotation.degree = m_interpolator.getValue();
+        mInterpolator.interpolate();
+        mCubeRotation.degree = mInterpolator.getValue();
 
-        float diff = Math.abs(m_target_rotation_degree) - Math.abs(m_interpolator.getValue());
+        float diff = Math.abs(m_target_rotation_degree) - Math.abs(mInterpolator.getValue());
 
-        if (diff < 0.1f && m_ad_base.lst_appear.isEmpty() && m_ad_face.lst_appear.isEmpty() && (Math.abs(1.0f - m_t) < EPSILON)) {
-            m_cube_rotation.degree = m_target_rotation_degree;
+        if (diff < 0.1f && appearDisappear.base.lst_appear.isEmpty() && appearDisappear.face.lst_appear.isEmpty() && (Math.abs(1.0f - m_t) < EPSILON)) {
+            mCubeRotation.degree = m_target_rotation_degree;
             mState = LevelStateEnum.Completed;
 
             Color color = new Color(100, 0, 0, 230);
 
-            m_cubefont_up.setColor(color);
-            m_cubefont_mid.setColor(color);
-            m_cubefont_low.setColor(color);
+            mCubefontUp.setColor(color);
+            mCubefontMid.setColor(color);
+            mCubefontLow.setColor(color);
 
             m_show_hint_2nd = false;
 
             for (int i = 0; i < MAX_HINT_CUBES; ++i) {
-                m_ar_hint_cubes[i] = null;
+                mHintCubes[i] = null;
             }
         }
     }
 
-    public void updateCompleted() {
-        m_menu_cube_up.update();
-        m_menu_cube_mid.update();
-        m_menu_cube_low.update();
+    private void updateCompleted() {
+        mLevelMenu.update();
 
-        m_cubefont_up.warmByFactor(60);
-        m_cubefont_mid.warmByFactor(60);
-        m_cubefont_low.warmByFactor(60);
+        mCubefontUp.warmByFactor(60);
+        mCubefontMid.warmByFactor(60);
+        mCubefontLow.warmByFactor(60);
 
-        if (m_menu_cube_up.isDone()) { // next        
-            if (0 == m_menu_cube_up.m_cube_pos.x) {
+        if (mLevelMenu.cubeUp.isDone()) { // next
+            if (0 == mLevelMenu.cubeUp.cubeLocation.x) {
                 switch (m_completed_face_next_action) {
                     case Next:
                         ++mLevelNumber;
@@ -903,58 +850,58 @@ public final class Level extends Scene {
             }
         }
 
-        if (m_menu_cube_mid.isDone()) { // replay        
-            if (m_menu_cube_mid.m_cube_pos.x == 0) {
+        if (mLevelMenu.cubeMid.isDone()) { // replay
+            if (mLevelMenu.cubeMid.cubeLocation.x == 0) {
                 reset();
                 setAnimFromCompleted();
             }
         }
 
-        if (m_menu_cube_low.isDone()) { // quit        
-            if (m_menu_cube_low.m_cube_pos.x == 0) {
+        if (mLevelMenu.cubeLow.isDone()) { // quit
+            if (mLevelMenu.cubeLow.cubeLocation.x == 0) {
                 eventQuit();
             }
         }
     }
 
-    public void setAnimFromCompleted() {
+    private void setAnimFromCompleted() {
         mState = LevelStateEnum.AnimFromCompleted;
         m_t = 0.0f;
         m_target_rotation_degree = -45.0f;
 
-        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 6.0f);
+        mInterpolator.setup(mCubeRotation.degree, m_target_rotation_degree, 6.0f);
 
-        m_ad_base.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
-        m_ad_face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        appearDisappear.base.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        appearDisappear.face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
     }
 
-    public void updateAnimFromCompleted() {
+    private void updateAnimFromCompleted() {
         m_t += 0.04f;
         if (m_t > 1f) {
             m_t = 1f;
         }
 
-        Utils.lerpCamera(m_camera_level_completed, m_camera_level, m_t, mCameraCurrent);
+        Utils.lerpCamera(mCameraLevelCompleted, mCameraLevel, m_t, mCameraCurrent);
 
         Cube cube;
 
-        cube = m_ad_base.getCubeFromDisappearList();
+        cube = appearDisappear.base.getCubeFromDisappearList();
         if (cube != null) {
             m_list_cubes_base.remove(cube);
         }
 
-        cube = m_ad_face.getCubeFromDisappearList();
+        cube = appearDisappear.face.getCubeFromDisappearList();
         if (cube != null) {
             m_list_cubes_face.remove(cube);
         }
 
-        m_interpolator.interpolate();
-        m_cube_rotation.degree = m_interpolator.getValue();
+        mInterpolator.interpolate();
+        mCubeRotation.degree = mInterpolator.getValue();
 
-        float diff = Math.abs(m_cube_rotation.degree) - Math.abs(m_target_rotation_degree);
+        float diff = Math.abs(mCubeRotation.degree) - Math.abs(m_target_rotation_degree);
 
-        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.isEmpty() && m_ad_base.lst_disappear.isEmpty()) {
-            m_cube_rotation.degree = m_target_rotation_degree;
+        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && appearDisappear.face.lst_disappear.isEmpty() && appearDisappear.base.lst_disappear.isEmpty()) {
+            mCubeRotation.degree = m_target_rotation_degree;
 
             // TODO: later
             if (DifficultyEnum.Hard == mDifficulty && 61 == mLevelNumber) {
@@ -966,14 +913,14 @@ public final class Level extends Scene {
         }
     }
     
-    public void setAnimToPaused() {
+    private void setAnimToPaused() {
         mState = LevelStateEnum.AnimToPaused;
 
-        m_draw_menu_cubes = true;
+        mDrawMenuCubes = true;
         m_draw_texts = true;
 
-        m_target_rotation_degree = m_cube_rotation.degree + 90.0f + 45.0f;
-        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 5.0f);
+        m_target_rotation_degree = mCubeRotation.degree + 90.0f + 45.0f;
+        mInterpolator.setup(mCubeRotation.degree, m_target_rotation_degree, 5.0f);
         m_t = 0.0f;
 
         Creator.createTextsLevelPausedFace(this);
@@ -986,15 +933,15 @@ public final class Level extends Scene {
         }
 
         Color color = new Color(20, 0, 0, 20);
-        m_cubefont_up.setColor(color);
-        m_cubefont_mid.setColor(color);
-        m_cubefont_low.setColor(color);
+        mCubefontUp.setColor(color);
+        mCubefontMid.setColor(color);
+        mCubefontLow.setColor(color);
 
         m_list_cubes_base.clear();
         m_list_cubes_face.clear();
 
-        m_ad_face.clear();
-        m_ad_base.clear();
+        appearDisappear.face.clear();
+        appearDisappear.base.clear();
 
         Cube cube;
 
@@ -1013,71 +960,58 @@ public final class Level extends Scene {
             cube = Game.cubes[0][i][0];
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
             cube.setColor(Game.faceColor);
-            m_ad_face.addAppear(cube);
+            appearDisappear.face.addAppear(cube);
 
             cube = Game.cubes[1][i][0];
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
             cube.setColor( Game.baseColor );
-            m_ad_base.addAppear(cube);
+            appearDisappear.base.addAppear(cube);
         }
 
         for (int i = 0; i < MAX_CUBE_COUNT; ++i) {
             cube = Game.cubes[1][0][i];
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
             cube.setColor( Game.baseColor );
-            m_ad_base.addAppear(cube);
+            appearDisappear.base.addAppear(cube);
         }
 
         cube = Game.cubes[0][0][1];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
         cube = Game.cubes[0][2][1];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
         cube = Game.cubes[0][4][1];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
         cube = Game.cubes[0][6][1];
         cube.type = CubeTypeEnum.CubeIsVisibleAndObstacle;
         cube.setColor(Game.faceColor);
-        m_ad_face.addAppear(cube);
+        appearDisappear.face.addAppear(cube);
 
-        m_ad_face.setLevelAndDirection(0, 1);
-        m_ad_base.setLevelAndDirection(0, 1);
+        appearDisappear.face.setLevelAndDirection(0, 1);
+        appearDisappear.base.setLevelAndDirection(0, 1);
 
-        m_menu_cube_up.setCubePos(0, 5, 8);
-        m_menu_cube_mid.setCubePos(0, 3, 8);
-        m_menu_cube_low.setCubePos(0, 1, 8);
-
-        CubePos offset = new CubePos(1, 0, 0);
-        m_menu_cube_up.setHiliteOffset(offset);
-        m_menu_cube_mid.setHiliteOffset(offset);
-        m_menu_cube_low.setHiliteOffset(offset);
-
-        m_menu_cube_up.moveOnAxis(AxisMovement_Z_Minus);
-        m_menu_cube_mid.moveOnAxis(AxisMovement_Z_Minus);
-        m_menu_cube_low.moveOnAxis(AxisMovement_Z_Minus);
+        mLevelMenu.setupForAnimPaused();
     }
 
     private void updateAnimToPaused() {
-        m_menu_cube_up.update();
-        m_menu_cube_mid.update();
-        m_menu_cube_low.update();
+        mLevelMenu.update();
 
         Cube cube;
 
-        cube = m_ad_base.getCubeFromAppearList();
+        cube = appearDisappear.base.getCubeFromAppearList();
         if (cube != null) {
             m_list_cubes_base.add(cube);
         }
 
-        cube = m_ad_face.getCubeFromAppearList();
+        cube = appearDisappear.face.getCubeFromAppearList();
         if (cube != null) {
             m_list_cubes_face.add(cube);
         }
@@ -1087,102 +1021,100 @@ public final class Level extends Scene {
             m_t = 1f;
         }
 
-        Utils.lerpCamera(m_camera_level, m_camera_level_paused, m_t, mCameraCurrent);
+        Utils.lerpCamera(mCameraLevel, mCameraLevelPaused, m_t, mCameraCurrent);
 
-        m_interpolator.interpolate();
-        m_cube_rotation.degree = m_interpolator.getValue();
+        mInterpolator.interpolate();
+        mCubeRotation.degree = mInterpolator.getValue();
 
-        float diff = Math.abs(m_interpolator.getValue()) - Math.abs(m_target_rotation_degree);
+        float diff = Math.abs(mInterpolator.getValue()) - Math.abs(m_target_rotation_degree);
         diff = Math.abs(diff);
 
-        if (diff < 0.1f && ((1.0f - m_t) < EPSILON_SMALL) && m_ad_face.lst_appear.isEmpty() && m_ad_base.lst_appear.isEmpty() ) {
-            m_cube_rotation.degree = m_target_rotation_degree;
+        if (diff < 0.1f && ((1.0f - m_t) < EPSILON_SMALL) && appearDisappear.face.lst_appear.isEmpty() && appearDisappear.base.lst_appear.isEmpty() ) {
+            mCubeRotation.degree = m_target_rotation_degree;
             mState = LevelStateEnum.Paused;
 
             Color color = new Color(100, 0, 0, 230);
-            m_cubefont_up.setColor(color);
-            m_cubefont_mid.setColor(color);
-            m_cubefont_low.setColor(color);
+            mCubefontUp.setColor(color);
+            mCubefontMid.setColor(color);
+            mCubefontLow.setColor(color);
 
             m_show_hint_2nd = false;
 
             for (int i = 0; i < MAX_HINT_CUBES; ++i) {
-                m_ar_hint_cubes[i] = null;
+                mHintCubes[i] = null;
             }
         }
     }
 
-    public void updatePaused() {
-        m_menu_cube_up.update();
-        m_menu_cube_mid.update();
-        m_menu_cube_low.update();
+    private void updatePaused() {
+        mLevelMenu.update();
 
-        m_cubefont_up.warmByFactor(60);
-        m_cubefont_mid.warmByFactor(60);
-        m_cubefont_low.warmByFactor(60);
+        mCubefontUp.warmByFactor(60);
+        mCubefontMid.warmByFactor(60);
+        mCubefontLow.warmByFactor(60);
 
-        if (m_menu_cube_up.isDone()) { // back
-            if (m_menu_cube_up.m_cube_pos.z == 8) {
+        if (mLevelMenu.cubeUp.isDone()) { // back
+            if (mLevelMenu.cubeUp.cubeLocation.z == 8) {
                 setAnimFromPaused();
             }
         }
 
-        if (m_menu_cube_mid.isDone()) { // reset
-            if (m_menu_cube_mid.m_cube_pos.z == 8) {
+        if (mLevelMenu.cubeMid.isDone()) { // reset
+            if (mLevelMenu.cubeMid.cubeLocation.z == 8) {
                 reset();
                 setAnimFromPaused();
             }
         }
 
-        if (m_menu_cube_low.isDone()) { // quit
-            if (m_menu_cube_low.m_cube_pos.z == 8) {
-                m_menu_cube_low.lst_cubes_to_hilite.clear();
+        if (mLevelMenu.cubeLow.isDone()) { // quit
+            if (mLevelMenu.cubeLow.cubeLocation.z == 8) {
+                mLevelMenu.cubeLow.lst_cubes_to_hilite.clear();
                 eventQuit();
             }
         }
     }
 
-    public void setAnimFromPaused() {
+    private void setAnimFromPaused() {
         mHud.setupAppear();
-        m_target_rotation_degree = m_cube_rotation.degree - 90.0f - 45.0f;
-        m_interpolator.setup(m_cube_rotation.degree, m_target_rotation_degree, 6.0f);
+        m_target_rotation_degree = mCubeRotation.degree - 90.0f - 45.0f;
+        mInterpolator.setup(mCubeRotation.degree, m_target_rotation_degree, 6.0f);
         m_t = 0.0f;
         mState = LevelStateEnum.AnimFromPaused;
 
-        m_ad_base.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
-        m_ad_face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        appearDisappear.base.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+        appearDisappear.face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
     }
 
-    public void updateAnimFromPaused() {
+    private void updateAnimFromPaused() {
         m_t += 0.04f;
         if (m_t > 1f) {
             m_t = 1f;
         }
 
-        Utils.lerpCamera(m_camera_level_paused, m_camera_level, m_t, mCameraCurrent);
+        Utils.lerpCamera(mCameraLevelPaused, mCameraLevel, m_t, mCameraCurrent);
 
         Cube cube;
 
-        cube = m_ad_base.getCubeFromDisappearList();
+        cube = appearDisappear.base.getCubeFromDisappearList();
         if (cube != null) {
             m_list_cubes_base.remove(cube);
         }
 
-        cube = m_ad_face.getCubeFromDisappearList();
+        cube = appearDisappear.face.getCubeFromDisappearList();
         if (cube != null) {
             m_list_cubes_face.remove(cube);
         }
 
-        m_interpolator.interpolate();
-        m_cube_rotation.degree = m_interpolator.getValue();
+        mInterpolator.interpolate();
+        mCubeRotation.degree = mInterpolator.getValue();
 
         // 90 <. - 45
-        float diff = Math.abs( Math.abs(m_target_rotation_degree) - Math.abs(m_interpolator.getValue()) );
+        float diff = Math.abs( Math.abs(m_target_rotation_degree) - Math.abs(mInterpolator.getValue()) );
 
-        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && m_ad_face.lst_disappear.isEmpty() && m_ad_base.lst_disappear.isEmpty() ) {
-            m_cube_rotation.degree = m_target_rotation_degree;
+        if (diff < 0.1f && ((1.0f - m_t) < EPSILON) && appearDisappear.face.lst_disappear.isEmpty() && appearDisappear.base.lst_disappear.isEmpty() ) {
+            mCubeRotation.degree = m_target_rotation_degree;
             mState = LevelStateEnum.Playing;
-            m_draw_menu_cubes = false;
+            mDrawMenuCubes = false;
             m_draw_texts = false;
         }
     }
@@ -1221,10 +1153,10 @@ public final class Level extends Scene {
             if (m_t >= 1.0f) {
                 m_t = 1.0f;
                 m_reposition_view = false;
-                m_user_rotation.reset();
+                mUserRotation.reset();
             } else {
-                m_user_rotation.current.x = Utils.lerp(m_user_rotation.from.x, 0.0f, m_t);
-                m_user_rotation.current.y = Utils.lerp(m_user_rotation.from.y, 0.0f, m_t);
+                mUserRotation.current.x = Utils.lerp(mUserRotation.from.x, 0.0f, m_t);
+                mUserRotation.current.y = Utils.lerp(mUserRotation.from.y, 0.0f, m_t);
             }
         }
 
@@ -1258,7 +1190,7 @@ public final class Level extends Scene {
 
             if (m_hint_timeout < 0.0f) {
                 m_hint_timeout = 0.2f;
-                Cube cube = m_ar_hint_cubes[m_hint_index];
+                Cube cube = mHintCubes[m_hint_index];
                 if (cube != null) {
                     Color col = new Color(255, 0, 0, 255);
 
@@ -1267,11 +1199,11 @@ public final class Level extends Scene {
 
                     // locate cube among moving cubes
                     MovingCube movingCube;
-                    int size = m_lst_moving_cubes.size();
+                    int size = movingCubes.size();
                     for(int i = 0; i < size; ++i) {
-                        movingCube = m_lst_moving_cubes.get(i);
-                        CubePos cube_pos = new CubePos(cube.x, cube.y, cube.z);
-                        CubePos moving_cube_pos = movingCube.getCubePos();
+                        movingCube = movingCubes.get(i);
+                        CubeLocation cube_pos = new CubeLocation(cube.x, cube.y, cube.z);
+                        CubeLocation moving_cube_pos = movingCube.getCubePos();
 
                         if (moving_cube_pos.x == cube_pos.x && moving_cube_pos.y == cube_pos.y && moving_cube_pos.z == cube_pos.z) {
                             movingCube.setCurrentColor(col);
@@ -1284,30 +1216,30 @@ public final class Level extends Scene {
         }
     }
 
-    public void warmCubes() {
+    private void warmCubes() {
         m_hilite_timeout -= 0.01f;
 
         if (m_hilite_timeout < 0.0f) {
             m_hilite_timeout = 0.05f;
             Color color = new Color(99, 99, 99, 255);
 
-            if (!m_menu_cube_up.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = m_menu_cube_up.lst_cubes_to_hilite.get(0);
-                m_menu_cube_up.lst_cubes_to_hilite.remove(p);
+            if (!mLevelMenu.cubeUp.lst_cubes_to_hilite.isEmpty()) {
+                Cube p = mLevelMenu.cubeUp.lst_cubes_to_hilite.get(0);
+                mLevelMenu.cubeUp.lst_cubes_to_hilite.remove(p);
 
                 p.colorCurrent.init(color);
             }
 
-            if (!m_menu_cube_mid.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = m_menu_cube_mid.lst_cubes_to_hilite.get(0);
-                m_menu_cube_mid.lst_cubes_to_hilite.remove(p);
+            if (!mLevelMenu.cubeMid.lst_cubes_to_hilite.isEmpty()) {
+                Cube p = mLevelMenu.cubeMid.lst_cubes_to_hilite.get(0);
+                mLevelMenu.cubeMid.lst_cubes_to_hilite.remove(p);
 
                 p.colorCurrent.init(color);
             }
 
-            if (!m_menu_cube_low.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = m_menu_cube_low.lst_cubes_to_hilite.get(0);
-                m_menu_cube_low.lst_cubes_to_hilite.remove(p);
+            if (!mLevelMenu.cubeLow.lst_cubes_to_hilite.isEmpty()) {
+                Cube p = mLevelMenu.cubeLow.lst_cubes_to_hilite.get(0);
+                mLevelMenu.cubeLow.lst_cubes_to_hilite.remove(p);
 
                 p.colorCurrent.init(color);
             }
@@ -1352,110 +1284,104 @@ public final class Level extends Scene {
             cube.warmByFactor(WARM_FACTOR);
         }
 
-        size = m_lst_moving_cubes.size();
+        size = movingCubes.size();
         MovingCube movingCube;
         for (int i = 0; i < size; ++i) {
-            movingCube = m_lst_moving_cubes.get(i);
+            movingCube = movingCubes.get(i);
             movingCube.warmByFactor(WARM_FACTOR);
         }
     }
 
-    public void updateDeadAnim() {
-        m_timeout -= 0.01f;
-        dead_size += 4.0f;
-        dead_alpha += dead_alpha_step;
+    private void updateDeadAnim() {
+        mTimeout -= 0.01f;
+        mDeadAnim.update();
 
-        if (dead_alpha_step > 0) {
-            if (dead_alpha > 130)
-                dead_alpha_step = -3;
-        } else {
-            if (dead_alpha < 0) {
-                reset();
-                mState = LevelStateEnum.Playing;
-                m_dead_cube = null;
-            }
+        if (mDeadAnim.isDone()) {
+            reset();
+            mState = LevelStateEnum.Playing;
+            mDeadCube = null;
         }
     }
 
-    public void updateMovingCube() {
-        m_timeout -= 0.01f;
+    private void updateMovingCube() {
+        mTimeout -= 0.01f;
 
-        if (m_timeout < 0.0f) {
-            m_moving_cube.update();
+        if (mTimeout < 0.0f) {
+            mMovingCube.update();
 
-            if (m_moving_cube.isDone()) {
-                mState = m_state_to_restore;
-                m_moving_cube = null;
+            if (mMovingCube.isDone()) {
+                mState = mStateToRestore;
+                mMovingCube = null;
 
-                if (LevelStateEnum.Solving == m_state_to_restore) {
-                    m_timeout = 1.0f;
+                if (LevelStateEnum.Solving == mStateToRestore) {
+                    mTimeout = 1.0f;
                 }
             }
         }
     }
 
-    public void updateMovingPlayer() {
-        m_timeout -= 0.01f;
+    private void updateMovingPlayer() {
+        mTimeout -= 0.01f;
 
-        if (m_timeout < 0.0f) {
+        if (mTimeout < 0.0f) {
             mPlayerCube.update();
 
             if (mPlayerCube.isDone()) {
-                if (m_mover_cube != null) {
-                    m_mover_cube.noHiLite();
-                    m_mover_cube = null;
+                if (mMoverCube != null) {
+                    mMoverCube.noHiLite();
+                    mMoverCube = null;
                 }
 
-                if (m_moving_cube != null) {
-                    m_moving_cube.noHiLite();
-                    m_moving_cube = null;
+                if (mMovingCube != null) {
+                    mMovingCube.noHiLite();
+                    mMovingCube = null;
                 }
 
-                if (m_dead_cube != null) {
-                    m_dead_cube.noHilite();
-                    m_dead_cube = null;
+                if (mDeadCube != null) {
+                    mDeadCube.noHilite();
+                    mDeadCube = null;
                 }
 
                 Game.audio.playSound(SOUND_CUBE_HIT);
 
-                mState = m_state_to_restore;
+                mState = mStateToRestore;
 
-                if (LevelStateEnum.Solving == m_state_to_restore) {
-                    m_timeout = 1.0f;
+                if (LevelStateEnum.Solving == mStateToRestore) {
+                    mTimeout = 1.0f;
                 }
 
-                CubePos player = mPlayerCube.getCubePos();
-                CubePos key = m_cube_pos_key;
+                CubeLocation player = mPlayerCube.getLocation();
+                CubeLocation key = mLocationKeyCube;
 
                 if (player.x == key.x && player.y == key.y && player.z == key.z) {
                     Game.levelComplete();
                 } else {
-                    if (mPlayerCube.m_dead_cube != null) {
-                        setupDeadCube(mPlayerCube.m_dead_cube);
-                    } else if (mPlayerCube.m_moving_cube != null) {
-                        setupMoveCube(mPlayerCube.m_moving_cube);
-                    } else if (mPlayerCube.m_mover_cube != null) {
-                        setupMoverCube(mPlayerCube.m_mover_cube);
+                    if (mPlayerCube.deadCube != null) {
+                        setupDeadCube(mPlayerCube.deadCube);
+                    } else if (mPlayerCube.movingCube != null) {
+                        setupMoveCube(mPlayerCube.movingCube);
+                    } else if (mPlayerCube.moverCube != null) {
+                        setupMoverCube(mPlayerCube.moverCube);
                     }
                 }
             }
         }
     }
 
-    public void updateSolving() {
-        m_timeout -= 0.01f;
+    private void updateSolving() {
+        mTimeout -= 0.02f;
 
-        if (m_timeout <= 0.0f) {
-            m_timeout = 1.0f;
+        if (mTimeout <= 0.0f) {
+            mTimeout = 1.0f;
 
             if (mPlayerCube.isDone()) {
-                int dir = m_ar_solution[m_solution_pointer++];
+                int dir = solution.getStep(); //m_ar_solution[m_solution_pointer++];
                 boolean success = mPlayerCube.moveOnAxis(dir);
 
                 if (success) {
-                    m_state_to_restore = mState;
+                    mStateToRestore = mState;
                     mState = LevelStateEnum.MovingPlayer;
-                    m_timeout = 0.0f;
+                    mTimeout = 0.0f;
 
                     ++mMovesCounter;
                     mHud.setTextMoves(mMovesCounter);
@@ -1466,69 +1392,69 @@ public final class Level extends Scene {
         mPlayerCube.update();
     }
 
-    public void updatePrepareSolving() {
+    private void updatePrepareSolving() {
         mHud.update();
 
-        m_timeout -= 0.01f;
+        mTimeout -= 0.03f;
 
-        if (m_timeout < 2.5f) {
-            mHud.showPrepareSolving(true, m_min_solution_steps);
+        if (mTimeout < 1.5f) {
+            mHud.showPrepareSolving(true, solution.getStepsCount());
         }
 
-        if (m_timeout <= 0.0f) {
-            mHud.showPrepareSolving(false, m_min_solution_steps);
+        if (mTimeout <= 0.0f) {
+            mHud.showPrepareSolving(false, solution.getStepsCount());
 
             mState = LevelStateEnum.Solving;
-            m_solution_pointer = 0;
+            solution.index = 0;
             m_fade_value = 1.0f;
-            m_timeout = 1.0f;
+            mTimeout = 1.0f;
             mHud.setupAppear();
         }
     }
 
-    public void updateAppear() {
-        m_timeout += 0.01f;
+    private void updateAppear() {
+        mTimeout += 0.01f;
 
         switch (m_appear_state) {
             case SubAppearWait: 
-                if (m_timeout > 0.2f) {
+                if (mTimeout > 0.2f) {
                     Cube cube;
 
-                    cube = m_ad_level.getCubeFromDisappearList();
+                    cube = appearDisappear.level.getCubeFromDisappearList();
                     if (cube != null) {
                         cube.type = CubeTypeEnum.CubeIsInvisible;
                         m_list_cubes_level.remove(cube);
                     }
 
-                    cube = m_ad_level.getCubeFromDisappearList();
+                    cube = appearDisappear.level.getCubeFromDisappearList();
                     if (cube != null) {
                         cube.type = CubeTypeEnum.CubeIsInvisible;
                         m_list_cubes_level.remove(cube);
                     }
 
-                    if (!m_lst_moving_cubes.isEmpty()) {
-                        MovingCube movingCube = m_lst_moving_cubes.get(0);
-                        m_lst_moving_cubes.remove(movingCube);
+                    if (!movingCubes.isEmpty()) {
+                        MovingCube movingCube = movingCubes.get(0);
+                        movingCubes.remove(movingCube);
                         LevelBuilder.movingCubes.add(movingCube);
                     }
 
-                    if (!m_lst_mover_cubes.isEmpty()) {
-                        MoverCube moverCube = m_lst_mover_cubes.get(0);
-                        m_lst_mover_cubes.remove(moverCube);
+                    if (!moverCubes.isEmpty()) {
+                        MoverCube moverCube = moverCubes.get(0);
+                        moverCubes.remove(moverCube);
                         LevelBuilder.moverCubes.add(moverCube);
                     }
 
-                    if (!m_lst_dead_cubes.isEmpty()) {
-                        DeadCube deadCube = m_lst_dead_cubes.get(0);
-                        m_lst_dead_cubes.remove(deadCube);
+                    if (!deadCubes.isEmpty()) {
+                        DeadCube deadCube = deadCubes.get(0);
+                        deadCubes.remove(deadCube);
                         LevelBuilder.deadCubes.add(deadCube);
                     }
 
                     if (m_list_cubes_level.isEmpty() &&
-                            m_lst_moving_cubes.isEmpty() &&
-                            m_lst_mover_cubes.isEmpty() &&
-                            m_lst_dead_cubes.isEmpty()) {
-                        m_timeout = 0.0f;
+                            movingCubes.isEmpty() &&
+                            moverCubes.isEmpty() &&
+                            deadCubes.isEmpty()) {
+                        mTimeout = 0.0f;
                         m_appear_state = SubAppearStateEnum.SubAppearKeyAndPlayer;
                         m_t = 0.0f;
                         m_fade_value = 0.0f;
@@ -1540,11 +1466,11 @@ public final class Level extends Scene {
                 break;
 
             case SubAppearKeyAndPlayer:
-                if (m_timeout > 0.1f) {
+                if (mTimeout > 0.1f) {
                     m_t += 0.1;
 
                     if (m_t > 1.0f) {
-                        m_timeout = 0.0f;
+                        mTimeout = 0.0f;
                         m_t = 1.0f;
                         m_appear_state = SubAppearStateEnum.SubAppearWaitAgain;
                     }
@@ -1554,13 +1480,13 @@ public final class Level extends Scene {
                 break;
 
             case SubAppearWaitAgain:
-                if (m_timeout > 0.2) {
+                if (mTimeout > 0.2) {
                     m_appear_state = SubAppearStateEnum.SubAppearLevel;
                 }
                 break;
 
             case SubAppearLevel:
-                if (m_ad_level.lst_appear.isEmpty() &&
+                if (appearDisappear.level.lst_appear.isEmpty() &&
                     LevelBuilder.movingCubes.isEmpty() &&
                     LevelBuilder.moverCubes.isEmpty() &&
                     LevelBuilder.deadCubes.isEmpty()) {
@@ -1600,8 +1526,8 @@ public final class Level extends Scene {
                     }
                 }                
             } else {
-                if (m_timeout > 0.02f) {
-                    Cube cube = m_ad_level.getCubeFromAppearList();
+                if (mTimeout > 0.02f) {
+                    Cube cube = appearDisappear.level.getCubeFromAppearList();
 
                     if (cube != null) {
                         m_list_cubes_level.add(cube);
@@ -1610,22 +1536,22 @@ public final class Level extends Scene {
                     if (!LevelBuilder.movingCubes.isEmpty()) {
                         MovingCube movingCube = LevelBuilder.movingCubes.get(0);
                         LevelBuilder.movingCubes.remove(movingCube);
-                        m_lst_moving_cubes.add(movingCube);
+                        movingCubes.add(movingCube);
                     }
 
                     if (!LevelBuilder.moverCubes.isEmpty()) {
                         MoverCube moverCube = LevelBuilder.moverCubes.get(0);
                         LevelBuilder.moverCubes.remove(moverCube);
-                        m_lst_mover_cubes.add(moverCube);
+                        moverCubes.add(moverCube);
                     }
 
                     if (!LevelBuilder.deadCubes.isEmpty()) {
                         DeadCube deadCube = LevelBuilder.deadCubes.get(0);
                         LevelBuilder.deadCubes.remove(deadCube);
-                        m_lst_dead_cubes.add(deadCube);
+                        deadCubes.add(deadCube);
                     }
 
-                    m_timeout = 0.0f;
+                    mTimeout = 0.0f;
                 }
             }
             break;
@@ -1635,46 +1561,46 @@ public final class Level extends Scene {
         } // switch
     }
 
-    public void updateTutorial() {
+    private void updateTutorial() {
         if (!mHud.isTutorDisplaying()) {
             mState = LevelStateEnum.Playing;
         }
     }
 
-    public void updatePlaying() {
+    private void updatePlaying() {
         mPlayerCube.update();
     }
 
-    public void updateUndo() {
-        m_timeout_undo -= 0.01f;
+    private void updateUndo() {
+        mTimeoutUndo -= 0.01f;
 
-        if (m_timeout_undo <= 0.0f) {
+        if (mTimeoutUndo <= 0.0f) {
             if (mPlayerCube.isDone()) {
-                if (!m_lst_undo.isEmpty()) {
-                    UndoData ud = m_lst_undo.get( m_lst_undo.size() - 1 );
+                if (!mUndoList.isEmpty()) {
+                    UndoData ud = mUndoList.get( mUndoList.size() - 1 );
 
-                    if (ud.mover_cube != null) {
+                    if (ud.moverCube != null) {
                         eventUndo();
                         return;
                     }
                 }
                 mState = LevelStateEnum.Playing;
             }
-            m_timeout_undo = UNDO_TIMEOUT;
+            mTimeoutUndo = UNDO_TIMEOUT;
         }
     }
 
     private boolean isPlayerAndKeyInSamePosition() {
-        if (m_cube_pos_key.x == mPlayerCube.m_cube_pos.x &&
-            m_cube_pos_key.y == mPlayerCube.m_cube_pos.y &&
-            m_cube_pos_key.z == mPlayerCube.m_cube_pos.z) {
+        if (mLocationKeyCube.x == mPlayerCube.location.x &&
+            mLocationKeyCube.y == mPlayerCube.location.y &&
+            mLocationKeyCube.z == mPlayerCube.location.z) {
             return true;
         } else{
             return false;
         }
     }
 
-    public void drawTheCube() {
+    private void drawTheCube() {
         Graphics graphics = Game.graphics;
 
         glClear(GL_STENCIL_BUFFER_BIT);
@@ -1686,8 +1612,8 @@ public final class Level extends Scene {
         glEnable(GL_TEXTURE_2D);
         graphics.textureGrayConcrete.bind();
 
-        Vector light = Utils.rotate3D_AroundYAxis(mPosLightCurrent.x, mPosLightCurrent.y, mPosLightCurrent.z, -m_cube_rotation.degree - m_user_rotation.current.y);
-        Vector light_tmp = Utils.rotate3D_AroundXAxis(light.x, light.y, light.z, -m_user_rotation.current.x);
+        Vector light = Utils.rotate3D_AroundYAxis(mPosLightCurrent.x, mPosLightCurrent.y, mPosLightCurrent.z, -mCubeRotation.degree - mUserRotation.current.y);
+        Vector light_tmp = Utils.rotate3D_AroundXAxis(light.x, light.y, light.z, -mUserRotation.current.x);
         light.init(light_tmp);
 
         glEnable(GL_STENCIL_TEST);
@@ -1757,46 +1683,46 @@ public final class Level extends Scene {
             }
 
             // moving cubes
-            if (!m_lst_moving_cubes.isEmpty()) {
+            if (!movingCubes.isEmpty()) {
                 MovingCube movingCube;
-                size = m_lst_moving_cubes.size();
+                size = movingCubes.size();
                 for(int i = 0; i < size; ++i) {
-                    movingCube = m_lst_moving_cubes.get(i);
+                    movingCube = movingCubes.get(i);
                     graphics.addCubeSize(movingCube.pos.x + Game.cube_offset.x, movingCube.pos.y + Game.cube_offset.y, movingCube.pos.z + Game.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
                 }
             }
 
             // mover cubes
-            if (!m_lst_mover_cubes.isEmpty()) {
+            if (!moverCubes.isEmpty()) {
                 MoverCube moverCube;
-                size = m_lst_mover_cubes.size();
+                size = moverCubes.size();
                 for(int i = 0; i < size; ++i) {
-                    moverCube = m_lst_mover_cubes.get(i);
+                    moverCube = moverCubes.get(i);
                     graphics.addCubeSize(moverCube.pos.x + Game.cube_offset.x, moverCube.pos.y + Game.cube_offset.y, moverCube.pos.z + Game.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
                 }
             }
 
             // dead cubes
-            if (!m_lst_dead_cubes.isEmpty()) {
+            if (!deadCubes.isEmpty()) {
                 DeadCube deadCube;
-                size = m_lst_dead_cubes.size();
+                size = deadCubes.size();
                 for(int i = 0; i < size; ++i) {
-                    deadCube = m_lst_dead_cubes.get(i);
+                    deadCube = deadCubes.get(i);
                     graphics.addCubeSize(deadCube.pos.x + Game.cube_offset.x, deadCube.pos.y + Game.cube_offset.y, deadCube.pos.z + Game.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
                 }
             }
 
-            // with player cube
-            if (mPlayerCube.m_cube_pos.x != 0) {
+            // with locationPlayer cube
+            if (mPlayerCube.location.x != 0) {
                 graphics.addCubeSize(mPlayerCube.pos.x + Game.cube_offset.x, mPlayerCube.pos.y + Game.cube_offset.y, mPlayerCube.pos.z + Game.cube_offset.z, HALF_CUBE_SIZE, shadow_color);
             }
 
-            // with key cube
-            if (m_cube_pos_key.x != 0 && !isPlayerAndKeyInSamePosition())
+            // with locationKey cube
+            if (mLocationKeyCube.x != 0 && !isPlayerAndKeyInSamePosition())
             {
-                graphics.addCubeSize(Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tx + Game.cube_offset.x,
-                                     Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].ty + Game.cube_offset.y,
-                                     Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z].tz + Game.cube_offset.z, HALF_CUBE_SIZE * 0.95f, shadow_color);
+                graphics.addCubeSize(Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].tx + Game.cube_offset.x,
+                                     Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].ty + Game.cube_offset.y,
+                                     Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].tz + Game.cube_offset.z, HALF_CUBE_SIZE * 0.95f, shadow_color);
             }
 
             glEnable(GL_BLEND);
@@ -1870,23 +1796,23 @@ public final class Level extends Scene {
         }
 
         MovingCube movingCube;
-        size = m_lst_moving_cubes.size();
+        size = movingCubes.size();
         for(int i = 0; i < size; ++i) {
-            movingCube = m_lst_moving_cubes.get(i);
+            movingCube = movingCubes.get(i);
             movingCube.renderCube();
         }
 
         MoverCube moverCube;
-        size = m_lst_mover_cubes.size();
+        size = moverCubes.size();
         for(int i = 0; i < size; ++i) {
-            moverCube = m_lst_mover_cubes.get(i);
+            moverCube = moverCubes.get(i);
             moverCube.renderCube();
         }
 
         DeadCube deadCube;
-        size = m_lst_dead_cubes.size();
+        size = deadCubes.size();
         for(int i = 0; i < size; ++i) {
-            deadCube = m_lst_dead_cubes.get(i);
+            deadCube = deadCubes.get(i);
             deadCube.renderCube();
         }
 
@@ -1910,7 +1836,7 @@ public final class Level extends Scene {
         glPopMatrix();
     }
 
-    public void drawTextsCompleted() {
+    private void drawTextsCompleted() {
         Graphics graphics = Game.graphics;
 
         CubeFont cubeFont;
@@ -1933,8 +1859,8 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (m_menu_cube_up.isDone() && m_menu_cube_up.m_cube_pos.x == 7) {
-            cubeFont = m_cubefont_up;
+        if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.cubeLocation.x == 7) {
+            cubeFont = mCubefontUp;
             pFont = cubeFont.getFont();
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
@@ -1945,8 +1871,8 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (m_menu_cube_mid.isDone() && m_menu_cube_mid.m_cube_pos.x == 7) {
-            cubeFont = m_cubefont_mid;
+        if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.cubeLocation.x == 7) {
+            cubeFont = mCubefontMid;
             pFont = cubeFont.getFont();
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
@@ -1957,8 +1883,8 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (m_menu_cube_low.isDone() && m_menu_cube_low.m_cube_pos.x == 7) {
-            cubeFont = m_cubefont_low;
+        if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.cubeLocation.x == 7) {
+            cubeFont = mCubefontLow;
             pFont = cubeFont.getFont();
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
@@ -1973,7 +1899,7 @@ public final class Level extends Scene {
         graphics.renderTriangles();
     }
 
-    public void drawTextsPaused() {
+    private void drawTextsPaused() {
         Graphics graphics = Game.graphics;
 
         CubeFont cubeFont;
@@ -1996,8 +1922,8 @@ public final class Level extends Scene {
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (m_menu_cube_up.isDone() && m_menu_cube_up.m_cube_pos.z == 1) {
-            cubeFont = m_cubefont_up;
+        if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.cubeLocation.z == 1) {
+            cubeFont = mCubefontUp;
             pFont = cubeFont.getFont();
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -2008,8 +1934,8 @@ public final class Level extends Scene {
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (m_menu_cube_mid.isDone() && m_menu_cube_mid.m_cube_pos.z == 1) {
-            cubeFont = m_cubefont_mid;
+        if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.cubeLocation.z == 1) {
+            cubeFont = mCubefontMid;
             pFont = cubeFont.getFont();
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -2020,8 +1946,8 @@ public final class Level extends Scene {
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (m_menu_cube_low.isDone() && m_menu_cube_low.m_cube_pos.z == 1) {
-            cubeFont = m_cubefont_low;
+        if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.cubeLocation.z == 1) {
+            cubeFont = mCubefontLow;
             pFont = cubeFont.getFont();
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -2035,7 +1961,7 @@ public final class Level extends Scene {
         graphics.renderTriangles();
     }
 
-    public void draw() {
+    private void draw() {
         Graphics graphics = Game.graphics;
         Color color = new Color(255, 255, 255, (int)(m_fade_value * 255));
         graphics.bindStreamSources3d();
@@ -2047,28 +1973,26 @@ public final class Level extends Scene {
 
         glEnable(GL_LIGHTING);
 
-        if (m_draw_menu_cubes || 0 != mPlayerCube.m_cube_pos.x) {
+        if (mDrawMenuCubes || mPlayerCube.location.x != 0) {
             Game.graphics.texturePlayer.bind();
 
             graphics.resetBufferIndices();
 
-            if (0 != mPlayerCube.m_cube_pos.x) {
+            if (0 != mPlayerCube.location.x) {
                 graphics.addCubeSize(mPlayerCube.pos.x, mPlayerCube.pos.y, mPlayerCube.pos.z, HALF_CUBE_SIZE, color);
             }
 
-            if (m_draw_menu_cubes) {
-                graphics.addCube(m_menu_cube_up.pos.x, m_menu_cube_up.pos.y, m_menu_cube_up.pos.z);
-                graphics.addCube(m_menu_cube_mid.pos.x, m_menu_cube_mid.pos.y, m_menu_cube_mid.pos.z);
-                graphics.addCube(m_menu_cube_low.pos.x, m_menu_cube_low.pos.y, m_menu_cube_low.pos.z);
+            if (mDrawMenuCubes) {
+                mLevelMenu.draw();
             }
             graphics.updateBuffers();
             graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
         }
 
-        if (0 != m_cube_pos_key.x && !isPlayerAndKeyInSamePosition()) {
+        if (0 != mLocationKeyCube.x && !isPlayerAndKeyInSamePosition()) {
             Game.graphics.textureKey.bind();
 
-            Cube pCube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
+            Cube pCube = Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z];
 
             graphics.resetBufferIndices();
             graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.95f, color);
@@ -2081,7 +2005,7 @@ public final class Level extends Scene {
             glEnable(GL_DEPTH_TEST);
         }
 
-        if (!m_lst_moving_cubes.isEmpty() || !m_lst_mover_cubes.isEmpty() || !m_lst_dead_cubes.isEmpty()) {
+        if (!movingCubes.isEmpty() || !moverCubes.isEmpty() || !deadCubes.isEmpty()) {
             int size;
             MovingCube movingCube;
             MoverCube moverCube;
@@ -2089,21 +2013,21 @@ public final class Level extends Scene {
 
             graphics.resetBufferIndices();
 
-            size = m_lst_moving_cubes.size();
+            size = movingCubes.size();
             for(int i = 0; i < size; ++i) {
-                movingCube = m_lst_moving_cubes.get(i);
+                movingCube = movingCubes.get(i);
                 movingCube.renderSymbols();
             }
 
-            size = m_lst_mover_cubes.size();
+            size = moverCubes.size();
             for(int i = 0; i < size; ++i) {
-                moverCube = m_lst_mover_cubes.get(i);
+                moverCube = moverCubes.get(i);
                 moverCube.renderSymbols();
             }
 
-            size = m_lst_dead_cubes.size();
+            size = deadCubes.size();
             for(int i = 0; i < size; ++i) {
-                deadCube = m_lst_dead_cubes.get(i);
+                deadCube = deadCubes.get(i);
                 deadCube.renderSymbols();
             }
 
@@ -2204,31 +2128,29 @@ public final class Level extends Scene {
         graphics.setModelViewMatrix3D(mCameraCurrent);
         graphics.bindStreamSources3d();
 
-        if (false) { //#ifdef DRAW_AXES_GLOBAL
-            glDisable(GL_TEXTURE_2D);
-            graphics.drawAxes();
-            glEnable(GL_TEXTURE_2D);
-        } //#endif
+        // draw axes global
+//        glDisable(GL_TEXTURE_2D);
+//        graphics.drawAxes();
+//        glEnable(GL_TEXTURE_2D);
 
         graphics.setLightPosition(mPosLightCurrent);
         glEnable(GL_LIGHTING);
 
         glPushMatrix();
-        glRotatef(m_user_rotation.current.x, 1.0f, 0.0f, 0.0f);
-        glRotatef(m_user_rotation.current.y, 0.0f, 1.0f, 0.0f);
+        glRotatef(mUserRotation.current.x, 1.0f, 0.0f, 0.0f);
+        glRotatef(mUserRotation.current.y, 0.0f, 1.0f, 0.0f);
 
         glPushMatrix();
-        glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
+        glRotatef(mCubeRotation.degree, mCubeRotation.axis.x, mCubeRotation.axis.y, mCubeRotation.axis.z);
 
         drawTheCube();
 
-        if (false) {//#ifdef DRAW_AXES_CUBE
-            glDisable(GL_TEXTURE_2D);
-            glDisable(GL_LIGHTING);
-            graphics.drawAxes();
-            glEnable(GL_LIGHTING);
-            glEnable(GL_TEXTURE_2D);
-        } // #endif
+        // draw axes cube
+//        glDisable(GL_TEXTURE_2D);
+//        glDisable(GL_LIGHTING);
+//        graphics.drawAxes();
+//        glEnable(GL_LIGHTING);
+//        glEnable(GL_TEXTURE_2D);
 
         draw();
 
@@ -2239,7 +2161,7 @@ public final class Level extends Scene {
         mHud.render();
     }
 
-    public void renderForPicking(PickRenderTypeEnum type) {
+    private void renderForPicking(PickRenderTypeEnum type) {
         Graphics graphics = Game.graphics;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -2266,11 +2188,9 @@ public final class Level extends Scene {
                 graphics.resetBufferIndices();
                 graphics.bindStreamSources3d();
 
-                glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
+                glRotatef(mCubeRotation.degree, mCubeRotation.axis.x, mCubeRotation.axis.y, mCubeRotation.axis.z);
 
-                graphics.addCubeSize(m_menu_cube_up.pos.x, m_menu_cube_up.pos.y, m_menu_cube_up.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_up.color);
-                graphics.addCubeSize(m_menu_cube_mid.pos.x, m_menu_cube_mid.pos.y, m_menu_cube_mid.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_mid.color);
-                graphics.addCubeSize(m_menu_cube_low.pos.x, m_menu_cube_low.pos.y, m_menu_cube_low.pos.z, HALF_CUBE_SIZE * 1.5f, m_menu_cube_low.color);
+                mLevelMenu.drawForPicking();
 
                 graphics.updateBuffers();
                 graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
@@ -2309,7 +2229,7 @@ public final class Level extends Scene {
 
         graphics.setLightPosition(mPosLightCurrent);
 
-        glRotatef(m_cube_rotation.degree, m_cube_rotation.axis.x, m_cube_rotation.axis.y, m_cube_rotation.axis.z);
+        glRotatef(mCubeRotation.degree, mCubeRotation.axis.x, mCubeRotation.axis.y, mCubeRotation.axis.z);
         drawTheCube();
 
         glEnable(GL_BLEND);
@@ -2317,11 +2237,11 @@ public final class Level extends Scene {
         graphics.bindStreamSources3d();
         Game.graphics.textureKey.bind();
 
-        if (0 != m_cube_pos_key.x) {
+        if (0 != mLocationKeyCube.x) {
             glEnable(GL_LIGHTING);
             Game.graphics.textureKey.bind();
 
-            Cube cube = Game.cubes[m_cube_pos_key.x][m_cube_pos_key.y][m_cube_pos_key.z];
+            Cube cube = Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z];
 
             graphics.resetBufferIndices();
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.95f, Color.WHITE);
@@ -2332,20 +2252,20 @@ public final class Level extends Scene {
 
         glDisable(GL_BLEND);
 
-        // draw key cube
+        // draw locationKey cube
         graphics.resetBufferIndices();
 
         glEnable(GL_LIGHTING);
         Game.graphics.textureKey.bind();
 
-        CubePos pos = m_cube_pos_key;
+        CubeLocation pos = mLocationKeyCube;
         Cube keyCube = Game.cubes[pos.x][pos.y][pos.z];
 
         graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE * 0.95f, Color.WHITE);
         graphics.updateBuffers();
         graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
 
-        // draw player cube
+        // draw locationPlayer cube
         graphics.resetBufferIndices();
 
         glEnable(GL_LIGHTING);
@@ -2356,7 +2276,7 @@ public final class Level extends Scene {
 
         glDisable(GL_LIGHTING);
 
-        if (!m_lst_moving_cubes.isEmpty() || !m_lst_mover_cubes.isEmpty() || !m_lst_dead_cubes.isEmpty()) {
+        if (!movingCubes.isEmpty() || !moverCubes.isEmpty() || !deadCubes.isEmpty()) {
             int size;
             MovingCube movingCube;
             MoverCube moverCube;
@@ -2364,21 +2284,21 @@ public final class Level extends Scene {
 
             graphics.resetBufferIndices();
 
-            size = m_lst_moving_cubes.size();
+            size = movingCubes.size();
             for(int i = 0; i < size; ++i) {
-                movingCube = m_lst_moving_cubes.get(i);
+                movingCube = movingCubes.get(i);
                 movingCube.renderSymbols();
             }
 
-            size = m_lst_mover_cubes.size();
+            size = moverCubes.size();
             for(int i = 0; i < size; ++i) {
-                moverCube = m_lst_mover_cubes.get(i);
+                moverCube = moverCubes.get(i);
                 moverCube.renderSymbols();
             }
 
-            size = m_lst_dead_cubes.size();
+            size = deadCubes.size();
             for(int i = 0; i < size; ++i) {
-                deadCube = m_lst_dead_cubes.get(i);
+                deadCube = deadCubes.get(i);
                 deadCube.renderSymbols();
             }
 
@@ -2392,22 +2312,22 @@ public final class Level extends Scene {
         }
     }
 
-    public void eventBuildLevel() {
+    private void eventBuildLevel() {
         switch (mDifficulty) {
             case Easy: LevelBuilderEasy.build(mLevelNumber); break;
             case Normal: LevelBuilderNormal.build(mLevelNumber); break;
             case Hard: LevelBuilderHard.build(mLevelNumber); break;
         }
 
-        m_cube_pos_key = LevelBuilder.key;
+        mLocationKeyCube = LevelBuilder.locationKey;
 
-        mPlayerCube.setCubePos(LevelBuilder.player);
-        mPlayerCube.setKeyCubePos(m_cube_pos_key);
+        mPlayerCube.setLocation(LevelBuilder.locationPlayer);
+        mPlayerCube.setKeyCubePos(mLocationKeyCube);
 
         if (Utils.rand.nextBoolean()) {
-            m_ad_level.setLevelAndDirection(0, 1);
+            appearDisappear.level.setLevelAndDirection(0, 1);
         } else {
-            m_ad_level.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
+            appearDisappear.level.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
         }
 
         String str;
@@ -2431,28 +2351,28 @@ public final class Level extends Scene {
         mHud.setupAppear();
     }
 
-    public void eventShowHint() {
+    private void eventShowHint() {
         if (0 == mMovesCounter) {
-            mHud.showHintToBegin(m_ar_solution[0]);
+            mHud.showHintToBegin( solution.getFirstStep() );
         } else {
             m_show_hint_2nd = true;
             m_hint_index = 0;
             m_hint_timeout = 0.0f;
             
             for (int i = 0; i < MAX_HINT_CUBES; ++i) {
-                m_ar_hint_cubes[i] = null;
+                mHintCubes[i] = null;
             }
 
             Cube cube;
-            int size = m_list_cubes_hint.size();
+            int size = hintCubes.size();
             for(int i = 0; i < size; ++i) {
-                cube = m_list_cubes_hint.get(i);
-                m_ar_hint_cubes[i] = cube;
+                cube = hintCubes.get(i);
+                mHintCubes[i] = cube;
             }
         }
     }
 
-    public void eventSolver() {
+    private void eventSolver() {
         if (LevelNextActionEnum.ShowSceneSolvers == mNextAction || LevelStateEnum.PrepareSolving == mState) {
             return;
         }
@@ -2467,7 +2387,7 @@ public final class Level extends Scene {
         if (solved) {
             reset();
             mState = LevelStateEnum.PrepareSolving;
-            m_timeout = 2.0f;
+            mTimeout = 2.0f;
         } else {
             mNextAction = LevelNextActionEnum.ShowSceneSolvers;
         }
@@ -2475,7 +2395,7 @@ public final class Level extends Scene {
         mHud.setupDisappear();
     }
 
-    public void eventQuit() {
+    private void eventQuit() {
         Game.anim_init_data.list_cubes_base.clear();
         int size;
         Cube cube;
@@ -2492,7 +2412,7 @@ public final class Level extends Scene {
             Game.anim_init_data.list_cubes_base.add(cube);
         }
 
-        Game.anim_init_data.cube_rotation_degree = m_cube_rotation.degree;
+        Game.anim_init_data.cube_rotation_degree = mCubeRotation.degree;
 
         if (LevelStateEnum.Paused == mState) {
             Game.anim_init_data.type = AnimTypeEnum.AnimToMenuFromPaused;
@@ -2503,7 +2423,7 @@ public final class Level extends Scene {
         Game.showScene(Scene_Anim);
     }
 
-    public void eventLevelPause() {
+    private void eventLevelPause() {
         mHud.setupDisappear();
         setAnimToPaused();
     }
@@ -2514,7 +2434,7 @@ public final class Level extends Scene {
         Game.renderToFBO(this);
         mHud.setupDisappear();
 
-        StatInitData sid = Game.stat_init_data;
+        StatInitData sid = Game.statInitData;
         getRatings();
 
         switch (mDifficulty) {
@@ -2566,60 +2486,60 @@ public final class Level extends Scene {
     public void reset() {
         int size;
         mMovesCounter = 0;
-        m_lst_undo.clear();
+        mUndoList.clear();
 
         mHud.set1stHint();
         mHud.setTextMoves(mMovesCounter);
-        mHud.setTextUndo( m_lst_undo.size() );
+        mHud.setTextUndo( mUndoList.size() );
 
-        mPlayerCube.setCubePos(LevelBuilder.player);
+        mPlayerCube.setLocation(LevelBuilder.locationPlayer);
 
         Game.resetCubesColors();
 
-        if (!m_lst_moving_cubes.isEmpty()) {
+        if (!movingCubes.isEmpty()) {
             MovingCube movingCube;
-            size = m_lst_moving_cubes.size();
+            size = movingCubes.size();
             for (int i = 0; i < size; ++i) {
-                movingCube = m_lst_moving_cubes.get(i);
+                movingCube = movingCubes.get(i);
                 movingCube.reposition();
             }
         }
 
-        if (!m_lst_mover_cubes.isEmpty()) {
+        if (!moverCubes.isEmpty()) {
             MoverCube moverCube;
-            size = m_lst_moving_cubes.size();
+            size = movingCubes.size();
             for (int i = 0; i < size; ++i) {
-                moverCube = m_lst_mover_cubes.get(i);
+                moverCube = moverCubes.get(i);
                 moverCube.reposition();
             }
         }
 
-        if (!m_lst_dead_cubes.isEmpty()) {
+        if (!deadCubes.isEmpty()) {
             DeadCube deadCube;
-            size = m_lst_moving_cubes.size();
+            size = deadCubes.size();
             for (int i = 0; i < size; ++i) {
-                deadCube = m_lst_dead_cubes.get(i);
+                deadCube = deadCubes.get(i);
                 deadCube.reposition();
             }
         }
     }
 
-    public void eventUndo() {
-        m_timeout_undo = UNDO_TIMEOUT;
+    private void eventUndo() {
+        mTimeoutUndo = UNDO_TIMEOUT;
 
         if (mMovesCounter > 0) {
             --mMovesCounter;
             mHud.setTextMoves(mMovesCounter);
 
-            UndoData ud = m_lst_undo.get(m_lst_undo.size() - 1);
-            m_lst_undo.remove(ud);
+            UndoData ud = mUndoList.get(mUndoList.size() - 1);
+            mUndoList.remove(ud);
 
-            mPlayerCube.setCubePos(ud.player_pos);
+            mPlayerCube.setLocation(ud.playerLocation);
 
-            mHud.setTextUndo(m_lst_undo.size());
+            mHud.setTextUndo(mUndoList.size());
 
-            if (null != ud.moving_cube) {
-                ud.moving_cube.init(ud.moving_cube_pos, ud.moving_cube_move_dir);
+            if (null != ud.movingCube) {
+                ud.movingCube.init(ud.movingCubeLocation, ud.movingCubeMoveDir);
             }
 
             if (0 == mMovesCounter) {
@@ -2631,22 +2551,22 @@ public final class Level extends Scene {
     }
 
     @Override
-    public void onFingerDown(float x, float y, int finger_count) {
+    public void onFingerDown(float x, float y, int fingerCount) {
         mIsFingerDown = true;
 
         mPosDown.x = x;
         mPosDown.y = y;
 
-        if (1 == finger_count) {
-            Color down_color;
+        if (fingerCount == 1) {
+            Color downColor;
 
             switch (mState) {
                 case Playing:
                     if (HUDStateEnum.DoneHUD == mHud.getState() ) {
                         renderForPicking(PickRenderTypeEnum.RenderOnlyHUD);
 
-                        down_color = Game.graphics.getColorFromScreen(mPosDown);
-                        switch (down_color.b) {
+                        downColor = Game.graphics.getColorFromScreen(mPosDown);
+                        switch (downColor.b) {
                             case 200: mHud.setHilitePause(true); break;
                             case 150: mHud.setHiliteUndo(true); break;
                             case 100: mHud.setHiliteHint(true); break;
@@ -2661,14 +2581,13 @@ public final class Level extends Scene {
                 case Completed: {
                     renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
-                    down_color = Game.graphics.getColorFromScreen(mPosDown);
-                    MenuCube menuCube = getMovingCubeFromColor(down_color.b);
+                    downColor = Game.graphics.getColorFromScreen(mPosDown);
+                    MenuCube menuCube = mLevelMenu.getMenuCubeFromColor(downColor.b);
                     if (menuCube != null) {
                         m_hilite_alpha = 0.0f;
                         m_menu_cube_hilite = menuCube;
-                        CubePos cp = new CubePos();
-                        cp.init(m_menu_cube_hilite.m_cube_pos);
-                        //printf("\nCubePos: %d, %d, %d", cp.x, cp.y, cp.z);
+                        CubeLocation cp = new CubeLocation();
+                        cp.init(m_menu_cube_hilite.cubeLocation);
                         m_font_hilite.init(SymbolHilite, cp);
                     }
                 }
@@ -2699,9 +2618,9 @@ public final class Level extends Scene {
             diff = Easy;
     }
 
-    engine.level_init_data.difficulty = diff;
-    engine.level_init_data.level_number = ln;
-    engine.level_init_data.init_action = FullInit;
+    engine.levelInitData.difficulty = diff;
+    engine.levelInitData.levelNumber = ln;
+    engine.levelInitData.initAction = FullInit;
 
     engine.ShowScene(Scene_Level);
     return;
@@ -2757,33 +2676,24 @@ public final class Level extends Scene {
 
                 m_alter_view = true;
 
-                m_user_rotation.current.x = -dir.y * 0.3f;
-                m_user_rotation.current.y = -dir.x * 0.3f;
-                m_user_rotation.clamp();
+                mUserRotation.current.x = -dir.y * 0.3f;
+                mUserRotation.current.y = -dir.x * 0.3f;
+                mUserRotation.clamp();
 
                 mIsSwipe = false;
             }
         }
     }
 
-    public void fingerUpPaused(float x, float y) {
-//    float fingerup_x = x;
-//    float fingerup_y = y;
-
+    private void fingerUpPaused(float x, float y) {
         if (mIsSwipe) {
             mIsSwipe = false;
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = Game.graphics.getColorFromScreen(mPosDown);
+            Color downColor = Game.graphics.getColorFromScreen(mPosDown);
             SwipeInfo swipeInfo = Game.getSwipeDirAndLength(mPosDown, mPosUp);
 
             if (swipeInfo.length > 30.0f * Game.graphics.scaleFactor) {
-                MenuCube menuCube = null;
-                switch (down_color.b) {
-                    case 200: menuCube = m_menu_cube_up; break;
-                    case 150: menuCube = m_menu_cube_mid; break;
-                    case 100: menuCube = m_menu_cube_low; break;
-                }
-
+                MenuCube menuCube = mLevelMenu.getMenuCubeFromColor(downColor.b);
                 if (menuCube != null) {
                     switch (swipeInfo.swipeDir) {
                         case SwipeRight: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
@@ -2796,30 +2706,16 @@ public final class Level extends Scene {
         }
     }
 
-    public void fingerUpCompleted(float x, float y) {
-//    float fingerup_x = x;
-//    float fingerup_y = y;
-
+    private void fingerUpCompleted(float x, float y) {
         if (mIsSwipe) {
             mIsSwipe = false;
 
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-            Color down_color = Game.graphics.getColorFromScreen(mPosDown);
-
-//		printf("\nOnFingerUp [SWIPE] color is: %d, %d, %d, %d", down_color.r, down_color.g, down_color.b, down_color.a);
-
-            SwipeDirEnums swipeDir = SwipeDirEnums.SwipeDown;
-            float length = 1f;
+            Color downColor = Game.graphics.getColorFromScreen(mPosDown);
             SwipeInfo swipeInfo = Game.getSwipeDirAndLength(mPosDown, mPosUp);
 
             if (swipeInfo.length > 30.0f * Game.graphics.scaleFactor) {
-                MenuCube menuCube = null;
-                switch (down_color.b) {
-                    case 200: menuCube = m_menu_cube_up; break;
-                    case 150: menuCube = m_menu_cube_mid; break;
-                    case 100: menuCube = m_menu_cube_low; break;
-                }
-
+                MenuCube menuCube = mLevelMenu.getMenuCubeFromColor(downColor.b);
                 if (menuCube != null) {
                     switch (swipeInfo.swipeDir) {
                         case SwipeLeft: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
@@ -2832,7 +2728,7 @@ public final class Level extends Scene {
         }
     }
 
-    public void fingerUpPlaying(float x, float y, int finger_count) {
+    private void fingerUpPlaying(float x, float y, int fingerCount) {
         if (mHud.getShowHint()) {
             return;
         }
@@ -2843,11 +2739,11 @@ public final class Level extends Scene {
         }
 
         if (m_alter_view) {
-            if ( Math.abs(m_user_rotation.current.x) > EPSILON || Math.abs(m_user_rotation.current.y) > EPSILON ) {
+            if ( Math.abs(mUserRotation.current.x) > EPSILON || Math.abs(mUserRotation.current.y) > EPSILON ) {
                 m_reposition_view = true;
                 m_alter_view = false;
                 m_t = 0.0f;
-                m_user_rotation.from = m_user_rotation.current;
+                mUserRotation.from = mUserRotation.current;
             }
             return;
         }
@@ -2866,7 +2762,6 @@ public final class Level extends Scene {
                         break;
                 }
             }
-            return;
         } else { // swipe        
             mIsSwipe = false;
 
@@ -2874,7 +2769,6 @@ public final class Level extends Scene {
                 return;
             }
 
-            // flip the Y-axis because pixel coordinates increase toward the bottom (iPhone 3D Programming 86. page)
             float fingerdown_x = mPosDown.x;
             float fingerdown_y = -mPosDown.y;
 
@@ -2886,9 +2780,6 @@ public final class Level extends Scene {
             dir.y = fingerup_y - fingerdown_y;
 
             float len = dir.len(); // swipe length
-
-            //System.out.println("Swipe Length: " + len + ", minSwipeLength(" + Game.minSwipeLength + ")");
-
             if (len < Game.minSwipeLength){
                 return;
             }
@@ -2896,12 +2787,6 @@ public final class Level extends Scene {
             dir.nor();
 
             float degree = (float)Math.toDegrees( Math.atan2(dir.y, dir.x) );
-
-//            printf("\nfinger down x:%f, y:%f", m_fingerdown_x, m_fingerdown_y);
-//            printf("\nfinger up x:%f, y:%f", fingerup_x, fingerup_y);
-//            printf("\ndir.x:%f, dir.y:%f", dir.x, dir.y);
-//            printf("\ndegree: %0.2f", degree);
-
             boolean success = false;
             float center;
             final float space = 30.0f;
@@ -2942,43 +2827,43 @@ public final class Level extends Scene {
         }
     }
 
-    public void addMove() {
+    private void addMove() {
         ++mMovesCounter;
         mHud.setTextMoves(mMovesCounter);
 
-        if (1 == mMovesCounter) {
+        if (mMovesCounter == 1) {
             mHud.set2ndHint();
         }
 
-        UndoData ud = new UndoData(mPlayerCube.getCubePos());
+        UndoData undoData = new UndoData(mPlayerCube.getLocation());
 
-        if (mPlayerCube.m_moving_cube != null) {
-            ud.moving_cube = mPlayerCube.m_moving_cube;
-            ud.moving_cube.init(mPlayerCube.m_moving_cube);
-            ud.moving_cube_pos.init(mPlayerCube.m_moving_cube.getCubePos());
-            ud.moving_cube_move_dir = mPlayerCube.m_moving_cube.getMovement();
+        if (mPlayerCube.movingCube != null) {
+            undoData.movingCube = mPlayerCube.movingCube;
+            undoData.movingCube.init(mPlayerCube.movingCube);
+
+            undoData.movingCubeLocation.init(mPlayerCube.movingCube.getCubePos());
+            undoData.movingCubeMoveDir = mPlayerCube.movingCube.getMovement();
         }
 
-        if (mPlayerCube.m_mover_cube != null) {
-            CubePos cp = mPlayerCube.m_cube_pos_destination;
-            CubePos cp_new = new CubePos();
+        if (mPlayerCube.moverCube != null) {
+            CubeLocation cp = mPlayerCube.destination;
+            CubeLocation cp_new = new CubeLocation();
             cp_new.init(cp);
 
-            // check if cube can move in a selected dir
-            mPlayerCube.calcMovement(cp_new, mPlayerCube.m_mover_cube.getMoveDir(), false);
+            mPlayerCube.calcMovement(cp_new, mPlayerCube.moverCube.getMoveDir(), false);
 
             if (cp.x != cp_new.x || cp.y != cp_new.y || cp.z != cp_new.z) {
-                ud.mover_cube = mPlayerCube.m_mover_cube;
+                undoData.moverCube = mPlayerCube.moverCube;
             }
         }
 
-        m_lst_undo.add(ud);
+        mUndoList.add(undoData);
 
-        mHud.setTextUndo(m_lst_undo.size());
+        mHud.setTextUndo(mUndoList.size());
 
-        m_state_to_restore = mState;
+        mStateToRestore = mState;
         mState = LevelStateEnum.MovingPlayer;
-        m_timeout = 0.0f; // move immediately
+        mTimeout = 0.0f; // move immediately
     }
 
 }

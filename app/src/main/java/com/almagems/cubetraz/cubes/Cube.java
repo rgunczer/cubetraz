@@ -24,7 +24,7 @@ public final class Cube {
     public CubeFont[] fonts = new CubeFont[6];
     public CubeFont[] symbols = new CubeFont[6];
 
-    public Vector velocity;
+    public Vector velocity = new Vector();
 
     public void setColor(Color color) {
         this.color.init(color);

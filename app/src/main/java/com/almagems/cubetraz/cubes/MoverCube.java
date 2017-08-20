@@ -10,8 +10,8 @@ import com.almagems.cubetraz.graphics.TexturedQuad;
 import static com.almagems.cubetraz.game.Game.*;
 
 public final class MoverCube {
-    private CubePos m_cube_pos_starting = new CubePos();
-    private CubePos m_cube_pos = new CubePos();
+    private CubeLocation m_cube_pos_starting = new CubeLocation();
+    private CubeLocation m_cube_pos = new CubeLocation();
     private int m_move_dir;
     private TexturedQuad[] m_ar_cube_symbols = new TexturedQuad[6];
 
@@ -36,7 +36,7 @@ public final class MoverCube {
         m_color_symbol_current.init(m_color_symbol);
     }
 
-    public void setCubePos(CubePos coordinate) {
+    public void setCubePos(CubeLocation coordinate) {
         m_cube_pos.init(coordinate); // here!?
         pos = Game.getCubePosAt(m_cube_pos);
     }
@@ -82,7 +82,7 @@ public final class MoverCube {
         }
     }
 
-    public void init(CubePos cube_pos, int move_dir) {
+    public void init(CubeLocation cube_pos, int move_dir) {
         m_move_dir = move_dir;
         setCubePos(cube_pos);
         m_cube_pos_starting = m_cube_pos;
@@ -135,7 +135,7 @@ public final class MoverCube {
         }
     }
     
-    public CubePos getCubePos() { 
+    public CubeLocation getCubePos() {
         return m_cube_pos; 
     }
     

@@ -1,17 +1,17 @@
 package com.almagems.cubetraz.cubes;
 
 
-public final class CubePos {
+public final class CubeLocation {
 
     public int x;
     public int y;
     public int z;
 
-    public CubePos() {
+    public CubeLocation() {
         this.reset();
     }
 
-    public CubePos(int x, int y, int z) {
+    public CubeLocation(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -21,7 +21,7 @@ public final class CubePos {
         x = y = z = 0;
     }
     
-    public void init(CubePos other) {
+    public void init(CubeLocation other) {
         x = other.x;
         y = other.y;
         z = other.z;

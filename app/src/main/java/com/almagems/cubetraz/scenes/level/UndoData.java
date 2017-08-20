@@ -1,25 +1,25 @@
 package com.almagems.cubetraz.scenes.level;
 
-import com.almagems.cubetraz.cubes.CubePos;
+import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.cubes.MoverCube;
 import com.almagems.cubetraz.cubes.MovingCube;
 
-public class UndoData {
+class UndoData {
 
-    public MovingCube moving_cube;
-    public MoverCube mover_cube;
+    MovingCube movingCube;
+    MoverCube moverCube;
 
-    public CubePos player_pos = new CubePos();
-    public CubePos moving_cube_pos = new CubePos();
+    CubeLocation playerLocation = new CubeLocation();
+    CubeLocation movingCubeLocation = new CubeLocation();
 
-    public int moving_cube_move_dir;
+    int movingCubeMoveDir;
 
-    public UndoData(CubePos player_pos) {
-        this.player_pos.init(player_pos);
+    UndoData(CubeLocation playerLocation) {
+        this.playerLocation.init(playerLocation);
 
-        moving_cube = null;
-        moving_cube_pos.reset();
+        movingCube = null;
+        movingCubeLocation.reset();
 
-        mover_cube = null;
+        moverCube = null;
     }
 }

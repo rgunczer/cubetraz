@@ -1,4 +1,4 @@
-package com.almagems.cubetraz.utils;
+package com.almagems.cubetraz.scenes.level;
 
 import com.almagems.cubetraz.cubes.Cube;
 
