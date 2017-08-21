@@ -30,7 +30,9 @@ final class HUD {
     private TexturedQuad mSymbolDeath;
 
     private Text mTextMotto = new Text();
-    
+
+    private boolean mFlashMotto = false;
+
     private Text mTextPause = new Text();
     private Text mTextUndo = new Text();
     private Text mTextHint = new Text();
@@ -273,6 +275,10 @@ final class HUD {
         }
     }
 
+    void flashMotto(boolean value) {
+        mFlashMotto = value;
+    }
+
     void setupAppear() {
 	    mState = HUDStateEnum.Appear;
     
@@ -367,6 +373,7 @@ final class HUD {
     public void init() {
         float deviceScale = Game.graphics.deviceScale;
         mTutorActive = false;
+        mFlashMotto = false;
         mPosCenter = new Vector2(Game.graphics.halfWidth, Game.graphics.halfHeight);
         mShowPrepareSolving = false;
         mHilitePause = mHiliteUndo = mHiliteHint = mHiliteSolver = false;
@@ -381,8 +388,9 @@ final class HUD {
         mTextMoves.init("MOVES\n0");
         mTextMotto.init("MOTTO\n0\n0");
     
-        float scale = 0.33f * deviceScale;
-        mTextLevel.setScale(scale, scale);
+        float scale = 0.4f * deviceScale;
+        mTextLevel.setScale(scale*1.1f, scale);
+        scale = 0.33f * deviceScale;
         mTextStars.setScale(scale, scale);
         mTextMoves.setScale(scale, scale);
         mTextMotto.setScale(scale, scale);
@@ -405,7 +413,7 @@ final class HUD {
 	    mPosXTextLeftStart = -100.0f * deviceScale;
 	    mPosXTextLeftEnd = 5.0f * deviceScale;
 
-	    mPosYMottoStart = -10.0f * deviceScale;
+	    mPosYMottoStart = -15.0f * deviceScale;
 	    mPosYMottoEnd = 30.0f * deviceScale;
 	
         mPosXTextRightStart = Game.graphics.width + (75.0f * deviceScale);
@@ -672,7 +680,11 @@ final class HUD {
 
             vec.x = graphics.width - 5.0f * graphics.deviceScale;
             vec.y = mPosYMotto;
-            mTextMotto.emitt(vec, colorText);
+            if (mFlashMotto) {
+                mTextMotto.emitt(vec, Color.WHITE);
+            } else {
+                mTextMotto.emitt(vec, colorText);
+            }
         }
     
         float yOffset = 14.0f * graphics.deviceScale;

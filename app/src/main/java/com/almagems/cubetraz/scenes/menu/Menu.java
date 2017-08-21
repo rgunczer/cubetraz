@@ -1468,7 +1468,7 @@ public final class Menu extends Scene {
             graphics.addCubeWithColor(cube.tx, cube.ty, cube.tz, cube.colorCurrent);
         }
         graphics.updateBuffers();
-        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
         graphics.resetBufferIndices();
         size = mCubesFace.size();
@@ -1477,7 +1477,7 @@ public final class Menu extends Scene {
             graphics.addCubeWithColor(cube.tx, cube.ty, cube.tz, cube.colorCurrent);
         }
         graphics.updateBuffers();
-        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
     }
 
     private void drawCubeHiLite(Color color) {
@@ -2332,7 +2332,7 @@ public final class Menu extends Scene {
         mNavigator.applyRotations();
 
         glPushMatrix();
-        glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
         graphics.resetBufferIndices();
 
@@ -2473,7 +2473,7 @@ public final class Menu extends Scene {
 //        }
 
         glPushMatrix();
-        glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
         graphics.textureLevelCubes.bind();
         drawLevelCubes();
@@ -2490,7 +2490,7 @@ public final class Menu extends Scene {
         graphics.bindStreamSources3d();
 
         glPushMatrix();
-            glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+            glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
             graphics.textureFonts.bind();
 

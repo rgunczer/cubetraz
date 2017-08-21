@@ -660,7 +660,7 @@ public final class Animator extends Scene {
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
         }
         graphics.updateBuffers();
-        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 	
 	    Color color = new Color(Game.faceColor);
 	    graphics.resetBufferIndices();
@@ -670,7 +670,7 @@ public final class Animator extends Scene {
             graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
         graphics.updateBuffers();
-	    graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+	    graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
     }
 
     private void drawLevelCubes() {
@@ -911,7 +911,7 @@ public final class Animator extends Scene {
         }
 
 	    glPushMatrix();
-	    glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+	    glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
 	    drawLevelCubes();
     

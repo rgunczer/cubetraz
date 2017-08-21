@@ -715,7 +715,7 @@ public final class Intro extends Scene {
             if (count_base > 0 || count_face > 0) {
                 graphics.textureGrayConcrete.bind();
                 glPushMatrix();
-                glTranslatef(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+                glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
                 glDrawArrays(GL_TRIANGLES, 36, count_base);
 
                     if (count_face > 0) {

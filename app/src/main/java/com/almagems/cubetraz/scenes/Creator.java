@@ -13,6 +13,7 @@ import com.almagems.cubetraz.scenes.menu.MenuCube;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.menu.Menu;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -51,7 +52,8 @@ public final class Creator {
 
         try {
             JSONObject jObject = new JSONObject(buffer);
-            value = jObject.getString(level2digits);
+            JSONArray jsonArray = jObject.getJSONArray(level2digits);
+            value = jsonArray.get(0) + "\n" + jsonArray.get(1) + "\n" + jsonArray.get(2);
         } catch (final Exception ex) {
             System.out.print(ex.toString());
         }

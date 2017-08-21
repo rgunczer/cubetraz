@@ -105,7 +105,7 @@ public final class Solvers extends Scene {
 
         m_gap = 0.02f * h;
 
-        m_y[0] = h * 0.8f; // title
+        m_y[0] = h * 0.8f + m_gap;
         m_y[1] = h * 0.5f + m_gap;
         m_y[2] = h * 0.3f + m_gap;
         m_y[3] = h * 0.1f + m_gap;
@@ -164,7 +164,7 @@ public final class Solvers extends Scene {
         float halfWidth = Game.graphics.halfWidth;
 
         pos.x = halfWidth - m_text_title.getHalfWidth();
-        pos.y = m_y[0] + m_h * 0.3f + m_gap;
+        pos.y = m_y[0] + m_h * 0.2f + m_gap;
         m_text_title.emitt(pos, color);
 
         pos.x = halfWidth - m_text_avail.getHalfWidth();

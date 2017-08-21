@@ -30,8 +30,8 @@ public class GameOptions {
         save();
     }
 
-    //public boolean getCanSkipIntro() { return mCanSkipIntro; }
-    public boolean getCanSkipIntro() { return true; } // TODO: remove this in final version
+    public boolean getCanSkipIntro() { return mCanSkipIntro; }
+    //public boolean getCanSkipIntro() { return true; } // TODO: remove this in final version
     public void setCanSkipIntro(boolean value) {
         mCanSkipIntro = value;
         save();
@@ -43,7 +43,7 @@ public class GameOptions {
     }
 
     public int getSolverCount() {
-        return 1; // TODO: remove
+        return 180; // TODO: remove
         //return mSolverCount;
     }
 

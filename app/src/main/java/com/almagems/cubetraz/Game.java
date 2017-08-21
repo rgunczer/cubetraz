@@ -378,10 +378,10 @@ public final class Game {
     public static final AnimInitData anim_init_data = new AnimInitData();
     public static final LevelInitData levelInitData = new LevelInitData();
 
-    public static final Vector cube_offset = new Vector();
+    public static final Vector cubeOffset = new Vector();
     public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
 
-    public static boolean canPlayLockedLevels = true;
+    public static boolean canPlayLockedLevels = false;
 
     public static Color faceColor = new Color(191, 204, 191, 255);
     public static Color baseColor = new Color(230, 230, 230, 255);
@@ -443,7 +443,7 @@ public final class Game {
         initSymbols();
 
         float size = (MAX_CUBE_COUNT * CUBE_SIZE) - CUBE_SIZE;
-        cube_offset.x = cube_offset.y = cube_offset.z = size / -2.0f;
+        cubeOffset.x = cubeOffset.y = cubeOffset.z = size / -2.0f;
 
         Creator.createCubes();
 
@@ -483,7 +483,7 @@ public final class Game {
             case Normal: str = "NORMAL-" + levelNumber + " " + (progress.isSolvedNormal(levelNumber) ? "\nSOLVED" : ""); break;
             case Hard: str = "HARD-" + levelNumber + " " + (progress.isSolvedHard(levelNumber) ? "\nSOLVED" : ""); break;
         }
-        return str;
+        return str.trim();
     }
 
     public static void levelComplete() {

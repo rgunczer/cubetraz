@@ -380,7 +380,7 @@ public final class Outro extends Scene {
 
         graphics.textureGrayConcrete.bind();
         graphics.updateBuffers();
-        graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+        graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
     }
 
     private void drawText() {
@@ -516,7 +516,7 @@ public final class Outro extends Scene {
             graphics.resetBufferIndices();
             graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
             graphics.updateBuffers();
-            graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+            graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
             glPopMatrix();
         } else {
@@ -526,7 +526,7 @@ public final class Outro extends Scene {
             graphics.resetBufferIndices();
             graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
             graphics.updateBuffers();
-            graphics.renderTriangles(Game.cube_offset.x, Game.cube_offset.y, Game.cube_offset.z);
+            graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
             glPopMatrix();
         }
