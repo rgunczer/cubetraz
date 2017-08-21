@@ -92,7 +92,9 @@ public final class GameProgress {
             ar[i].reset();
         }
 
-        ar[0].stars = Game.LEVEL_UNLOCKED; // unlock first level
+        if (fileName.equals(SAVE_GAME_FILE_EASY)) {
+            ar[0].stars = Game.LEVEL_UNLOCKED; // unlock first level on easy face
+        }
 
         try {
             FileInputStream fis = Game.getContext().openFileInput(fileName);
