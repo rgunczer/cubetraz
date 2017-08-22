@@ -2461,7 +2461,7 @@ public final class Level extends Scene {
 
         if (!moverCubes.isEmpty()) {
             MoverCube moverCube;
-            size = movingCubes.size();
+            size = moverCubes.size();
             for (int i = 0; i < size; ++i) {
                 moverCube = moverCubes.get(i);
                 moverCube.reposition();
