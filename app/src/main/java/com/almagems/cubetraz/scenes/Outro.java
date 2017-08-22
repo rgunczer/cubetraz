@@ -173,7 +173,7 @@ public final class Outro extends Scene {
             }
         }
 
-        mPosCubePlayer.init(Game.getCubePosAt(Game.level.mPlayerCube.getLocation()));
+        mPosCubePlayer.init(Game.getCubePosition(Game.level.mPlayerCube.getLocation()));
 
         Game.graphics.setLightPosition(mPosLightCurrent);
     }
@@ -295,7 +295,7 @@ public final class Outro extends Scene {
         if (mStarsAlpha > 1.0f) {
             mState = OutroStateEnum.OutroExplosion;
             mStarsAlpha = 1.0f;
-            mPosCubePlayer.init(Game.getCubePosAt(4, 4, 4));
+            mPosCubePlayer.init(Game.getCubePosition(4, 4, 4));
             mDegreePlayerCube = 0.0f;
             setupExplosion();
             Game.audio.playMusic(MUSIC_VECTORS);
@@ -420,11 +420,11 @@ public final class Outro extends Scene {
         Vector2 pos = new Vector2();
         pos.x = Game.graphics.halfWidth - mTextCenter[0].getHalfWidth();
         pos.y = Game.graphics.halfHeight + mTextCenter[0].getHalfHeight();
-        mTextCenter[0].emitt(pos, color);
+        mTextCenter[0].emit(pos, color);
 
         pos.x = Game.graphics.halfWidth - mTextCenter[1].getHalfWidth();
         pos.y = Game.graphics.halfHeight - mTextCenter[1].getHalfHeight();
-        mTextCenter[1].emitt(pos, color);
+        mTextCenter[1].emit(pos, color);
 
         glPushMatrix();
         glTranslatef(Game.graphics.deviceScale, Game.graphics.deviceScale, 0.0f);
@@ -438,11 +438,11 @@ public final class Outro extends Scene {
 
         pos.x = Game.graphics.halfWidth - mTextCenter[0].getHalfWidth();
         pos.y = Game.graphics.halfHeight + mTextCenter[0].getHalfHeight();
-        mTextCenter[0].emitt(pos, color);
+        mTextCenter[0].emit(pos, color);
 
         pos.x = Game.graphics.halfWidth - mTextCenter[1].getHalfWidth();
         pos.y = Game.graphics.halfHeight - mTextCenter[1].getHalfHeight();
-        mTextCenter[1].emitt(pos, color);
+        mTextCenter[1].emit(pos, color);
 
         graphics.updateBuffers();
         graphics.renderTriangles();

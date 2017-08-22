@@ -148,7 +148,7 @@ public final class MenuFaceBuilder {
 		}
 	}
 
-    private static void setupFaceX(final int[] arr, int faceType, CubeFaceNamesEnum faceId) {
+    private static void setupFaceX(final int[] arr, int faceType, CubeFaceNames faceId) {
 	    int x = (faceType == Face_X_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -165,7 +165,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFaceY(final int[] arr, int faceType, CubeFaceNamesEnum faceId) {
+    private static void setupFaceY(final int[] arr, int faceType, CubeFaceNames faceId) {
 	    int y = (faceType == Face_Y_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -182,7 +182,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFaceZ(final int[] arr, int faceType, CubeFaceNamesEnum faceId) {
+    private static void setupFaceZ(final int[] arr, int faceType, CubeFaceNames faceId) {
 	    int z = (faceType == Face_Z_Plus ? MAX_CUBE_COUNT - 1 : 0);
         int counter = 0;
         char ch;
@@ -199,7 +199,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceX(final int[] arr, int faceType, CubeFaceNamesEnum faceName, int x, Color color) {
+    private static void setupFontFaceX(final int[] arr, int faceType, CubeFaceNames faceName, int x, Color color) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -217,7 +217,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceY(final int[] arr, int faceType, CubeFaceNamesEnum faceName, int y, Color color) {
+    private static void setupFontFaceY(final int[] arr, int faceType, CubeFaceNames faceName, int y, Color color) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -235,7 +235,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceZ(final int[] arr, int faceType, CubeFaceNamesEnum faceName, int z, Color color) {
+    private static void setupFontFaceZ(final int[] arr, int faceType, CubeFaceNames faceName, int z, Color color) {
         int counter = 0;
         char ch;
 	    Cube cube;
@@ -253,7 +253,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceSymbolX(final int[] a, int faceType, CubeFaceNamesEnum faceName, int x, Color color) {
+    private static void setupFontFaceSymbolX(final int[] a, int faceType, CubeFaceNames faceName, int x, Color color) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -271,7 +271,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceSymbolY(final int[] a, int faceType, CubeFaceNamesEnum faceName, int y, Color color) {
+    private static void setupFontFaceSymbolY(final int[] a, int faceType, CubeFaceNames faceName, int y, Color color) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -289,7 +289,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    private static void setupFontFaceSymbolZ(final int[] a, int faceType, CubeFaceNamesEnum faceName, int z, Color color) {
+    private static void setupFontFaceSymbolZ(final int[] a, int faceType, CubeFaceNames faceName, int z, Color color) {
         int counter = 0;
         int symbol_id;
 	    Cube cube;
@@ -307,7 +307,7 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void build(CubeFaceNamesEnum faceId, int faceType) {
+    public static void build(CubeFaceNames faceId, int faceType) {
 	    buildCubeFaces(faceId, faceType);
 	    buildTitleTexts(faceId, faceType);
 	    buildTexts(faceId, faceType, false);
@@ -325,7 +325,7 @@ public final class MenuFaceBuilder {
         return arr;
     }
 
-    private static void buildCubeFaces(CubeFaceNamesEnum faceName, int faceType) {
+    private static void buildCubeFaces(CubeFaceNames faceName, int faceType) {
         String str = getFace(faceName);
         int[] arr = convertToIntArray(str);
 
@@ -351,7 +351,7 @@ public final class MenuFaceBuilder {
         cubeFont = cube.fonts[faceType];
 
         if (cubeFont != null) {
-            texturedQuad = cubeFont.getFont();
+            texturedQuad = cubeFont.texturedQuad;
         
             if (texturedQuad != null) {
                 ch = texturedQuad.ch;
@@ -360,13 +360,13 @@ public final class MenuFaceBuilder {
         }
     }
 
-    static void buildTexts(CubeFaceNamesEnum faceId, int faceType, boolean alt) {
+    static void buildTexts(CubeFaceNames faceName, int faceType, boolean alt) {
         String str;
 	
 	    if (!alt) {
-            str = getFaceText(faceId);
+            str = getFaceText(faceName);
         } else {
-            str = getFaceHelpText(faceId);
+            str = getFaceHelpText(faceName);
         }
 
         int[] arr = convertToIntArray(str);
@@ -380,15 +380,15 @@ public final class MenuFaceBuilder {
         Color color = Game.textColor;
 
 	    switch (faceType) {
-		    case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceId, x - 1, color); break;
+		    case Face_X_Plus: 	setupFontFaceX(arr, faceType, faceName, x - 1, color); break;
 		    case Face_X_Minus:
-		        setupFontFaceX(arr, faceType, faceId, x + 1, color);
+		        setupFontFaceX(arr, faceType, faceName, x + 1, color);
                 break;
-		    case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceId, y - 1, color); break;
+		    case Face_Y_Plus: 	setupFontFaceY(arr, faceType, faceName, y - 1, color); break;
 		    case Face_Y_Minus: {
-			    setupFontFaceY(arr, faceType, faceId, y + 1, color);
+			    setupFontFaceY(arr, faceType, faceName, y + 1, color);
             
-                if ( CubeFaceNamesEnum.Face_Score == faceId) {
+                if ( CubeFaceNames.Face_Score == faceName) {
                     CubeLocation cp;
                     cp = new CubeLocation(1, 0, 6);
                     setFontFromCube(Game.menu.m_cubefont_noads, cp, new CubeLocation(0, 1, 0), faceType);
@@ -406,9 +406,9 @@ public final class MenuFaceBuilder {
 			break;
 			
 			case Face_Z_Plus: {
-				setupFontFaceZ(arr, faceType, faceId, z - 1, color);
+				setupFontFaceZ(arr, faceType, faceName, z - 1, color);
             
-            	if (CubeFaceNamesEnum.Face_Menu == faceId) {
+            	if (CubeFaceNames.Face_Menu == faceName) {
                 	CubeLocation cp;
                 	cp = new CubeLocation(1, 5, 8);
                 	setFontFromCube(Game.menu.m_cubefont_play, cp, new CubeLocation(0, 0, -1), faceType);
@@ -426,12 +426,12 @@ public final class MenuFaceBuilder {
 			break;
 			
 			case Face_Z_Minus:
-			    setupFontFaceZ(arr, faceType, faceId, z + 1, color);
+			    setupFontFaceZ(arr, faceType, faceName, z + 1, color);
                 break;
 		}
 	}
 
-    private static void buildTitleTexts(CubeFaceNamesEnum faceName, int faceType) {
+    private static void buildTitleTexts(CubeFaceNames faceName, int faceType) {
     	String str = getFaceTitle(faceName);
         int[] arr = convertToIntArray(str);
 
@@ -453,7 +453,7 @@ public final class MenuFaceBuilder {
 		}	    
 	}
 
-    private static void buildSymbolsOnFace(CubeFaceNamesEnum faceId, int faceType) {
+    private static void buildSymbolsOnFace(CubeFaceNames faceId, int faceType) {
 		int[] arr = getFaceSymbol(faceId);
 
 		doTransforms(arr);
@@ -474,7 +474,7 @@ public final class MenuFaceBuilder {
 		}    
 	}
 
-    private static void buildSymbolsOnBase(CubeFaceNamesEnum faceId, int faceType) {
+    private static void buildSymbolsOnBase(CubeFaceNames faceId, int faceType) {
     	int[] arr = getFaceSymbolOnBase(faceId);
 
 		doTransforms(arr);
@@ -495,7 +495,7 @@ public final class MenuFaceBuilder {
 		}    
 	}
 
-    private static String getFaceHelpText(CubeFaceNamesEnum faceId) {
+    private static String getFaceHelpText(CubeFaceNames faceId) {
 		switch (faceId) {
 			case Face_Tutorial:
                 return
@@ -561,7 +561,7 @@ public final class MenuFaceBuilder {
         return score;
     }
 
-    private static String getFaceText(CubeFaceNamesEnum faceName) {
+    private static String getFaceText(CubeFaceNames faceName) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -779,7 +779,7 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-    private static String getFaceTitle(CubeFaceNamesEnum faceId) {
+    private static String getFaceTitle(CubeFaceNames faceId) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -997,7 +997,7 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-    private static String getFace(CubeFaceNamesEnum faceId) {
+    private static String getFace(CubeFaceNames faceId) {
 		final String empty =
 		"xxxxxxxxx" +
 		"x       x" +
@@ -1215,7 +1215,7 @@ public final class MenuFaceBuilder {
 		return null;
 	}
 
-    private static int[] getFaceSymbol(CubeFaceNamesEnum faceId) {
+    private static int[] getFaceSymbol(CubeFaceNames faceId) {
 		switch (faceId) {
 			case Face_Menu:
                 return new int[]{
@@ -1246,7 +1246,7 @@ public final class MenuFaceBuilder {
     }
 
 
-	private static int[] getFaceSymbolOnBase(CubeFaceNamesEnum faceId) {
+	private static int[] getFaceSymbolOnBase(CubeFaceNames faceId) {
 		switch (faceId) {
 			case Face_Menu:
                 return new int[] {

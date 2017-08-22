@@ -8,21 +8,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
 import com.almagems.cubetraz.Game;
-//import android.util.Log;
 
-public final class TextureHelper {
 
-	//private static final String TAG = "TextureHelper";
-	
-	public static Texture loadTexture(int resourceId) {
+final class TextureHelper {
+
+	 static Texture loadTexture(int resourceId) {
 		
 		final int[] textureObjectIds = new int[1];
 		glGenTextures(1, textureObjectIds, 0);
 		
 		if (textureObjectIds[0] == 0) {
-//			if (LoggerConfig.ON) {
-//				Log.w(TAG, "Could not generate new OpenGL texture object.");
-//			}
 			return null;
 		}
 	
@@ -34,10 +29,8 @@ public final class TextureHelper {
 		final Bitmap bmp = BitmapFactory.decodeResource(Game.getContext().getResources(), resourceId, options);
         final int w = bmp.getWidth();
         final int h = bmp.getHeight();
-        final String resourceName = Game.getContext().getResources().getResourceEntryName(resourceId);
-        //System.out.println("Texture info[" + resourceName + "], w:" + w + " h:" + h);
 
-        texture.name = resourceName;
+        texture.name = Game.getContext().getResources().getResourceEntryName(resourceId);
         texture.width = w;
         texture.height = h;
 
@@ -47,9 +40,6 @@ public final class TextureHelper {
 		Bitmap bitmap = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), flip, true);
 		
 		if (bitmap == null) {
-//			if (LoggerConfig.ON) {
-//				Log.w(TAG, "Resource ID " + resourceId + " could not be decoded.");
-//			}
 			glDeleteTextures(1, textureObjectIds, 0);
 			return null;
 		}
@@ -68,6 +58,5 @@ public final class TextureHelper {
 
         return texture;
 	}
-	
-	
+
 }

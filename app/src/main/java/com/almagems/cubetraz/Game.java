@@ -36,6 +36,8 @@ import static android.opengl.GLES10.*;
 
 public final class Game {
 
+    private static float hiliteTimeout = 0f;
+
     public static final int MAX_TUTOR_COUNT = 11;
 
     public static final float EPSILON_SMALL = 0.001f;
@@ -79,7 +81,6 @@ public final class Game {
     public static final int AxisMovement_X_Minus = 4;
     public static final int AxisMovement_Z_Plus = 5;
     public static final int AxisMovement_Z_Minus = 6;
-    public static final int AxisMovement_No_Move = 7;
 
     public static final int Scene_Intro = 0;
     public static final int Scene_Menu = 1;
@@ -179,8 +180,7 @@ public final class Game {
 
     public enum AnimTypeEnum {
         AnimToLevel,
-        AnimToMenuFromPaused,
-        AnimToMenuFromCompleted
+        AnimToMenu,
     }
 
     public enum LevelCubeDecalTypeEnum {
@@ -202,8 +202,6 @@ public final class Game {
     }
 
     public enum CubeTypeEnum {
-        CubeIsNotSet,
-
         CubeIsInvisible,
         CubeIsInvisibleAndObstacle,
 
@@ -211,7 +209,7 @@ public final class Game {
         CubeIsVisibleAndObstacleAndLevel
     }
 
-    public enum CubeFaceNamesEnum {
+    public enum CubeFaceNames {
         Face_Empty,
 
         Face_Tutorial,
@@ -331,14 +329,14 @@ public final class Game {
     private MainRenderer renderer;
     public static Graphics graphics;
 
-    public static Game getInstance() {
+    static Game getInstance() {
         if (instance == null) {
             instance = new Game();
         }
         return instance;
     }
 
-    public void setRenderer(MainRenderer renderer) {
+    void setRenderer(MainRenderer renderer) {
         this.renderer = renderer;
     }
 
@@ -353,12 +351,10 @@ public final class Game {
 
     public static boolean fboLost = false;
 
-    // audio
     public static Audio audio;
 
     private boolean initialized;
 
-    // scenes
     private static Scene currentScene;
     private static Intro intro;
     public static Menu menu;
@@ -370,18 +366,16 @@ public final class Game {
 
     public static float dirtyAlpha;
     public static float minSwipeLength;
-    public static TexturedQuad m_newlinefont = new TexturedQuad();
 
-    public static StatInitData statInitData = new StatInitData();
-
-    public static final MenuInitData menu_init_data = new MenuInitData();
-    public static final AnimInitData anim_init_data = new AnimInitData();
+    public static final StatInitData statInitData = new StatInitData();
+    public static final MenuInitData menuInitData = new MenuInitData();
+    public static final AnimInitData animInitData = new AnimInitData();
     public static final LevelInitData levelInitData = new LevelInitData();
 
     public static final Vector cubeOffset = new Vector();
-    public static CubeFaceData[] ar_cubefacedata = new CubeFaceData[6];
+    public static CubeFaceData[] cubeFacesData = new CubeFaceData[6];
 
-    public static boolean canPlayLockedLevels = false;
+    public static boolean canPlayLockedLevels = true; // TODO: modify this in final version
 
     public static Color faceColor = new Color(191, 204, 191, 255);
     public static Color baseColor = new Color(230, 230, 230, 255);
@@ -391,6 +385,9 @@ public final class Game {
     public static Color symbolColor = new Color(23, 23, 23, 150);
     public static Color textColorOnCubeFace = new Color(76, 0, 0, 153);
     public static Color levelNumberColor = new Color(0, 0, 0, 150);
+    public static Color cubeHiLiteColor = new Color(160, 160, 160, 255);
+
+    public static final ArrayList<Cube> cubesToHilite = new ArrayList<>();
 
     static {
         for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
@@ -400,7 +397,7 @@ public final class Game {
             }
         }
         for (int i = 0; i < 6; ++i) {
-            ar_cubefacedata[i] = new CubeFaceData();
+            cubeFacesData[i] = new CubeFaceData();
         }
     }
 
@@ -449,11 +446,13 @@ public final class Game {
 
         level = new Level();
         menu = new Menu();
+        animator = new Animator();
+        statistics = new Statistics();
 
         LevelBuilder.level = level;
     }
 
-    public void onSurfaceChanged() {
+     void onSurfaceChanged() {
         minSwipeLength = graphics.height / 10;
 
         if (currentScene == null) {
@@ -484,12 +483,6 @@ public final class Game {
             case Hard: str = "HARD-" + levelNumber + " " + (progress.isSolvedHard(levelNumber) ? "\nSOLVED" : ""); break;
         }
         return str.trim();
-    }
-
-    public static void levelComplete() {
-        if (level != null) {
-            level.eventLevelComplete();
-        }
     }
 
     public static boolean isObstacle(CubeLocation cube_pos) {
@@ -570,7 +563,7 @@ public final class Game {
 
     public static  void clearCubeFaceData() {
         for (int i = 0; i < 6; ++i) {
-            ar_cubefacedata[i].clear();
+            cubeFacesData[i].clear();
         }
         resetCubesFonts();
     }
@@ -586,21 +579,17 @@ public final class Game {
                 break;
 
             case Scene_Menu:
-                //showFullScreenAd();
                 intro = null;
 
                 if (outro != null) {
                     outro = null;
-                    menu_init_data.reappear = false;
+                    menuInitData.reappear = false;
                 }
                 menu.init();
                 scene = menu;
                 break;
 
             case Scene_Anim:
-                if (animator == null) {
-                    animator = new Animator();
-                }
                 animator.init();
                 scene = animator;
                 break;
@@ -619,9 +608,6 @@ public final class Game {
                 break;
 
             case Scene_Stat:
-                if (statistics == null) {
-                    statistics = new Statistics();
-                }
                 statistics.init();
                 scene = statistics;
                 break;
@@ -635,10 +621,10 @@ public final class Game {
                 break;
 
             default:
-                System.out.println("ShowScene: SCENE NOT FOUND!");
                 break;
         }
         currentScene = scene;
+        currentScene.update();
     }
 
     public static Vector2 rotate(Vector2 a, float degree) {
@@ -646,10 +632,6 @@ public final class Game {
         float c = (float)Math.cos(angle);
         float s = (float)Math.sin(angle);
         return new Vector2(c*a.x - s*a.y, s*a.x + c*a.y);
-    }
-
-    public static TexturedQuad getNewLineFont() {
-        return m_newlinefont;
     }
 
     public static void resetCubes() {
@@ -697,11 +679,11 @@ public final class Game {
         }
     }
 
-    public static Vector getCubePosAt(CubeLocation pos) {
-        return getCubePosAt(pos.x, pos.y, pos.z);
+    public static Vector getCubePosition(CubeLocation pos) {
+        return getCubePosition(pos.x, pos.y, pos.z);
     }
 
-    public static Vector getCubePosAt(int x, int y, int z) {
+    public static Vector getCubePosition(int x, int y, int z) {
         Vector pos = new Vector();
 
         pos.x = cubes[x][y][z].tx;
@@ -827,7 +809,7 @@ public final class Game {
         System.out.println("Number of Invisible Cubes: " + number_of_invisible_cubes);
     }
 
-    public static void setCubeTypeOnFace(Cube cube, char ch, int face_type, CubeFaceNamesEnum faceName) {
+    public static void setCubeTypeOnFace(Cube cube, char ch, int face_type, CubeFaceNames faceName) {
         int levelNumber = -1;
 
         switch (faceName) {
@@ -888,7 +870,7 @@ public final class Game {
     }
 
     public static void setCubeTypeInvisible(CubeLocation cube_pos) {
-        //printf("\nSet Cube Type Invisible (%d, %d, %d)", cube_pos.x, cube_pos.y, cube_pos.z);
+        //printf("\nSet Cube Type Invisible (%d, %d, %d)", location.x, location.y, location.z);
         cubes[cube_pos.x][cube_pos.y][cube_pos.z].type = CubeTypeEnum.CubeIsInvisible;
     }
 
@@ -1689,6 +1671,81 @@ public final class Game {
 
         if (y_plus){
             graphics.drawCubeFaceY_Plus();
+        }
+    }
+
+    public static void setAnimFaces(DifficultyEnum difficulty, int levelNumber) {
+        AnimInitData animInitData = Game.animInitData;
+        switch (difficulty) {
+            case Easy:
+                if (levelNumber >= 1 && levelNumber <= 15) {
+                    animInitData.setFaces(CubeFaceNames.Face_Easy01, CubeFaceNames.Face_Easy04, CubeFaceNames.Face_Menu);
+                }
+
+                if (levelNumber >= 16 && levelNumber <= 30) {
+                    animInitData.setFaces(CubeFaceNames.Face_Easy02, CubeFaceNames.Face_Easy01, CubeFaceNames.Face_Empty);
+                }
+
+                if (levelNumber >= 31 && levelNumber <= 45) {
+                    animInitData.setFaces(CubeFaceNames.Face_Easy03, CubeFaceNames.Face_Easy02, CubeFaceNames.Face_Empty);
+                }
+
+                if (levelNumber >= 46 && levelNumber <= 60) {
+                    animInitData.setFaces(CubeFaceNames.Face_Easy04, CubeFaceNames.Face_Easy03, CubeFaceNames.Face_Empty);
+                }
+                break;
+
+            case Normal:
+                if (levelNumber >= 1 && levelNumber <= 15) {
+                    animInitData.setFaces(CubeFaceNames.Face_Normal01, CubeFaceNames.Face_Normal04, CubeFaceNames.Face_Easy01);
+                }
+
+                if (levelNumber >= 16 && levelNumber <= 30) {
+                    animInitData.setFaces(CubeFaceNames.Face_Normal02, CubeFaceNames.Face_Normal01, CubeFaceNames.Face_Empty);
+                }
+
+                if (levelNumber >= 31 && levelNumber <= 45) {
+                    animInitData.setFaces(CubeFaceNames.Face_Normal03, CubeFaceNames.Face_Normal02, CubeFaceNames.Face_Empty);
+                }
+
+                if (levelNumber >= 46 && levelNumber <= 60) {
+                    animInitData.setFaces(CubeFaceNames.Face_Normal04, CubeFaceNames.Face_Normal03, CubeFaceNames.Face_Empty);
+                }
+                break;
+
+            case Hard:
+                if (levelNumber >= 1 && levelNumber <= 15) {
+                    animInitData.setFaces(CubeFaceNames.Face_Hard01, CubeFaceNames.Face_Hard04, CubeFaceNames.Face_Normal01);
+                }
+
+                if (levelNumber >= 16 && levelNumber <= 30) {
+                    animInitData.setFaces(CubeFaceNames.Face_Hard02, CubeFaceNames.Face_Hard01, CubeFaceNames.Face_Empty);
+                }
+
+                if (levelNumber >= 31 && levelNumber <= 45) {
+                    animInitData.setFaces(CubeFaceNames.Face_Hard03, CubeFaceNames.Face_Hard02, CubeFaceNames.Face_Empty);
+                }
+
+                if (levelNumber >= 46 && levelNumber <= 60) {
+                    animInitData.setFaces(CubeFaceNames.Face_Hard04, CubeFaceNames.Face_Hard03, CubeFaceNames.Face_Empty);
+                }
+                break;
+        }
+
+    }
+
+    public static void updateHiLitedCubes() {
+        hiliteTimeout -= 0.01f;
+
+        if (hiliteTimeout < 0.0f) {
+            hiliteTimeout = 0.02f;
+
+            if (!cubesToHilite.isEmpty()) {
+                Cube cube = cubesToHilite.get(0);
+                cubesToHilite.remove(cube);
+
+                cube.colorCurrent.init(Game.cubeHiLiteColor);
+            }
         }
     }
 }

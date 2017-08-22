@@ -119,11 +119,6 @@ public final class Statistics extends Scene {
 
         initFallingCubes();
 
-        mTextTitle.setUseBigFonts(true);
-        mTextMiddle.setUseBigFonts(true);
-        mTextMoves.setUseBigFonts(true);
-        mTextTap.setUseBigFonts(true);
-
         mTextTitle.setVSPace(1.0f);
         mTextMiddle.setVSPace(0.8f);
         mTextMoves.setVSPace(0.8f);
@@ -135,7 +130,6 @@ public final class Statistics extends Scene {
     public void setup(StatInitData sid) {
         mStarCount = sid.stars;
 
-        // texts
         mTextTitle.setVSPace(1.0f);
 
         mTextTitle.init(sid.title);
@@ -358,7 +352,7 @@ public final class Statistics extends Scene {
 
             pos.x = graphics.halfWidth - mTextTitle.getHalfWidth();
             pos.y = m_rating_y - mTextTitle.getHalfHeight();
-            mTextTitle.emitt(pos, color);
+            mTextTitle.emit(pos, color);
             shouldDraw = true;
         }
 
@@ -370,7 +364,7 @@ public final class Statistics extends Scene {
             pos.x = graphics.halfWidth - mTextMiddle.getHalfWidth();
             pos.y = m_title_y - mTextMiddle.getHalfHeight();
 
-            mTextMiddle.emitt(pos, color);
+            mTextMiddle.emit(pos, color);
 
             // moves
             scale = graphics.deviceScale + m_text_scales[2] - (0.25f * graphics.deviceScale);
@@ -379,7 +373,7 @@ public final class Statistics extends Scene {
             pos.x = graphics.halfWidth - mTextMoves.getHalfWidth();
             pos.y = m_moves_y - mTextMoves.getHalfHeight();
 
-            mTextMoves.emitt(pos, color);
+            mTextMoves.emit(pos, color);
             shouldDraw = true;
         }
 
@@ -390,7 +384,7 @@ public final class Statistics extends Scene {
             pos.x = graphics.halfWidth - mTextTap.getHalfWidth();
             pos.y = m_tap_y;
 
-            mTextTap.emitt(pos, tapToContinueColor);
+            mTextTap.emit(pos, tapToContinueColor);
             shouldDraw = true;
         }
         return shouldDraw;

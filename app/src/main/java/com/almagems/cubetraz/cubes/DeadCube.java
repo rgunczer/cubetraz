@@ -45,7 +45,7 @@ public final class DeadCube {
 
     private void setCubePos(CubeLocation coordinate) {
         mLocation.init(coordinate);
-        pos.init(Game.getCubePosAt(mLocation));
+        pos.init(Game.getCubePosition(mLocation));
     }
 
     public void init(CubeLocation cubePos) {

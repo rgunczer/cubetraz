@@ -646,44 +646,44 @@ final class HUD {
         if (mTextLevel.isVisible()) {
             vec.x = mPosXTextRight - shadow_offset_x;
             vec.y = (pause_quad_y + 9.0f * graphics.deviceScale) - shadow_offset_y;
-            mTextLevel.emitt(vec, colorShadow);
+            mTextLevel.emit(vec, colorShadow);
 
             vec.x = mPosXTextRight;
             vec.y = pause_quad_y + 9.0f * graphics.deviceScale;
-            mTextLevel.emitt(vec, colorText);
+            mTextLevel.emit(vec, colorText);
         }
     
         if (mTextStars.isVisible()) {
             vec.x = mPosXTextRight - shadow_offset_x;
             vec.y = (undo_quad_y - 12.5f * graphics.deviceScale) - shadow_offset_y;
-            mTextStars.emitt(vec, colorShadow);
+            mTextStars.emit(vec, colorShadow);
 
             vec.x = mPosXTextRight;
             vec.y = undo_quad_y - 12.5f * graphics.deviceScale;
-            mTextStars.emitt(vec, colorText);
+            mTextStars.emit(vec, colorText);
         }
     
         if (mTextMoves.isVisible()) {
             vec.x = mPosXTextRight - shadow_offset_x;
             vec.y = (hint_quad_y - 10.0f * graphics.deviceScale) + shadow_offset_y;
-            mTextMoves.emitt(vec, colorShadow);
+            mTextMoves.emit(vec, colorShadow);
 
             vec.x = mPosXTextRight;
             vec.y = hint_quad_y - 10.0f * graphics.deviceScale;
-            mTextMoves.emitt(vec, colorText);
+            mTextMoves.emit(vec, colorText);
         }
     
         if (mTextMotto.isVisible()) {
             vec.x = (graphics.width - 5.0f * graphics.deviceScale) - shadow_offset_x;
             vec.y = mPosYMotto + shadow_offset_y;
-            mTextMotto.emitt(vec, colorShadow);
+            mTextMotto.emit(vec, colorShadow);
 
             vec.x = graphics.width - 5.0f * graphics.deviceScale;
             vec.y = mPosYMotto;
             if (mFlashMotto) {
-                mTextMotto.emitt(vec, Color.WHITE);
+                mTextMotto.emit(vec, Color.WHITE);
             } else {
-                mTextMotto.emitt(vec, colorText);
+                mTextMotto.emit(vec, colorText);
             }
         }
     
@@ -692,41 +692,41 @@ final class HUD {
         if (mTextPause.isVisible()) {
             vec.x = mPosXTextLeft + shadow_offset_x;
             vec.y = pause_quad_y - yOffset - shadow_offset_y;
-            mTextPause.emitt(vec, colorShadow);
+            mTextPause.emit(vec, colorShadow);
 
             vec.x = mPosXTextLeft;
             vec.y = pause_quad_y - yOffset;
-            mTextPause.emitt(vec, mHilitePause ? colorHilite : colorText);
+            mTextPause.emit(vec, mHilitePause ? colorHilite : colorText);
         }
         
         if (mTextUndo.isVisible()) {
             vec.x = mPosXTextLeft + shadow_offset_x;
             vec.y = undo_quad_y - yOffset - shadow_offset_y;
-            mTextUndo.emitt(vec, colorShadow);
+            mTextUndo.emit(vec, colorShadow);
 
             vec.x = mPosXTextLeft;
             vec.y = undo_quad_y - yOffset;
-            mTextUndo.emitt(vec, mHiliteUndo ? colorHilite : colorText);
+            mTextUndo.emit(vec, mHiliteUndo ? colorHilite : colorText);
         }
         
         if (mTextHint.isVisible()) {
             vec.x = mPosXTextLeft + shadow_offset_x;
             vec.y = hint_quad_y - yOffset + shadow_offset_y;
-            mTextHint.emitt(vec, colorShadow);
+            mTextHint.emit(vec, colorShadow);
 
             vec.x = mPosXTextLeft;
             vec.y = hint_quad_y - yOffset;
-            mTextHint.emitt(vec, mHiliteHint ? colorHilite : colorText);
+            mTextHint.emit(vec, mHiliteHint ? colorHilite : colorText);
         }
         
         if (mTextSolver.isVisible()) {
             vec.x = mPosXTextLeft + shadow_offset_x;
             vec.y = solver_quad_y - yOffset + shadow_offset_y;
-            mTextSolver.emitt(vec, colorShadow);
+            mTextSolver.emit(vec, colorShadow);
 
             vec.x = mPosXTextLeft;
             vec.y = solver_quad_y - yOffset;
-            mTextSolver.emitt(vec, mHiliteSolver ? colorHilite : colorText);
+            mTextSolver.emit(vec, mHiliteSolver ? colorHilite : colorText);
         }
 
         graphics.updateBuffers();
@@ -761,11 +761,11 @@ final class HUD {
 
             vec.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
             vec.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
-            mArTextCenter[0].emitt(vec, color);
+            mArTextCenter[0].emit(vec, color);
 
             vec.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
             vec.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
-            mArTextCenter[1].emitt(vec, color);
+            mArTextCenter[1].emit(vec, color);
 
             glPushMatrix();
             glTranslatef(graphics.deviceScale, graphics.deviceScale, 0.0f);
@@ -777,11 +777,11 @@ final class HUD {
 
             vec.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
             vec.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
-            mArTextCenter[0].emitt(vec, color);
+            mArTextCenter[0].emit(vec, color);
 
             vec.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
             vec.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
-            mArTextCenter[1].emitt(vec, color);
+            mArTextCenter[1].emit(vec, color);
 
             graphics.updateBuffers();
             graphics.renderTriangles();

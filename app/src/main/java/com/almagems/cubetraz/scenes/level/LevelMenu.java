@@ -4,7 +4,7 @@ import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Color;
-import com.almagems.cubetraz.scenes.menu.MenuCube;
+import com.almagems.cubetraz.cubes.MenuCube;
 
 import static com.almagems.cubetraz.Game.AxisMovement_X_Plus;
 import static com.almagems.cubetraz.Game.AxisMovement_Z_Minus;

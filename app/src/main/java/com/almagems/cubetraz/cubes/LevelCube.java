@@ -7,10 +7,9 @@ import com.almagems.cubetraz.graphics.TexturedQuad;
 
 import static com.almagems.cubetraz.Game.*;
 
-
 public final class LevelCube {
             
-    public int level_number;
+    public int levelNumber;
 	public Color color;
     public Vector pos;
     
@@ -18,36 +17,36 @@ public final class LevelCube {
     public TexturedQuad pStars;
     public TexturedQuad pSolver;
 
-    public Color color_number;
-    public Color color_stars_and_solver;
+    public Color colorNumber;
+    public Color colorStarsAndSolver;
     
-    public Vector font_pos;
+    public Vector fontPos;
     
-    public CubeLocation cube_pos;
-	public CubeFaceNamesEnum face_id;
-    public int face_type;
+    public CubeLocation location;
+	public CubeFaceNames faceName;
+    public int faceType;
 
 
     public LevelCube() {
     }
 
-    public void init(int level_number, int face_type, CubeFaceNamesEnum face_id, CubeLocation cube_pos) {
-        this.face_type = face_type;
-        this.face_id = face_id;
-        this.color = new Color(255 - level_number, 0, 0, 255);
-        this.cube_pos = cube_pos;
-        this.level_number = level_number;
+    public void init(int levelNumber, int faceType, CubeFaceNames faceName, CubeLocation location) {
+        this.faceType = faceType;
+        this.faceName = faceName;
+        this.color = new Color(255 - levelNumber, 0, 0, 255);
+        this.location = location;
+        this.levelNumber = levelNumber;
     
-        pos = Game.getCubePosAt(cube_pos);
+        pos = Game.getCubePosition(location);
     
-        pNumber = Game.getNumberFont(level_number);
+        pNumber = Game.getNumberFont(levelNumber);
         pStars = Game.getSymbol(Symbol_Lock);
         pSolver = null;
     
-        color_number = new Color(Game.levelNumberColor);
-        color_stars_and_solver = new Color(255, 255, 255, 180);
+        colorNumber = new Color(Game.levelNumberColor);
+        colorStarsAndSolver = new Color(255, 255, 255, 180);
     
-        font_pos = pos;
+        fontPos = pos;
     }
 
     public void setStars(int starCount) {

@@ -11,7 +11,7 @@ import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
 import com.almagems.cubetraz.Game;
-import com.almagems.cubetraz.scenes.menu.MenuCube;
+import com.almagems.cubetraz.cubes.MenuCube;
 import com.almagems.cubetraz.cubes.MoverCube;
 import com.almagems.cubetraz.cubes.MovingCube;
 import com.almagems.cubetraz.cubes.PlayerCube;
@@ -104,7 +104,7 @@ public final class Level extends Scene {
     public ArrayList<Cube> cubesHint = new ArrayList<>();
 
     private Cube[] mHintCubes = new Cube[MAX_HINT_CUBES];
-    private boolean mShowHint2Nd;
+    private boolean mShowHint2nd;
     private int mHintIndex;
     private float mHintTimeout;
 
@@ -184,7 +184,7 @@ public final class Level extends Scene {
         mLevelMenu.init();
 
         mRepositionView = false;
-        mShowHint2Nd = false;
+        mShowHint2nd = false;
     }
 
     public CubeLocation getKeyPos() {
@@ -216,7 +216,7 @@ public final class Level extends Scene {
         switch (levelInitData.initAction) {
             case FullInit: {
                 mMenuCubeHilite = null;
-                mShowHint2Nd = false;
+                mShowHint2nd = false;
 
                 mHiliteTimeout = 0.0f;
 
@@ -768,7 +768,7 @@ public final class Level extends Scene {
 
             mLevelMenu.setFontColor(Game.fontColorOnMenuCube);
 
-            mShowHint2Nd = false;
+            mShowHint2nd = false;
 
             for (int i = 0; i < MAX_HINT_CUBES; ++i) {
                 mHintCubes[i] = null;
@@ -1000,7 +1000,7 @@ public final class Level extends Scene {
 
             mLevelMenu.setFontColor(Game.fontColorOnMenuCube);
 
-            mShowHint2Nd = false;
+            mShowHint2nd = false;
 
             for (int i = 0; i < MAX_HINT_CUBES; ++i) {
                 mHintCubes[i] = null;
@@ -1026,7 +1026,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeLow.isDone()) { // quit
             if (mLevelMenu.cubeLow.cubeLocation.z == 8) {
-                mLevelMenu.cubeLow.lst_cubes_to_hilite.clear();
+                Game.cubesToHilite.clear();
                 eventQuit();
             }
         }
@@ -1138,7 +1138,7 @@ public final class Level extends Scene {
             }
         }
 
-        if (mShowHint2Nd) {
+        if (mShowHint2nd) {
             mHintTimeout -= 0.05f;
 
             if (mHintTimeout < 0.0f) {
@@ -1163,40 +1163,14 @@ public final class Level extends Scene {
                         }
                     }
                 } else {
-                    mShowHint2Nd = false;
+                    mShowHint2nd = false;
                 }
             }
         }
     }
 
     private void warmCubes() {
-        mHiliteTimeout -= 0.01f;
-
-        if (mHiliteTimeout < 0.0f) {
-            mHiliteTimeout = 0.05f;
-            Color color = new Color(99, 99, 99, 255);
-
-            if (!mLevelMenu.cubeUp.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = mLevelMenu.cubeUp.lst_cubes_to_hilite.get(0);
-                mLevelMenu.cubeUp.lst_cubes_to_hilite.remove(p);
-
-                p.colorCurrent.init(color);
-            }
-
-            if (!mLevelMenu.cubeMid.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = mLevelMenu.cubeMid.lst_cubes_to_hilite.get(0);
-                mLevelMenu.cubeMid.lst_cubes_to_hilite.remove(p);
-
-                p.colorCurrent.init(color);
-            }
-
-            if (!mLevelMenu.cubeLow.lst_cubes_to_hilite.isEmpty()) {
-                Cube p = mLevelMenu.cubeLow.lst_cubes_to_hilite.get(0);
-                mLevelMenu.cubeLow.lst_cubes_to_hilite.remove(p);
-
-                p.colorCurrent.init(color);
-            }
-        }
+        Game.updateHiLitedCubes();
 
         int size;
         Cube cube;
@@ -1306,8 +1280,8 @@ public final class Level extends Scene {
                 CubeLocation player = mPlayerCube.getLocation();
                 CubeLocation key = mLocationKeyCube;
 
-                if (player.x == key.x && player.y == key.y && player.z == key.z) {
-                    Game.levelComplete();
+                if (player.equals(key)) {
+                    eventLevelComplete();
                 } else {
                     if (mPlayerCube.deadCube != null) {
                         setupDeadCube(mPlayerCube.deadCube);
@@ -1802,7 +1776,7 @@ public final class Level extends Scene {
         size = fonts.size();
         for(int i = 0; i < size; ++i) {
             cubeFont = fonts.get(i);
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -1814,7 +1788,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.cubeLocation.x == 7) {
             cubeFont = mLevelMenu.fontUp;
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -1826,7 +1800,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.cubeLocation.x == 7) {
             cubeFont = mLevelMenu.fontMid;
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -1838,7 +1812,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.cubeLocation.x == 7) {
             cubeFont = mLevelMenu.fontLow;
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_up_left.x,  pFont.tx_up_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
@@ -1865,7 +1839,7 @@ public final class Level extends Scene {
         size = fonts.size();
         for(int i = 0; i < size; ++i) {
             cubeFont = fonts.get(i);
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
@@ -1877,7 +1851,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.cubeLocation.z == 1) {
             cubeFont = mLevelMenu.fontUp;
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
@@ -1889,7 +1863,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.cubeLocation.z == 1) {
             cubeFont = mLevelMenu.fontMid;
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
@@ -1901,7 +1875,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.cubeLocation.z == 1) {
             cubeFont = mLevelMenu.fontLow;
-            pFont = cubeFont.getFont();
+            pFont = cubeFont.texturedQuad;
 
             coords.tx0 = new Vector2(pFont.tx_lo_left.x,  pFont.tx_lo_left.y);
             coords.tx1 = new Vector2(pFont.tx_lo_right.x, pFont.tx_lo_right.y);
@@ -2001,7 +1975,7 @@ public final class Level extends Scene {
 
             TexCoordsQuad coords = new TexCoordsQuad();
 
-            TexturedQuad p = mFontHilite.getFont();
+            TexturedQuad p = mFontHilite.texturedQuad;
 
             coords.tx0 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
             coords.tx1 = new Vector2(p.tx_up_left.x,  p.tx_up_left.y);
@@ -2308,7 +2282,7 @@ public final class Level extends Scene {
         if (0 == mMovesCounter) {
             mHud.showHintToBegin( solution.getFirstStep() );
         } else {
-            mShowHint2Nd = true;
+            mShowHint2nd = true;
             mHintIndex = 0;
             mHintTimeout = 0.0f;
             
@@ -2348,30 +2322,59 @@ public final class Level extends Scene {
         mHud.setupDisappear();
     }
 
+    private CubeFaceNames getCubeFaceName(int levelNumber, DifficultyEnum difficulty) {
+        if (levelNumber > 0 && levelNumber <= 15) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy01;
+                case Normal: return CubeFaceNames.Face_Normal01;
+                case Hard: return CubeFaceNames.Face_Hard01;
+            }
+        } else if (levelNumber > 15 && levelNumber <= 30) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy02;
+                case Normal: return CubeFaceNames.Face_Normal02;
+                case Hard: return CubeFaceNames.Face_Hard02;
+            }
+        } else if (levelNumber > 30 && levelNumber <= 45) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy03;
+                case Normal: return CubeFaceNames.Face_Normal03;
+                case Hard: return CubeFaceNames.Face_Hard03;
+            }
+        } else if (levelNumber > 45 && levelNumber <= 60) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy04;
+                case Normal: return CubeFaceNames.Face_Normal04;
+                case Hard: return CubeFaceNames.Face_Hard04;
+            }
+        }
+
+        return CubeFaceNames.Face_Easy01;
+    }
+
     private void eventQuit() {
-        Game.anim_init_data.list_cubes_base.clear();
+        CubeFaceNames faceName = getCubeFaceName(mLevelNumber, mDifficulty);
+        System.out.println("Face name is: " + faceName.toString());
+        Game.menuInitData.cubeFaceName = faceName;
+
+        Game.animInitData.cubesBase.clear();
         int size;
         Cube cube;
 
         size = cubesBase.size();
         for(int i = 0; i < size; ++i) {
             cube = cubesBase.get(i);
-            Game.anim_init_data.list_cubes_base.add(cube);
+            Game.animInitData.cubesBase.add(cube);
         }
 
         size = cubesEdge.size();
         for(int i = 0; i < size; ++i) {
             cube = cubesEdge.get(i);
-            Game.anim_init_data.list_cubes_base.add(cube);
+            Game.animInitData.cubesBase.add(cube);
         }
 
-        Game.anim_init_data.cube_rotation_degree = mCubeRotation.degree;
-
-        if (State.Paused == mState) {
-            Game.anim_init_data.type = AnimTypeEnum.AnimToMenuFromPaused;
-        } else {
-            Game.anim_init_data.type = AnimTypeEnum.AnimToMenuFromCompleted;
-        }
+        Game.animInitData.cubeRotationDegree = mCubeRotation.degree;
+        Game.animInitData.type = AnimTypeEnum.AnimToMenu;
 
         Game.showScene(Scene_Anim);
     }
@@ -2399,8 +2402,6 @@ public final class Level extends Scene {
                     if (LEVEL_LOCKED == Game.progress.getStarsEasy(mLevelNumber + 1))
                     Game.progress.setStarsEasy(mLevelNumber + 1, LEVEL_UNLOCKED);
                 }
-
-                //reportAchievementEasy();
                 break;
 
             case Normal:
@@ -2412,8 +2413,6 @@ public final class Level extends Scene {
                         Game.progress.setStarsNormal(mLevelNumber + 1, LEVEL_UNLOCKED);
                     }
                 }
-
-                //reportAchievementNormal();
                 break;
 
             case Hard:
@@ -2425,13 +2424,10 @@ public final class Level extends Scene {
                         Game.progress.setStarsHard(mLevelNumber + 1, LEVEL_UNLOCKED);
                     }
                 }
-
-                //reportAchievementHard();
                 break;
         } // switch
 
         Game.progress.save();
-        //Game.submitScore(cCubetraz::GetStarCount());
         mState = State.SetupAnimToCompleted;
         Game.showScene(Scene_Stat);
     }
@@ -2555,30 +2551,33 @@ public final class Level extends Scene {
 
     @Override
     public void onFingerUp(float x, float y, int fingerCount) {
-/*
+
+        if (x > 600 && y > 400) {
     int ln = mLevelNumber + 1;
     DifficultyEnum diff = mDifficulty;
 
     if (ln > 60)
     {
         ln = 1;
-        if (Easy == mDifficulty)
-            diff = Normal;
+        if (DifficultyEnum.Easy == mDifficulty)
+            diff = DifficultyEnum.Normal;
 
-        if (Normal == mDifficulty)
-            diff = Hard;
+        if (DifficultyEnum.Normal == mDifficulty)
+            diff = DifficultyEnum.Hard;
 
-        if (Hard == mDifficulty)
-            diff = Easy;
+        if (DifficultyEnum.Hard == mDifficulty)
+            diff = DifficultyEnum.Easy;
     }
 
-    engine.levelInitData.difficulty = diff;
-    engine.levelInitData.levelNumber = ln;
-    engine.levelInitData.initAction = FullInit;
+    Game.levelInitData.difficulty = diff;
+    Game.levelInitData.levelNumber = ln;
+    Game.levelInitData.initAction = LevelInitActionEnum.FullInit;
 
-    engine.ShowScene(Scene_Level);
-    return;
-*/
+    Game.showScene(Scene_Level);
+
+            return;
+        }
+
         mPosUp.x = x;
         mPosUp.y = y;
 
@@ -2683,6 +2682,9 @@ public final class Level extends Scene {
     }
 
     private void fingerUpPlaying(float x, float y, int fingerCount) {
+
+
+
         if (mHud.getShowHint()) {
             return;
         }

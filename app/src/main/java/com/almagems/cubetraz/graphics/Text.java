@@ -13,7 +13,6 @@ public final class Text {
     private Vector2 scale = new Vector2();
     private int m_length;
     private int m_lines_count;
-    private boolean m_use_big_fonts;
     private boolean m_visible;
 
     private TextAlignEnum m_align;
@@ -27,9 +26,7 @@ public final class Text {
     private float m_half_height;
 
 
-    // ctor
     public Text() {
-        m_use_big_fonts = false;
         m_vspace = 1.0f;
         m_lines_count = 0;
         m_length = 0;
@@ -126,7 +123,7 @@ public final class Text {
         m_half_height = m_height / 2.0f;
     }
 
-    public void emitt(Vector2 pos, Color color) {
+    public void emit(Vector2 pos, Color color) {
         int size;
         TexturedQuad pFont;
         float x_start;
@@ -160,9 +157,6 @@ public final class Text {
         }
     }
 
-    public void setUseBigFonts(boolean use) {
-        m_use_big_fonts = use;
-    }
     public void setAlign(TextAlignEnum align) {
         m_align = align;
     }

@@ -165,31 +165,31 @@ public final class Solvers extends Scene {
 
         pos.x = halfWidth - m_text_title.getHalfWidth();
         pos.y = m_y[0] + m_h * 0.2f + m_gap;
-        m_text_title.emitt(pos, color);
+        m_text_title.emit(pos, color);
 
         pos.x = halfWidth - m_text_avail.getHalfWidth();
         pos.y = m_y[0] + m_gap;
-        m_text_avail.emitt(pos, color);
+        m_text_avail.emit(pos, color);
 
         pos.x = halfWidth - m_text_show_the_solution.getHalfWidth();
         pos.y = m_y[1] + m_h * 0.3f + m_gap;
-        m_text_show_the_solution.emitt(pos, colorHi);
+        m_text_show_the_solution.emit(pos, colorHi);
 
         pos.x = halfWidth - m_text_for_one_solver.getHalfWidth();
         pos.y = m_y[1] - m_h * 0.01f + m_gap;
-        m_text_for_one_solver.emitt(pos, colorHi);
+        m_text_for_one_solver.emit(pos, colorHi);
 
         pos.x = halfWidth - m_text_buy_pack_of.getHalfWidth();
         pos.y = m_y[2] + m_h * 0.3f + m_gap;
-        m_text_buy_pack_of.emitt(pos, color);
+        m_text_buy_pack_of.emit(pos, color);
 
         pos.x = halfWidth - m_text_buy_5_solver.getHalfWidth();
         pos.y = m_y[2] - m_h * 0.01f + m_gap;
-        m_text_buy_5_solver.emitt(pos, color);
+        m_text_buy_5_solver.emit(pos, color);
 
         pos.x = halfWidth - m_text_dismiss.getHalfWidth();
         pos.y = m_y[3] + m_h * 0.18f + m_gap;
-        m_text_dismiss.emitt(pos, color);
+        m_text_dismiss.emit(pos, color);
     }
 
     @Override

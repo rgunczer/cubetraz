@@ -1,36 +1,20 @@
 package com.almagems.cubetraz.cubes;
 
-
 import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.TexturedQuad;
-import com.almagems.cubetraz.scenes.menu.MenuCube;
-
-import static com.almagems.cubetraz.Game.*;
-
 
 public final class CubeFont {
     
-    private TexturedQuad m_pFont = new TexturedQuad();
-    private CubeLocation m_cube_pos = new CubeLocation();
-    private MenuCube m_pTriggerCube = new MenuCube();
-    private AxisEnum m_trigger_axis;
-    private AxisEnum m_align_axis;
-    private int m_align_axis_value;
-    private int m_align_value;
-        
-    private Vector pos_origin = new Vector();
-            
+    public TexturedQuad texturedQuad = new TexturedQuad();
+
     public Vector pos = new Vector();
+
     public Color colorCurrent = new Color();
     public Color color = new Color();
 
 
-    public CubeFont() {
-    
-    }
-    
     public void warmByFactor(int factor) {
         if (colorCurrent.r < color.r) {
             colorCurrent.r += factor;
@@ -97,64 +81,24 @@ public final class CubeFont {
         }
     }
     
-    public void setColor(Color col) { 
-        color.init(col);
-        colorCurrent.init(col);
-    }
-    
-    public void setAxis(AxisEnum trigger_axis, AxisEnum align_axis) {
-//        m_trigger_axis = trigger_axis;
-//        m_align_axis = align_axis;
-//
-//        switch (m_align_axis) {
-//            case X_Axis:
-//                m_align_axis_value = &m_pTriggerCube->cubeLocation.x;
-//                m_align_value = &cubeLocation.x;
-//                break;
-//
-//            case Y_Axis:
-//                m_align_axis_value = &m_pTriggerCube->cubeLocation.y;
-//                m_align_value = &cubeLocation.y;
-//                break;
-//
-//            case Z_Axis:
-//                m_align_axis_value = &m_pTriggerCube->cubeLocation.z;
-//                m_align_value = &cubeLocation.z;
-//                break;
-//        }
-    }
-    
-    public void setTriggerCube(MenuCube cube) { 
-        m_pTriggerCube = cube; 
-    }
-        
-    public TexturedQuad getFont() {
-        return m_pFont; 
+    public void setColor(Color color) {
+        this.color.init(color);
+        this.colorCurrent.init(color);
     }
 
-    public void init(CubeLocation cube_pos) {
-        m_trigger_axis = AxisEnum.X_Axis;
-        m_pTriggerCube = null;
-
-        m_cube_pos.init(cube_pos);
-
-        Vector v = Game.getCubePosAt(m_cube_pos);
-        pos_origin.init(v);
+    public void init(CubeLocation location) {
+        Vector v = Game.getCubePosition(location);
         pos.init(v);
     }
 
-    public void init(char ch, CubeLocation cube_pos) {
-        m_pFont = Game.getFont(ch);
-        if (m_pFont == null) {
-            System.out.println("m_pFont is null");
-        }
-
-        init(cube_pos);
+    public void init(char ch, CubeLocation location) {
+        texturedQuad = Game.getFont(ch);
+        init(location);
     }
 
-    public void init(int type, CubeLocation cube_pos) {
-        m_pFont = Game.getSymbol(type);    
-        init(cube_pos);
+    public void init(int type, CubeLocation location) {
+        texturedQuad = Game.getSymbol(type);
+        init(location);
     }
 
 }

@@ -38,7 +38,7 @@ public final class PlayerCube {
 
     public void setLocation(int x, int y, int z) {
 	    this.location.init(x, y, z);
-	    pos = Game.getCubePosAt(location);
+	    pos = Game.getCubePosition(location);
 	    mDone = true;
     }
 
@@ -246,7 +246,7 @@ public final class PlayerCube {
 		
 		    if (location.x != cube_pos.x || location.y != cube_pos.y || location.z != cube_pos.z) {
 			    destination = cube_pos;
-			    Vector pos_destination = Game.getCubePosAt(cube_pos);
+			    Vector pos_destination = Game.getCubePosition(cube_pos);
                 m_moveType = type;
 			
 			    switch (type) {

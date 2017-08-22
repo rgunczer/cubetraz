@@ -9,7 +9,7 @@ import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
 import com.almagems.cubetraz.cubes.LevelCube;
-import com.almagems.cubetraz.scenes.menu.MenuCube;
+import com.almagems.cubetraz.cubes.MenuCube;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.menu.Menu;
 
@@ -299,7 +299,7 @@ public final class Creator {
         menu.m_cubeCredits = menuCube;
     }
 
-    public static void addLevelCube(int levelNumber, int faceType, CubeFaceNamesEnum faceId, int x, int y, int z) {
+    public static void addLevelCube(int levelNumber, int faceType, CubeFaceNames faceId, int x, int y, int z) {
         LevelCube cube = getLevelCubeFromPool();
         cube.init(levelNumber, faceType, faceId, new CubeLocation(x, y, z));
     
@@ -331,24 +331,24 @@ public final class Creator {
             default:
                 break;
         }
-        Game.ar_cubefacedata[faceType].lst_level_cubes.add(cube);
+        Game.cubeFacesData[faceType].levelCubes.add(cube);
     }
 
-	public static void addCubeFont(final char ch, CubeLocation cubePos, int faceType, CubeFaceNamesEnum faceName, Color color) {
+	public static void addCubeFont(final char ch, CubeLocation cubePos, int faceType, CubeFaceNames faceName, Color color) {
 		CubeFont cubeFont = getCubeFontFromPool();
 		Cube cube = Game.cubes[cubePos.x][cubePos.y][cubePos.z];
 
 		cubeFont.init(ch, cubePos);
         cubeFont.setColor(color);
 
-        if (faceName == CubeFaceNamesEnum.Face_Tutorial) {
+        if (faceName == CubeFaceNames.Face_Tutorial) {
             cubeFont.colorCurrent.a = 0;
         }
 
 		cube.fonts[faceType] = cubeFont;
 	}
 
-	public static void addCubeFontSymbol(final int symbolId, CubeLocation cubePos, int faceType, CubeFaceNamesEnum faceName, Color color) {
+	public static void addCubeFontSymbol(final int symbolId, CubeLocation cubePos, int faceType, CubeFaceNames faceName, Color color) {
 		CubeFont cubeFont = getCubeFontFromPool();
 		Cube cube = Game.cubes[cubePos.x][cubePos.y][cubePos.z];
 		

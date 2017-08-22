@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.cubes;
 
-
 public final class CubeLocation {
 
     public int x;
@@ -39,4 +38,7 @@ public final class CubeLocation {
         this.z = z;
     }
 
+    public boolean equals(CubeLocation other) {
+        return (this.x == other.x && this.y == other.y && this.z == other.z);
+    }
 }

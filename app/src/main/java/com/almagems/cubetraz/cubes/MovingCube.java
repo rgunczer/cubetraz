@@ -54,7 +54,7 @@ public final class MovingCube {
     public void setCubePos(CubeLocation coordinate) {
 	    m_done = true;
         m_cube_pos.init(coordinate);
-        pos = Game.getCubePosAt(m_cube_pos);
+        pos = Game.getCubePosition(m_cube_pos);
     }
 
 	public void init(MovingCube other) {
@@ -291,7 +291,7 @@ public final class MovingCube {
 		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {
 			    m_cube_pos_destination = cube_pos;
             
-			    Vector pos_destination = Game.getCubePosAt(cube_pos);
+			    Vector pos_destination = Game.getCubePosition(cube_pos);
                 m_moveType = m_move_dir;
 
 			    switch (m_move_dir) {
