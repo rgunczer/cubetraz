@@ -45,14 +45,9 @@ public class LevelMenu {
     }
 
     void setupForAnimCompleted() {
-        cubeUp.setCubePos(0, 5, 0);
-        cubeMid.setCubePos(0, 3, 0);
-        cubeLow.setCubePos(0, 1, 0);
-
-        CubeLocation offset = new CubeLocation(0,0,1);
-        cubeUp.setHiliteOffset(offset);
-        cubeMid.setHiliteOffset(offset);
-        cubeLow.setHiliteOffset(offset);
+        cubeUp.setCubeLocation(0, 5, 0);
+        cubeMid.setCubeLocation(0, 3, 0);
+        cubeLow.setCubeLocation(0, 1, 0);
 
         cubeUp.moveOnAxis(AxisMovement_X_Plus);
         cubeMid.moveOnAxis(AxisMovement_X_Plus);
@@ -60,14 +55,9 @@ public class LevelMenu {
     }
 
     void setupForAnimPaused() {
-        cubeUp.setCubePos(0, 5, 8);
-        cubeMid.setCubePos(0, 3, 8);
-        cubeLow.setCubePos(0, 1, 8);
-
-        CubeLocation offset = new CubeLocation(1, 0, 0);
-        cubeUp.setHiliteOffset(offset);
-        cubeMid.setHiliteOffset(offset);
-        cubeLow.setHiliteOffset(offset);
+        cubeUp.setCubeLocation(0, 5, 8);
+        cubeMid.setCubeLocation(0, 3, 8);
+        cubeLow.setCubeLocation(0, 1, 8);
 
         cubeUp.moveOnAxis(AxisMovement_Z_Minus);
         cubeMid.moveOnAxis(AxisMovement_Z_Minus);

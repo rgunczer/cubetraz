@@ -36,6 +36,10 @@ import static android.opengl.GLES10.*;
 
 public final class Game {
 
+    public static final Vector Xaxis = new Vector(1f, 0f, 0f);
+    public static final Vector Yaxis = new Vector(0f, 1f, 0f);
+    public static final Vector Zaxis = new Vector(0f, 0f, 1f);
+
     private static float hiliteTimeout = 0f;
 
     public static final int MAX_TUTOR_COUNT = 11;
@@ -235,7 +239,6 @@ public final class Game {
     }
 
     public enum PickRenderTypeEnum {
-        RenderAll,
         RenderOnlyMovingCubes,
         RenderOnlyLevelCubes,
         RenderOnlyMovingCubePlay,
@@ -254,8 +257,7 @@ public final class Game {
 
     public enum CompletedFaceNextActionEnum {
         Finish,
-        Next,
-        Buy_Full_Version,
+        Next
     }
 
     public enum FaceTransformsEnum {
@@ -809,7 +811,7 @@ public final class Game {
         System.out.println("Number of Invisible Cubes: " + number_of_invisible_cubes);
     }
 
-    public static void setCubeTypeOnFace(Cube cube, char ch, int face_type, CubeFaceNames faceName) {
+    public static void setCubeTypeOnFace(Cube cube, char ch, int faceType, CubeFaceNames faceName) {
         int levelNumber = -1;
 
         switch (faceName) {
@@ -866,7 +868,7 @@ public final class Game {
 
         cube.type = CubeTypeEnum.CubeIsInvisibleAndObstacle;
 
-        Creator.addLevelCube(levelNumber, face_type, faceName, cube.x, cube.y, cube.z);
+        Creator.addLevelCube(levelNumber, faceType, faceName, cube.x, cube.y, cube.z);
     }
 
     public static void setCubeTypeInvisible(CubeLocation cube_pos) {

@@ -307,12 +307,12 @@ public final class MenuFaceBuilder {
 	    }
     }
 
-    public static void build(CubeFaceNames faceId, int faceType) {
-	    buildCubeFaces(faceId, faceType);
-	    buildTitleTexts(faceId, faceType);
-	    buildTexts(faceId, faceType, false);
-	    buildSymbolsOnFace(faceId, faceType);
-	    buildSymbolsOnBase(faceId, faceType);
+    public static void build(CubeFaceNames faceName, int faceType) {
+	    buildCubeFaces(faceName, faceType);
+	    buildTitleTexts(faceName, faceType);
+	    buildTexts(faceName, faceType, false);
+	    buildSymbolsOnFace(faceName, faceType);
+	    buildSymbolsOnBase(faceName, faceType);
 	
 	    resetTransforms();
     }

@@ -164,11 +164,6 @@ public final class Creator {
                 ch = 'F';
                 text = "FINISH";
                 break;
-            
-            case Buy_Full_Version:
-                ch = 'G';
-                text = "GET FULL";
-                break;
         }
     
         CubeFont cubeFont;
@@ -271,39 +266,39 @@ public final class Creator {
         location.init(7, 8, 3);
         color.init(255, 255, 255, 255);
 	    menuCube.init(location, color);
-        menu.m_arOptionsCubes[0] = menuCube;
+        menu.optionCubes[0] = menuCube;
     
         menuCube = new MenuCube();
         location.init(1, 8, 3);
         color.init(254, 255, 255, 255);
 	    menuCube.init(location, color);
-        menu.m_arOptionsCubes[1] = menuCube;
+        menu.optionCubes[1] = menuCube;
     
         menuCube = new MenuCube();
         location.init(7, 8, 6);
         color.init(253, 255, 255, 255);
 	    menuCube.init(location, color);
-        menu.m_arOptionsCubes[2] = menuCube;
+        menu.optionCubes[2] = menuCube;
     
         menuCube = new MenuCube();
         location.init(1, 8, 6);
         color.init(252, 255, 255, 255);
 	    menuCube.init(location, color);
-        menu.m_arOptionsCubes[3] = menuCube;
+        menu.optionCubes[3] = menuCube;
 
         // credits
         menuCube = new MenuCube();
         location.init(8, 0, 8);
         color.init(1, 100, 100, 255);
         menuCube.init(location, color);
-        menu.m_cubeCredits = menuCube;
+        menu.cubeCredits = menuCube;
     }
 
-    public static void addLevelCube(int levelNumber, int faceType, CubeFaceNames faceId, int x, int y, int z) {
+    public static void addLevelCube(int levelNumber, int faceType, CubeFaceNames faceName, int x, int y, int z) {
         LevelCube cube = getLevelCubeFromPool();
-        cube.init(levelNumber, faceType, faceId, new CubeLocation(x, y, z));
+        cube.init(levelNumber, faceType, faceName, new CubeLocation(x, y, z));
     
-        switch (faceId) {
+        switch (faceName) {
             case Face_Easy01:
             case Face_Easy02:
             case Face_Easy03:

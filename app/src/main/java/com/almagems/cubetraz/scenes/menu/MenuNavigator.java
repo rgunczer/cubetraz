@@ -13,28 +13,40 @@ import static com.almagems.cubetraz.Game.*;
 
 public final class MenuNavigator
 {    
-    private final EaseOutDivideInterpolation m_interpolator = new EaseOutDivideInterpolation();
-    private boolean m_secondary_rotation;
+    private final EaseOutDivideInterpolation mInterpolator = new EaseOutDivideInterpolation();
+    private boolean mSecondaryRotation;
     
-    public CubeRotation cubeRotation = new CubeRotation();
-    public CubeRotation cubeRotationSecondary = new CubeRotation();
+    public CubeRotation primaryRotation = new CubeRotation();
+    public CubeRotation secondaryRotation = new CubeRotation();
    
     private CubeFaceNavigationEnum mNavigation;
 	
-    public boolean isCurrentNavigation(CubeFaceNavigationEnum navigation) {
-        if (navigation == mNavigation) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+     boolean isCurrentNavigation(CubeFaceNavigationEnum navigation) {
+        return (navigation == mNavigation);
+     }
     
-    public void applyRotations() {
-        glRotatef(cubeRotation.degree, cubeRotation.axis.x, cubeRotation.axis.y, cubeRotation.axis.z);
-        glRotatef(cubeRotationSecondary.degree, cubeRotationSecondary.axis.x, cubeRotationSecondary.axis.y, cubeRotationSecondary.axis.z);
+    void applyRotations() {
+        glRotatef(primaryRotation.degree, primaryRotation.axis.x, primaryRotation.axis.y, primaryRotation.axis.z);
+        glRotatef(secondaryRotation.degree, secondaryRotation.axis.x, secondaryRotation.axis.y, secondaryRotation.axis.z);
+    }
+
+    private String getAxisFromVector(Vector vec) {
+        if (vec.x == 1f && vec.y == 0f && vec.z == 0f) {
+            return "Game.Xaxis";
+        } else if (vec.x == 0f && vec.y == 1f && vec.z == 0f) {
+            return "Game.Yaxis";
+        } else if (vec.x == 0f && vec.y == 0f && vec.z == 1f) {
+            return "Game.Zaxis";
+        }
+        return "";
+    }
+
+    void dump() {
+        System.out.println("mNavigator.primaryRotation.init(" + primaryRotation.degree + "f,  " + getAxisFromVector(primaryRotation.axis) + " );");
+        System.out.println("mNavigator.secondaryRotation.init(" + secondaryRotation.degree + "f, " + getAxisFromVector(secondaryRotation.axis) + ");");
     }
             
-    public void createMenuFaces(boolean tutorial) {
+     void createMenuFaces(boolean tutorial) {
 	    Game.clearCubeFaceData();
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
@@ -58,7 +70,7 @@ public final class MenuNavigator
         MenuFaceBuilder.build(CubeFaceNames.Face_Score, Face_Y_Minus);
     }
 
-    public void createEasyFaces() {
+     void createEasyFaces() {
 	    Game.clearCubeFaceData();
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
@@ -81,7 +93,7 @@ public final class MenuNavigator
         MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Face_Z_Minus);
     }
 
-    public void createNormalFaces() {
+     void createNormalFaces() {
 	    Game.clearCubeFaceData();
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
@@ -106,7 +118,7 @@ public final class MenuNavigator
         MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Face_Z_Minus);
     }
 
-    public void createHardFaces() {
+    void createHardFaces() {
 	    Game.clearCubeFaceData();
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
@@ -136,268 +148,268 @@ public final class MenuNavigator
     public void init() {
         mNavigation = CubeFaceNavigationEnum.NoNavigation;
     
-        cubeRotation.degree = 90.0f;
-        cubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+        primaryRotation.degree = 90.0f;
+        primaryRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
     
-        m_secondary_rotation = false;
+        mSecondaryRotation = false;
     
-        cubeRotationSecondary.degree = 0.0f;
-        cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+        secondaryRotation.degree = 0.0f;
+        secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
     }
 
     public void setup(CubeFaceNavigationEnum navigation) {
         mNavigation = navigation;
     
-        cubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+        primaryRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
     
         final float divisor = 5.0f;
     
         switch (navigation) {
             case Hard3_To_Hard2:
-                m_interpolator.setup(-180.0f, -90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = -180.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(-180.0f, -90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = -180.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Hard1_To_Hard4:
-                m_interpolator.setup(0.0f, 90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(0.0f, 90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
                 break;
             
             case Hard4_To_Hard1:
-                m_interpolator.setup(-270.0f, -360.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = -270.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(-270.0f, -360.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = -270.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
 			    createHardFaces();
                 break;
             
             case Hard4_To_Hard3:
-                m_interpolator.setup(-270.0f, -180.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = -270.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(-270.0f, -180.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = -270.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Hard3_To_Hard4:
-                m_interpolator.setup(-180.0f, -270.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = -180.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(-180.0f, -270.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = -180.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Hard2_To_Hard3:
-                m_interpolator.setup(-90.0f, -180.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = -90.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(-90.0f, -180.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = -90.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
         
             case Hard2_To_Hard1:
-                m_interpolator.setup(-90.0f, 0.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = -90.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(-90.0f, 0.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = -90.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 createHardFaces();
 			    break;
             
             case Hard1_To_Hard2:
-                m_interpolator.setup(0.0f, -90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);;
+                mInterpolator.setup(0.0f, -90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
                 break;
             
             case Normal1_To_Normal4:
-                m_interpolator.setup(0.0f, -90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(0.0f, -90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Plus);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Minus);
                 break;
             
             case Normal4_To_Normal1:
-                m_interpolator.setup(270.0f, 360.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 270.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(270.0f, 360.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 270.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
 			    createNormalFaces();
                 break;
             
             case Normal4_To_Normal3:
-                m_interpolator.setup(270.0f, 180.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 270.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(270.0f, 180.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 270.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
             
             case Normal3_To_Normal4:
-                m_interpolator.setup(180.0f, 270.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 180.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(180.0f, 270.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 180.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
             
             case Normal3_To_Normal2:
-                m_interpolator.setup(180.0f, 90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 180.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(180.0f, 90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 180.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
             
             case Normal2_To_Normal3:
-                m_interpolator.setup(90.0f, 180.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 90.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(90.0f, 180.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 90.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
             
             case Normal2_To_Normal1:
-                m_interpolator.setup(90.0f, 0.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 90.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(90.0f, 0.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 90.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
 			    createNormalFaces();
                 break;
             
             case Normal1_To_Normal2:
-                m_interpolator.setup(0.0f, 90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-                cubeRotationSecondary.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(0.0f, 90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+                secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Plus);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Minus);
                 break;
             
             case Easy1_To_Easy4:
-                m_interpolator.setup(0.0f, -90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(0.0f, -90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
                 break;
             
             case Easy4_To_Easy1:
-                m_interpolator.setup(270.0f, 360.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 270.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(270.0f, 360.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 270.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
 			    createEasyFaces();
                 break;
             
             case Easy4_To_Easy3:
-                m_interpolator.setup(270.0f, 180.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 270.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(270.0f, 180.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 270.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Easy3_To_Easy4:
-                m_interpolator.setup(180.0f, 270.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 180.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(180.0f, 270.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 180.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Easy3_To_Easy2:
-                m_interpolator.setup(180.0f, 90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 180.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(180.0f, 90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 180.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Easy2_To_Easy3:
-                m_interpolator.setup(90.0f, 180.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 90.0f;
-                cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(90.0f, 180.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 90.0f;
+                secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 break;
             
             case Easy1_To_Easy2:
-                m_interpolator.setup(0.0f, 90.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-			    cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(0.0f, 90.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+			    secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
                 MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
                 break;
             
             case Easy2_To_Easy1:
-                m_interpolator.setup(90.0f, 0.0f, divisor);
-                m_secondary_rotation = true;
-                cubeRotationSecondary.degree = 0.0f;
-			    cubeRotationSecondary.axis = new Vector(0.0f, 0.0f, 1.0f);
+                mInterpolator.setup(90.0f, 0.0f, divisor);
+                mSecondaryRotation = true;
+                secondaryRotation.degree = 0.0f;
+			    secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
 			    createEasyFaces();
                 break;
             
             case Menu_To_Easy1:
-                m_interpolator.setup(0.0f, -90.0f, divisor);
+                mInterpolator.setup(0.0f, -90.0f, divisor);
                 createEasyFaces();
                 break;
             
             case Easy1_To_Menu:
-                m_interpolator.setup(-90.0f, 0.0f, divisor);
+                mInterpolator.setup(-90.0f, 0.0f, divisor);
                 createMenuFaces(false);
                 break;
             
             case Easy1_To_Normal1:
-                m_interpolator.setup(-90.0f, -180.0f, divisor);
+                mInterpolator.setup(-90.0f, -180.0f, divisor);
                 createNormalFaces();
                 break;
             
             case Normal1_To_Easy1:
-                m_interpolator.setup(-180.0f, -90.0f, divisor);
+                mInterpolator.setup(-180.0f, -90.0f, divisor);
                 createEasyFaces();
                 break;
             
             case Normal1_To_Hard1:
-                m_interpolator.setup(-180.0f, -270.0f, divisor);
+                mInterpolator.setup(-180.0f, -270.0f, divisor);
                 createHardFaces();
                 break;
             
             case Hard1_To_Normal1:
-                m_interpolator.setup(-270.0f, -180.0f, divisor);
+                mInterpolator.setup(-270.0f, -180.0f, divisor);
                 createNormalFaces();
                 break;
            
 		    case Tutorial_To_Menu:
-                m_interpolator.setup(-270.0f, -360.0f, divisor);
+                mInterpolator.setup(-270.0f, -360.0f, divisor);
 			    createMenuFaces(true);
 			    break;
 			
             case Hard1_To_Menu:
-                m_interpolator.setup(-270.0f, -360.0f, divisor);
+                mInterpolator.setup(-270.0f, -360.0f, divisor);
                 createMenuFaces(false);
                 break;
 
    		    case Options_To_Menu:
-                m_interpolator.setup(90.0f, 0.0f, divisor);
-			    cubeRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(90.0f, 0.0f, divisor);
+			    primaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 //Game.saveOptions();
                 break;
             
             case Menu_To_Options:
-                m_interpolator.setup(0.0f, 90.0f, divisor);
-			    cubeRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(0.0f, 90.0f, divisor);
+			    primaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
 
    		    case Menu_To_Store:
-                m_interpolator.setup(0.0f, -90.0f, divisor);
-			    cubeRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(0.0f, -90.0f, divisor);
+			    primaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
             
 		    case Store_To_Menu:
-                m_interpolator.setup(-90.0f, 0.0f, divisor);
-			    cubeRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
+                mInterpolator.setup(-90.0f, 0.0f, divisor);
+			    primaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
                 break;
             
             default:
@@ -408,290 +420,290 @@ public final class MenuNavigator
     }
 
     public void update() {
-        m_interpolator.interpolate();
+        mInterpolator.interpolate();
     
-        if (m_secondary_rotation) {
-            cubeRotationSecondary.degree = m_interpolator.getValue();
+        if (mSecondaryRotation) {
+            secondaryRotation.degree = mInterpolator.getValue();
         } else {
-            cubeRotation.degree = m_interpolator.getValue();
+            primaryRotation.degree = mInterpolator.getValue();
         }
     
         switch (mNavigation) {
             case Hard3_To_Hard2:            
-                if ( ( Math.abs(cubeRotationSecondary.degree) - 90.0f) < EPSILON) {
-                    cubeRotationSecondary.degree = -90.0f;
+                if ( ( Math.abs(secondaryRotation.degree) - 90.0f) < EPSILON) {
+                    secondaryRotation.degree = -90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Hard1_To_Hard4: 
-                if ( (90.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = -270.0f;
+                if ( (90.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = -270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Hard4_To_Hard1: 
-                if ( 360.0f - Math.abs(cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 0.0f;
+                if ( 360.0f - Math.abs(secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Hard4_To_Hard3:            
-                if ( Math.abs(cubeRotationSecondary.degree) - 180.0f < EPSILON) {
-                    cubeRotationSecondary.degree = -180.0f;
+                if ( Math.abs(secondaryRotation.degree) - 180.0f < EPSILON) {
+                    secondaryRotation.degree = -180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Hard3_To_Hard4:
-                if ( 270.0f - Math.abs(cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = -270.0f;
+                if ( 270.0f - Math.abs(secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = -270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Hard2_To_Hard3:
-                if ( 180.0f - Math.abs(cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = -180.0f;
+                if ( 180.0f - Math.abs(secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = -180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
                 
             case Hard2_To_Hard1:            
-                if ( Math.abs(cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 0.0f;
+                if ( Math.abs(secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Hard1_To_Hard2:            
-                if ( (90.0f - Math.abs(cubeRotationSecondary.degree)) < EPSILON) {
-                    cubeRotationSecondary.degree = -90.0f;
+                if ( (90.0f - Math.abs(secondaryRotation.degree)) < EPSILON) {
+                    secondaryRotation.degree = -90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;            
             
             case Normal1_To_Normal4:             
-                if ( (90.0f - Math.abs(cubeRotationSecondary.degree)) < EPSILON) {
-                    cubeRotationSecondary.degree = 270.0f;
+                if ( (90.0f - Math.abs(secondaryRotation.degree)) < EPSILON) {
+                    secondaryRotation.degree = 270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal4_To_Normal1:             
-                if ( (360.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 0.0f;
+                if ( (360.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal4_To_Normal3:             
-                if ( (cubeRotationSecondary.degree - 180.0f) < EPSILON) {
-                    cubeRotationSecondary.degree = 180.0f;
+                if ( (secondaryRotation.degree - 180.0f) < EPSILON) {
+                    secondaryRotation.degree = 180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal3_To_Normal4:
-                if ( (270.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 270.0f;
+                if ( (270.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal3_To_Normal2:             
-                if ( (cubeRotationSecondary.degree - 90.0f) < EPSILON) {
-                    cubeRotationSecondary.degree = 90.0f;
+                if ( (secondaryRotation.degree - 90.0f) < EPSILON) {
+                    secondaryRotation.degree = 90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal2_To_Normal3:                
-                if ( (180.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 180.0f;
+                if ( (180.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal2_To_Normal1:             
-                if ( (cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 0.0f;
+                if ( (secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Normal1_To_Normal2:            
-                if ( (90.0f - Math.abs(cubeRotationSecondary.degree)) < EPSILON) {
-                    cubeRotationSecondary.degree = 90.0f;
+                if ( (90.0f - Math.abs(secondaryRotation.degree)) < EPSILON) {
+                    secondaryRotation.degree = 90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Easy1_To_Easy4:            
-                if ( (90.0f - Math.abs(cubeRotationSecondary.degree)) < EPSILON) {
-                    cubeRotationSecondary.degree = 270.0f;
+                if ( (90.0f - Math.abs(secondaryRotation.degree)) < EPSILON) {
+                    secondaryRotation.degree = 270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }
                 break;
             
             case Easy4_To_Easy1:            
-                if ( (360.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 0.0f;
+                if ( (360.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;                
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Easy4_To_Easy3:            
-                if ( (cubeRotationSecondary.degree - 180.0f) < EPSILON) {
-                    cubeRotationSecondary.degree = 180.0f;
+                if ( (secondaryRotation.degree - 180.0f) < EPSILON) {
+                    secondaryRotation.degree = 180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }                        
                 break;
             
             case Easy3_To_Easy4:            
-                if ( (270.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 270.0f;
+                if ( (270.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Easy3_To_Easy2:            
-                if ( (cubeRotationSecondary.degree - 90.0f) < EPSILON) {
-                    cubeRotationSecondary.degree = 90.0f;
+                if ( (secondaryRotation.degree - 90.0f) < EPSILON) {
+                    secondaryRotation.degree = 90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Easy2_To_Easy3:             
-                if ( (180.0f - cubeRotationSecondary.degree) < EPSILON) {
-                    cubeRotationSecondary.degree = 180.0f;
+                if ( (180.0f - secondaryRotation.degree) < EPSILON) {
+                    secondaryRotation.degree = 180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Easy1_To_Easy2:            
-                if ( Math.abs(Math.abs(90.0f) - Math.abs(cubeRotationSecondary.degree)) < EPSILON) {
-                    cubeRotationSecondary.degree = 90.0f;
+                if ( Math.abs(Math.abs(90.0f) - Math.abs(secondaryRotation.degree)) < EPSILON) {
+                    secondaryRotation.degree = 90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;                
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Easy2_To_Easy1:            
-                if ( cubeRotationSecondary.degree < EPSILON ) {
-                    cubeRotationSecondary.degree = 0.0f;
+                if ( secondaryRotation.degree < EPSILON ) {
+                    secondaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    m_secondary_rotation = false;
+                    mSecondaryRotation = false;
                 }            
                 break;
             
             case Menu_To_Easy1:            
-                if ( (Math.abs(-90.0f) - Math.abs(cubeRotation.degree))  < EPSILON) {
-                    cubeRotation.degree = -90.0f;
+                if ( (Math.abs(-90.0f) - Math.abs(primaryRotation.degree))  < EPSILON) {
+                    primaryRotation.degree = -90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
             
             case Easy1_To_Menu:            
-                if ( Math.abs(0.0f - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = 0.0f;
+                if ( Math.abs(0.0f - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
             
             case Easy1_To_Normal1:            
-                if ( Math.abs(180.0f - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = -180.0f;
+                if ( Math.abs(180.0f - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = -180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
             
             case Normal1_To_Easy1:            
-                if ( Math.abs(Math.abs(-90.0f) - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = -90.0f;
+                if ( Math.abs(Math.abs(-90.0f) - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = -90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
             
             case Normal1_To_Hard1:            
-                if ( Math.abs(Math.abs(-270.0f) - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = -270.0f;
+                if ( Math.abs(Math.abs(-270.0f) - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = -270.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
             
             case Hard1_To_Normal1:            
-                if ( Math.abs(Math.abs(-180.0f) - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = -180.0f;
+                if ( Math.abs(Math.abs(-180.0f) - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = -180.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
             
 		    case Tutorial_To_Menu:			
             case Hard1_To_Menu:            
-                if ( Math.abs(Math.abs(-360.0f) - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = 0.0f;
+                if ( Math.abs(Math.abs(-360.0f) - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
                 break;
 			
 		    case Menu_To_Options:            
-                if ( Math.abs(90.0f - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = 90.0f;
+                if ( Math.abs(90.0f - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = 90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
 			    break;
             
 		    case Options_To_Menu:            
-                if ( Math.abs(0.0f - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = 0.0f;
+                if ( Math.abs(0.0f - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = 0.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
-                    cubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+                    primaryRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
                 }            
 			    break;
             
 		    case Menu_To_Store:            
-                if ( Math.abs(Math.abs(-90.0f) - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = -90.0f;
+                if ( Math.abs(Math.abs(-90.0f) - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = -90.0f;
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
 			    break;
             
 		    case Store_To_Menu:            
-                if ( Math.abs(0.0f - Math.abs(cubeRotation.degree)) < EPSILON) {
-                    cubeRotation.degree = 0.0f;
-                    cubeRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
+                if ( Math.abs(0.0f - Math.abs(primaryRotation.degree)) < EPSILON) {
+                    primaryRotation.degree = 0.0f;
+                    primaryRotation.axis = new Vector(0.0f, 1.0f, 0.0f);
                     mNavigation = CubeFaceNavigationEnum.NoNavigation;
                 }            
 			    break;
 			
 		    case NoNavigation:
 			    break;
-    } // switch
-}
+        }
+    }
 
 }

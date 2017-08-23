@@ -41,4 +41,8 @@ public final class CubeLocation {
     public boolean equals(CubeLocation other) {
         return (this.x == other.x && this.y == other.y && this.z == other.z);
     }
+
+    public String toString() {
+        return "CubeLocation(" + x + ", " + y + ", " + z + ")";
+    }
 }

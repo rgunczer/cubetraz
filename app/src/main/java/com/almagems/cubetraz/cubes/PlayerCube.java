@@ -87,146 +87,146 @@ public final class PlayerCube {
         }
     }
 
-    public void calcMovement(CubeLocation cube_pos, int type, boolean set) {
+    public void calcMovement(CubeLocation location, int type, boolean set) {
         boolean is_obstacle;
         boolean is_moving;
         boolean is_mover;
         boolean is_dead;
 
         CubeLocation prev = new CubeLocation();
-        prev.init(cube_pos);
+        prev.init(location);
 
         switch(type) {
             case AxisMovement_X_Plus:
-			    while (cube_pos.x <= MAX_CUBE_COUNT - 1) {
-				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.level.isMovingCube(cube_pos, set);
-                    is_mover = Game.level.isMoverCube(cube_pos, set);
-                    is_dead = Game.level.isDeadCube(cube_pos, set);
+			    while (location.x <= MAX_CUBE_COUNT - 1) {
+				    is_obstacle = Game.isObstacle(location);
+                    is_moving = Game.level.isMovingCube(location, set);
+                    is_mover = Game.level.isMoverCube(location, set);
+                    is_dead = Game.level.isDeadCube(location, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos.init(prev);
+					    location.init(prev);
 					    return;
 				    }
 				
-				    if ( isKeyCube(cube_pos) ) {
+				    if ( isKeyCube(location) ) {
 					    return;
                     }
 				
-				    prev.x = cube_pos.x;
-				    ++cube_pos.x;
+				    prev.x = location.x;
+				    ++location.x;
 			    }
-			    --cube_pos.x;
+			    --location.x;
                 break;
             
             case AxisMovement_X_Minus:
-			    while (cube_pos.x >= 0) {
-				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.level.isMovingCube(cube_pos, set);
-                    is_mover = Game.level.isMoverCube(cube_pos, set);
-                    is_dead = Game.level.isDeadCube(cube_pos, set);
+			    while (location.x >= 0) {
+				    is_obstacle = Game.isObstacle(location);
+                    is_moving = Game.level.isMovingCube(location, set);
+                    is_mover = Game.level.isMoverCube(location, set);
+                    is_dead = Game.level.isDeadCube(location, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-                        cube_pos.init(prev);
+                        location.init(prev);
 					    return;
 				    }
 				
-				    if ( isKeyCube(cube_pos) ) {
+				    if ( isKeyCube(location) ) {
 					    return;
                     }
 				
-				    prev.x = cube_pos.x;
-				    --cube_pos.x;
+				    prev.x = location.x;
+				    --location.x;
 			    }
-			    ++cube_pos.x;
+			    ++location.x;
                 break;
             
             case AxisMovement_Y_Plus:
-			    while (cube_pos.y <= MAX_CUBE_COUNT - 1) {
-				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.level.isMovingCube(cube_pos, set);
-                    is_mover = Game.level.isMoverCube(cube_pos, set);
-                    is_dead = Game.level.isDeadCube(cube_pos, set);
+			    while (location.y <= MAX_CUBE_COUNT - 1) {
+				    is_obstacle = Game.isObstacle(location);
+                    is_moving = Game.level.isMovingCube(location, set);
+                    is_mover = Game.level.isMoverCube(location, set);
+                    is_dead = Game.level.isDeadCube(location, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos.init(prev);
+					    location.init(prev);
 					    return;
 				    }
 				
-				    if ( isKeyCube(cube_pos) ) {
+				    if ( isKeyCube(location) ) {
 					    return;
                     }
 				
-				    prev.y = cube_pos.y;
-				    ++cube_pos.y;
+				    prev.y = location.y;
+				    ++location.y;
 			    }
-			    --cube_pos.y;
+			    --location.y;
                 break;
             
             case AxisMovement_Y_Minus:
-			    while (cube_pos.y >= 0) {
-				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.level.isMovingCube(cube_pos, set);
-                    is_mover = Game.level.isMoverCube(cube_pos, set);
-                    is_dead = Game.level.isDeadCube(cube_pos, set);
+			    while (location.y >= 0) {
+				    is_obstacle = Game.isObstacle(location);
+                    is_moving = Game.level.isMovingCube(location, set);
+                    is_mover = Game.level.isMoverCube(location, set);
+                    is_dead = Game.level.isDeadCube(location, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos.init(prev);
+					    location.init(prev);
 					    return;
 				    }
 				
-				    if ( isKeyCube(cube_pos) ) {
+				    if ( isKeyCube(location) ) {
 					    return;
                     }
 				
-				    prev.y = cube_pos.y;
-				    --cube_pos.y;
+				    prev.y = location.y;
+				    --location.y;
 			    }
-			    ++cube_pos.y;
+			    ++location.y;
                 break;
             
             case AxisMovement_Z_Plus:
-			    while (cube_pos.z <= MAX_CUBE_COUNT - 1) {			
-				    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.level.isMovingCube(cube_pos, set);
-                    is_mover = Game.level.isMoverCube(cube_pos, set);
-                    is_dead = Game.level.isDeadCube(cube_pos, set);
+			    while (location.z <= MAX_CUBE_COUNT - 1) {
+				    is_obstacle = Game.isObstacle(location);
+                    is_moving = Game.level.isMovingCube(location, set);
+                    is_mover = Game.level.isMoverCube(location, set);
+                    is_dead = Game.level.isDeadCube(location, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos.init(prev);
+					    location.init(prev);
 					    return;
 				    }
 				
-				    if ( isKeyCube(cube_pos) ) {
+				    if ( isKeyCube(location) ) {
 					    return;
                     }
 
-				    prev.z = cube_pos.z;
-				    ++cube_pos.z;
+				    prev.z = location.z;
+				    ++location.z;
 			    }
-			    --cube_pos.z;
+			    --location.z;
                 break;
             
             case AxisMovement_Z_Minus:
-			    while (cube_pos.z >= 0) {
-                    is_obstacle = Game.isObstacle(cube_pos);
-                    is_moving = Game.level.isMovingCube(cube_pos, set);
-                    is_mover = Game.level.isMoverCube(cube_pos, set);
-                    is_dead = Game.level.isDeadCube(cube_pos, set);
+			    while (location.z >= 0) {
+                    is_obstacle = Game.isObstacle(location);
+                    is_moving = Game.level.isMovingCube(location, set);
+                    is_mover = Game.level.isMoverCube(location, set);
+                    is_dead = Game.level.isDeadCube(location, set);
 
                     if (is_obstacle || is_moving || is_mover || is_dead) {
-					    cube_pos.init(prev);
+					    location.init(prev);
 					    return;
 				    }
 
-				    if ( isKeyCube(cube_pos) ) {
+				    if ( isKeyCube(location) ) {
 					    return;
                     }
 
-				    prev.z = cube_pos.z;
-				    --cube_pos.z;
+				    prev.z = location.z;
+				    --location.z;
 			    }
-			    ++cube_pos.z;
+			    ++location.z;
                 break;
             
             default:

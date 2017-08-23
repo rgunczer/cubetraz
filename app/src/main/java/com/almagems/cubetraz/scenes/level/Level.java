@@ -780,7 +780,7 @@ public final class Level extends Scene {
         mLevelMenu.update();
 
         if (mLevelMenu.cubeUp.isDone()) { // next
-            if (0 == mLevelMenu.cubeUp.cubeLocation.x) {
+            if (0 == mLevelMenu.cubeUp.location.x) {
                 switch (m_completed_face_next_action) {
                     case Next:
                         ++mLevelNumber;
@@ -821,14 +821,14 @@ public final class Level extends Scene {
         }
 
         if (mLevelMenu.cubeMid.isDone()) { // replay
-            if (mLevelMenu.cubeMid.cubeLocation.x == 0) {
+            if (mLevelMenu.cubeMid.location.x == 0) {
                 reset();
                 setAnimFromCompleted();
             }
         }
 
         if (mLevelMenu.cubeLow.isDone()) { // quit
-            if (mLevelMenu.cubeLow.cubeLocation.x == 0) {
+            if (mLevelMenu.cubeLow.location.x == 0) {
                 eventQuit();
             }
         }
@@ -1012,20 +1012,20 @@ public final class Level extends Scene {
         mLevelMenu.update();
 
         if (mLevelMenu.cubeUp.isDone()) { // back
-            if (mLevelMenu.cubeUp.cubeLocation.z == 8) {
+            if (mLevelMenu.cubeUp.location.z == 8) {
                 setAnimFromPaused();
             }
         }
 
         if (mLevelMenu.cubeMid.isDone()) { // reset
-            if (mLevelMenu.cubeMid.cubeLocation.z == 8) {
+            if (mLevelMenu.cubeMid.location.z == 8) {
                 reset();
                 setAnimFromPaused();
             }
         }
 
         if (mLevelMenu.cubeLow.isDone()) { // quit
-            if (mLevelMenu.cubeLow.cubeLocation.z == 8) {
+            if (mLevelMenu.cubeLow.location.z == 8) {
                 Game.cubesToHilite.clear();
                 eventQuit();
             }
@@ -1786,7 +1786,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.cubeLocation.x == 7) {
+        if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.location.x == 7) {
             cubeFont = mLevelMenu.fontUp;
             pFont = cubeFont.texturedQuad;
 
@@ -1798,7 +1798,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.cubeLocation.x == 7) {
+        if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.location.x == 7) {
             cubeFont = mLevelMenu.fontMid;
             pFont = cubeFont.texturedQuad;
 
@@ -1810,7 +1810,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_Z_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.cubeLocation.x == 7) {
+        if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.location.x == 7) {
             cubeFont = mLevelMenu.fontLow;
             pFont = cubeFont.texturedQuad;
 
@@ -1849,7 +1849,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.cubeLocation.z == 1) {
+        if (mLevelMenu.cubeUp.isDone() && mLevelMenu.cubeUp.location.z == 1) {
             cubeFont = mLevelMenu.fontUp;
             pFont = cubeFont.texturedQuad;
 
@@ -1861,7 +1861,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.cubeLocation.z == 1) {
+        if (mLevelMenu.cubeMid.isDone() && mLevelMenu.cubeMid.location.z == 1) {
             cubeFont = mLevelMenu.fontMid;
             pFont = cubeFont.texturedQuad;
 
@@ -1873,7 +1873,7 @@ public final class Level extends Scene {
             graphics.addCubeFace_X_Minus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, cubeFont.colorCurrent);
         }
 
-        if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.cubeLocation.z == 1) {
+        if (mLevelMenu.cubeLow.isDone() && mLevelMenu.cubeLow.location.z == 1) {
             cubeFont = mLevelMenu.fontLow;
             pFont = cubeFont.texturedQuad;
 
@@ -2537,7 +2537,7 @@ public final class Level extends Scene {
                         mHiliteAlpha = 0.0f;
                         mMenuCubeHilite = menuCube;
                         CubeLocation cp = new CubeLocation();
-                        cp.init(mMenuCubeHilite.cubeLocation);
+                        cp.init(mMenuCubeHilite.location);
                         mFontHilite.init(Symbol_Hilite, cp);
                     }
                 }
@@ -2552,8 +2552,8 @@ public final class Level extends Scene {
     @Override
     public void onFingerUp(float x, float y, int fingerCount) {
 
-        if (x > 600 && y > 400) {
-    int ln = mLevelNumber + 1;
+        if (x > 800 && y > 400) {
+    int ln = mLevelNumber + 2;
     DifficultyEnum diff = mDifficulty;
 
     if (ln > 60)
