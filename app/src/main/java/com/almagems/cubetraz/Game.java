@@ -3,6 +3,7 @@ package com.almagems.cubetraz;
 import android.content.Context;
 
 import com.almagems.cubetraz.cubes.CubeLocation;
+import com.almagems.cubetraz.cubes.MenuCube;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
@@ -353,8 +354,6 @@ public final class Game {
 
     public static boolean fboLost = false;
 
-    public static Audio audio;
-
     private boolean initialized;
 
     private static Scene currentScene;
@@ -389,8 +388,6 @@ public final class Game {
     public static Color levelNumberColor = new Color(0, 0, 0, 150);
     public static Color cubeHiLiteColor = new Color(160, 160, 160, 255);
 
-    public static final ArrayList<Cube> cubesToHilite = new ArrayList<>();
-
     static {
         for(int i = 0; i < MAX_CUBE_COUNT; ++i) {
             for(int j = 0; j < MAX_CUBE_COUNT; ++j) {
@@ -422,8 +419,7 @@ public final class Game {
         progress = new GameProgress();
         progress.load();
 
-        audio = new Audio();
-        audio.init(options.getMusicVolume(), options.getSoundVolume());
+        Audio.init(options.getMusicVolume(), options.getSoundVolume());
 
         intro = null;
         menu = null;
@@ -570,10 +566,10 @@ public final class Game {
         resetCubesFonts();
     }
 
-    public static void showScene(int sceneId) {
+    public static void showScene(int sceneName) {
         Scene scene = null;
 
-        switch (sceneId) {
+        switch (sceneName) {
             case Scene_Intro:
                 intro = new Intro();
                 intro.init();
@@ -1608,7 +1604,7 @@ public final class Game {
         }
 
         options.setMusicVolume(volume);
-        audio.setMusicVolume(volume);
+        Audio.setMusicVolume(volume);
     }
 
     public static void musicVolumeDown() {
@@ -1620,7 +1616,7 @@ public final class Game {
         }
 
         options.setMusicVolume(volume);
-        audio.setMusicVolume(volume);
+        Audio.setMusicVolume(volume);
     }
 
     public static void soundVolumeUp() {
@@ -1736,17 +1732,21 @@ public final class Game {
 
     }
 
-    public static void updateHiLitedCubes() {
+    public static void updateHiLitedCubes(ArrayList<MenuCube> menuCubes) {
         hiliteTimeout -= 0.01f;
 
         if (hiliteTimeout < 0.0f) {
             hiliteTimeout = 0.02f;
 
-            if (!cubesToHilite.isEmpty()) {
-                Cube cube = cubesToHilite.get(0);
-                cubesToHilite.remove(cube);
-
-                cube.colorCurrent.init(Game.cubeHiLiteColor);
+            MenuCube menuCube;
+            int size = menuCubes.size();
+            for(int i = 0; i < size; ++i) {
+                menuCube = menuCubes.get(i);
+                if (!menuCube.cubesToHilite.isEmpty()) {
+                    Cube cube = menuCube.cubesToHilite.get(0);
+                    menuCube.cubesToHilite.remove(cube);
+                    cube.colorCurrent.init(Game.cubeHiLiteColor);
+                }
             }
         }
     }

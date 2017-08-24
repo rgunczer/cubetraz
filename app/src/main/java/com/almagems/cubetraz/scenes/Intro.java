@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.scenes;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.Game;
@@ -310,8 +311,7 @@ public final class Intro extends Scene {
                     mTick = 400;
                     mState = State.BuildCubetraz;
                     m_offset_y = 0.0f;
-                    Game.audio.playMusic(MUSIC_VECTORS);
-                    //mStarfield.speed = 0.25f;
+                    Audio.playMusic(MUSIC_VECTORS);
                 }
                 break;
 
@@ -464,7 +464,7 @@ public final class Intro extends Scene {
                     case 60:
                         setCubeVisibleAndBuild(4, 4, 7);
                         mState = State.BuildCubetrazFace;
-                        Game.audio.stopMusic();
+                        Audio.stopMusic();
                         break;
                 } // switch
                 break;
@@ -732,7 +732,7 @@ public final class Intro extends Scene {
     public void onFingerUp(float x, float y, int fingerCount) {
         if (mCanSkipIntro) {
             Game.dirtyAlpha = DIRTY_ALPHA;
-            Game.audio.stopMusic();
+            Audio.stopMusic();
             Game.showScene(Scene_Menu);
         }                
     }

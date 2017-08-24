@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.scenes;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
@@ -283,7 +284,7 @@ public final class Outro extends Scene {
             mState = OutroStateEnum.RotateFull;
             mDrawStarfield = true;
             mStarsAlpha = 0.0f;
-            Game.audio.stopMusic();
+            Audio.stopMusic();
         }
     }
 
@@ -298,7 +299,7 @@ public final class Outro extends Scene {
             mPosCubePlayer.init(Game.getCubePosition(4, 4, 4));
             mDegreePlayerCube = 0.0f;
             setupExplosion();
-            Game.audio.playMusic(MUSIC_VECTORS);
+            Audio.playMusic(MUSIC_VECTORS);
         }
 
         mStarfield.alpha = mStarsAlpha * 255f;
@@ -559,7 +560,7 @@ public final class Outro extends Scene {
     }
 
     private void goToMenuScene() {
-        Game.audio.stopMusic();
+        Audio.stopMusic();
         Game.showScene(Scene_Menu);
     }
 

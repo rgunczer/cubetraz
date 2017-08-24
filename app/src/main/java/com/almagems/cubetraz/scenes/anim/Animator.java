@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.scenes.anim;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.scenes.level.AppearDisappearListData;
 import com.almagems.cubetraz.graphics.Camera;
@@ -8,6 +9,7 @@ import com.almagems.cubetraz.scenes.Scene;
 import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
+import com.almagems.cubetraz.scenes.menu.Menu;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
 import com.almagems.cubetraz.Game;
@@ -39,10 +41,6 @@ public final class Animator extends Scene {
 	private final Camera mCameraFrom = new Camera();
 	private final Camera mCameraTo = new Camera();
 	
-	private CubeFaceNames mFaceNameXPlus;
-	private CubeFaceNames mFaceNameYPlus;
-	private CubeFaceNames mFaceNameZPlus;
-	
 	private LevelCube mLevelCubeHilite;
     
     private final EaseOutDivideInterpolation mInterpolator = new EaseOutDivideInterpolation();
@@ -66,10 +64,6 @@ public final class Animator extends Scene {
 
 
     public Animator() {
-	    mFaceNameXPlus = CubeFaceNames.Face_Empty;
-	    mFaceNameYPlus = CubeFaceNames.Face_Empty;
-	    mFaceNameZPlus = CubeFaceNames.Face_Empty;
-
         for(int i = 0; i < 6; ++i) {
             mTitles.add(new ArrayList<CubeFont>());
             mTexts.add(new ArrayList<CubeFont>());
@@ -148,10 +142,10 @@ public final class Animator extends Scene {
         Creator.fillPools();
 	    
         MenuFaceBuilder.resetTransforms();
-	    MenuFaceBuilder.build(mFaceNameXPlus, Face_X_Plus);
+	    MenuFaceBuilder.build(Game.animInitData.faceNameXPlus, Face_X_Plus);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
-	    MenuFaceBuilder.build(mFaceNameYPlus, Face_Y_Plus);
-	    MenuFaceBuilder.build(mFaceNameZPlus, Face_Z_Plus);
+	    MenuFaceBuilder.build(Game.animInitData.faceNameYPlus, Face_Y_Plus);
+	    MenuFaceBuilder.build(Game.animInitData.faceNameZPlus, Face_Z_Plus);
     }
 
 	private static LevelCube getLevelCubeFrom(ArrayList<LevelCube> lst) {
@@ -197,7 +191,7 @@ public final class Animator extends Scene {
 	    mAnimToMenuPhase = 0;
 	
 	    AnimInitData aid = Game.animInitData;
-	
+
 	    createMenuFaces();
 	
 	    m_ad_face.clear();
@@ -260,10 +254,6 @@ public final class Animator extends Scene {
         mTargetRotationDegree = mCubeRotation.degree + 45.0f;
     
         mInterpolator.setup(mCubeRotation.degree, mTargetRotationDegree, 15);
-
-	    mFaceNameXPlus = aid.faceNameXPlus;
-	    mFaceNameYPlus = aid.faceNameYPlus;
-	    mFaceNameZPlus = aid.faceNameZPlus;
 	
 	    createMenuFaces();
 	
@@ -442,7 +432,7 @@ public final class Animator extends Scene {
 			    mCubesFace.add(cube);
             }
         
-            Game.audio.stopMusic();
+            Audio.stopMusic();
 		
 		    mAnimToMenuPhase = 1;
 		
@@ -616,9 +606,9 @@ public final class Animator extends Scene {
                 break;
 
             case AnimToMenu:
-                //updateAnimToMenu();
-                Game.menuInitData.reappear = true;
-                Game.showScene(Scene_Menu);
+                updateAnimToMenu();
+                //Game.menuInitData.reappear = true;
+                //Game.showScene(Scene_Menu);
                 break;
 
             default:

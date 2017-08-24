@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
@@ -125,7 +126,7 @@ public final class MovingCube {
 			    m_done = true;
                 m_color_symbol_current = m_color_symbol;
 			
-			    Game.audio.playSound(SOUND_CUBE_HIT);
+			    Audio.playSound(SOUND_CUBE_HIT);
 			
 			    setCubePos(m_cube_pos_destination);
 			

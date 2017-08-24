@@ -6,9 +6,12 @@ import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.MenuCube;
 
+import java.util.ArrayList;
+
 import static com.almagems.cubetraz.Game.AxisMovement_X_Plus;
 import static com.almagems.cubetraz.Game.AxisMovement_Z_Minus;
 import static com.almagems.cubetraz.Game.HALF_CUBE_SIZE;
+import static com.almagems.cubetraz.Game.menu;
 
 public class LevelMenu {
 
@@ -21,6 +24,14 @@ public class LevelMenu {
     MenuCube cubeUp = new MenuCube();
     MenuCube cubeMid = new MenuCube();
     MenuCube cubeLow = new MenuCube();
+
+    public ArrayList<MenuCube> menuCubes = new ArrayList<>(3);
+
+    public LevelMenu() {
+        menuCubes.add(cubeUp);
+        menuCubes.add(cubeMid);
+        menuCubes.add(cubeLow);
+    }
 
     public void init() {
         CubeLocation location = new CubeLocation(0, 0, 0);
@@ -96,6 +107,12 @@ public class LevelMenu {
 
     void setFontColor(Color color) {
         setFontColor(color.r, color.g, color.b, color.a);
+    }
+
+    void done() {
+        cubeUp.cubesToHilite.clear();
+        cubeMid.cubesToHilite.clear();
+        cubeLow.cubesToHilite.clear();
     }
 
 }

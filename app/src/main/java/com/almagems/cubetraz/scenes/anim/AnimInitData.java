@@ -25,22 +25,10 @@ public final class AnimInitData {
 	public CubeFaceNames faceNameXPlus;
 	public CubeFaceNames faceNameYPlus;
 	public CubeFaceNames faceNameZPlus;
-        
-    public FaceTransformsEnum[] transformsXPlus = new FaceTransformsEnum[MAX_FACE_TRANSFORM_COUNT];
-    public FaceTransformsEnum[] transformsYPlus = new FaceTransformsEnum[MAX_FACE_TRANSFORM_COUNT];
-    public FaceTransformsEnum[] transformsZPlus = new FaceTransformsEnum[MAX_FACE_TRANSFORM_COUNT];
-    
-	public void setFaces(CubeFaceNames faceIdX, CubeFaceNames faceIdY, CubeFaceNames faceIdZ) {
-		faceNameXPlus = faceIdX;
-		faceNameYPlus = faceIdY;
-		faceNameZPlus = faceIdZ;
+
+	public void setFaces(CubeFaceNames faceNameXPlus, CubeFaceNames faceNameYPlus, CubeFaceNames faceNameZPlus) {
+		this.faceNameXPlus = faceNameXPlus;
+		this.faceNameYPlus = faceNameYPlus;
+		this.faceNameZPlus = faceNameZPlus;
 	}
-	
-    public void clearTransforms() {
-        for (int i = 0; i < MAX_FACE_TRANSFORM_COUNT; ++i) {
-            transformsXPlus[i] = FaceTransformsEnum.NoTransform;
-            transformsYPlus[i] = FaceTransformsEnum.NoTransform;
-            transformsZPlus[i] = FaceTransformsEnum.NoTransform;
-        }
-    }
 }

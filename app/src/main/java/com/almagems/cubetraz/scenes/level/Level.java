@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.scenes.level;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.scenes.Creator;
@@ -7,6 +8,7 @@ import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
+import com.almagems.cubetraz.scenes.menu.Menu;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.cubes.DeadCube;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
@@ -326,12 +328,6 @@ public final class Level extends Scene {
         statInitData.moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + minSolutionSteps;
     }
     
-    private void showTutor(int tutorId) {
-        mState = State.Tutorial;
-        mHud.clearTutors();
-        mHud.showTutor(tutorId);
-    }
-    
     public boolean isMovingCube(CubeLocation cube_pos, boolean set) {
         MovingCube movingCube;
         int size = movingCubes.size();
@@ -440,55 +436,55 @@ public final class Level extends Scene {
         switch (mDifficulty) {
             case Easy:
                 if (mLevelNumber >= 1 && mLevelNumber <= 15) {
-                    Game.audio.playMusic(MUSIC_BREEZE);
+                    Audio.playMusic(MUSIC_BREEZE);
                 }
 
                 if (mLevelNumber >= 16 && mLevelNumber <= 30) {
-                    Game.audio.playMusic(MUSIC_DRONES);
+                    Audio.playMusic(MUSIC_DRONES);
                 }
 
                 if (mLevelNumber >= 31 && mLevelNumber <= 45) {
-                    Game.audio.playMusic(MUSIC_WAVES);
+                    Audio.playMusic(MUSIC_WAVES);
                 }
 
                 if (mLevelNumber >= 46 && mLevelNumber <= 60) {
-                    Game.audio.playMusic(MUSIC_BREEZE);
+                    Audio.playMusic(MUSIC_BREEZE);
                 }
                 break;
 
             case Normal:
                 if (mLevelNumber >= 1 && mLevelNumber <= 15) {
-                    Game.audio.playMusic(MUSIC_DRONES);
+                    Audio.playMusic(MUSIC_DRONES);
                 }
 
                 if (mLevelNumber >= 16 && mLevelNumber <= 30) {
-                    Game.audio.playMusic(MUSIC_WAVES);
+                    Audio.playMusic(MUSIC_WAVES);
                 }
 
                 if (mLevelNumber >= 31 && mLevelNumber <= 45) {
-                    Game.audio.playMusic(MUSIC_BREEZE);
+                    Audio.playMusic(MUSIC_BREEZE);
                 }
 
                 if (mLevelNumber >= 46 && mLevelNumber <= 60) {
-                    Game.audio.playMusic(MUSIC_DRONES);
+                    Audio.playMusic(MUSIC_DRONES);
                 }
                 break;
 
             case Hard:
                 if (mLevelNumber >= 1 && mLevelNumber <= 15) {
-                    Game.audio.playMusic(MUSIC_WAVES);
+                    Audio.playMusic(MUSIC_WAVES);
                 }
 
                 if (mLevelNumber >= 16 && mLevelNumber <= 30) {
-                    Game.audio.playMusic(MUSIC_BREEZE);
+                    Audio.playMusic(MUSIC_BREEZE);
                 }
 
                 if (mLevelNumber >= 31 && mLevelNumber <= 45) {
-                    Game.audio.playMusic(MUSIC_DRONES);
+                    Audio.playMusic(MUSIC_DRONES);
                 }                    
 
                 if (mLevelNumber >= 46 && mLevelNumber <= 60) {
-                    Game.audio.playMusic(MUSIC_WAVES);
+                    Audio.playMusic(MUSIC_WAVES);
                 }
                 break;
         }
@@ -789,14 +785,14 @@ public final class Level extends Scene {
                                 case Easy:
                                     mDifficulty = DifficultyEnum.Normal;
                                     mLevelNumber = 1;
-                                    Game.audio.stopMusic();
+                                    Audio.stopMusic();
                                     setupMusic();
                                     break;
 
                                 case Normal:
                                     mDifficulty = DifficultyEnum.Hard;
                                     mLevelNumber = 1;
-                                    Game.audio.stopMusic();
+                                    Audio.stopMusic();
                                     setupMusic();
                                     break;
 
@@ -805,7 +801,7 @@ public final class Level extends Scene {
                             }
                         } else {
                             if (mLevelNumber == 16 || mLevelNumber == 31 || mLevelNumber == 46) {
-                                Game.audio.stopMusic();
+                                Audio.stopMusic();
                                 setupMusic();
                             }
                         }
@@ -1026,7 +1022,7 @@ public final class Level extends Scene {
 
         if (mLevelMenu.cubeLow.isDone()) { // quit
             if (mLevelMenu.cubeLow.location.z == 8) {
-                Game.cubesToHilite.clear();
+                mLevelMenu.done();
                 eventQuit();
             }
         }
@@ -1170,7 +1166,7 @@ public final class Level extends Scene {
     }
 
     private void warmCubes() {
-        Game.updateHiLitedCubes();
+        Game.updateHiLitedCubes( mLevelMenu.menuCubes );
 
         int size;
         Cube cube;
@@ -1269,7 +1265,7 @@ public final class Level extends Scene {
                     mDeadCube = null;
                 }
 
-                Game.audio.playSound(SOUND_CUBE_HIT);
+                Audio.playSound(SOUND_CUBE_HIT);
 
                 mState = mStateToRestore;
 
@@ -1302,7 +1298,7 @@ public final class Level extends Scene {
             mTimeout = 1.0f;
 
             if (mPlayerCube.isDone()) {
-                int dir = solution.getStep(); //m_ar_solution[m_solution_pointer++];
+                int dir = solution.getStep();
                 boolean success = mPlayerCube.moveOnAxis(dir);
 
                 if (success) {
@@ -1324,7 +1320,7 @@ public final class Level extends Scene {
 
         mTimeout -= 0.03f;
 
-        if (mTimeout < 1.5f) {
+        if (mTimeout < 1.6f) {
             mHud.showPrepareSolving(true, solution.getStepsCount());
         }
 
@@ -1336,6 +1332,35 @@ public final class Level extends Scene {
             mFadeValue = 1.0f;
             mTimeout = 1.0f;
             mHud.setupAppear();
+        }
+    }
+
+    private void showTutor() {
+        if (DifficultyEnum.Easy == mDifficulty) {
+            int tutorId = -1;
+            if (mLevelNumber == 1) {
+                tutorId = Tutor_Swipe;
+            } else if (mLevelNumber == 2) {
+                tutorId = Tutor_MenuPause;
+            } else if (mLevelNumber == 3) {
+                tutorId = Tutor_MenuHint;
+            } else if (mLevelNumber == 4) {
+                tutorId = Tutor_Drag;
+            } else if (mLevelNumber == 5) {
+                tutorId = Tutor_Plain;
+            } else if (mLevelNumber == 10) {
+                tutorId = Tutor_Moving;
+            } else if (mLevelNumber == 12) {
+                tutorId = Tutor_Mover;
+            } else if (mLevelNumber == 19) {
+                tutorId = Tutor_Dead;
+            }
+
+            if (tutorId != -1) {
+                mState = State.Tutorial;
+                mHud.clearTutors();
+                mHud.showTutor(tutorId);
+            }
         }
     }
 
@@ -1418,40 +1443,7 @@ public final class Level extends Scene {
                     LevelBuilder.moverCubes.isEmpty() &&
                     LevelBuilder.deadCubes.isEmpty()) {
                     mState = State.Playing;
-
-                if (DifficultyEnum.Easy == mDifficulty) {
-                    if (1 == mLevelNumber) {
-                        showTutor(Tutor_Swipe);
-                    }
-
-                    if (2 == mLevelNumber) {
-                        showTutor(Tutor_MenuPause);
-                    }
-
-                    if (3 == mLevelNumber) {
-                        showTutor(Tutor_MenuHint);
-                    }
-
-                    if (4 == mLevelNumber) {
-                        showTutor(Tutor_Drag);
-                    }
-
-                    if (5 == mLevelNumber) {
-                        showTutor(Tutor_Plain);
-                    }
-
-                    if (10 == mLevelNumber) {
-                        showTutor(Tutor_Moving);
-                    }
-
-                    if (12 == mLevelNumber) {
-                        showTutor(Tutor_Mover);
-                    }
-
-                    if (19 == mLevelNumber) {
-                        showTutor(Tutor_Dead);
-                    }
-                }                
+                    showTutor();
             } else {
                 if (mTimeout > 0.02f) {
                     Cube cube = appearDisappear.level.getCubeFromAppearList();
@@ -2322,40 +2314,14 @@ public final class Level extends Scene {
         mHud.setupDisappear();
     }
 
-    private CubeFaceNames getCubeFaceName(int levelNumber, DifficultyEnum difficulty) {
-        if (levelNumber > 0 && levelNumber <= 15) {
-            switch (difficulty) {
-                case Easy: return CubeFaceNames.Face_Easy01;
-                case Normal: return CubeFaceNames.Face_Normal01;
-                case Hard: return CubeFaceNames.Face_Hard01;
-            }
-        } else if (levelNumber > 15 && levelNumber <= 30) {
-            switch (difficulty) {
-                case Easy: return CubeFaceNames.Face_Easy02;
-                case Normal: return CubeFaceNames.Face_Normal02;
-                case Hard: return CubeFaceNames.Face_Hard02;
-            }
-        } else if (levelNumber > 30 && levelNumber <= 45) {
-            switch (difficulty) {
-                case Easy: return CubeFaceNames.Face_Easy03;
-                case Normal: return CubeFaceNames.Face_Normal03;
-                case Hard: return CubeFaceNames.Face_Hard03;
-            }
-        } else if (levelNumber > 45 && levelNumber <= 60) {
-            switch (difficulty) {
-                case Easy: return CubeFaceNames.Face_Easy04;
-                case Normal: return CubeFaceNames.Face_Normal04;
-                case Hard: return CubeFaceNames.Face_Hard04;
-            }
-        }
-
-        return CubeFaceNames.Face_Easy01;
-    }
-
     private void eventQuit() {
-        CubeFaceNames faceName = getCubeFaceName(mLevelNumber, mDifficulty);
-        System.out.println("Face name is: " + faceName.toString());
+        // setup menu obj to point to a cube face where current level is located
+        CubeFaceNames faceName = Menu.getCubeFaceName(mDifficulty, mLevelNumber);
         Game.menuInitData.cubeFaceName = faceName;
+        Game.menuInitData.reappear = true;
+        Game.menu.init();
+
+        Game.setAnimFaces(mDifficulty, mLevelNumber);
 
         Game.animInitData.cubesBase.clear();
         int size;
@@ -2385,7 +2351,7 @@ public final class Level extends Scene {
     }
 
     public void eventLevelComplete() {
-        Game.audio.playSound(SOUND_LEVEL_COMPLETED);
+        Audio.playSound(SOUND_LEVEL_COMPLETED);
 
         Game.renderToFBO(this);
         mHud.setupDisappear();
@@ -2552,28 +2518,29 @@ public final class Level extends Scene {
     @Override
     public void onFingerUp(float x, float y, int fingerCount) {
 
-        if (x > 800 && y > 400) {
-    int ln = mLevelNumber + 2;
-    DifficultyEnum diff = mDifficulty;
+        // TODO: comment this out in final release
+        if (x > Game.graphics.width - 100 && y > Game.graphics.height - 100) {
+            int ln = mLevelNumber + 2;
+            DifficultyEnum diff = mDifficulty;
 
-    if (ln > 60)
-    {
-        ln = 1;
-        if (DifficultyEnum.Easy == mDifficulty)
-            diff = DifficultyEnum.Normal;
+            if (ln > 60)
+            {
+                ln = 1;
+                if (DifficultyEnum.Easy == mDifficulty)
+                    diff = DifficultyEnum.Normal;
 
-        if (DifficultyEnum.Normal == mDifficulty)
-            diff = DifficultyEnum.Hard;
+                if (DifficultyEnum.Normal == mDifficulty)
+                    diff = DifficultyEnum.Hard;
 
-        if (DifficultyEnum.Hard == mDifficulty)
-            diff = DifficultyEnum.Easy;
-    }
+                if (DifficultyEnum.Hard == mDifficulty)
+                    diff = DifficultyEnum.Easy;
+            }
 
-    Game.levelInitData.difficulty = diff;
-    Game.levelInitData.levelNumber = ln;
-    Game.levelInitData.initAction = LevelInitActionEnum.FullInit;
+            Game.levelInitData.difficulty = diff;
+            Game.levelInitData.levelNumber = ln;
+            Game.levelInitData.initAction = LevelInitActionEnum.FullInit;
 
-    Game.showScene(Scene_Level);
+            Game.showScene(Scene_Level);
 
             return;
         }

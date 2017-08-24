@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.scenes.menu;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.cubes.MenuCube;
 import com.almagems.cubetraz.graphics.Camera;
@@ -36,6 +37,8 @@ public final class Menu extends Scene {
     private final ArrayList<ArrayList<CubeFont>> mTitles = new ArrayList<>(6);
     private final ArrayList<ArrayList<CubeFont>> mTexts = new ArrayList<>(6);
     private final ArrayList<ArrayList<CubeFont>> mSymbols = new ArrayList<>(6);
+
+    private final ArrayList<MenuCube> mMenuCubes = new ArrayList<>(3);
 
     private StateEnum mState;
 
@@ -149,12 +152,10 @@ public final class Menu extends Scene {
         mCameraCredits.eye = new Vector(18.0f / 1.5f, 30.0f / 1.5f, 45.0f / 1.5f);
         mCameraCredits.target = new Vector(-2.0f / 1.5f, 0.0f, 5.0f / 1.5f);
 
-        //#if defined(DRAW_AXES_CUBE) || defined(DRAW_AXES_GLOBAL)
-        mCameraMenu.eye = new Vector(6.0f , 3.0f, 26.0f);
-        //#else
-        //mCameraMenu.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
-        //#endif
+        // DRAW_AXES_CUBE || DRAW_AXES_GLOBAL
+        //mCameraMenu.eye = new Vector(6.0f , 3.0f, 26.0f);
 
+        mCameraMenu.eye = new Vector(0.0f, 0.0f, 35.0f / 1.5f);
         mCameraMenu.target.init(new Vector(0.0f, 0.0f, 0.0f));
 
         mCameraMenu.eye.scaled(Game.graphics.aspectRatio);
@@ -262,11 +263,41 @@ public final class Menu extends Scene {
         setCubeFaceTypeFromCubeFaceName(mCurrentCubeFaceName);
     }
 
+    public static CubeFaceNames getCubeFaceName(DifficultyEnum difficulty, int levelNumber) {
+        if (levelNumber > 0 && levelNumber <= 15) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy01;
+                case Normal: return CubeFaceNames.Face_Normal01;
+                case Hard: return CubeFaceNames.Face_Hard01;
+            }
+        } else if (levelNumber > 15 && levelNumber <= 30) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy02;
+                case Normal: return CubeFaceNames.Face_Normal02;
+                case Hard: return CubeFaceNames.Face_Hard02;
+            }
+        } else if (levelNumber > 30 && levelNumber <= 45) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy03;
+                case Normal: return CubeFaceNames.Face_Normal03;
+                case Hard: return CubeFaceNames.Face_Hard03;
+            }
+        } else if (levelNumber > 45 && levelNumber <= 60) {
+            switch (difficulty) {
+                case Easy: return CubeFaceNames.Face_Easy04;
+                case Normal: return CubeFaceNames.Face_Normal04;
+                case Hard: return CubeFaceNames.Face_Hard04;
+            }
+        }
+
+        return CubeFaceNames.Face_Easy01;
+    }
+
     @Override
     public void init() {
         setupCameras();
         Game.dirtyAlpha = DIRTY_ALPHA;
-        Game.audio.playMusic(MUSIC_CPU);
+        Audio.playMusic(MUSIC_CPU);
 
         mMenuCubeHilite = null;
         mShowingHelp = false;
@@ -329,6 +360,10 @@ public final class Menu extends Scene {
             mNavigator.setup(CubeFaceNavigationEnum.NoNavigation);
         } else {
             Creator.createMovingCubesForMenu();
+            mMenuCubes.clear();
+            mMenuCubes.add(mMenuCubePlay);
+            mMenuCubes.add(mMenuCubeOptions);
+            mMenuCubes.add(mMenuCubeStore);
 
             mNavigator.init();
             mCurrentCubeFaceName = CubeFaceNames.Face_Tutorial;
@@ -2185,7 +2220,7 @@ public final class Menu extends Scene {
                 case AnimToCredits: updateAnimToCredits(); break;
                 case AnimFromCredits: updateAnimFromCredits(); break;
             }
-            Game.updateHiLitedCubes();
+            Game.updateHiLitedCubes(mMenuCubes);
         }
         updateCubes();
     }
@@ -2195,31 +2230,30 @@ public final class Menu extends Scene {
             switch (difficulty) {
                 case Easy:
                     if (LEVEL_LOCKED == Game.progress.getStarsEasy(levelNumber)) {
-                        Game.audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+                        Audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
                         return;
                     }
                     break;
 
                 case Normal:
                     if (LEVEL_LOCKED == Game.progress.getStarsNormal(levelNumber)) {
-                        Game.audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+                        Audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
                         return;
                     }
                     break;
 
                 case Hard:
                     if (LEVEL_LOCKED == Game.progress.getStarsHard(levelNumber)) {
-                        Game.audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
+                        Audio.playSound(SOUND_TAP_ON_LOCKED_LEVEL_CUBE);
                         return;
                     }
                     break;
             }
         }
 
-        Game.audio.playSound(SOUND_TAP_ON_LEVEL_CUBE);
+        Audio.playSound(SOUND_TAP_ON_LEVEL_CUBE);
 
-        Game.audio.stopMusic();
-        Game.animInitData.clearTransforms();
+        Audio.stopMusic();
 
         Game.setAnimFaces(difficulty, levelNumber);
 
@@ -2412,13 +2446,13 @@ public final class Menu extends Scene {
         graphics.textureGrayConcrete.bind();
         drawTheCube();
 
-        if (true) {
-            glDisable(GL_TEXTURE_2D);
-            glDisable(GL_LIGHTING);
-            graphics.drawAxes();
-            glEnable(GL_LIGHTING);
-            glEnable(GL_TEXTURE_2D);
-        }
+//        if (true) {
+//            glDisable(GL_TEXTURE_2D);
+//            glDisable(GL_LIGHTING);
+//            graphics.drawAxes();
+//            glEnable(GL_LIGHTING);
+//            glEnable(GL_TEXTURE_2D);
+//        }
 
         glPushMatrix();
         glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
@@ -2647,22 +2681,22 @@ public final class Menu extends Scene {
             switch (downR) {
                 case 255:
                     Game.musicVolumeUp();
-                    Game.audio.playSound(SOUND_VOLUME_UP);
+                    Audio.playSound(SOUND_VOLUME_UP);
                     break;
 
                 case 254:
                     Game.musicVolumeDown();
-                    Game.audio.playSound(SOUND_VOLUME_DOWN);
+                    Audio.playSound(SOUND_VOLUME_DOWN);
                     break;
 
                 case 253:
                     Game.soundVolumeUp();
-                    Game.audio.playSound(SOUND_VOLUME_UP);
+                    Audio.playSound(SOUND_VOLUME_UP);
                     break;
 
                 case 252:
                     Game.soundVolumeDown();
-                    Game.audio.playSound(SOUND_VOLUME_DOWN);
+                    Audio.playSound(SOUND_VOLUME_DOWN);
                     break;
 
                 default:

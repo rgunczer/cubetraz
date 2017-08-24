@@ -55,7 +55,6 @@ public final class MainRenderer implements Renderer {
         }
 
         game.init();
-        audio = Game.audio;
     }
 
     @Override

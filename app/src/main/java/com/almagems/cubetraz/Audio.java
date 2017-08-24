@@ -24,48 +24,51 @@ public final class Audio {
     public static final String SOUND_TAP_ON_LEVEL_CUBE = "open";
     public static final String SOUND_TAP_ON_LOCKED_LEVEL_CUBE = "locked";
 
-    private Map<String, String> mResources = new HashMap<>();
-    private Map<String, Integer> mSounds = new HashMap<>();
+    private static Map<String, String> resources = new HashMap<>();
+    private static Map<String, Integer> sounds = new HashMap<>();
 
-    private float musicVolume = 0.5f;
-    private float soundVolume = 0.5f;
+    private static float musicVolume = 0.5f;
+    private static float soundVolume = 0.5f;
 
-    private MediaPlayer mediaPlayer;
-    private SoundPool soundPool;
+    private static MediaPlayer mediaPlayer;
+    private static SoundPool soundPool;
 
-    private int soundStreamId;
-    private int musicTrackPos = 0;
-    private String currentMusicKey;
+    private static int soundStreamId;
+    private static int musicTrackPos = 0;
+    private static String currentMusicKey;
 
-    public Audio() {
-        mResources.clear();
+    static {
+        resources.clear();
 
         // add music
-        mResources.put(MUSIC_CPU, "" + R.raw.pol_a_cpu_life_short);
-        mResources.put(MUSIC_BREEZE, "" + R.raw.pol_breeze_short);
-        mResources.put(MUSIC_DRONES, "" + R.raw.pol_positive_drones_short);
-        mResources.put(MUSIC_VECTORS, "" + R.raw.pol_vectors_short);
-        mResources.put(MUSIC_WAVES, "" + R.raw.pol_warm_waves_short);
+        resources.put(MUSIC_CPU, "" + R.raw.pol_a_cpu_life_short);
+        resources.put(MUSIC_BREEZE, "" + R.raw.pol_breeze_short);
+        resources.put(MUSIC_DRONES, "" + R.raw.pol_positive_drones_short);
+        resources.put(MUSIC_VECTORS, "" + R.raw.pol_vectors_short);
+        resources.put(MUSIC_WAVES, "" + R.raw.pol_warm_waves_short);
 
         // add sound
-        mResources.put(SOUND_LEVEL_COMPLETED, "" + R.raw.keys); // "keys"
-        mResources.put(SOUND_VOLUME_DOWN, "" + R.raw.nff_switch_off); // "NFF-switch-off"
-        mResources.put(SOUND_VOLUME_UP, "" + R.raw.nff_switch_on);
-        mResources.put(SOUND_CUBE_HIT, "" + R.raw.cube_to_cube); // "cube_to_cube"
-        mResources.put(SOUND_TAP_ON_LEVEL_CUBE, "" + R.raw.open); // "open"
-        mResources.put(SOUND_TAP_ON_LOCKED_LEVEL_CUBE, "" + R.raw.locked); // "locked"
+        resources.put(SOUND_LEVEL_COMPLETED, "" + R.raw.keys); // "keys"
+        resources.put(SOUND_VOLUME_DOWN, "" + R.raw.nff_switch_off); // "NFF-switch-off"
+        resources.put(SOUND_VOLUME_UP, "" + R.raw.nff_switch_on);
+        resources.put(SOUND_CUBE_HIT, "" + R.raw.cube_to_cube); // "cube_to_cube"
+        resources.put(SOUND_TAP_ON_LEVEL_CUBE, "" + R.raw.open); // "open"
+        resources.put(SOUND_TAP_ON_LOCKED_LEVEL_CUBE, "" + R.raw.locked); // "locked"
 
-        mSounds.clear();
+        sounds.clear();
     }
 
-    public void setMusicVolume(float value) {
+    private Audio() {
+    }
+
+    public static void setMusicVolume(float value) {
         if (value != musicVolume) {
             musicVolume = value;
             playMusic(null);
         }
     }
 
-    public void setSoundVolume(float value) {
+    public static void setSoundVolume(float value) {
         if (value != soundVolume) {
             soundVolume = value;
             soundPool.setVolume(soundStreamId, soundVolume, soundVolume);
@@ -73,32 +76,32 @@ public final class Audio {
         }
     }
 
-    private int getResourceIdFromKey(String key) {
-        String stringValue = mResources.get(key);
+    private static int getResourceIdFromKey(String key) {
+        String stringValue = resources.get(key);
         int resourceId = Integer.parseInt(stringValue);
         return resourceId;
     }
 
-    private void createMediaPlayer(String key) {
+    private static void createMediaPlayer(String key) {
         int resourceId = getResourceIdFromKey(key);
         mediaPlayer = MediaPlayer.create(Game.getContext(), resourceId);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
-    private void destroyMediaPlayer() {
+    private static void destroyMediaPlayer() {
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
     }
 
-    private void loadToSoundPool(String key) {
-        int resourceId = Integer.parseInt(mResources.get(key));
+    private static void loadToSoundPool(String key) {
+        int resourceId = Integer.parseInt(resources.get(key));
         int id = soundPool.load(Game.getContext(), resourceId, 1);
-        mSounds.put(key, id);
+        sounds.put(key, id);
     }
 
-    private void createSoundPool() {
+    private static void createSoundPool() {
         soundPool = new SoundPool(12, AudioManager.STREAM_MUSIC, 0);
 
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
@@ -116,15 +119,15 @@ public final class Audio {
         loadToSoundPool(SOUND_VOLUME_UP);
     }
 
-    public void init(float musicVolume, float soundVolume) {
-        this.musicVolume = musicVolume;
-        this.soundVolume = soundVolume;
+    public static void init(float musicVolume, float soundVolume) {
+        Audio.musicVolume = musicVolume;
+        Audio.soundVolume = soundVolume;
 
         createSoundPool();
     }
 
-    public void reInit() {
-        init(this.musicVolume, this.soundVolume);
+    public static void reInit() {
+        init(musicVolume, soundVolume);
         if (currentMusicKey != null) {
             createMediaPlayer(currentMusicKey);
             mediaPlayer.setVolume(musicVolume, musicVolume);
@@ -134,7 +137,7 @@ public final class Audio {
         }
     }
 
-    public void playMusic(String key) {
+    public static void playMusic(String key) {
         if (key != null) {
             currentMusicKey = key;
             createMediaPlayer(key);
@@ -154,37 +157,37 @@ public final class Audio {
         }
     }
 
-    public void stopMusic() {
+    public static void stopMusic() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             destroyMediaPlayer();
         }
     }
 
-    public void playSound(String key) {
+    public static void playSound(String key) {
         int loopMode = 0; // (0 = no loop, -1 = loop forever)
 
-        int soundPoolId = mSounds.get(key);
+        int soundPoolId = sounds.get(key);
         soundStreamId = soundPool.play(soundPoolId, soundVolume, soundVolume, 1, loopMode, 1.0f);
     }
 
-    public void stopSound(){
+    public static void stopSound(){
         soundPool.stop(soundStreamId);
     }
 
-    public void pause() {
+    public static void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
     }
 
-    public void resume() {
+    public static void resume() {
         if (mediaPlayer != null) {
             mediaPlayer.start();
         }
     }
 
-    public void release() {
+    public static void release() {
         if (soundPool != null ) {
             soundPool.release();
             soundPool = null;

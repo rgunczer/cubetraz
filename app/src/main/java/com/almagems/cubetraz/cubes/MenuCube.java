@@ -1,9 +1,12 @@
 package com.almagems.cubetraz.cubes;
 
+import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.graphics.Color;
+
+import java.util.ArrayList;
 
 import static com.almagems.cubetraz.Audio.SOUND_CUBE_HIT;
 import static com.almagems.cubetraz.Game.*;
@@ -30,6 +33,8 @@ public final class MenuCube {
     
     public CubeLocation location = new CubeLocation();
     public CubeLocation m_cube_pos_destination = new CubeLocation();
+
+    public ArrayList<Cube> cubesToHilite = new ArrayList<>();
 
 
     public MenuCube() {
@@ -83,7 +88,7 @@ public final class MenuCube {
 		    if (m_t >= 1.0f) {
 			    m_t = 1.0f;
 			    mDone = true;
-			    Game.audio.playSound(SOUND_CUBE_HIT);
+			    Audio.playSound(SOUND_CUBE_HIT);
 			    setCubeLocation(m_cube_pos_destination.x, m_cube_pos_destination.y, m_cube_pos_destination.z);
 		    } else {
                 float value = Utils.lerp(m_start_value, m_end_value, m_t);
