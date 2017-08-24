@@ -60,18 +60,18 @@ public final class PlayerCube {
 		    } else {
 			    float value = Utils.lerp(mStartValue, mEndValue, m_t);
                 switch (m_moveType) {
-                    case AxisMovement_X_Plus:
-                    case AxisMovement_X_Minus:
+                    case X_Plus:
+                    case X_Minus:
                         position.x = value;
                         break;
 
-                    case AxisMovement_Y_Plus:
-                    case AxisMovement_Y_Minus:
+                    case Y_Plus:
+                    case Y_Minus:
                         position.y = value;
                         break;
 
-                    case AxisMovement_Z_Plus:
-                    case AxisMovement_Z_Minus:
+                    case Z_Plus:
+                    case Z_Minus:
                         position.z = value;
                         break;
                 }
@@ -97,7 +97,7 @@ public final class PlayerCube {
         prev.init(location);
 
         switch(type) {
-            case AxisMovement_X_Plus:
+            case X_Plus:
 			    while (location.x <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(location);
                     is_moving = Game.level.isMovingCube(location, set);
@@ -119,7 +119,7 @@ public final class PlayerCube {
 			    --location.x;
                 break;
             
-            case AxisMovement_X_Minus:
+            case X_Minus:
 			    while (location.x >= 0) {
 				    is_obstacle = Game.isObstacle(location);
                     is_moving = Game.level.isMovingCube(location, set);
@@ -141,7 +141,7 @@ public final class PlayerCube {
 			    ++location.x;
                 break;
             
-            case AxisMovement_Y_Plus:
+            case Y_Plus:
 			    while (location.y <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(location);
                     is_moving = Game.level.isMovingCube(location, set);
@@ -163,7 +163,7 @@ public final class PlayerCube {
 			    --location.y;
                 break;
             
-            case AxisMovement_Y_Minus:
+            case Y_Minus:
 			    while (location.y >= 0) {
 				    is_obstacle = Game.isObstacle(location);
                     is_moving = Game.level.isMovingCube(location, set);
@@ -185,7 +185,7 @@ public final class PlayerCube {
 			    ++location.y;
                 break;
             
-            case AxisMovement_Z_Plus:
+            case Z_Plus:
 			    while (location.z <= MAX_CUBE_COUNT - 1) {
 				    is_obstacle = Game.isObstacle(location);
                     is_moving = Game.level.isMovingCube(location, set);
@@ -207,7 +207,7 @@ public final class PlayerCube {
 			    --location.z;
                 break;
             
-            case AxisMovement_Z_Minus:
+            case Z_Minus:
 			    while (location.z >= 0) {
                     is_obstacle = Game.isObstacle(location);
                     is_moving = Game.level.isMovingCube(location, set);
@@ -250,22 +250,22 @@ public final class PlayerCube {
                 m_moveType = type;
 			
 			    switch (type) {
-				    case AxisMovement_X_Plus:
-				    case AxisMovement_X_Minus:
+				    case X_Plus:
+				    case X_Minus:
 					    mStartValue = pos.x;
 					    mEndValue = pos_destination.x;
 					    position = pos;
 					    break;
 					
-				    case AxisMovement_Y_Plus:
-				    case AxisMovement_Y_Minus:
+				    case Y_Plus:
+				    case Y_Minus:
 					    mStartValue = pos.y;
 					    mEndValue = pos_destination.y;
 					    position = pos;
 					    break;
 					
-				    case AxisMovement_Z_Plus:
-				    case AxisMovement_Z_Minus:
+				    case Z_Plus:
+				    case Z_Minus:
 					    mStartValue = pos.z;
 					    mEndValue = pos_destination.z;
 					    position = pos;

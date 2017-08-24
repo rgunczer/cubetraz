@@ -37,9 +37,9 @@ import static android.opengl.GLES10.*;
 
 public final class Game {
 
-    public static final Vector Xaxis = new Vector(1f, 0f, 0f);
-    public static final Vector Yaxis = new Vector(0f, 1f, 0f);
-    public static final Vector Zaxis = new Vector(0f, 0f, 1f);
+    public static final Vector vectorXaxis = new Vector(1f, 0f, 0f);
+    public static final Vector vectorYaxis = new Vector(0f, 1f, 0f);
+    public static final Vector vectorZaxis = new Vector(0f, 0f, 1f);
 
     private static float hiliteTimeout = 0f;
 
@@ -73,19 +73,12 @@ public final class Game {
     public static final int LEVEL_LOCKED = -1;
     public static final int LEVEL_UNLOCKED = 0;
 
-    public static final int Face_X_Plus = 0;
-    public static final int Face_X_Minus = 1;
-    public static final int Face_Y_Plus = 2;
-    public static final int Face_Y_Minus = 3;
-    public static final int Face_Z_Plus = 4;
-    public static final int Face_Z_Minus = 5;
-
-    public static final int AxisMovement_Y_Plus = 1;
-    public static final int AxisMovement_Y_Minus = 2;
-    public static final int AxisMovement_X_Plus = 3;
-    public static final int AxisMovement_X_Minus = 4;
-    public static final int AxisMovement_Z_Plus = 5;
-    public static final int AxisMovement_Z_Minus = 6;
+    public static final int X_Plus = 3;
+    public static final int X_Minus = 4;
+    public static final int Y_Plus = 1;
+    public static final int Y_Minus = 2;
+    public static final int Z_Plus = 5;
+    public static final int Z_Minus = 6;
 
     public static final int Scene_Intro = 0;
     public static final int Scene_Menu = 1;
@@ -122,7 +115,6 @@ public final class Game {
     public static final int Symbol_TriangleRight = 24;
     public static final int Symbol_Empty = 25;
 
-
     public static final int Tutor_Dead = 0;
     public static final int Tutor_Swipe = 1;
     public static final int Tutor_Goal = 2;
@@ -135,22 +127,7 @@ public final class Game {
     public static final int Tutor_MenuHint = 9;
     public static final int Tutor_MenuSolvers = 10;
 
-    public static final int FACE_SIZE = MAX_CUBE_COUNT * MAX_CUBE_COUNT;
-
     public static final int MAX_TEXT_LINES = 4;
-
-    public static final int MoveDir_MoveNone = 0;
-    public static final int MoveDir_MoveY = 1;
-    public static final int MoveDir_MoveX = 2;
-    public static final int MoveDir_MoveZ = 3;
-
-
-    public static final int X_Plus = 3;
-    public static final int X_Minus = 4;
-    public static final int Y_Plus = 1;
-    public static final int Y_Minus = 2;
-    public static final int Z_Plus = 5;
-    public static final int Z_Minus = 6;
 
 
     public enum TextAlignEnum {
@@ -374,7 +351,7 @@ public final class Game {
     public static final LevelInitData levelInitData = new LevelInitData();
 
     public static final Vector cubeOffset = new Vector();
-    public static CubeFaceData[] cubeFacesData = new CubeFaceData[6];
+    public static CubeFaceData[] cubeFacesData = new CubeFaceData[7];
 
     public static boolean canPlayLockedLevels = true; // TODO: modify this in final version
 
@@ -395,7 +372,7 @@ public final class Game {
                     cubes[i][j][k] = new Cube();
             }
         }
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 7; ++i) {
             cubeFacesData[i] = new CubeFaceData();
         }
     }
@@ -560,7 +537,7 @@ public final class Game {
     }
 
     public static  void clearCubeFaceData() {
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 7; ++i) {
             cubeFacesData[i].clear();
         }
         resetCubesFonts();

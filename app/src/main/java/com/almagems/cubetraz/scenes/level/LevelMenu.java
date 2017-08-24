@@ -8,10 +8,7 @@ import com.almagems.cubetraz.cubes.MenuCube;
 
 import java.util.ArrayList;
 
-import static com.almagems.cubetraz.Game.AxisMovement_X_Plus;
-import static com.almagems.cubetraz.Game.AxisMovement_Z_Minus;
-import static com.almagems.cubetraz.Game.HALF_CUBE_SIZE;
-import static com.almagems.cubetraz.Game.menu;
+import static com.almagems.cubetraz.Game.*;
 
 public class LevelMenu {
 
@@ -60,9 +57,9 @@ public class LevelMenu {
         cubeMid.setCubeLocation(0, 3, 0);
         cubeLow.setCubeLocation(0, 1, 0);
 
-        cubeUp.moveOnAxis(AxisMovement_X_Plus);
-        cubeMid.moveOnAxis(AxisMovement_X_Plus);
-        cubeLow.moveOnAxis(AxisMovement_X_Plus);
+        cubeUp.moveOnAxis(X_Plus);
+        cubeMid.moveOnAxis(X_Plus);
+        cubeLow.moveOnAxis(X_Plus);
     }
 
     void setupForAnimPaused() {
@@ -70,9 +67,9 @@ public class LevelMenu {
         cubeMid.setCubeLocation(0, 3, 8);
         cubeLow.setCubeLocation(0, 1, 8);
 
-        cubeUp.moveOnAxis(AxisMovement_Z_Minus);
-        cubeMid.moveOnAxis(AxisMovement_Z_Minus);
-        cubeLow.moveOnAxis(AxisMovement_Z_Minus);
+        cubeUp.moveOnAxis(Z_Minus);
+        cubeMid.moveOnAxis(Z_Minus);
+        cubeLow.moveOnAxis(Z_Minus);
     }
 
     void update() {

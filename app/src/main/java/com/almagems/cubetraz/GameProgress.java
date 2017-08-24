@@ -115,7 +115,7 @@ public final class GameProgress {
         }
     }
 
-    public void load() {
+     void load() {
         LevelData[] temp;
 
         temp = loadArray(SAVE_GAME_FILE_EASY);

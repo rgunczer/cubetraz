@@ -12,7 +12,7 @@ public final class DeadCube {
 
     private CubeLocation mLocation = new CubeLocation();
 
-    private TexturedQuad[] mCubeFaceTextures = new TexturedQuad[6];
+    private TexturedQuad[] mCubeFaceTextures = new TexturedQuad[7];
     
     private final Color mColor = new Color();
     private final Color mColorCurrent = new Color();
@@ -34,7 +34,7 @@ public final class DeadCube {
     }
 
     public DeadCube() {
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 7; ++i) {
             mCubeFaceTextures[i] = null;
         }
     }
@@ -51,8 +51,8 @@ public final class DeadCube {
     public void init(CubeLocation cubePos) {
         setCubePos(cubePos);
     
-        mCubeFaceTextures[Face_Z_Plus] = Game.getSymbol(Symbol_Death);
-        mCubeFaceTextures[Face_X_Plus] = Game.getSymbol(Symbol_Death);
+        mCubeFaceTextures[Z_Plus] = Game.getSymbol(Symbol_Death);
+        mCubeFaceTextures[X_Plus] = Game.getSymbol(Symbol_Death);
     
         mColorCurrent.init( Game.faceColor );
         mColor.init( Game.faceColor );
@@ -67,14 +67,14 @@ public final class DeadCube {
     }
 
     public void renderSymbols() {
-        TexturedQuad pTQ = mCubeFaceTextures[Face_X_Plus];
+        TexturedQuad pTQ = mCubeFaceTextures[X_Plus];
         coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
         coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
         coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
         coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
         Game.graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, mColorSymbol);
 
-        pTQ = mCubeFaceTextures[Face_Z_Plus];
+        pTQ = mCubeFaceTextures[Z_Plus];
         coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
         coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
         coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);

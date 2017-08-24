@@ -21,8 +21,8 @@ public final class Cube {
 
     public CubeTypeEnum type;
 
-    public CubeFont[] fonts = new CubeFont[6];
-    public CubeFont[] symbols = new CubeFont[6];
+    public CubeFont[] fonts = new CubeFont[7];
+    public CubeFont[] symbols = new CubeFont[7];
 
     public Vector velocity = new Vector();
 

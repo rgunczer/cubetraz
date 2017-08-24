@@ -2391,7 +2391,7 @@ public final class Level extends Scene {
                     }
                 }
                 break;
-        } // switch
+        }
 
         Game.progress.save();
         mState = State.SetupAnimToCompleted;
@@ -2616,8 +2616,8 @@ public final class Level extends Scene {
                 MenuCube menuCube = mLevelMenu.getMenuCubeFromColor(downColor.b);
                 if (menuCube != null) {
                     switch (swipeInfo.swipeDir) {
-                        case SwipeRight: menuCube.moveOnAxis(AxisMovement_Z_Plus); break;
-                        case SwipeLeft:  menuCube.moveOnAxis(AxisMovement_Z_Minus); break;
+                        case SwipeRight: menuCube.moveOnAxis(Z_Plus); break;
+                        case SwipeLeft:  menuCube.moveOnAxis(Z_Minus); break;
                         default:
                             break;
                     }
@@ -2638,8 +2638,8 @@ public final class Level extends Scene {
                 MenuCube menuCube = mLevelMenu.getMenuCubeFromColor(downColor.b);
                 if (menuCube != null) {
                     switch (swipeInfo.swipeDir) {
-                        case SwipeLeft: menuCube.moveOnAxis(AxisMovement_X_Plus); break;
-                        case SwipeRight: menuCube.moveOnAxis(AxisMovement_X_Minus); break;
+                        case SwipeLeft: menuCube.moveOnAxis(X_Plus); break;
+                        case SwipeRight: menuCube.moveOnAxis(X_Minus); break;
                         default:
                             break;
                     }
@@ -2649,9 +2649,6 @@ public final class Level extends Scene {
     }
 
     private void fingerUpPlaying(float x, float y, int fingerCount) {
-
-
-
         if (mHud.getShowHint()) {
             return;
         }
@@ -2716,32 +2713,32 @@ public final class Level extends Scene {
 
             center = 90.0f; // Y plus
             if (degree > (center - space) && degree < (center + space)) {
-                success = mPlayerCube.moveOnAxis(AxisMovement_Y_Plus);
+                success = mPlayerCube.moveOnAxis(Y_Plus);
             }
 
             center = -90.0f; // Y minus
             if (degree > (center - space) && degree < (center + space)) {
-                success = mPlayerCube.moveOnAxis(AxisMovement_Y_Minus);
+                success = mPlayerCube.moveOnAxis(Y_Minus);
             }
 
             center = 30.0f; // Z plus
             if (degree > (center - space) && degree < (center + space)) {
-                success = mPlayerCube.moveOnAxis(AxisMovement_Z_Minus);
+                success = mPlayerCube.moveOnAxis(Z_Minus);
             }
 
             center = -150.0f; // Z minus
             if (degree > (center - space) && degree < (center + space)) {
-                success = mPlayerCube.moveOnAxis(AxisMovement_Z_Plus);
+                success = mPlayerCube.moveOnAxis(Z_Plus);
             }
 
             center = -30.0f; // X minus
             if (degree > (center - space) && degree < (center + space)) {
-                success = mPlayerCube.moveOnAxis(AxisMovement_X_Plus);
+                success = mPlayerCube.moveOnAxis(X_Plus);
             }
 
             center = 150.0f; // X plus
             if (degree > (center - space) && degree < (center + space)) {
-                success = mPlayerCube.moveOnAxis(AxisMovement_X_Minus);
+                success = mPlayerCube.moveOnAxis(X_Minus);
             }
 
             if (success) {

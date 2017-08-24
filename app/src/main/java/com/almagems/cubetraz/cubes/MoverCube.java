@@ -14,7 +14,7 @@ public final class MoverCube {
     private CubeLocation m_cube_pos_starting = new CubeLocation();
     private CubeLocation m_cube_pos = new CubeLocation();
     private int m_move_dir;
-    private TexturedQuad[] m_ar_cube_symbols = new TexturedQuad[6];
+    private TexturedQuad[] m_ar_cube_symbols = new TexturedQuad[7];
 
     private Color m_color = new Color();
     private Color m_color_current = new Color();
@@ -27,7 +27,7 @@ public final class MoverCube {
 
     // ctor
     public MoverCube() {
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 7; ++i) {
             m_ar_cube_symbols[i] = null;
         }
     }
@@ -43,39 +43,39 @@ public final class MoverCube {
     }
 
     public void setSymbols() {
-        m_ar_cube_symbols[Face_X_Plus] = null;
-        m_ar_cube_symbols[Face_Y_Plus] = null;
-        m_ar_cube_symbols[Face_Z_Plus] = null;
+        m_ar_cube_symbols[X_Plus] = null;
+        m_ar_cube_symbols[Y_Plus] = null;
+        m_ar_cube_symbols[Z_Plus] = null;
     
         switch (m_move_dir) {
-            case AxisMovement_X_Plus:
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoLeft);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoLeft);
+            case X_Plus:
+                m_ar_cube_symbols[Y_Plus] = Game.getSymbol(Symbol_GoLeft);
+                m_ar_cube_symbols[Z_Plus] = Game.getSymbol(Symbol_GoLeft);
                 break;
             
-            case AxisMovement_X_Minus:
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoRight);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoRight);
+            case X_Minus:
+                m_ar_cube_symbols[Y_Plus] = Game.getSymbol(Symbol_GoRight);
+                m_ar_cube_symbols[Z_Plus] = Game.getSymbol(Symbol_GoRight);
                 break;
             
-            case AxisMovement_Y_Plus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoUp);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoUp);
+            case Y_Plus:
+                m_ar_cube_symbols[X_Plus] = Game.getSymbol(Symbol_GoUp);
+                m_ar_cube_symbols[Z_Plus] = Game.getSymbol(Symbol_GoUp);
                 break;
             
-            case AxisMovement_Y_Minus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoDown);
-                m_ar_cube_symbols[Face_Z_Plus] = Game.getSymbol(Symbol_GoDown);
+            case Y_Minus:
+                m_ar_cube_symbols[X_Plus] = Game.getSymbol(Symbol_GoDown);
+                m_ar_cube_symbols[Z_Plus] = Game.getSymbol(Symbol_GoDown);
                 break;
             
-            case AxisMovement_Z_Plus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoRight);
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoDown);
+            case Z_Plus:
+                m_ar_cube_symbols[X_Plus] = Game.getSymbol(Symbol_GoRight);
+                m_ar_cube_symbols[Y_Plus] = Game.getSymbol(Symbol_GoDown);
                 break;
             
-            case AxisMovement_Z_Minus:
-                m_ar_cube_symbols[Face_X_Plus] = Game.getSymbol(Symbol_GoLeft);
-                m_ar_cube_symbols[Face_Y_Plus] = Game.getSymbol(Symbol_GoUp);
+            case Z_Minus:
+                m_ar_cube_symbols[X_Plus] = Game.getSymbol(Symbol_GoLeft);
+                m_ar_cube_symbols[Y_Plus] = Game.getSymbol(Symbol_GoUp);
                 break;
             
             default:
@@ -108,7 +108,7 @@ public final class MoverCube {
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         
-        pTQ = m_ar_cube_symbols[Face_X_Plus];    
+        pTQ = m_ar_cube_symbols[X_Plus];
         if (pTQ != null) {
             coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
@@ -117,7 +117,7 @@ public final class MoverCube {
             graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
-        pTQ = m_ar_cube_symbols[Face_Z_Plus];    
+        pTQ = m_ar_cube_symbols[Z_Plus];
         if (pTQ != null) {
             coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
@@ -126,7 +126,7 @@ public final class MoverCube {
             graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
-        pTQ = m_ar_cube_symbols[Face_Y_Plus];    
+        pTQ = m_ar_cube_symbols[Y_Plus];
         if (pTQ != null) {
             coords.tx0 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
             coords.tx1 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);

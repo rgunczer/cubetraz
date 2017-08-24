@@ -93,18 +93,18 @@ public final class MenuCube {
 		    } else {
                 float value = Utils.lerp(m_start_value, m_end_value, m_t);
                 switch (mMoveType) {
-                    case AxisMovement_X_Plus:
-                    case AxisMovement_X_Minus:
+                    case X_Plus:
+                    case X_Minus:
                         position.x = value;
                         break;
 
-                    case AxisMovement_Y_Plus:
-                    case AxisMovement_Y_Minus:
+                    case Y_Plus:
+                    case Y_Minus:
                         position.y = value;
                         break;
 
-                    case AxisMovement_Z_Plus:
-                    case AxisMovement_Z_Minus:
+                    case Z_Plus:
+                    case Z_Minus:
                         position.z = value;
                         break;
                 }
@@ -117,7 +117,7 @@ public final class MenuCube {
         prev.init(cube_pos);
 	
         switch(type) {
-            case AxisMovement_X_Plus:
+            case X_Plus:
 			    while (cube_pos.x <= MAX_CUBE_COUNT - 1) {
 				    if ( Game.isObstacle(cube_pos) ) {
 					    cube_pos.init(prev);
@@ -129,7 +129,7 @@ public final class MenuCube {
 			    --cube_pos.x;
             break;
             
-        case AxisMovement_X_Minus:
+        case X_Minus:
 			while (cube_pos.x >= 0) {
 				if ( Game.isObstacle(cube_pos) ) {
 					cube_pos.init(prev);
@@ -141,7 +141,7 @@ public final class MenuCube {
 			++cube_pos.x;
             break;
             
-        case AxisMovement_Y_Plus:
+        case Y_Plus:
 			while (cube_pos.y <= MAX_CUBE_COUNT - 1) {
 				if ( Game.isObstacle(cube_pos) ) {
 					cube_pos.init(prev);
@@ -153,7 +153,7 @@ public final class MenuCube {
 			--cube_pos.y;
             break;
             
-        case AxisMovement_Y_Minus:
+        case Y_Minus:
 			while (cube_pos.y >= 0) {
 				if ( Game.isObstacle(cube_pos) ) {
 					cube_pos.init(prev);
@@ -165,7 +165,7 @@ public final class MenuCube {
 			++cube_pos.y;
             break;
             
-        case AxisMovement_Z_Plus:
+        case Z_Plus:
 			while (cube_pos.z <= MAX_CUBE_COUNT - 1) {
 				if ( Game.isObstacle(cube_pos) ) {
 					cube_pos.init(prev);
@@ -177,7 +177,7 @@ public final class MenuCube {
 			--cube_pos.z;
             break;
             
-        case AxisMovement_Z_Minus:
+        case Z_Minus:
 			while (cube_pos.z >= 0) {
 				if ( Game.isObstacle(cube_pos) ) {
 					cube_pos.init(prev);
@@ -208,22 +208,22 @@ public final class MenuCube {
                 mMoveType = type;
 
                 switch (mMoveType) {
-                    case AxisMovement_X_Plus:
-                    case AxisMovement_X_Minus:
+                    case X_Plus:
+                    case X_Minus:
                         m_start_value = pos.x;
                         m_end_value = pos_destination.x;
                         position = pos;
                         break;
 
-                    case AxisMovement_Y_Plus:
-                    case AxisMovement_Y_Minus:
+                    case Y_Plus:
+                    case Y_Minus:
                         m_start_value = pos.y;
                         m_end_value = pos_destination.y;
                         position = pos;
                         break;
 
-                    case AxisMovement_Z_Plus:
-                    case AxisMovement_Z_Minus:
+                    case Z_Plus:
+                    case Z_Minus:
                         m_start_value = pos.z;
                         m_end_value = pos_destination.z;
                         position = pos;
@@ -243,7 +243,7 @@ public final class MenuCube {
                     cubesToHilite.clear();
 
                     switch (type) {
-                        case AxisMovement_X_Plus: {
+                        case X_Plus: {
                             int y, z;
                             y = location.y + mCubeHiliteOffset.y;
                             z = location.z + mCubeHiliteOffset.z;
@@ -254,7 +254,7 @@ public final class MenuCube {
                         }
                         break;
 
-                        case AxisMovement_X_Minus: {
+                        case X_Minus: {
                             int y, z;
                             y = location.y + mCubeHiliteOffset.y;
                             z = location.z + mCubeHiliteOffset.z;
@@ -265,7 +265,7 @@ public final class MenuCube {
                         }
                         break;
 
-                        case AxisMovement_Y_Plus: {
+                        case Y_Plus: {
                             int x, z;
                             x = location.x + mCubeHiliteOffset.x;
                             z = location.z + mCubeHiliteOffset.z;
@@ -276,7 +276,7 @@ public final class MenuCube {
                         }
                         break;
 
-                        case AxisMovement_Y_Minus: {
+                        case Y_Minus: {
                             int x, z;
                             x = location.x + mCubeHiliteOffset.x;
                             z = location.z + mCubeHiliteOffset.z;
@@ -287,7 +287,7 @@ public final class MenuCube {
                         }
                         break;
 
-                        case AxisMovement_Z_Plus: {
+                        case Z_Plus: {
                             int x, y;
                             x = location.x + mCubeHiliteOffset.x;
                             y = location.y + mCubeHiliteOffset.y;
@@ -298,7 +298,7 @@ public final class MenuCube {
                         }
                         break;
 
-                        case AxisMovement_Z_Minus: {
+                        case Z_Minus: {
                             int x, y;
                             x = location.x + mCubeHiliteOffset.x;
                             y = location.y + mCubeHiliteOffset.y;

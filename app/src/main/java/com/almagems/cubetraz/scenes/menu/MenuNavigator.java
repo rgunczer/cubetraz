@@ -32,11 +32,11 @@ public final class MenuNavigator
 
     private String getAxisFromVector(Vector vec) {
         if (vec.x == 1f && vec.y == 0f && vec.z == 0f) {
-            return "Game.Xaxis";
+            return "Game.vectorXaxis";
         } else if (vec.x == 0f && vec.y == 1f && vec.z == 0f) {
-            return "Game.Yaxis";
+            return "Game.vectorYaxis";
         } else if (vec.x == 0f && vec.y == 0f && vec.z == 1f) {
-            return "Game.Zaxis";
+            return "Game.vectorZaxis";
         }
         return "";
     }
@@ -51,23 +51,23 @@ public final class MenuNavigator
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
 		
-        MenuFaceBuilder.build(CubeFaceNames.Face_Easy01, Face_X_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Easy01, X_Plus);
 	
 	    if (tutorial) {
 		    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-		    MenuFaceBuilder.build(CubeFaceNames.Face_Tutorial, Face_X_Minus);
+		    MenuFaceBuilder.build(CubeFaceNames.Face_Tutorial, X_Minus);
 	    } else {
 		    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-		    MenuFaceBuilder.build(CubeFaceNames.Face_Hard01, Face_X_Minus);
+		    MenuFaceBuilder.build(CubeFaceNames.Face_Hard01, X_Minus);
 	    }
     
-  	    MenuFaceBuilder.build(CubeFaceNames.Face_Menu, Face_Z_Plus);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
+  	    MenuFaceBuilder.build(CubeFaceNames.Face_Menu, Z_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Minus);
 	
-	    MenuFaceBuilder.build(CubeFaceNames.Face_Options, Face_Y_Plus);
+	    MenuFaceBuilder.build(CubeFaceNames.Face_Options, Y_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Score, Face_Y_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Score, Y_Minus);
     }
 
      void createEasyFaces() {
@@ -75,22 +75,22 @@ public final class MenuNavigator
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
 	
-        MenuFaceBuilder.build(CubeFaceNames.Face_Easy01, Face_X_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Easy01, X_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCW90);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Easy02, Face_Y_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Easy02, Y_Minus);
 
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Easy03, Face_X_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Easy03, X_Minus);
     
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Easy04, Face_Y_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Easy04, Y_Plus);
 	
-        MenuFaceBuilder.build(CubeFaceNames.Face_Menu, Face_Z_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Menu, Z_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Face_Z_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Z_Minus);
     }
 
      void createNormalFaces() {
@@ -98,24 +98,24 @@ public final class MenuNavigator
 	    Creator.fillPools();
 	    MenuFaceBuilder.resetTransforms();
 
-        MenuFaceBuilder.build(CubeFaceNames.Face_Easy01, Face_X_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Easy01, X_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Hard01, Face_X_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Hard01, X_Minus);
     
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Normal04, Face_Y_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Normal04, Y_Plus);
 
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Normal02, Face_Y_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Normal02, Y_Minus);
 
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Normal03, Face_Z_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Normal03, Z_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Face_Z_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Z_Minus);
     }
 
     void createHardFaces() {
@@ -125,24 +125,24 @@ public final class MenuNavigator
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCW90);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCW90);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Hard03, Face_X_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Hard03, X_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Hard01, Face_X_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Hard01, X_Minus);
     
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Hard04, Face_Y_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Hard04, Y_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorHoriz);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Hard02, Face_Y_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Hard02, Y_Minus);
 
-        MenuFaceBuilder.build(CubeFaceNames.Face_Menu, Face_Z_Plus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Menu, Z_Plus);
 	
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.MirrorVert);
-        MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Face_Z_Minus);
+        MenuFaceBuilder.build(CubeFaceNames.Face_Normal01, Z_Minus);
     }
 
     public void init() {
@@ -177,8 +177,8 @@ public final class MenuNavigator
                 mSecondaryRotation = true;
                 secondaryRotation.degree = 0.0f;
                 secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Plus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Minus);
                 break;
             
             case Hard4_To_Hard1:
@@ -223,8 +223,8 @@ public final class MenuNavigator
                 mSecondaryRotation = true;
                 secondaryRotation.degree = 0.0f;
                 secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Plus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Minus);
                 break;
             
             case Normal1_To_Normal4:
@@ -232,8 +232,8 @@ public final class MenuNavigator
                 mSecondaryRotation = true;
                 secondaryRotation.degree = 0.0f;
                 secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Plus);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Minus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, X_Plus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, X_Minus);
                 break;
             
             case Normal4_To_Normal1:
@@ -285,8 +285,8 @@ public final class MenuNavigator
                 mSecondaryRotation = true;
                 secondaryRotation.degree = 0.0f;
                 secondaryRotation.axis = new Vector(1.0f, 0.0f, 0.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Plus);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_X_Minus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, X_Plus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, X_Minus);
                 break;
             
             case Easy1_To_Easy4:
@@ -294,8 +294,8 @@ public final class MenuNavigator
                 mSecondaryRotation = true;
                 secondaryRotation.degree = 0.0f;
                 secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Plus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Minus);
                 break;
             
             case Easy4_To_Easy1:
@@ -339,8 +339,8 @@ public final class MenuNavigator
                 mSecondaryRotation = true;
                 secondaryRotation.degree = 0.0f;
 			    secondaryRotation.axis = new Vector(0.0f, 0.0f, 1.0f);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Plus);
-                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Face_Z_Minus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Plus);
+                MenuFaceBuilder.build(CubeFaceNames.Face_Empty, Z_Minus);
                 break;
             
             case Easy2_To_Easy1:

@@ -324,41 +324,41 @@ final class HUD {
         mEnd = new Vector2(0.0f, 40.0f * deviceScale);
 
         switch (hintType) {
-            case AxisMovement_X_Plus:
+            case X_Plus:
                 degree = -120.0f;
                 rad = (float)Math.toRadians(degree);
                 mStart.rotateRad(rad);
                 mEnd.rotateRad(rad);
                 break;
             
-            case AxisMovement_X_Minus:
+            case X_Minus:
                 degree = 60.0f;
                 rad = (float)Math.toRadians(degree);
                 mStart.rotateRad(rad);
                 mEnd.rotateRad(rad);
                 break;
             
-            case AxisMovement_Y_Plus:
+            case Y_Plus:
                 rad = (float)Math.toRadians(degree);
                 mStart.rotateRad(rad);
                 mEnd.rotateRad(rad);
                 break;
             
-            case AxisMovement_Y_Minus:
+            case Y_Minus:
                 degree = 180.0f;
                 rad = (float)Math.toRadians(degree);
                 mStart.rotateRad(rad);
                 mEnd.rotateRad(rad);
                 break;
             
-            case AxisMovement_Z_Plus:
+            case Z_Plus:
                 degree = 120.0f;
                 rad = (float)Math.toRadians(degree);
                 mStart.rotateRad(rad);
                 mEnd.rotateRad(rad);
                 break;
             
-            case AxisMovement_Z_Minus:
+            case Z_Minus:
                 degree = -60.0f;
                 rad = (float)Math.toRadians(degree);
                 mStart.rotateRad(rad);

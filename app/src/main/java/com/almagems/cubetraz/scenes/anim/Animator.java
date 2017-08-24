@@ -64,7 +64,7 @@ public final class Animator extends Scene {
 
 
     public Animator() {
-        for(int i = 0; i < 6; ++i) {
+        for(int i = 0; i < 7; ++i) {
             mTitles.add(new ArrayList<CubeFont>());
             mTexts.add(new ArrayList<CubeFont>());
             mSymbols.add(new ArrayList<CubeFont>());
@@ -142,10 +142,10 @@ public final class Animator extends Scene {
         Creator.fillPools();
 	    
         MenuFaceBuilder.resetTransforms();
-	    MenuFaceBuilder.build(Game.animInitData.faceNameXPlus, Face_X_Plus);
+	    MenuFaceBuilder.build(Game.animInitData.faceNameXPlus, X_Plus);
 	    MenuFaceBuilder.addTransform(FaceTransformsEnum.RotateCCW90);
-	    MenuFaceBuilder.build(Game.animInitData.faceNameYPlus, Face_Y_Plus);
-	    MenuFaceBuilder.build(Game.animInitData.faceNameZPlus, Face_Z_Plus);
+	    MenuFaceBuilder.build(Game.animInitData.faceNameYPlus, Y_Plus);
+	    MenuFaceBuilder.build(Game.animInitData.faceNameZPlus, Z_Plus);
     }
 
 	private static LevelCube getLevelCubeFrom(ArrayList<LevelCube> lst) {
@@ -161,28 +161,28 @@ public final class Animator extends Scene {
         LevelCube cube;
         
 	    mLevelCubesXplus.clear();
-        len = Game.cubeFacesData[Face_X_Plus].levelCubes.size();
+        len = Game.cubeFacesData[X_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
-            cube = Game.cubeFacesData[Face_X_Plus].levelCubes.get(i);
+            cube = Game.cubeFacesData[X_Plus].levelCubes.get(i);
 		    mLevelCubesXplus.add(cube);
 	    }
-	    Game.cubeFacesData[Face_X_Plus].levelCubes.clear();
+	    Game.cubeFacesData[X_Plus].levelCubes.clear();
 	
 	    mLevelCubesYplus.clear();
-        len = Game.cubeFacesData[Face_Y_Plus].levelCubes.size();
+        len = Game.cubeFacesData[Y_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {	
-            cube = Game.cubeFacesData[Face_Y_Plus].levelCubes.get(i);
+            cube = Game.cubeFacesData[Y_Plus].levelCubes.get(i);
 		    mLevelCubesYplus.add(cube);
 	    }
-	    Game.cubeFacesData[Face_Y_Plus].levelCubes.clear();
+	    Game.cubeFacesData[Y_Plus].levelCubes.clear();
 	
 	    mLevelCubesZplus.clear();
-        len = Game.cubeFacesData[Face_Z_Plus].levelCubes.size();
+        len = Game.cubeFacesData[Z_Plus].levelCubes.size();
 	    for (int i = 0 ; i < len; ++i) {	
-            cube = Game.cubeFacesData[Face_Z_Plus].levelCubes.get(i);
+            cube = Game.cubeFacesData[Z_Plus].levelCubes.get(i);
 		    mLevelCubesZplus.add(cube);
 	    }
-	    Game.cubeFacesData[Face_Z_Plus].levelCubes.clear();
+	    Game.cubeFacesData[Z_Plus].levelCubes.clear();
     }
 
     private void setupAnimToMenu() {
@@ -313,10 +313,10 @@ public final class Animator extends Scene {
 
     public void locateLevelCube() {
 	    int level_number = Game.levelInitData.levelNumber;
-        int size = Game.cubeFacesData[Face_X_Plus].levelCubes.size();
+        int size = Game.cubeFacesData[X_Plus].levelCubes.size();
 	    LevelCube levelCube;
 	    for(int i = 0; i < size; ++i) {
-            levelCube = Game.cubeFacesData[Face_X_Plus].levelCubes.get(i);
+            levelCube = Game.cubeFacesData[X_Plus].levelCubes.get(i);
 		    if (levelCube.levelNumber == level_number) {
                 mLevelCubeHilite = levelCube;
                 mLevelCubeHilite.colorNumber = new Color(255, 255, 0, 255);
@@ -407,19 +407,19 @@ public final class Animator extends Scene {
             
                 levelCube = getLevelCubeFrom(mLevelCubesXplus);
                 if (levelCube != null) {
-                    Game.cubeFacesData[Face_X_Plus].levelCubes.add(levelCube);
+                    Game.cubeFacesData[X_Plus].levelCubes.add(levelCube);
                     mLevelCubesXplus.remove(levelCube);
                 }
             
                 levelCube = getLevelCubeFrom(mLevelCubesYplus);
                 if (levelCube != null) {
-                    Game.cubeFacesData[Face_Y_Plus].levelCubes.add(levelCube);
+                    Game.cubeFacesData[Y_Plus].levelCubes.add(levelCube);
                     mLevelCubesYplus.remove(levelCube);
                 }
             
                 levelCube = getLevelCubeFrom(mLevelCubesZplus);
                 if (levelCube != null) {
-                    Game.cubeFacesData[Face_Z_Plus].levelCubes.add(levelCube);
+                    Game.cubeFacesData[Z_Plus].levelCubes.add(levelCube);
                     mLevelCubesZplus.remove(levelCube);
                 }
             }
@@ -452,23 +452,23 @@ public final class Animator extends Scene {
 	    if (mTimeout <= 0f) {
 		    LevelCube levelCube;
 		
-		    levelCube = getLevelCubeFrom(Game.cubeFacesData[Face_X_Plus].levelCubes);
+		    levelCube = getLevelCubeFrom(Game.cubeFacesData[X_Plus].levelCubes);
 		    if (levelCube != null) {
-			    Game.cubeFacesData[Face_X_Plus].levelCubes.remove(levelCube);
+			    Game.cubeFacesData[X_Plus].levelCubes.remove(levelCube);
 			
 			    if (levelCube == mLevelCubeHilite) {
-				    Game.cubeFacesData[Face_X_Plus].levelCubes.add(0, levelCube);
+				    Game.cubeFacesData[X_Plus].levelCubes.add(0, levelCube);
                 }
 		    }
 		
-		    levelCube = getLevelCubeFrom(Game.cubeFacesData[Face_Y_Plus].levelCubes);
+		    levelCube = getLevelCubeFrom(Game.cubeFacesData[Y_Plus].levelCubes);
 		    if (levelCube != null) {
-			    Game.cubeFacesData[Face_Y_Plus].levelCubes.remove(levelCube);
+			    Game.cubeFacesData[Y_Plus].levelCubes.remove(levelCube);
             }
 		
-		    levelCube = getLevelCubeFrom(Game.cubeFacesData[Face_Z_Plus].levelCubes);
+		    levelCube = getLevelCubeFrom(Game.cubeFacesData[Z_Plus].levelCubes);
 		    if (levelCube != null) {
-			    Game.cubeFacesData[Face_Z_Plus].levelCubes.remove(levelCube);
+			    Game.cubeFacesData[Z_Plus].levelCubes.remove(levelCube);
             }
 		    mTimeout = 0.03f;
 	    }
@@ -508,8 +508,8 @@ public final class Animator extends Scene {
 	    }
 	
 	    if (done) {
-		    if (1 == Game.cubeFacesData[Face_X_Plus].levelCubes.size()) {
-			    Game.cubeFacesData[Face_X_Plus].levelCubes.clear();
+		    if (1 == Game.cubeFacesData[X_Plus].levelCubes.size()) {
+			    Game.cubeFacesData[X_Plus].levelCubes.clear();
             }
 		
 		    cube = m_ad_base_appear.getCubeFromAppearList();
@@ -537,7 +537,7 @@ public final class Animator extends Scene {
     }
 
     public void updateCubes() {
-	    for (int i = 0; i < 6; ++i) {
+	    for (int i = 0; i < 7; ++i) {
 		    mTitles.get(i).clear();
 		    mTexts.get(i).clear();
             mSymbols.get(i).clear();
@@ -549,7 +549,7 @@ public final class Animator extends Scene {
 	    for (int i = 0; i < size; ++i) {
 		    cube = mCubesBase.get(i);
 		
-		    face_type = Face_X_Plus;
+		    face_type = X_Plus;
 		    if (null != cube.fonts[face_type]) {
 			    mTexts.get(face_type).add(cube.fonts[face_type]);
             }
@@ -558,7 +558,7 @@ public final class Animator extends Scene {
                 mSymbols.get(face_type).add(cube.symbols[face_type]);
             }
         
-		    face_type = Face_Y_Plus;
+		    face_type = Y_Plus;
 		    if (null != cube.fonts[face_type]) {
 			    mTexts.get(face_type).add(cube.fonts[face_type]);
             }
@@ -567,7 +567,7 @@ public final class Animator extends Scene {
                 mSymbols.get(face_type).add(cube.symbols[face_type]);
             }
         
-		    face_type = Face_Z_Plus;
+		    face_type = Z_Plus;
 		    if (null != cube.fonts[face_type]) {
 			    mTexts.get(face_type).add(cube.fonts[face_type]);
             }
@@ -581,17 +581,17 @@ public final class Animator extends Scene {
 	    for (int i = 0; i < size; ++i) {
 		    cube = mCubesFace.get(i);
 				
-		    face_type = Face_X_Plus;
+		    face_type = X_Plus;
 		    if (null != cube.fonts[face_type]) {
 			    mTitles.get(face_type).add(cube.fonts[face_type]);
             }
 				
-		    face_type = Face_Y_Plus;
+		    face_type = Y_Plus;
 		    if (null != cube.fonts[face_type]) {
 			    mTitles.get(face_type).add(cube.fonts[face_type]);
             }
 	
-		    face_type = Face_Z_Plus;
+		    face_type = Z_Plus;
 		    if (null != cube.fonts[face_type]) {
 			    mTitles.get(face_type).add(cube.fonts[face_type]);
             }
@@ -652,21 +652,21 @@ public final class Animator extends Scene {
 	    graphics.bindStreamSources3d();
 	
 	    LevelCube cube;
-        int len = Game.cubeFacesData[Face_X_Plus].levelCubes.size();
+        int len = Game.cubeFacesData[X_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
-            cube = Game.cubeFacesData[Face_X_Plus].levelCubes.get(i);
+            cube = Game.cubeFacesData[X_Plus].levelCubes.get(i);
 		    graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
         }
 
-        len = Game.cubeFacesData[Face_Y_Plus].levelCubes.size();
+        len = Game.cubeFacesData[Y_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
-            cube = Game.cubeFacesData[Face_Y_Plus].levelCubes.get(i);
+            cube = Game.cubeFacesData[Y_Plus].levelCubes.get(i);
 		    graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
         }
 	
-        len = Game.cubeFacesData[Face_Z_Plus].levelCubes.size();
+        len = Game.cubeFacesData[Z_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
-            cube = Game.cubeFacesData[Face_Z_Plus].levelCubes.get(i);
+            cube = Game.cubeFacesData[Z_Plus].levelCubes.get(i);
 		    graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
         }
 	
@@ -688,7 +688,7 @@ public final class Animator extends Scene {
 	    int faceType;
         int size;
 
-        faceType = Face_X_Plus;
+        faceType = X_Plus;
         size = Game.cubeFacesData[faceType].levelCubes.size();
 	    for(int i = 0; i < size; ++i) {
 		    levelCube = Game.cubeFacesData[faceType].levelCubes.get(i);
@@ -721,7 +721,7 @@ public final class Animator extends Scene {
             }
 	    }
 
-        faceType = Face_Y_Plus;
+        faceType = Y_Plus;
         size = Game.cubeFacesData[faceType].levelCubes.size();
 	    for(int i = 0; i < size; ++i) {
 		    levelCube = Game.cubeFacesData[faceType].levelCubes.get(i);
@@ -754,7 +754,7 @@ public final class Animator extends Scene {
             }
 	    }
 
-        faceType = Face_Z_Plus;
+        faceType = Z_Plus;
         size = Game.cubeFacesData[faceType].levelCubes.size();
 	    for(int i = 0; i < size; ++i) {
 		    levelCube = Game.cubeFacesData[faceType].levelCubes.get(i);
@@ -860,7 +860,7 @@ public final class Animator extends Scene {
         Color color = new Color(255, 255, 255, (int)Game.dirtyAlpha);
         graphics.drawFullScreenTexture(Game.graphics.textureDirty, color);
     
-        glDepthMask(true); //GL_TRUE);
+        glDepthMask(true);
     
         graphics.setProjection3D();
         graphics.setModelViewMatrix3D(mCameraCurrent);
@@ -897,10 +897,10 @@ public final class Animator extends Scene {
 	
         color = Game.textColor;
 		graphics.textureFonts.bind();
-        drawTexts(mTexts.get(Face_X_Plus), mTexts.get(Face_Y_Plus), mTexts.get(Face_Z_Plus), color);
+        drawTexts(mTexts.get(X_Plus), mTexts.get(Y_Plus), mTexts.get(Z_Plus), color);
 	
 	    color = Game.titleColor;
-	    drawTexts(mTitles.get(Face_X_Plus), mTitles.get(Face_Y_Plus), mTitles.get(Face_Z_Plus), color);
+	    drawTexts(mTitles.get(X_Plus), mTitles.get(Y_Plus), mTitles.get(Z_Plus), color);
 
 	    color = Game.symbolColor;
 		graphics.textureNumbers.bind();
@@ -910,7 +910,7 @@ public final class Animator extends Scene {
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalStars);
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalSolver);
     
-        drawTexts(mSymbols.get(Face_X_Plus), mSymbols.get(Face_Y_Plus), mSymbols.get(Face_Z_Plus), color);
+        drawTexts(mSymbols.get(X_Plus), mSymbols.get(Y_Plus), mSymbols.get(Z_Plus), color);
     
 	    glDisable(GL_BLEND);
 	
