@@ -21,56 +21,54 @@ import java.nio.FloatBuffer;
 
 public final class Graphics {
 
-    private GL10 gl;
+    public static GL10 gl;
 
-    public int width;
-    public int height;
-    public int halfWidth;
-    public int halfHeight;
-    public float deviceScale;
+    public static int width;
+    public static int height;
+    public static int halfWidth;
+    public static int halfHeight;
+    public static float deviceScale;
 
-    private int[] mOriginalFBO = new int[1];
+    private static int[] mOriginalFBO = new int[1];
 
-    public Texture textureGrayConcrete;
-    public Texture textureKey;
-    public Texture textureFonts;
-    public Texture textureFontsClear;
-    public Texture textureLevelCubes;
-    public Texture textureFontsBig;
-    public Texture textureNumbers;
-    public Texture texturePlayer;
-    public Texture textureStar;
-    public Texture textureSymbols;
-    public Texture textureStatBackground;
-    public Texture textureCredits;
-    public Texture textureDirty;
-    public Texture textureTutor;
+    public static Texture textureGrayConcrete;
+    public static Texture textureKey;
+    public static Texture textureFonts;
+    public static Texture textureFontsClear;
+    public static Texture textureLevelCubes;
+    public static Texture textureFontsBig;
+    public static Texture textureNumbers;
+    public static Texture texturePlayer;
+    public static Texture textureStar;
+    public static Texture textureSymbols;
+    public static Texture textureStatBackground;
+    public static Texture textureCredits;
+    public static Texture textureDirty;
+    public static Texture textureTutor;
 
-    public int _vertices_count = 0;
-    public int _vindex = -1;
-    public int _cindex = -1;
-    public int _color_index = -1;
+    public static int _vertices_count = 0;
+    public static int _vindex = -1;
+    public static int _cindex = -1;
+    public static int _color_index = -1;
 
-    private float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
-    private float[] _normals = new float[BUF_SIZE * KILOBYTE];
-    private float[] _coords = new float[BUF_SIZE * KILOBYTE];
-    private byte[] _colors = new byte[BUF_SIZE * KILOBYTE];
+    private static float[] _vertices = new float[BUF_SIZE * KILOBYTE];  /*3 * 36 * MAX_CUBE_COUNT * MAX_CUBE_COUNT * MAX_CUBE_COUNT */
+    private static float[] _normals = new float[BUF_SIZE * KILOBYTE];
+    private static float[] _coords = new float[BUF_SIZE * KILOBYTE];
+    private static byte[] _colors = new byte[BUF_SIZE * KILOBYTE];
 
-    public float aspectRatio;
-    public float scaleFactor;
+    public static float aspectRatio;
+    public static float scaleFactor;
 
-    private FloatBuffer _vertexBuffer;
-    private FloatBuffer _normalBuffer;
-    private FloatBuffer _coordsBuffer;
-    private ByteBuffer _colorBuffer;
+    private static FloatBuffer _vertexBuffer;
+    private static FloatBuffer _normalBuffer;
+    private static FloatBuffer _coordsBuffer;
+    private static ByteBuffer _colorBuffer;
 
-    public FBO fbo;
+    public static FBO fbo;
 
-    public Graphics(GL10 gl) {
-        this.gl = gl;
-    }
+    private Graphics() {}
 
-    public void initialSetup() {
+    public static void initialSetup() {
         ByteBuffer vbb;
 
         vbb = ByteBuffer.allocateDirect(_vertices.length * 4);
@@ -88,15 +86,15 @@ public final class Graphics {
         _colorBuffer = ByteBuffer.allocateDirect(_colors.length);
     }
 
-    public void saveOriginalFBO() {
+    public static void saveOriginalFBO() {
         glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, mOriginalFBO, 0);
     }
 
-    public void restoreOriginalFBO() {
+    public static void restoreOriginalFBO() {
         glBindFramebufferOES(GL_FRAMEBUFFER_OES, mOriginalFBO[0]);
     }
 
-    public void updateBuffers() {
+    public static void updateBuffers() {
         _vertexBuffer.put(_vertices);
         _vertexBuffer.position(0);
 
@@ -110,46 +108,46 @@ public final class Graphics {
         _colorBuffer.position(0);
     }
 
-    public void zeroBufferPositions() {
+    public static void zeroBufferPositions() {
         _vertexBuffer.position(0);
         _colorBuffer.position(0);
         _coordsBuffer.position(0);
         _normalBuffer.position(0);
     }
 
-    public void setLightPosition(Vector pos) {
+    public static void setLightPosition(Vector pos) {
         float posLight[] = { pos.x, pos.y, pos.z, 1.0f };
         glLightfv(GL_LIGHT0, GL_POSITION, posLight, 0);
     }
 
-    public void drawQuad() {
+    public static void drawQuad() {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
-    public void drawCube() {
+    public static void drawCube() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
     // draw cube face
-    public void drawCubeFaceY_Plus() {
+    public static void drawCubeFaceY_Plus() {
         glDrawArrays(GL_TRIANGLES, 30, 6);
     }
-    public void drawCubeFaceY_Minus() {
+    public static void drawCubeFaceY_Minus() {
         glDrawArrays(GL_TRIANGLES, 18, 6);
     }
-    public void drawCubeFaceX_Plus() {
+    public static void drawCubeFaceX_Plus() {
         glDrawArrays(GL_TRIANGLES, 12, 6);
     }
-    public void drawCubeFaceX_Minus() {
+    public static void drawCubeFaceX_Minus() {
         glDrawArrays(GL_TRIANGLES, 24, 6);
     }
-    public void drawCubeFaceZ_Plus() {
+    public static void drawCubeFaceZ_Plus() {
         glDrawArrays(GL_TRIANGLES, 6, 6);
     }
-    public void drawCubeFaceZ_Minus() {
+    public static void drawCubeFaceZ_Minus() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    public Color getColorFromScreen(Vector2 pos) {
+    public static Color getColorFromScreen(Vector2 pos) {
         int x = (int) pos.x;
         int y = height - (int) pos.y;
 
@@ -172,7 +170,7 @@ public final class Graphics {
         return color;
     }
 
-    public void drawAxes() {
+    public static void drawAxes() {
         final float length = width;
         final float axis[] = {
                 -length, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,    // x
@@ -217,15 +215,15 @@ public final class Graphics {
         glDrawArrays(GL_LINES, 0, 6);
     }
 
-    public void drawFullScreenTexture(FBO fbo, Color color) {
+    public static void drawFullScreenTexture(FBO fbo, Color color) {
         drawFullScreenTexture(fbo.textureId, color);
     }
 
-    public void drawFullScreenTexture(Texture texture, Color color) {
+    public static void drawFullScreenTexture(Texture texture, Color color) {
         drawFullScreenTexture(texture.id, color);
     }
 
-    private void drawFullScreenTexture(int textureId, Color color) {
+    private static void drawFullScreenTexture(int textureId, Color color) {
         final float verts[] = {
                 0f, height,
                 0f, 0f,
@@ -255,7 +253,7 @@ public final class Graphics {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-    public void drawFullScreenQuad(Color color) {
+    public static void drawFullScreenQuad(Color color) {
         final float verts[] = {
                 0f, height,
                 0f, 0f,
@@ -278,18 +276,18 @@ public final class Graphics {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-    public void setModelViewMatrix2D() {
+    public static void setModelViewMatrix2D() {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
     }
 
-    public void setProjection2D() {
+    public static void setProjection2D() {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrthof(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     }
 
-    public void setModelViewMatrix3D(final Camera camera) {
+    public static void setModelViewMatrix3D(final Camera camera) {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
@@ -299,7 +297,7 @@ public final class Graphics {
                 0f, 1f, 0f);
     }
 
-    public void setProjection3D() {
+    public static void setProjection3D() {
         final float zNear = 0.01f;
         final float zFar = 1000.0f;
         final float fieldOfView = 30.0f;
@@ -310,19 +308,19 @@ public final class Graphics {
         glFrustumf(-size, size, -size / aspectRatio, size / aspectRatio, zNear, zFar);
     }
 
-    public void addCubeWithColor(float tx, float ty, float tz, Color color) {
+    public static void addCubeWithColor(float tx, float ty, float tz, Color color) {
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, color);
     }
 
-    public void renderPoints() {
+    public static void renderPoints() {
         glDrawArrays(GL_POINTS, 0, _vertices_count);
     }
 
-    public void addCube(float tx, float ty, float tz) {
+    public static void addCube(float tx, float ty, float tz) {
         addCubeSize(tx, ty, tz, HALF_CUBE_SIZE, Color.WHITE);
     }
 
-    public void resetBufferIndices() {
+    public static void resetBufferIndices() {
         _vertices_count = 0;
         _vindex = -1;
         _cindex = -1;
@@ -330,7 +328,7 @@ public final class Graphics {
         zeroBufferPositions();
     }
 
-    public void bindStreamSources2dNoTextures() {
+    public static void bindStreamSources2dNoTextures() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
@@ -340,7 +338,7 @@ public final class Graphics {
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
     }
 
-    public void bindStreamSources2d() {
+    public static void bindStreamSources2d() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
@@ -351,7 +349,7 @@ public final class Graphics {
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
     }
 
-    public void bindStreamSources3d() {
+    public static void bindStreamSources3d() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
@@ -363,7 +361,7 @@ public final class Graphics {
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
     }
 
-    public void bindStreamSources3dNoTexture() {
+    public static void bindStreamSources3dNoTexture() {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
@@ -374,8 +372,7 @@ public final class Graphics {
         glColorPointer(4, GL_UNSIGNED_BYTE, 0, _colorBuffer);
     }
 
-
-    public void loadStartupAssets() throws Exception {
+    public static void loadStartupAssets() throws Exception {
         textureGrayConcrete = loadTexture(R.drawable.grey_concrete128_stroke);
         textureKey = loadTexture(R.drawable.key);
         textureFonts = loadTexture(R.drawable.fonts);
@@ -392,12 +389,12 @@ public final class Graphics {
         textureTutor = loadTexture(R.drawable.tutor_swipe);
     }
 
-    public Texture loadTexture(int resourceId) {
+    public static Texture loadTexture(int resourceId) {
         Texture texture = TextureHelper.loadTexture(resourceId);
         return texture;
     }
 
-    public int createTexture(int w, int h) {
+    public static int createTexture(int w, int h) {
         int[] temp = new int[1];
         glGenTextures(1, temp, 0);
 
@@ -414,15 +411,15 @@ public final class Graphics {
         return temp[0];
     }
 
-    public void prepareFrame() {
+    public static void prepareFrame() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    public void onSurfaceChanged(int width, int height) {
+    public static void onSurfaceChanged(int width, int height) {
         System.out.println("Graphics.onSurfaceChanged");
 
-        this.width = width;
-        this.height = height;
+        Graphics.width = width;
+        Graphics.height = height;
 
         halfWidth = width / 2;
         halfHeight = height / 2;
@@ -466,18 +463,18 @@ public final class Graphics {
         restoreOriginalFBO();
     }
 
-    public void renderTriangles() {
+    public static void renderTriangles() {
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
     }
 
-    public void renderTriangles(float tx, float ty, float tz) {
+    public static void renderTriangles(float tx, float ty, float tz) {
         glPushMatrix();
         glTranslatef(tx, ty, tz);
         glDrawArrays(GL_TRIANGLES, 0, _vertices_count);
         glPopMatrix();
     }
 
-    public void addCubeSize(float tx, float ty, float tz, float size, Color color) {
+    public static void addCubeSize(float tx, float ty, float tz, float size, Color color) {
         float xp = size + tx;
         float yp = size + ty;
         float zp = size + tz;
@@ -1017,7 +1014,7 @@ public final class Graphics {
         _vertices_count += 36;
     }
 
-    public void addVerticesCoordsColors(float[] verts, float[] coords, byte[] colors) {
+    public static void addVerticesCoordsColors(float[] verts, float[] coords, byte[] colors) {
         _vertexBuffer.position(0);
         _coordsBuffer.position(0);
         _colorBuffer.position(0);
@@ -1027,7 +1024,7 @@ public final class Graphics {
         _colorBuffer.put(colors);
     }
 
-    public void addVerticesCoordsNormalsColors(float[] verts, float[] coords, float[] norms, byte[] colors) {
+    public static void addVerticesCoordsNormalsColors(float[] verts, float[] coords, float[] norms, byte[] colors) {
         _vertexBuffer.put(verts);
         _coordsBuffer.put(coords);
         _normalBuffer.put(norms);
@@ -1039,7 +1036,7 @@ public final class Graphics {
         _colorBuffer.position(0);
     }
 
-    public void addFont(Vector2 pos, Vector2 scale, Color color, TexturedQuad pFont) {
+    public static void addFont(Vector2 pos, Vector2 scale, Color color, TexturedQuad pFont) {
         // verts
         int i = _vindex;
         _vertices[++i] = pos.x;						_vertices[++i] = pos.y;
@@ -1076,7 +1073,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addQuad(float x, float y, float w, float h, Color color) {
+    public static void addQuad(float x, float y, float w, float h, Color color) {
         int i = _vindex;
 
         // vertices
@@ -1128,8 +1125,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-
-    public void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
+    public static void addQuad(float size, float tx, float ty, TexCoordsQuad coords) {
         int i = _vindex;
 
         _vertices[++i] = tx;
@@ -1170,7 +1166,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
+    public static void addQuad(float size, float tx, float ty, TexCoordsQuad coords, Color color) {
         int i = _vindex;
 
         // vertices
@@ -1240,7 +1236,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addPoint(float x, float y, float z) {
+    public static void addPoint(float x, float y, float z) {
         int i = _vindex;
 
         // z-minus
@@ -1253,7 +1249,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public void addPoint(Vector pos, Color color) {
+    public static void addPoint(Vector pos, Color color) {
         int i = _vindex;
 
         _vertices[++i] = pos.x;
@@ -1274,7 +1270,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public void addPoint2D(float x, float y) {
+    public static void addPoint2D(float x, float y) {
         int i = _vindex;
 
         // z-minus
@@ -1286,7 +1282,7 @@ public final class Graphics {
         ++_vertices_count;
     }
 
-    public void addCubeFace_X_Plus(float tx, float ty, float tz) {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1356,7 +1352,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Minus(float tx, float ty, float tz) {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1426,7 +1422,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Plus(float tx, float ty, float tz) {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1504,7 +1500,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Minus(float tx, float ty, float tz) {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1573,7 +1569,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Plus(float tx, float ty, float tz) {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1642,7 +1638,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Minus(float tx, float ty, float tz) {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1711,7 +1707,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1792,7 +1788,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1872,7 +1868,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -1952,7 +1948,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2032,7 +2028,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2113,7 +2109,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2190,7 +2186,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2289,7 +2285,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2389,7 +2385,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2490,7 +2486,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2590,7 +2586,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2690,7 +2686,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, TexCoordsQuad coords, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2788,7 +2784,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
+    public static void addCubeFace_X_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2888,7 +2884,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
+    public static void addCubeFace_X_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -2988,7 +2984,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
+    public static void addCubeFace_Y_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -3095,7 +3091,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
+    public static void addCubeFace_Y_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -3194,7 +3190,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
+    public static void addCubeFace_Z_Plus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -3293,7 +3289,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
+    public static void addCubeFace_Z_Minus(float tx, float ty, float tz, Color color) {
         int i = _vindex;
         int j = _vindex;
 
@@ -3391,7 +3387,7 @@ public final class Graphics {
         _vertices_count += 6;
     }
 
-    public void drawCircleAt(float x, float y, float radius, Color color) {
+    public static void drawCircleAt(float x, float y, float radius, Color color) {
         float[] vertices = new float[80];
         byte[] colors = new byte[150];
         int v_index = -1;

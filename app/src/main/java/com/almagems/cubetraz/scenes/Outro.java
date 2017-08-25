@@ -176,7 +176,7 @@ public final class Outro extends Scene {
 
         mPosCubePlayer.init(Game.getCubePosition(Game.level.mPlayerCube.getLocation()));
 
-        Game.graphics.setLightPosition(mPosLightCurrent);
+        Graphics.setLightPosition(mPosLightCurrent);
     }
 
     private void setupExplosion() {
@@ -359,101 +359,99 @@ public final class Outro extends Scene {
     }
 
     private void drawTheCube() {
-        Graphics graphics = Game.graphics;
-        graphics.bindStreamSources3d();
-        graphics.resetBufferIndices();
+        
+        Graphics.bindStreamSources3d();
+        Graphics.resetBufferIndices();
 
         Cube cube;
         int size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
             cube = mCubesBase.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.colorCurrent);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.colorCurrent);
         }
 
         size = mCubesLevel.size();
         for (int i = 0; i < size; ++i) {
             cube = mCubesLevel.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.colorCurrent);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, cube.colorCurrent);
         }
 
         glEnable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
 
-        graphics.textureGrayConcrete.bind();
-        graphics.updateBuffers();
-        graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
+        Graphics.textureGrayConcrete.bind();
+        Graphics.updateBuffers();
+        Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
     }
 
     private void drawText() {
-        Graphics graphics = Game.graphics;
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
 
         int a = (int) mCenterAlpha * 255;
 
         glDisable(GL_TEXTURE_2D);
         Color color_bg = new Color(30, 30, 15, (int) mCenterAlpha * 150);
 
-        graphics.bindStreamSources2dNoTextures();
-        graphics.resetBufferIndices();
-        graphics.addQuad(0.0f, Game.graphics.halfHeight - 20.0f * Game.graphics.deviceScale, Game.graphics.width, 75.0f * Game.graphics.deviceScale, color_bg);
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        Graphics.bindStreamSources2dNoTextures();
+        Graphics.resetBufferIndices();
+        Graphics.addQuad(0.0f, Graphics.halfHeight - 20.0f * Graphics.deviceScale, Graphics.width, 75.0f * Graphics.deviceScale, color_bg);
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
 
-        graphics.bindStreamSources2d();
+        Graphics.bindStreamSources2d();
         glEnable(GL_TEXTURE_2D);
-        graphics.textureFontsBig.bind();
+        Graphics.textureFontsBig.bind();
 
-        float scale = 0.75f * Game.graphics.deviceScale;
+        float scale = 0.75f * Graphics.deviceScale;
         mTextCenter[0].setScale(scale, scale);
         mTextCenter[1].setScale(scale, scale);
 
         Color color = new Color(0, 0, 0, a);
 
-        graphics.resetBufferIndices();
+        Graphics.resetBufferIndices();
 
         Vector2 pos = new Vector2();
-        pos.x = Game.graphics.halfWidth - mTextCenter[0].getHalfWidth();
-        pos.y = Game.graphics.halfHeight + mTextCenter[0].getHalfHeight();
+        pos.x = Graphics.halfWidth - mTextCenter[0].getHalfWidth();
+        pos.y = Graphics.halfHeight + mTextCenter[0].getHalfHeight();
         mTextCenter[0].emit(pos, color);
 
-        pos.x = Game.graphics.halfWidth - mTextCenter[1].getHalfWidth();
-        pos.y = Game.graphics.halfHeight - mTextCenter[1].getHalfHeight();
+        pos.x = Graphics.halfWidth - mTextCenter[1].getHalfWidth();
+        pos.y = Graphics.halfHeight - mTextCenter[1].getHalfHeight();
         mTextCenter[1].emit(pos, color);
 
         glPushMatrix();
-        glTranslatef(Game.graphics.deviceScale, Game.graphics.deviceScale, 0.0f);
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        glTranslatef(Graphics.deviceScale, Graphics.deviceScale, 0.0f);
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
         glPopMatrix();
 
         color = new Color(255, 255, 0, a);
 
-        graphics.resetBufferIndices();
+        Graphics.resetBufferIndices();
 
-        pos.x = Game.graphics.halfWidth - mTextCenter[0].getHalfWidth();
-        pos.y = Game.graphics.halfHeight + mTextCenter[0].getHalfHeight();
+        pos.x = Graphics.halfWidth - mTextCenter[0].getHalfWidth();
+        pos.y = Graphics.halfHeight + mTextCenter[0].getHalfHeight();
         mTextCenter[0].emit(pos, color);
 
-        pos.x = Game.graphics.halfWidth - mTextCenter[1].getHalfWidth();
-        pos.y = Game.graphics.halfHeight - mTextCenter[1].getHalfHeight();
+        pos.x = Graphics.halfWidth - mTextCenter[1].getHalfWidth();
+        pos.y = Graphics.halfHeight - mTextCenter[1].getHalfHeight();
         mTextCenter[1].emit(pos, color);
 
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
 
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
     }
 
     public void render() {
-        Graphics graphics = Game.graphics;
         Color color = new Color();
 
         glEnable(GL_LIGHTING);
@@ -463,26 +461,26 @@ public final class Outro extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
 
         if (Game.dirtyAlpha > 0) {
-            graphics.setProjection2D();
-            graphics.setModelViewMatrix2D();
-            graphics.bindStreamSources2d();
+            Graphics.setProjection2D();
+            Graphics.setModelViewMatrix2D();
+            Graphics.bindStreamSources2d();
 
             glDisable(GL_LIGHTING);
             glDepthMask(false);
             glEnable(GL_TEXTURE_2D);
 
             color.init(255, 255, 255, (int)Game.dirtyAlpha);
-            graphics.drawFullScreenTexture(Game.graphics.textureDirty, color);
+            Graphics.drawFullScreenTexture(Graphics.textureDirty, color);
 
             glDepthMask(true);
             glEnable(GL_LIGHTING);
         }
 
-        graphics.setProjection3D();
-        graphics.setModelViewMatrix3D(mCameraCurrent);
-        graphics.bindStreamSources3d();
-        graphics.zeroBufferPositions();
-        graphics.resetBufferIndices();
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(mCameraCurrent);
+        Graphics.bindStreamSources3d();
+        Graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
 
         if (mDrawStarfield) {
             glDisable(GL_TEXTURE_2D);
@@ -505,7 +503,7 @@ public final class Outro extends Scene {
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
 
-        graphics.texturePlayer.bind();
+        Graphics.texturePlayer.bind();
 
         if (OutroStateEnum.OutroExplosion == mState || OutroStateEnum.OutroDone == mState) {
             glPushMatrix();
@@ -514,20 +512,20 @@ public final class Outro extends Scene {
             glRotatef(mDegreePlayerCube, 0.0f, 1.0f, 0.0f);
             glRotatef(mDegreePlayerCube, 0.0f, 0.0f, 1.0f);
 
-            graphics.resetBufferIndices();
-            graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
-            graphics.updateBuffers();
-            graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
+            Graphics.resetBufferIndices();
+            Graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
+            Graphics.updateBuffers();
+            Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
             glPopMatrix();
         } else {
             glPushMatrix();
             glRotatef(mCubeRotation.degree, mCubeRotation.axis.x, mCubeRotation.axis.y, mCubeRotation.axis.z);
 
-            graphics.resetBufferIndices();
-            graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
-            graphics.updateBuffers();
-            graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
+            Graphics.resetBufferIndices();
+            Graphics.addCube(mPosCubePlayer.x, mPosCubePlayer.y, mPosCubePlayer.z);
+            Graphics.updateBuffers();
+            Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
             glPopMatrix();
         }
@@ -541,7 +539,7 @@ public final class Outro extends Scene {
 //            if (false) { //#ifdef DRAW_AXES_CUBE
 //                glDisable(GL_TEXTURE_2D);
 //                glDisable(GL_LIGHTING);
-//                graphics.drawAxes();
+//                Graphics.drawAxes();
 //                glEnable(GL_LIGHTING);
 //                glEnable(GL_TEXTURE_2D);
 //            } //#endif

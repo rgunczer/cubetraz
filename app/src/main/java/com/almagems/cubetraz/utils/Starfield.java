@@ -27,7 +27,7 @@ public class Starfield {
     }
 
     public void create() {
-        m_star_count = (int)(384f * Game.graphics.deviceScale);
+        m_star_count = (int)(384f * Graphics.deviceScale);
 
         for (int i = 0; i < MAX_STARS; ++i) {
             m_stars[i] = new Vector();
@@ -52,13 +52,12 @@ public class Starfield {
     }
 
     public void render() {
-        Graphics graphics = Game.graphics;
         int big_points = 0;
         Color color = new Color(224, 255, 255, (int)alpha);
 
         for (int i = 0; i < m_star_count; ++i) {
             if (m_stars[i].z > 10.0f) {
-                graphics.addPoint(m_stars[i], color);
+                Graphics.addPoint(m_stars[i], color);
                 ++big_points;
             }
         }
@@ -67,18 +66,18 @@ public class Starfield {
         color = new Color(255, 255, 224, (int)alpha);
         for (int i = 0; i < m_star_count; ++i) {
             if (m_stars[i].z < 10.0f) {
-                graphics.addPoint(m_stars[i], color);
+                Graphics.addPoint(m_stars[i], color);
                 ++small_points;
             }
         }
 
-        graphics.updateBuffers();
+        Graphics.updateBuffers();
 
         if (small_points > 0 && big_points > 0) {
-            glPointSize(2.0f * Game.graphics.deviceScale);
+            glPointSize(2.0f * Graphics.deviceScale);
             glDrawArrays(GL_POINTS, 0, big_points);
 
-            glPointSize(1.0f * Game.graphics.deviceScale);
+            glPointSize(1.0f * Graphics.deviceScale);
             glDrawArrays(GL_POINTS, big_points, small_points);
 //            glDrawArrays(GL_LINE_LOOP, 0, big_points);
 //            glDrawArrays(GL_LINE_LOOP, big_points, small_points);

@@ -306,32 +306,21 @@ public final class Game {
     }
 
     private static Game instance;
-    private MainRenderer renderer;
-    public static Graphics graphics;
+    private static MainRenderer renderer;
 
-    static Game getInstance() {
-        if (instance == null) {
-            instance = new Game();
-        }
-        return instance;
-    }
-
-    void setRenderer(MainRenderer renderer) {
-        this.renderer = renderer;
+    static void setRenderer(MainRenderer renderer) {
+        Game.renderer = renderer;
     }
 
     public static Context getContext() {
-        return instance.renderer.context;
+        return Game.renderer.context;
     }
 
     public static Cube[][][] cubes = new Cube[MAX_CUBE_COUNT][MAX_CUBE_COUNT][MAX_CUBE_COUNT];
 
-    public static GameOptions options;
-    public static GameProgress progress;
-
     public static boolean fboLost = false;
 
-    private boolean initialized;
+    private static boolean initialized;
 
     private static Scene currentScene;
     private static Intro intro;
@@ -377,11 +366,10 @@ public final class Game {
         }
     }
 
-    public Game() {
-        //System.out.println("Game.ctor");
+    private Game() {
     }
 
-    public void init() {
+    public static void init() {
         //System.out.println("Game.init");
 
         if (initialized) {
@@ -390,13 +378,9 @@ public final class Game {
 
         initialized = true;
 
-        options = new GameOptions();
-        options.load();
 
-        progress = new GameProgress();
-        progress.load();
 
-        Audio.init(options.getMusicVolume(), options.getSoundVolume());
+        Audio.init(GameOptions.getMusicVolume(), GameOptions.getSoundVolume());
 
         intro = null;
         menu = null;
@@ -427,8 +411,8 @@ public final class Game {
         LevelBuilder.level = level;
     }
 
-     void onSurfaceChanged() {
-        minSwipeLength = graphics.height / 10;
+    static void onSurfaceChanged() {
+        minSwipeLength = Graphics.height / 10;
 
         if (currentScene == null) {
             showScene(Scene_Intro);
@@ -453,9 +437,9 @@ public final class Game {
     public static String getLevelTypeAndNumberString(DifficultyEnum difficulty, int levelNumber) {
         String str = "";
         switch (difficulty) {
-            case Easy: str = "EASY-" + levelNumber + " " + (progress.isSolvedEasy(levelNumber) ? "\nSOLVED" : ""); break;
-            case Normal: str = "NORMAL-" + levelNumber + " " + (progress.isSolvedNormal(levelNumber) ? "\nSOLVED" : ""); break;
-            case Hard: str = "HARD-" + levelNumber + " " + (progress.isSolvedHard(levelNumber) ? "\nSOLVED" : ""); break;
+            case Easy: str = "EASY-" + levelNumber + " " + (GameProgress.isSolvedEasy(levelNumber) ? "\nSOLVED" : ""); break;
+            case Normal: str = "NORMAL-" + levelNumber + " " + (GameProgress.isSolvedNormal(levelNumber) ? "\nSOLVED" : ""); break;
+            case Hard: str = "HARD-" + levelNumber + " " + (GameProgress.isSolvedHard(levelNumber) ? "\nSOLVED" : ""); break;
         }
         return str.trim();
     }
@@ -671,33 +655,33 @@ public final class Game {
     public static void renderToFBO(Scene scene) {
         fboLost = false;
 
-        graphics.saveOriginalFBO();
+        Graphics.saveOriginalFBO();
 
-        graphics.fbo.bind();
+        Graphics.fbo.bind();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.renderToFBO();
 
-        graphics.restoreOriginalFBO();
+        Graphics.restoreOriginalFBO();
     }
 
-	public void update() {
+	public static void update() {
         currentScene.update();
     }
 
-	public void draw() {
+	public static void draw() {
         currentScene.render();
 	}
 
-	public void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
+	public static void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
         currentScene.onFingerDown(normalizedX, normalizedY, fingerCount);
     }
 
-	public void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
+	public static void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
         currentScene.onFingerMove(0f, 0f, normalizedX, normalizedY, fingerCount);
     }
 
-	public void handleTouchRelease(float normalizedX, float normalizedY) {
+	public static void handleTouchRelease(float normalizedX, float normalizedY) {
         currentScene.onFingerUp(normalizedX, normalizedY, 1);
     }
 
@@ -754,7 +738,6 @@ public final class Game {
         }
         return swipeInfo;
     }
-
 
     public static void setupHollowCube() {
         int number_of_visible_cubes = 0;
@@ -1090,7 +1073,7 @@ public final class Game {
                 R, G, B, A,
         };
 
-        graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
+        Graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
     }
 
     // Scales a vector by a scalar
@@ -1189,9 +1172,9 @@ public final class Game {
     }
 
     public static Texture loadTutorTexture(final int tutorId) {
-        if (graphics.textureTutor != null) {
-            graphics.textureTutor.release();
-            graphics.textureTutor = null;
+        if (Graphics.textureTutor != null) {
+            Graphics.textureTutor.release();
+            Graphics.textureTutor = null;
         }
 
         int resourceId = -1;
@@ -1209,9 +1192,9 @@ public final class Game {
             case Tutor_MenuSolvers: resourceId = R.drawable.tutor_menu_solver; break;
         }
         if (resourceId != -1) {
-            graphics.textureTutor = graphics.loadTexture(resourceId);
+            Graphics.textureTutor = Graphics.loadTexture(resourceId);
         }
-        return graphics.textureTutor;
+        return Graphics.textureTutor;
     }
 
     private static void initFontsBig() {
@@ -1563,7 +1546,7 @@ public final class Game {
 
     public static void updateDisplayedSolvers() {
         if (solvers != null) {
-            int solver = options.getSolverCount();
+            int solver = GameOptions.getSolverCount();
             solvers.updateSolversCount(solver);
         }
 
@@ -1573,49 +1556,51 @@ public final class Game {
     }
 
     public static void musicVolumeUp() {
-        float volume = options.getMusicVolume();
+        float volume = GameOptions.getMusicVolume();
 
         volume += 0.1f;
         if (volume > 1.0f) {
             volume = 1.0f;
         }
 
-        options.setMusicVolume(volume);
+        GameOptions.setMusicVolume(volume);
         Audio.setMusicVolume(volume);
     }
 
     public static void musicVolumeDown() {
-        float volume = options.getMusicVolume();
+        float volume = GameOptions.getMusicVolume();
 
         volume -= 0.1f;
         if (volume < 0.0f) {
             volume = 0.0f;
         }
 
-        options.setMusicVolume(volume);
+        GameOptions.setMusicVolume(volume);
         Audio.setMusicVolume(volume);
     }
 
     public static void soundVolumeUp() {
-        float volume = options.getSoundVolume();
+        float volume = GameOptions.getSoundVolume();
 
         volume += 0.1f;
         if (volume > 1.0f) {
             volume = 1.0f;
         }
 
-        options.setSoundVolume(volume);
+        GameOptions.setSoundVolume(volume);
+        Audio.setSoundVolume(volume);
     }
 
     public static void soundVolumeDown() {
-        float volume = options.getSoundVolume();
+        float volume = GameOptions.getSoundVolume();
 
         volume -= 0.1f;
         if (volume < 0.0f) {
             volume = 0.0f;
         }
 
-        options.setSoundVolume(volume);
+        GameOptions.setSoundVolume(volume);
+        Audio.setSoundVolume(volume);
     }
 
     public static void drawCubeNoFace(  boolean x_plus,
@@ -1625,27 +1610,27 @@ public final class Game {
                                         boolean z_plus,
                                         boolean z_minus) {
         if (z_minus) {
-            graphics.drawCubeFaceZ_Minus();
+            Graphics.drawCubeFaceZ_Minus();
         }
 
         if (z_plus) {
-            graphics.drawCubeFaceZ_Plus();
+            Graphics.drawCubeFaceZ_Plus();
         }
 
         if (x_plus) {
-            graphics.drawCubeFaceX_Plus();
+            Graphics.drawCubeFaceX_Plus();
         }
 
         if (y_minus) {
-            graphics.drawCubeFaceY_Minus();
+            Graphics.drawCubeFaceY_Minus();
         }
 
         if (x_minus) {
-            graphics.drawCubeFaceX_Minus();
+            Graphics.drawCubeFaceX_Minus();
         }
 
         if (y_plus){
-            graphics.drawCubeFaceY_Plus();
+            Graphics.drawCubeFaceY_Plus();
         }
     }
 

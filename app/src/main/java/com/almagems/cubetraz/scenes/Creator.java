@@ -1,5 +1,6 @@
 package com.almagems.cubetraz.scenes;
 
+import com.almagems.cubetraz.GameProgress;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.R;
@@ -303,24 +304,24 @@ public final class Creator {
             case Face_Easy02:
             case Face_Easy03:
             case Face_Easy04:
-                cube.setStars(Game.progress.getStarsEasy(levelNumber));
-                cube.setSolver(Game.progress.isSolvedEasy(levelNumber));
+                cube.setStars(GameProgress.getStarsEasy(levelNumber));
+                cube.setSolver(GameProgress.isSolvedEasy(levelNumber));
                 break;
             
             case Face_Normal01:
             case Face_Normal02:
             case Face_Normal03:
             case Face_Normal04:
-                cube.setStars(Game.progress.getStarsNormal(levelNumber));
-                cube.setSolver(Game.progress.isSolvedNormal(levelNumber));
+                cube.setStars(GameProgress.getStarsNormal(levelNumber));
+                cube.setSolver(GameProgress.isSolvedNormal(levelNumber));
                 break;
             
             case Face_Hard01:
             case Face_Hard02:
             case Face_Hard03:
             case Face_Hard04:
-			    cube.setStars(Game.progress.getStarsHard(levelNumber));
-                cube.setSolver(Game.progress.isSolvedHard(levelNumber));
+			    cube.setStars(GameProgress.getStarsHard(levelNumber));
+                cube.setSolver(GameProgress.isSolvedHard(levelNumber));
                 break;
             
             default:

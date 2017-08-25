@@ -1,6 +1,7 @@
 package com.almagems.cubetraz.scenes;
 
 import com.almagems.cubetraz.Audio;
+import com.almagems.cubetraz.GameOptions;
 import com.almagems.cubetraz.graphics.Camera;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.Game;
@@ -63,8 +64,8 @@ public final class Intro extends Scene {
         mCameraEnd.setEye(0.0f, 0.0f, 35.0f / 1.5f);
         mCameraEnd.setTarget(0.0f, 0.0f, 0.0f);
 
-        mCameraBegin.eye.scaled(Game.graphics.aspectRatio);
-        mCameraEnd.eye.scaled(Game.graphics.aspectRatio);
+        mCameraBegin.eye.scaled(Graphics.aspectRatio);
+        mCameraEnd.eye.scaled(Graphics.aspectRatio);
 
         mCameraCurrent.setEye(mCameraBegin.eye);
         mCameraCurrent.setTarget(mCameraBegin.target);
@@ -89,7 +90,7 @@ public final class Intro extends Scene {
 
         setupCubetraz();
         
-        mCanSkipIntro = Game.options.getCanSkipIntro();
+        mCanSkipIntro = GameOptions.getCanSkipIntro();
         mState = State.AppearStarfield;
     }
 
@@ -607,12 +608,12 @@ public final class Intro extends Scene {
                         break;
 
                     case 150:
-                        Game.options.setCanSkipIntro(true);
+                        GameOptions.setCanSkipIntro(true);
                         Game.showScene(Scene_Menu);
                         break;
-                } // switch
+                }
                 break;
-        } // switch
+        }
 
         mStarfield.alpha = m_stars_alpha * 255;
         mStarfield.update();
@@ -620,14 +621,12 @@ public final class Intro extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Game.graphics;
-
         glDisable(GL_BLEND);
         glEnable(GL_LIGHT0);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-        graphics.bindStreamSources2d();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+        Graphics.bindStreamSources2d();
 
         glEnable(GL_BLEND);
 
@@ -635,21 +634,21 @@ public final class Intro extends Scene {
         glDepthMask(false);
 
         Color color_dirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-        graphics.drawFullScreenTexture(graphics.textureDirty, color_dirty);
+        Graphics.drawFullScreenTexture(Graphics.textureDirty, color_dirty);
 
         glDisable(GL_TEXTURE_2D);
-        //graphics.drawAxes();
+        //Graphics.drawAxes();
 
-        graphics.setProjection3D();
-        graphics.setModelViewMatrix3D(mCameraCurrent);
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(mCameraCurrent);
 
-        graphics.setLightPosition(mPosLightCurrent);
+        Graphics.setLightPosition(mPosLightCurrent);
 
         glDisable(GL_LIGHTING);
 
-        graphics.zeroBufferPositions();
-        graphics.resetBufferIndices();
-        graphics.bindStreamSources3d();
+        Graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.bindStreamSources3d();
 
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -662,25 +661,24 @@ public final class Intro extends Scene {
         glDepthMask(true);
         glDisable(GL_BLEND);
 
-        //graphics.setStreamSourcesFull3D();
+        //Graphics.setStreamSourcesFull3D();
+        //Graphics.drawAxes();
 
-        //graphics.drawAxes();
-
-        graphics.bindStreamSources3d();
+        Graphics.bindStreamSources3d();
 
         glEnable(GL_LIGHTING);
 
         glDepthMask(true); //GL_TRUE);
 
         glEnable(GL_TEXTURE_2D);
-        graphics.texturePlayer.bind();
+        Graphics.texturePlayer.bind();
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
-        graphics.addCube(0.0f, 0.0f, 0.0f);
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
+        Graphics.addCube(0.0f, 0.0f, 0.0f);
 
         int size;
         Cube cube;
@@ -688,22 +686,22 @@ public final class Intro extends Scene {
         size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
             cube = mCubesBase.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
         }
 
-        int count_base = graphics._vertices_count - 36;
+        int count_base = Graphics._vertices_count - 36;
 
         Color color = new Color(Game.faceColor);
 
         size = mCubesFace.size();
         for (int i = 0; i < size; ++i) {
             cube = mCubesFace.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, color);
         }
 
-        int count_face = graphics._vertices_count - count_base - 36;
+        int count_face = Graphics._vertices_count - count_base - 36;
 
-        graphics.updateBuffers();
+        Graphics.updateBuffers();
 
         glPushMatrix();
             glTranslatef(0.0f, m_offset_y, 0.0f);
@@ -713,7 +711,7 @@ public final class Intro extends Scene {
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             if (count_base > 0 || count_face > 0) {
-                graphics.textureGrayConcrete.bind();
+                Graphics.textureGrayConcrete.bind();
                 glPushMatrix();
                 glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
                 glDrawArrays(GL_TRIANGLES, 36, count_base);

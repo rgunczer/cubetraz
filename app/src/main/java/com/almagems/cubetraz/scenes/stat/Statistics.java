@@ -138,12 +138,12 @@ public final class Statistics extends Scene {
         mTextTap.init("TAP TO CONTINUE");
 
         // pre calc y positions
-        m_stars_y = Game.graphics.height * 0.75f;
-        m_rating_y = Game.graphics.height * 0.5f;
+        m_stars_y = Graphics.height * 0.75f;
+        m_rating_y = Graphics.height * 0.5f;
 
-        m_title_y = Game.graphics.height * 0.33f;
-        m_moves_y = Game.graphics.height * 0.2f;
-        m_tap_y = Game.graphics.height * 0.017f;
+        m_title_y = Graphics.height * 0.33f;
+        m_moves_y = Graphics.height * 0.2f;
+        m_tap_y = Graphics.height * 0.017f;
     }
 
     public void updateFallingCubes() {
@@ -167,7 +167,7 @@ public final class Statistics extends Scene {
             case StatWait:
                 if (State.StatNone != mStateNext) {
                     m_pulse += 0.3f;
-                    float mTextScale = (float)( Math.sin(m_pulse) / 5.0f) * Game.graphics.deviceScale;
+                    float mTextScale = (float)( Math.sin(m_pulse) / 5.0f) * Graphics.deviceScale;
 
                     switch (mStateNext) {
                         case StatAppearTitle:
@@ -275,10 +275,10 @@ public final class Statistics extends Scene {
     }
 
     public void drawFallingCubes() {
-        Graphics graphics = Game.graphics;
+        
         Game.bindCubeGLData();
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
 
         glPushMatrix();
             glTranslatef(0f, 0f, 5f);
@@ -303,8 +303,8 @@ public final class Statistics extends Scene {
     }
 
     public void drawBackground() {
-        Graphics graphics = Game.graphics;
-        float dim = Math.max(Game.graphics.width, Game.graphics.height) * 1.25f;
+        
+        float dim = Math.max(Graphics.width, Graphics.height) * 1.25f;
         float q = dim / 2.0f;
 
         final float verts[] = {
@@ -331,26 +331,26 @@ public final class Statistics extends Scene {
             color, color, color, maxColor
         };
 
-        graphics.addVerticesCoordsColors(verts, coords, colors);
+        Graphics.addVerticesCoordsColors(verts, coords, colors);
 
         glPushMatrix();
-            glTranslatef(Game.graphics.halfWidth, Game.graphics.halfHeight, 0.0f);
+            glTranslatef(Graphics.halfWidth, Graphics.halfHeight, 0.0f);
             glRotatef(mBackgroundRotDegree, 0.0f, 0.0f, 1.0f);
             glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         glPopMatrix();
     }
 
     public boolean drawText(Color color, Color tapToContinueColor) {
-        Graphics graphics = Game.graphics;
+        
         boolean shouldDraw = false;
         Vector2 pos = new Vector2();
         float scale;
 
         if (m_DrawTitle) {
-            scale = graphics.deviceScale + m_text_scales[0];
-            mTextTitle.setScale(scale + (0.3f * graphics.deviceScale), scale + (0.6f * graphics.deviceScale));
+            scale = Graphics.deviceScale + m_text_scales[0];
+            mTextTitle.setScale(scale + (0.3f * Graphics.deviceScale), scale + (0.6f * Graphics.deviceScale));
 
-            pos.x = graphics.halfWidth - mTextTitle.getHalfWidth();
+            pos.x = Graphics.halfWidth - mTextTitle.getHalfWidth();
             pos.y = m_rating_y - mTextTitle.getHalfHeight();
             mTextTitle.emit(pos, color);
             shouldDraw = true;
@@ -358,19 +358,19 @@ public final class Statistics extends Scene {
 
         if (m_DrawMoves) {
             // middle
-            scale = graphics.deviceScale * 0.9f;
-            mTextMiddle.setScale(scale, scale + (0.2f * graphics.deviceScale));
+            scale = Graphics.deviceScale * 0.9f;
+            mTextMiddle.setScale(scale, scale + (0.2f * Graphics.deviceScale));
 
-            pos.x = graphics.halfWidth - mTextMiddle.getHalfWidth();
+            pos.x = Graphics.halfWidth - mTextMiddle.getHalfWidth();
             pos.y = m_title_y - mTextMiddle.getHalfHeight();
 
             mTextMiddle.emit(pos, color);
 
             // moves
-            scale = graphics.deviceScale + m_text_scales[2] - (0.25f * graphics.deviceScale);
-            mTextMoves.setScale(scale + (0.1f * graphics.deviceScale), scale + (0.1f * graphics.deviceScale));
+            scale = Graphics.deviceScale + m_text_scales[2] - (0.25f * Graphics.deviceScale);
+            mTextMoves.setScale(scale + (0.1f * Graphics.deviceScale), scale + (0.1f * Graphics.deviceScale));
 
-            pos.x = graphics.halfWidth - mTextMoves.getHalfWidth();
+            pos.x = Graphics.halfWidth - mTextMoves.getHalfWidth();
             pos.y = m_moves_y - mTextMoves.getHalfHeight();
 
             mTextMoves.emit(pos, color);
@@ -378,10 +378,10 @@ public final class Statistics extends Scene {
         }
 
         if (m_DrawTap) {
-            scale = graphics.deviceScale * 0.25f;
-            mTextTap.setScale(scale + (0.3f * graphics.deviceScale), scale + (0.3f * graphics.deviceScale));
+            scale = Graphics.deviceScale * 0.25f;
+            mTextTap.setScale(scale + (0.3f * Graphics.deviceScale), scale + (0.3f * Graphics.deviceScale));
 
-            pos.x = graphics.halfWidth - mTextTap.getHalfWidth();
+            pos.x = Graphics.halfWidth - mTextTap.getHalfWidth();
             pos.y = m_tap_y;
 
             mTextTap.emit(pos, tapToContinueColor);
@@ -391,7 +391,7 @@ public final class Statistics extends Scene {
     }
 
     public void drawStars() {
-        Graphics graphics = Game.graphics;
+        
         final float verts[] = {
             -0.5f, -0.5f,
              0.5f, -0.5f,
@@ -425,14 +425,14 @@ public final class Statistics extends Scene {
             maxColor, maxColor, 0, a
         };
 
-        graphics.addVerticesCoordsColors(verts, coords, colors_red);
+        Graphics.addVerticesCoordsColors(verts, coords, colors_red);
 
-        float s = graphics.width * 0.14f;
-        float w = graphics.width * 0.2f;
+        float s = Graphics.width * 0.14f;
+        float w = Graphics.width * 0.2f;
         float half_w = w / 2.0f;
-        float x = graphics.halfWidth - ((w * mStarCount) / 2.0f);
+        float x = Graphics.halfWidth - ((w * mStarCount) / 2.0f);
         float y = m_stars_y;
-        float raise = 3.0f * graphics.deviceScale;
+        float raise = 3.0f * Graphics.deviceScale;
 
         for (int i = 0; i < mStarCount; ++i) {
             glPushMatrix();
@@ -447,7 +447,7 @@ public final class Statistics extends Scene {
 
         y = m_stars_y;
 
-        graphics.addVerticesCoordsColors(verts, coords, colors_yellow);
+        Graphics.addVerticesCoordsColors(verts, coords, colors_yellow);
 
         for (int i = 0; i < mStarCount; ++i) {
             glPushMatrix();
@@ -462,7 +462,7 @@ public final class Statistics extends Scene {
 
     @Override
     public void render() {
-        Graphics graphics = Game.graphics;
+        
         Color color;
 
         glEnable(GL_TEXTURE_2D);
@@ -473,27 +473,27 @@ public final class Statistics extends Scene {
         glDisable(GL_LIGHT0);
         glDisable(GL_BLEND);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-        graphics.bindStreamSources2d();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+        Graphics.bindStreamSources2d();
 
-        graphics.drawFullScreenTexture(graphics.fbo, Color.WHITE);
+        Graphics.drawFullScreenTexture(Graphics.fbo, Color.WHITE);
 
-        graphics.setProjection3D();
-        graphics.setModelViewMatrix3D(mCameraCurrent);
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(mCameraCurrent);
 
-        graphics.bindStreamSources3d();
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.bindStreamSources3d();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
 
         glDepthMask(true);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
-        graphics.textureGrayConcrete.bind();
+        Graphics.textureGrayConcrete.bind();
 
-        graphics.setLightPosition(new Vector(-100.0f, 300.0f, 900.0f));
+        Graphics.setLightPosition(new Vector(-100.0f, 300.0f, 900.0f));
 
         drawFallingCubes();
         glDisable(GL_LIGHTING);
@@ -502,34 +502,34 @@ public final class Statistics extends Scene {
         glEnable(GL_BLEND);
         glDepthMask(false);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-        graphics.bindStreamSources2d();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+        Graphics.bindStreamSources2d();
 
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
 
-        graphics.textureStatBackground.bind();
+        Graphics.textureStatBackground.bind();
         drawBackground();
 
         if (m_DrawStars) {
-            graphics.textureStar.bind();
+            Graphics.textureStar.bind();
             drawStars();
         }
 
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
 
-        graphics.textureFontsBig.bind();
+        Graphics.textureFontsBig.bind();
 
         color = new Color(0, 0, 0, 200);
         boolean shouldDraw;
         shouldDraw = drawText(color, color);
         if (shouldDraw) {
             glPushMatrix();
-                glTranslatef(rot.x * graphics.deviceScale, rot.y * graphics.deviceScale, 0.0f);
-                graphics.updateBuffers();
-                graphics.renderTriangles();
+                glTranslatef(rot.x * Graphics.deviceScale, rot.y * Graphics.deviceScale, 0.0f);
+                Graphics.updateBuffers();
+                Graphics.renderTriangles();
             glPopMatrix();
         }
 
@@ -537,8 +537,8 @@ public final class Statistics extends Scene {
         color = new Color(240, 0, 0, 255);
         shouldDraw = drawText(color, colorTapToContinue);
         if (shouldDraw) {
-            graphics.updateBuffers();
-            graphics.renderTriangles();
+            Graphics.updateBuffers();
+            Graphics.renderTriangles();
         }
 
         glDepthMask(true);

@@ -333,11 +333,11 @@ public final class MovingCube {
     }
 
     public void renderCube() {
-        Game.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
+        Graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, m_color_current);
     }
 
     public void renderSymbols() {
-        Graphics graphics = Game.graphics;
+
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pTQ;
         
@@ -347,7 +347,7 @@ public final class MovingCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-            graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = ar_cube_textures[Z_Plus];
@@ -356,7 +356,7 @@ public final class MovingCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-            graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     
         pTQ = ar_cube_textures[Y_Plus];
@@ -365,7 +365,7 @@ public final class MovingCube {
             coords.tx1 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
             coords.tx2 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
             coords.tx3 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
-            graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
+            Graphics.addCubeFace_Y_Plus(pos.x, pos.y, pos.z, coords, m_color_symbol_current);
         }
     }
         

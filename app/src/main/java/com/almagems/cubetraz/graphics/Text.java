@@ -148,7 +148,7 @@ public final class Text {
             size = m_ar_lines.get(i).size();
             for (int j = 0; j < size; ++j) {
                 pFont = m_ar_lines.get(i).get(j);
-                Game.graphics.addFont(tmp, scale, color, pFont);
+                Graphics.addFont(tmp, scale, color, pFont);
                 tmp.x += (pFont.w * m_vspace) * scale.x;
             }
 

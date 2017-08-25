@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.scenes.anim;
 
-import com.almagems.cubetraz.Audio;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.scenes.level.AppearDisappearListData;
 import com.almagems.cubetraz.graphics.Camera;
@@ -9,7 +8,6 @@ import com.almagems.cubetraz.scenes.Scene;
 import com.almagems.cubetraz.scenes.Creator;
 import com.almagems.cubetraz.cubes.Cube;
 import com.almagems.cubetraz.cubes.CubeFont;
-import com.almagems.cubetraz.scenes.menu.Menu;
 import com.almagems.cubetraz.utils.CubeRotation;
 import com.almagems.cubetraz.utils.EaseOutDivideInterpolation;
 import com.almagems.cubetraz.Game;
@@ -431,9 +429,7 @@ public final class Animator extends Scene {
 		    if (cube != null) {
 			    mCubesFace.add(cube);
             }
-        
-            Audio.stopMusic();
-		
+
 		    mAnimToMenuPhase = 1;
 		
 		    mElapsedCamera = 0.0f;
@@ -618,68 +614,68 @@ public final class Animator extends Scene {
     }
 
     private void drawTheCube() {
-		Graphics graphics = Game.graphics;
+		
 	    glEnable(GL_LIGHTING);
 	    glEnable(GL_TEXTURE_2D);
-		graphics.textureGrayConcrete.bind();
+		Graphics.textureGrayConcrete.bind();
 	
-        graphics.resetBufferIndices();
-        graphics.bindStreamSources3d();
+        Graphics.resetBufferIndices();
+        Graphics.bindStreamSources3d();
 
         int size;
         Cube cube;
         size = mCubesBase.size();
         for (int i = 0; i < size; ++i) {
             cube = mCubesBase.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.baseColor);
         }
-        graphics.updateBuffers();
-        graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
+        Graphics.updateBuffers();
+        Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
-	    graphics.resetBufferIndices();
+	    Graphics.resetBufferIndices();
         size = mCubesFace.size();
         for (int i = 0; i < size; ++i) {
             cube = mCubesFace.get(i);
-            graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.faceColor);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE, Game.faceColor);
         }
-        graphics.updateBuffers();
-	    graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
+        Graphics.updateBuffers();
+	    Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
     }
 
     private void drawLevelCubes() {
-        Graphics graphics = Game.graphics;
-	    graphics.resetBufferIndices();
-	    graphics.bindStreamSources3d();
+        
+	    Graphics.resetBufferIndices();
+	    Graphics.bindStreamSources3d();
 	
 	    LevelCube cube;
         int len = Game.cubeFacesData[X_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
             cube = Game.cubeFacesData[X_Plus].levelCubes.get(i);
-		    graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
+		    Graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
         }
 
         len = Game.cubeFacesData[Y_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
             cube = Game.cubeFacesData[Y_Plus].levelCubes.get(i);
-		    graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
+		    Graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
         }
 	
         len = Game.cubeFacesData[Z_Plus].levelCubes.size();
 	    for (int i = 0; i < len; ++i) {
             cube = Game.cubeFacesData[Z_Plus].levelCubes.get(i);
-		    graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
+		    Graphics.addCube(cube.pos.x, cube.pos.y, cube.pos.z);
         }
 	
-	    if (graphics._vertices_count > 0) {
-			Game.graphics.textureLevelCubes.bind();
-            graphics.updateBuffers();
-		    graphics.renderTriangles();
+	    if (Graphics._vertices_count > 0) {
+			Graphics.textureLevelCubes.bind();
+            Graphics.updateBuffers();
+		    Graphics.renderTriangles();
 	    }
     }
 
     public void drawLevelCubeDecals(LevelCubeDecalTypeEnum decalType) {
-        Graphics graphics = Game.graphics;
-	    graphics.resetBufferIndices();
+        
+	    Graphics.resetBufferIndices();
 	
 	    TexCoordsQuad coords = new TexCoordsQuad();
         LevelCube levelCube;
@@ -717,7 +713,7 @@ public final class Animator extends Scene {
                 coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
                 coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
             
-                graphics.addCubeFace_X_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
+                Graphics.addCubeFace_X_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
             }
 	    }
 
@@ -750,7 +746,7 @@ public final class Animator extends Scene {
                 coords.tx2 = new Vector2(p.tx_up_right.x, p.tx_up_right.y);
                 coords.tx3 = new Vector2(p.tx_up_left.x, p.tx_up_left.y);
 
-                graphics.addCubeFace_Y_Plus(levelCube.fontPos.x, levelCube.fontPos.y, levelCube.fontPos.z, coords, color);
+                Graphics.addCubeFace_Y_Plus(levelCube.fontPos.x, levelCube.fontPos.y, levelCube.fontPos.z, coords, color);
             }
 	    }
 
@@ -783,21 +779,21 @@ public final class Animator extends Scene {
                 coords.tx2 = new Vector2(p.tx_lo_left.x,  p.tx_lo_left.y);
                 coords.tx3 = new Vector2(p.tx_lo_right.x, p.tx_lo_right.y);
 
-                graphics.addCubeFace_Z_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
+                Graphics.addCubeFace_Z_Plus(levelCube.pos.x, levelCube.pos.y, levelCube.pos.z, coords, color);
             }
 	    }
-        graphics.updateBuffers();
-	    graphics.renderTriangles();
+        Graphics.updateBuffers();
+	    Graphics.renderTriangles();
     }
 
     public void drawTexts(ArrayList<CubeFont> lst_face_x_plus, ArrayList<CubeFont> lst_face_y_plus, ArrayList<CubeFont> lst_face_z_plus, Color color) {
-        Graphics graphics = Game.graphics;
+        
 	    int size;
         CubeFont cubeFont;
 	    TexturedQuad font;
 	    TexCoordsQuad coords = new TexCoordsQuad();
 	
-	    graphics.resetBufferIndices();
+	    Graphics.resetBufferIndices();
 
         size = lst_face_x_plus.size();
 	    for (int i = 0; i < size; ++i) {
@@ -809,7 +805,7 @@ public final class Animator extends Scene {
 		    coords.tx2 = new Vector2(font.tx_lo_left.x,  font.tx_lo_left.y);
 		    coords.tx3 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
 		
-		    graphics.addCubeFace_X_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
+		    Graphics.addCubeFace_X_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
 	    }
 
         size = lst_face_y_plus.size();
@@ -822,7 +818,7 @@ public final class Animator extends Scene {
 		    coords.tx2 = new Vector2(font.tx_up_right.x, font.tx_up_right.y);
 		    coords.tx3 = new Vector2(font.tx_up_left.x,  font.tx_up_left.y);
 		
-		    graphics.addCubeFace_Y_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
+		    Graphics.addCubeFace_Y_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
 	    }
 
 	    size = lst_face_z_plus.size();
@@ -835,19 +831,19 @@ public final class Animator extends Scene {
 		    coords.tx2 = new Vector2(font.tx_lo_left.x, font.tx_lo_left.y);
 		    coords.tx3 = new Vector2(font.tx_lo_right.x, font.tx_lo_right.y);
 		
-		    graphics.addCubeFace_Z_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
+		    Graphics.addCubeFace_Z_Plus(cubeFont.pos.x, cubeFont.pos.y, cubeFont.pos.z, coords, color);
 	    }
-	    graphics.updateBuffers();
-	    graphics.renderTriangles();
+	    Graphics.updateBuffers();
+	    Graphics.renderTriangles();
     }
 
     @Override
     public void render() {
-        Graphics graphics = Game.graphics;
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-        graphics.bindStreamSources2d();
-        graphics.resetBufferIndices();
+        
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+        Graphics.bindStreamSources2d();
+        Graphics.resetBufferIndices();
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
@@ -858,16 +854,16 @@ public final class Animator extends Scene {
         glDisableClientState(GL_NORMAL_ARRAY);
     
         Color color = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-        graphics.drawFullScreenTexture(Game.graphics.textureDirty, color);
+        Graphics.drawFullScreenTexture(Graphics.textureDirty, color);
     
         glDepthMask(true);
     
-        graphics.setProjection3D();
-        graphics.setModelViewMatrix3D(mCameraCurrent);
-        graphics.bindStreamSources3d();
-        graphics.resetBufferIndices();
+        Graphics.setProjection3D();
+        Graphics.setModelViewMatrix3D(mCameraCurrent);
+        Graphics.bindStreamSources3d();
+        Graphics.resetBufferIndices();
 
-        graphics.setLightPosition(mPosLightCurrent);
+        Graphics.setLightPosition(mPosLightCurrent);
 
         glEnable(GL_LIGHTING);
     
@@ -878,7 +874,7 @@ public final class Animator extends Scene {
         if (false) { // DRAW_AXES_CUBE
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_LIGHTING);
-            graphics.drawAxes();
+            Graphics.drawAxes();
             glEnable(GL_LIGHTING);
             glEnable(GL_TEXTURE_2D);
         }
@@ -893,20 +889,20 @@ public final class Animator extends Scene {
 	    glEnable(GL_BLEND);
 	    glDisableClientState(GL_NORMAL_ARRAY);
 	
-	    graphics.bindStreamSources3d();
+	    Graphics.bindStreamSources3d();
 	
         color = Game.textColor;
-		graphics.textureFonts.bind();
+		Graphics.textureFonts.bind();
         drawTexts(mTexts.get(X_Plus), mTexts.get(Y_Plus), mTexts.get(Z_Plus), color);
 	
 	    color = Game.titleColor;
 	    drawTexts(mTitles.get(X_Plus), mTitles.get(Y_Plus), mTitles.get(Z_Plus), color);
 
 	    color = Game.symbolColor;
-		graphics.textureNumbers.bind();
+		Graphics.textureNumbers.bind();
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalNumber);
 
-		graphics.textureSymbols.bind();
+		Graphics.textureSymbols.bind();
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalStars);
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalSolver);
     

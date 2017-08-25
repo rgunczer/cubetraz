@@ -1,6 +1,8 @@
 package com.almagems.cubetraz.scenes.level;
 
 import com.almagems.cubetraz.Game;
+import com.almagems.cubetraz.GameOptions;
+import com.almagems.cubetraz.GameProgress;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.graphics.Text;
@@ -66,7 +68,7 @@ public final class Solvers extends Scene {
 
     @Override
     public void init() {
-        final float scale = Game.graphics.deviceScale;
+        final float scale = Graphics.deviceScale;
 
         m_text_title.setScale(0.9f * scale, 0.9f * scale);
         m_text_avail.setScale(0.5f * scale, 0.5f * scale);
@@ -94,14 +96,14 @@ public final class Solvers extends Scene {
         m_alpha = 0.0f;
 
         m_text_title.init("SOLVERS");
-        m_text_avail.init("AVAILABLE: " + Game.options.getSolverCount());
+        m_text_avail.init("AVAILABLE: " + GameOptions.getSolverCount());
         m_text_buy_pack_of.init("EARN");
         m_text_buy_5_solver.init("ONE SOLVER");
         m_text_show_the_solution.init("SHOW THE SOLUTION");
         m_text_for_one_solver.init("FOR ONE SOLVER");
         m_text_dismiss.init("DISMISS");
 
-        final float h = Game.graphics.height;
+        final float h = Graphics.height;
 
         m_gap = 0.02f * h;
 
@@ -112,7 +114,7 @@ public final class Solvers extends Scene {
 
         m_w = 300.0f * scale;
         m_h = h / 5.5f;
-        m_x = Game.graphics.halfWidth - (m_w / 2.0f);
+        m_x = Graphics.halfWidth - (m_w / 2.0f);
 
         resetOverArray();
     }
@@ -161,7 +163,7 @@ public final class Solvers extends Scene {
 
     private void drawText(Color color, Color colorHi) {
         Vector2 pos = new Vector2();
-        float halfWidth = Game.graphics.halfWidth;
+        float halfWidth = Graphics.halfWidth;
 
         pos.x = halfWidth - m_text_title.getHalfWidth();
         pos.y = m_y[0] + m_h * 0.2f + m_gap;
@@ -200,60 +202,59 @@ public final class Solvers extends Scene {
 
         Color color;
         Color colorHilite;
-        Graphics graphics = Game.graphics;
 
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
         glDisable(GL_LIGHTING);
         glDisable(GL_LIGHT0);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-        graphics.bindStreamSources2d();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+        Graphics.bindStreamSources2d();
 
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
 
         glEnable(GL_TEXTURE_2D);
-        graphics.drawFullScreenTexture(graphics.fbo, Color.WHITE);
+        Graphics.drawFullScreenTexture(Graphics.fbo, Color.WHITE);
 
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
 
         color = new Color(0, 0, 0, 100 * (int)m_alpha);
-        graphics.drawFullScreenQuad(color);
+        Graphics.drawFullScreenQuad(color);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
 
         color = new Color(47, 79, 79, 100 * (int)m_alpha);
         colorHilite = new Color(50, 80, 80, 200 * (int)m_alpha);
 
-        float w_title = graphics.width;
+        float w_title = Graphics.width;
         float x_title = 0.0f;
         float x = m_x;
 
-        graphics.addQuad(x_title, m_y[0], w_title, m_h, color);
-        graphics.addQuad(x, m_y[1], m_w, m_h, mOver[1] ? colorHilite : color);
-        graphics.addQuad(x, m_y[2], m_w, m_h, mOver[2] ? colorHilite : color);
-        graphics.addQuad(x, m_y[3], m_w, m_h, mOver[3] ? colorHilite : color);
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        Graphics.addQuad(x_title, m_y[0], w_title, m_h, color);
+        Graphics.addQuad(x, m_y[1], m_w, m_h, mOver[1] ? colorHilite : color);
+        Graphics.addQuad(x, m_y[2], m_w, m_h, mOver[2] ? colorHilite : color);
+        Graphics.addQuad(x, m_y[3], m_w, m_h, mOver[3] ? colorHilite : color);
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
 
         // texts
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
 
         glEnable(GL_TEXTURE_2D);
-        graphics.textureFontsBig.bind();
+        Graphics.textureFontsBig.bind();
 
         Color colorShadow = new Color(0, 0, 0, 255 * (int)m_alpha);
         drawText(colorShadow, colorShadow);
 
         glPushMatrix();
-        glTranslatef(graphics.deviceScale, graphics.deviceScale, 0.0f);
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        glTranslatef(Graphics.deviceScale, Graphics.deviceScale, 0.0f);
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
         glPopMatrix();
 
         color = new Color(210, 210, 210, 240 * (int)m_alpha);
@@ -265,8 +266,8 @@ public final class Solvers extends Scene {
         }
 
         drawText(color, colorHilite);
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
     }
 
     public void onFingerDown(float x, float y, int fingerCount) {
@@ -306,33 +307,32 @@ public final class Solvers extends Scene {
         if (index_down == index_up) {
             switch (index_down) {
                 case MenuItemEarn:
-                    //engine->BuyPackOfSolvers(5)
                     Game.showAd();
                     break;
 
                 case MenuItemSolve:
-                    int solverCount = Game.options.getSolverCount();
+                    int solverCount = GameOptions.getSolverCount();
                     if (solverCount > 0) {
                         m_action = SolverMenuItemsEnum.MenuItemSolve;
                         mState = SolverStateEnum.SolverDisappear;
                         int levelNumber = Game.level.getLevelNumber();
-                        Game.options.setSolverCount(solverCount - 1);
+                        GameOptions.setSolverCount(solverCount - 1);
                         Game.updateDisplayedSolvers();
 
                         switch(Game.level.getDifficulty()) {
                             case Easy:
-                                Game.progress.setSolvedEasy(levelNumber, true);
+                                GameProgress.setSolvedEasy(levelNumber, true);
                                 break;
 
                             case Normal:
-                                Game.progress.setSolvedNormal(levelNumber, true);
+                                GameProgress.setSolvedNormal(levelNumber, true);
                                 break;
 
                             case Hard:
-                                Game.progress.setSolvedHard(levelNumber, true);
+                                GameProgress.setSolvedHard(levelNumber, true);
                                 break;
                         }
-                        Game.progress.save();
+                        GameProgress.save();
                     } else {
                         if (!mShowBuySome) {
                             m_text_show_the_solution.init("NO AVAILABLE SOLVERS");
@@ -353,7 +353,7 @@ public final class Solvers extends Scene {
 
     private SolverMenuItemsEnum getMenuItem(float x, float y) {
         if (x > m_x && x < m_x + m_w) {
-            float y_gl = Game.graphics.height - y;
+            float y_gl = Graphics.height - y;
 
             if (y_gl > m_y[3] && y_gl < m_y[3] + m_h) {
                 return SolverMenuItemsEnum.MenuItemDismiss;

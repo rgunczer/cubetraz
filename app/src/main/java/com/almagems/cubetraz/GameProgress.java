@@ -16,22 +16,22 @@ public final class GameProgress {
     private static final String SAVE_GAME_FILE_NORMAL = "normal_game.dat";
     private static final String SAVE_GAME_FILE_HARD = "hard_game.dat";
 
-    private final LevelData[] mLevelsEasy = new LevelData[MAX_LEVELS];
-    private final LevelData[] mLevelsNormal = new LevelData[MAX_LEVELS];
-    private final LevelData[] mLevelsHard = new LevelData[MAX_LEVELS];
+    private static final LevelData[] mLevelsEasy = new LevelData[MAX_LEVELS];
+    private static final LevelData[] mLevelsNormal = new LevelData[MAX_LEVELS];
+    private static final LevelData[] mLevelsHard = new LevelData[MAX_LEVELS];
 
-    public int getStarsEasy(final int levelNumber) { return mLevelsEasy[levelNumber - 1].stars; }
-    public int getStarsNormal(final int levelNumber) { return mLevelsNormal[levelNumber - 1].stars; }
-    public int getStarsHard(final int levelNumber) { return mLevelsHard[levelNumber - 1].stars; }
+    public static int getStarsEasy(final int levelNumber) { return mLevelsEasy[levelNumber - 1].stars; }
+    public static int getStarsNormal(final int levelNumber) { return mLevelsNormal[levelNumber - 1].stars; }
+    public static int getStarsHard(final int levelNumber) { return mLevelsHard[levelNumber - 1].stars; }
 
-    public boolean isSolvedEasy(final int levelNumber) { return mLevelsEasy[levelNumber - 1].solved; }
-    public boolean isSolvedNormal(final int levelNumber) { return mLevelsNormal[levelNumber - 1].solved; }
-    public boolean isSolvedHard(final int levelNumber) { return mLevelsHard[levelNumber - 1].solved; }
+    public static boolean isSolvedEasy(final int levelNumber) { return mLevelsEasy[levelNumber - 1].solved; }
+    public static boolean isSolvedNormal(final int levelNumber) { return mLevelsNormal[levelNumber - 1].solved; }
+    public static boolean isSolvedHard(final int levelNumber) { return mLevelsHard[levelNumber - 1].solved; }
 
-    public GameProgress() {
+    private GameProgress() {
     }
 
-    public void setStarsEasy(final int levelNumber, final int stars) {
+    public static void setStarsEasy(final int levelNumber, final int stars) {
         int index = levelNumber - 1;
 
         if (stars > mLevelsEasy[index].stars) {
@@ -39,10 +39,10 @@ public final class GameProgress {
         }
     }
 
-    public void setMovesEasy(final int levelNumber, final int moves) { mLevelsEasy[levelNumber - 1].moves = moves; }
-    public void setSolvedEasy(final int levelNumber, final boolean solved) { mLevelsEasy[levelNumber - 1].solved = solved; }
+    public static void setMovesEasy(final int levelNumber, final int moves) { mLevelsEasy[levelNumber - 1].moves = moves; }
+    public static void setSolvedEasy(final int levelNumber, final boolean solved) { mLevelsEasy[levelNumber - 1].solved = solved; }
 
-    public void setStarsNormal(final int levelNumber, final int stars) {
+    public static void setStarsNormal(final int levelNumber, final int stars) {
         int index = levelNumber - 1;
 
         if (stars > mLevelsNormal[index].stars) {
@@ -50,10 +50,10 @@ public final class GameProgress {
         }
     }
 
-    public void setMovesNormal(final int levelNumber, final int moves) { mLevelsNormal[levelNumber - 1].moves = moves; }
-    public void setSolvedNormal(final int levelNumber, final boolean solved) { mLevelsNormal[levelNumber - 1].solved = solved; }
+    public static void setMovesNormal(final int levelNumber, final int moves) { mLevelsNormal[levelNumber - 1].moves = moves; }
+    public static void setSolvedNormal(final int levelNumber, final boolean solved) { mLevelsNormal[levelNumber - 1].solved = solved; }
 
-    public void setStarsHard(final int levelNumber, final int stars) {
+    public static void setStarsHard(final int levelNumber, final int stars) {
         int index = levelNumber - 1;
 
         if (stars > mLevelsHard[index].stars) {
@@ -61,10 +61,10 @@ public final class GameProgress {
         }
     }
 
-    public void setMovesHard(final int levelNumber, final int moves) { mLevelsHard[levelNumber - 1].moves = moves; }
-    public void setSolvedHard(final int levelNumber, final boolean solved) { mLevelsHard[levelNumber - 1].solved = solved; }
+    public static void setMovesHard(final int levelNumber, final int moves) { mLevelsHard[levelNumber - 1].moves = moves; }
+    public static void setSolvedHard(final int levelNumber, final boolean solved) { mLevelsHard[levelNumber - 1].solved = solved; }
 
-    private void saveArray(String fileName, LevelData[] array) {
+    private static void saveArray(String fileName, LevelData[] array) {
         try {
             FileOutputStream fos = Game.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -78,13 +78,13 @@ public final class GameProgress {
         }
     }
 
-    public void save() {
+    public static void save() {
         saveArray(SAVE_GAME_FILE_EASY, mLevelsEasy);
         saveArray(SAVE_GAME_FILE_NORMAL, mLevelsNormal);
         saveArray(SAVE_GAME_FILE_HARD, mLevelsHard);
     }
 
-    private LevelData[] loadArray(String fileName) {
+    private static LevelData[] loadArray(String fileName) {
         LevelData[] ar = new LevelData[MAX_LEVELS];
 
         for (int i = 0; i < MAX_LEVELS; ++i) {
@@ -108,14 +108,14 @@ public final class GameProgress {
         return ar;
     }
 
-    private void copyArray(LevelData[] from, LevelData[] to) {
+    private static void copyArray(LevelData[] from, LevelData[] to) {
         //System.arraycopy(from, 0, to, 0, from.length);
         for(int i = 0; i < from.length; ++i) {
             to[i] = from[i];
         }
     }
 
-     void load() {
+    static void load() {
         LevelData[] temp;
 
         temp = loadArray(SAVE_GAME_FILE_EASY);
@@ -128,7 +128,7 @@ public final class GameProgress {
         copyArray(temp, mLevelsHard);
     }
 
-    public int getStarCount() {
+    public static int getStarCount() {
         int stars = 0;
         for (int i = 0; i < MAX_LEVELS - 1; ++i) {
             if (mLevelsEasy[i].stars > 0) {
@@ -146,7 +146,7 @@ public final class GameProgress {
         return stars;
     }
 
-    public int getSolvedLevelCount() {
+    public static int getSolvedLevelCount() {
         int solved = 0;
         for(int i = 0; i < MAX_LEVELS - 1; ++i) {
             if (mLevelsEasy[i].stars > 0) {

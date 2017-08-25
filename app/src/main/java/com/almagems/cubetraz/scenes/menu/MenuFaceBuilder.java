@@ -1,6 +1,7 @@
 package com.almagems.cubetraz.scenes.menu;
 
 
+import com.almagems.cubetraz.GameProgress;
 import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.scenes.Creator;
@@ -554,8 +555,8 @@ public final class MenuFaceBuilder {
             "x       x" +
             "xxxxxxxxx";
 
-        String stars = getNumberIn3CharLongString( Game.progress.getStarCount() ); //String.format(Locale.US, "%03d", Game.progress.getStarCount());
-        String solved = getNumberIn3CharLongString( Game.progress.getSolvedLevelCount() ); //String.format(Locale.US, "%03d", Game.progress.getSolvedLevelCount());
+        String stars = getNumberIn3CharLongString( GameProgress.getStarCount() ); //String.format(Locale.US, "%03d", GameProgress.getStarCount());
+        String solved = getNumberIn3CharLongString( GameProgress.getSolvedLevelCount() ); //String.format(Locale.US, "%03d", GameProgress.getSolvedLevelCount());
 
         score = score.replace("sss", stars);
         score = score.replace("ggg", solved);

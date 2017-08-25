@@ -9,48 +9,48 @@ public class GameOptions {
     private static String keyCanSkipIntro = "INTRO";
     private static String keySolverCount = "SOLVER";
 
-    private float mMusicVolume = 0.5f;
-    private float mSoundVolume = 0.5f;
-    private boolean mCanSkipIntro = false;
-    private int mSolverCount = 9;
+    private static float mMusicVolume = 0.5f;
+    private static float mSoundVolume = 0.5f;
+    private static boolean mCanSkipIntro = false;
+    private static int mSolverCount = 9;
 
-    public float getMusicVolume() {
+    public static float getMusicVolume() {
         return mMusicVolume;
     }
-    public float getSoundVolume() {
+    public static float getSoundVolume() {
         return mSoundVolume;
     }
 
-    public void setSoundVolume(float volume) {
+    public static void setSoundVolume(float volume) {
         mSoundVolume = volume;
         save();
     }
-    public void setMusicVolume(float volume) {
+    public static void setMusicVolume(float volume) {
         mMusicVolume = volume;
         save();
     }
 
-    public boolean getCanSkipIntro() { return mCanSkipIntro; }
-    //public boolean getCanSkipIntro() { return true; } // TODO: remove this in final version
-    public void setCanSkipIntro(boolean value) {
+    //public static boolean getCanSkipIntro() { return mCanSkipIntro; }
+    public static boolean getCanSkipIntro() { return true; } // TODO: remove this in final version
+    public static void setCanSkipIntro(boolean value) {
         mCanSkipIntro = value;
         save();
     }
 
-    public void setSolverCount(int solverCount) {
+    public static void setSolverCount(int solverCount) {
         mSolverCount = solverCount;
         save();
     }
 
-    public int getSolverCount() {
+    public static int getSolverCount() {
         return 180; // TODO: remove
         //return mSolverCount;
     }
 
-    public GameOptions() {
+    private GameOptions() {
     }
 
-    private static SecurePreferences CreateSecurePreferencesObj() {
+    private static SecurePreferences createSecurePreferencesObj() {
         String name = "ctraz0";
         String key = "jKDz2fJhKE33cBQlDAkRM9axAnrBmUxs9dp11AqoogfulCL2DvNsexBuL2qeEstAIc27bqiMZbOOxZbZ";
         key = key.substring(10, 20) + key.substring(21, 26);
@@ -74,8 +74,8 @@ public class GameOptions {
         return defaultValue;
     }
 
-    public void save() {
-        SecurePreferences preferences = CreateSecurePreferencesObj();
+    public static void save() {
+        SecurePreferences preferences = createSecurePreferencesObj();
 
         // Put (all puts are automatically committed)
         //preferences.put("userId", "User1234");
@@ -86,8 +86,8 @@ public class GameOptions {
         preferences.put(keySolverCount, "" + mSolverCount);
     }
 
-    public void load() {
-        SecurePreferences preferences = CreateSecurePreferencesObj();
+    public static void load() {
+        SecurePreferences preferences = createSecurePreferencesObj();
 
         mMusicVolume = getPref(preferences, keyMusic, 0.5f);
         mSoundVolume = getPref(preferences, keySound, 0.5f);

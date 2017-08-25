@@ -5,6 +5,7 @@ import com.almagems.cubetraz.cubes.CubeLocation;
 import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.cubes.MenuCube;
+import com.almagems.cubetraz.graphics.Graphics;
 
 import java.util.ArrayList;
 
@@ -83,15 +84,15 @@ public class LevelMenu {
     }
 
     void draw() {
-        Game.graphics.addCube(cubeUp.pos.x, cubeUp.pos.y, cubeUp.pos.z);
-        Game.graphics.addCube(cubeMid.pos.x, cubeMid.pos.y, cubeMid.pos.z);
-        Game.graphics.addCube(cubeLow.pos.x, cubeLow.pos.y, cubeLow.pos.z);
+        Graphics.addCube(cubeUp.pos.x, cubeUp.pos.y, cubeUp.pos.z);
+        Graphics.addCube(cubeMid.pos.x, cubeMid.pos.y, cubeMid.pos.z);
+        Graphics.addCube(cubeLow.pos.x, cubeLow.pos.y, cubeLow.pos.z);
     }
 
     void drawForPicking() {
-        Game.graphics.addCubeSize(cubeUp.pos.x, cubeUp.pos.y, cubeUp.pos.z, HALF_CUBE_SIZE * 1.5f, cubeUp.color);
-        Game.graphics.addCubeSize(cubeMid.pos.x, cubeMid.pos.y, cubeMid.pos.z, HALF_CUBE_SIZE * 1.5f, cubeMid.color);
-        Game.graphics.addCubeSize(cubeLow.pos.x, cubeLow.pos.y, cubeLow.pos.z, HALF_CUBE_SIZE * 1.5f, cubeLow.color);
+        Graphics.addCubeSize(cubeUp.pos.x, cubeUp.pos.y, cubeUp.pos.z, HALF_CUBE_SIZE * 1.5f, cubeUp.color);
+        Graphics.addCubeSize(cubeMid.pos.x, cubeMid.pos.y, cubeMid.pos.z, HALF_CUBE_SIZE * 1.5f, cubeMid.color);
+        Graphics.addCubeSize(cubeLow.pos.x, cubeLow.pos.y, cubeLow.pos.z, HALF_CUBE_SIZE * 1.5f, cubeLow.color);
     }
 
     void setFontColor(int r, int g, int b, int a) {

@@ -72,7 +72,7 @@ public final class Audio {
         if (value != soundVolume) {
             soundVolume = value;
             soundPool.setVolume(soundStreamId, soundVolume, soundVolume);
-            playSound(null);
+            playSound(SOUND_VOLUME_DOWN);
         }
     }
 
@@ -84,12 +84,14 @@ public final class Audio {
 
     private static void createMediaPlayer(String key) {
         int resourceId = getResourceIdFromKey(key);
+        destroyMediaPlayer();
         mediaPlayer = MediaPlayer.create(Game.getContext(), resourceId);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
     private static void destroyMediaPlayer() {
         if (mediaPlayer != null) {
+            mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
         }
@@ -126,7 +128,7 @@ public final class Audio {
         createSoundPool();
     }
 
-    public static void reInit() {
+     static void reInit() {
         init(musicVolume, soundVolume);
         if (currentMusicKey != null) {
             createMediaPlayer(currentMusicKey);

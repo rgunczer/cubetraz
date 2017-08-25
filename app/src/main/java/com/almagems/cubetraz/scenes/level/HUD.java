@@ -1,6 +1,7 @@
 package com.almagems.cubetraz.scenes.level;
 
 import com.almagems.cubetraz.Game;
+import com.almagems.cubetraz.GameOptions;
 import com.almagems.cubetraz.graphics.Texture;
 import com.almagems.cubetraz.math.Utils;
 import com.almagems.cubetraz.math.Vector2;
@@ -314,7 +315,7 @@ final class HUD {
     void showHintToBegin(int hintType) {
         float degree = 0.0f;
         float rad;
-        float deviceScale = Game.graphics.deviceScale;
+        float deviceScale = Graphics.deviceScale;
     
 	    mShowHint = true;
         mElapsed = 0.0f;
@@ -371,17 +372,17 @@ final class HUD {
     }
 
     public void init() {
-        float deviceScale = Game.graphics.deviceScale;
+        float deviceScale = Graphics.deviceScale;
         mTutorActive = false;
         mFlashMotto = false;
-        mPosCenter = new Vector2(Game.graphics.halfWidth, Game.graphics.halfHeight);
+        mPosCenter = new Vector2(Graphics.halfWidth, Graphics.halfHeight);
         mShowPrepareSolving = false;
         mHilitePause = mHiliteUndo = mHiliteHint = mHiliteSolver = false;
 	
         mTextPause.init("PAUSE");
         mTextUndo.init("UNDO\nLAST\nMOVE");
         mTextHint.init("HINT\nFIRST\nMOVE");
-        mTextSolver.init("SOLVERS\n" + Game.options.getSolverCount());
+        mTextSolver.init("SOLVERS\n" + GameOptions.getSolverCount());
     
         mTextLevel.init("LEVEL\nEASY-01");
         mTextStars.init("STARS\n0");
@@ -416,8 +417,8 @@ final class HUD {
 	    mPosYMottoStart = -15.0f * deviceScale;
 	    mPosYMottoEnd = 30.0f * deviceScale;
 	
-        mPosXTextRightStart = Game.graphics.width + (75.0f * deviceScale);
-	    mPosXTextRightEnd = Game.graphics.width - (6.0f * deviceScale);
+        mPosXTextRightStart = Graphics.width + (75.0f * deviceScale);
+	    mPosXTextRightEnd = Graphics.width - (6.0f * deviceScale);
 
 	    mState = HUDStateEnum.Done;
 	    mShowHint = false;
@@ -466,8 +467,8 @@ final class HUD {
     
 	    if (mState == HUDStateEnum.Disappear) {
 		    final int icon_alpha_speed = -40;
-		    final float text_anim_speed = -10.0f * Game.graphics.deviceScale;
-            final float text_anim_speed_motto = -10.0f * Game.graphics.deviceScale;
+		    final float text_anim_speed = -10.0f * Graphics.deviceScale;
+            final float text_anim_speed_motto = -10.0f * Graphics.deviceScale;
 		
 		    mIconsAlpha += icon_alpha_speed;
 
@@ -508,8 +509,8 @@ final class HUD {
 		    int done_counter = 0;
 		
             final int icon_alpha_speed = 20;
-		    final float text_anim_speed = 8.0f * Game.graphics.deviceScale;
-            final float text_anim_speed_motto = 3.0f * Game.graphics.deviceScale;
+		    final float text_anim_speed = 8.0f * Graphics.deviceScale;
+            final float text_anim_speed_motto = 3.0f * Graphics.deviceScale;
 				
             mIconsAlpha += icon_alpha_speed;
 		
@@ -572,22 +573,22 @@ final class HUD {
     }
 
     void renderForPicking() {
-        Graphics graphics = Game.graphics;
-	    float solver_quad_y = graphics.height * 0.09f;
-	    float hint_quad_y   = graphics.height * 0.37f;
-        float undo_quad_y   = graphics.height * 0.65f;
-	    float pause_quad_y  = graphics.height * 0.93f;
+        
+	    float solver_quad_y = Graphics.height * 0.09f;
+	    float hint_quad_y   = Graphics.height * 0.37f;
+        float undo_quad_y   = Graphics.height * 0.65f;
+	    float pause_quad_y  = Graphics.height * 0.93f;
 
-	    solver_quad_y -= 0.1f * graphics.height;
-	    hint_quad_y   -= 0.1f * graphics.height;
-        undo_quad_y   -= 0.1f * graphics.height;
-	    pause_quad_y  -= 0.1f * graphics.height;
+	    solver_quad_y -= 0.1f * Graphics.height;
+	    hint_quad_y   -= 0.1f * Graphics.height;
+        undo_quad_y   -= 0.1f * Graphics.height;
+	    pause_quad_y  -= 0.1f * Graphics.height;
     
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-  	    graphics.bindStreamSources2d();
-        graphics.resetBufferIndices();
-        graphics.zeroBufferPositions();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+  	    Graphics.bindStreamSources2d();
+        Graphics.resetBufferIndices();
+        Graphics.zeroBufferPositions();
     
         TexCoordsQuad tcoords = new TexCoordsQuad();
         tcoords.tx0 = new Vector2(0.0f, 0.0f);
@@ -600,30 +601,30 @@ final class HUD {
         Color color_hint = new Color(0, 0, 100, 255);
 	    Color color_solver = new Color(0, 0, 50, 255);
     
-        float x = 5.0f * graphics.deviceScale;
-        float size = 60.0f * graphics.deviceScale;
+        float x = 5.0f * Graphics.deviceScale;
+        float size = 60.0f * Graphics.deviceScale;
 
-        graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
-        graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
-        graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
-        graphics.addQuad(size, x, solver_quad_y, tcoords, color_solver);
-        graphics.updateBuffers();
+        Graphics.addQuad(size, x, pause_quad_y,  tcoords, color_pause);
+        Graphics.addQuad(size, x, undo_quad_y,   tcoords, color_undo);
+        Graphics.addQuad(size, x, hint_quad_y,   tcoords, color_hint);
+        Graphics.addQuad(size, x, solver_quad_y, tcoords, color_solver);
+        Graphics.updateBuffers();
         glDisable(GL_TEXTURE_2D);
-	    graphics.renderTriangles();
+	    Graphics.renderTriangles();
         glEnable(GL_TEXTURE_2D);
     }
 
     public void render() {
-        Graphics graphics = Game.graphics;
+        
         Color color = new Color();
         Vector2 vec = new Vector2();
         float scale;
-	    float pause_quad_y  = graphics.height * 0.91f;
-        float undo_quad_y   = graphics.height * 0.67f;
-	    float hint_quad_y   = graphics.height * 0.38f;
-	    float solver_quad_y = graphics.height * 0.1f;
-        float shadow_offset_x = 1.5f * graphics.deviceScale;
-        float shadow_offset_y = 1.5f * graphics.deviceScale;
+	    float pause_quad_y  = Graphics.height * 0.91f;
+        float undo_quad_y   = Graphics.height * 0.67f;
+	    float hint_quad_y   = Graphics.height * 0.38f;
+	    float solver_quad_y = Graphics.height * 0.1f;
+        float shadow_offset_x = 1.5f * Graphics.deviceScale;
+        float shadow_offset_y = 1.5f * Graphics.deviceScale;
 
         colorIcon.a = mIconsAlpha;
         colorText.a = mIconsAlpha;
@@ -635,50 +636,50 @@ final class HUD {
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
 
-        graphics.setProjection2D();
-        graphics.setModelViewMatrix2D();
-        graphics.zeroBufferPositions();
-        graphics.resetBufferIndices();
-        graphics.bindStreamSources2d();
+        Graphics.setProjection2D();
+        Graphics.setModelViewMatrix2D();
+        Graphics.zeroBufferPositions();
+        Graphics.resetBufferIndices();
+        Graphics.bindStreamSources2d();
 
-        graphics.textureFontsClear.bind();
+        Graphics.textureFontsClear.bind();
 
         if (mTextLevel.isVisible()) {
             vec.x = mPosXTextRight - shadow_offset_x;
-            vec.y = (pause_quad_y + 9.0f * graphics.deviceScale) - shadow_offset_y;
+            vec.y = (pause_quad_y + 9.0f * Graphics.deviceScale) - shadow_offset_y;
             mTextLevel.emit(vec, colorShadow);
 
             vec.x = mPosXTextRight;
-            vec.y = pause_quad_y + 9.0f * graphics.deviceScale;
+            vec.y = pause_quad_y + 9.0f * Graphics.deviceScale;
             mTextLevel.emit(vec, colorText);
         }
     
         if (mTextStars.isVisible()) {
             vec.x = mPosXTextRight - shadow_offset_x;
-            vec.y = (undo_quad_y - 12.5f * graphics.deviceScale) - shadow_offset_y;
+            vec.y = (undo_quad_y - 12.5f * Graphics.deviceScale) - shadow_offset_y;
             mTextStars.emit(vec, colorShadow);
 
             vec.x = mPosXTextRight;
-            vec.y = undo_quad_y - 12.5f * graphics.deviceScale;
+            vec.y = undo_quad_y - 12.5f * Graphics.deviceScale;
             mTextStars.emit(vec, colorText);
         }
     
         if (mTextMoves.isVisible()) {
             vec.x = mPosXTextRight - shadow_offset_x;
-            vec.y = (hint_quad_y - 10.0f * graphics.deviceScale) + shadow_offset_y;
+            vec.y = (hint_quad_y - 10.0f * Graphics.deviceScale) + shadow_offset_y;
             mTextMoves.emit(vec, colorShadow);
 
             vec.x = mPosXTextRight;
-            vec.y = hint_quad_y - 10.0f * graphics.deviceScale;
+            vec.y = hint_quad_y - 10.0f * Graphics.deviceScale;
             mTextMoves.emit(vec, colorText);
         }
     
         if (mTextMotto.isVisible()) {
-            vec.x = (graphics.width - 5.0f * graphics.deviceScale) - shadow_offset_x;
+            vec.x = (Graphics.width - 5.0f * Graphics.deviceScale) - shadow_offset_x;
             vec.y = mPosYMotto + shadow_offset_y;
             mTextMotto.emit(vec, colorShadow);
 
-            vec.x = graphics.width - 5.0f * graphics.deviceScale;
+            vec.x = Graphics.width - 5.0f * Graphics.deviceScale;
             vec.y = mPosYMotto;
             if (mFlashMotto) {
                 mTextMotto.emit(vec, Color.WHITE);
@@ -687,7 +688,7 @@ final class HUD {
             }
         }
     
-        float yOffset = 14.0f * graphics.deviceScale;
+        float yOffset = 14.0f * Graphics.deviceScale;
         
         if (mTextPause.isVisible()) {
             vec.x = mPosXTextLeft + shadow_offset_x;
@@ -729,8 +730,8 @@ final class HUD {
             mTextSolver.emit(vec, mHiliteSolver ? colorHilite : colorText);
         }
 
-        graphics.updateBuffers();
-        graphics.renderTriangles();
+        Graphics.updateBuffers();
+        Graphics.renderTriangles();
 
         if (mShowPrepareSolving) {
             int a = (int) mCenterAlpha * 255;
@@ -738,100 +739,100 @@ final class HUD {
             glDisable(GL_TEXTURE_2D);
             color.init(30, 30, 15, (int)(150 * mCenterAlpha));
         
-            graphics.bindStreamSources2dNoTextures();
-            graphics.resetBufferIndices();
-            graphics.addQuad(0.0f, graphics.halfHeight - 20.0f * graphics.deviceScale, graphics.width, 75.0f * graphics.deviceScale, color);
-            graphics.updateBuffers();
-            graphics.renderTriangles();
+            Graphics.bindStreamSources2dNoTextures();
+            Graphics.resetBufferIndices();
+            Graphics.addQuad(0.0f, Graphics.halfHeight - 20.0f * Graphics.deviceScale, Graphics.width, 75.0f * Graphics.deviceScale, color);
+            Graphics.updateBuffers();
+            Graphics.renderTriangles();
 
-            graphics.setProjection2D();
-            graphics.setModelViewMatrix2D();
-            graphics.zeroBufferPositions();
-            graphics.resetBufferIndices();
-            graphics.bindStreamSources2d();
+            Graphics.setProjection2D();
+            Graphics.setModelViewMatrix2D();
+            Graphics.zeroBufferPositions();
+            Graphics.resetBufferIndices();
+            Graphics.bindStreamSources2d();
 
             glEnable(GL_TEXTURE_2D);
-            graphics.textureFontsBig.bind();
+            Graphics.textureFontsBig.bind();
         
-            scale = 0.75f * graphics.deviceScale;
+            scale = 0.75f * Graphics.deviceScale;
             mArTextCenter[0].setScale(scale, scale);
             mArTextCenter[1].setScale(scale, scale);
 
 		    color.init(0, 0, 0, a);
 
-            vec.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
-            vec.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
+            vec.x = Graphics.halfWidth - mArTextCenter[0].getHalfWidth();
+            vec.y = Graphics.halfHeight + mArTextCenter[0].getHalfHeight();
             mArTextCenter[0].emit(vec, color);
 
-            vec.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
-            vec.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
+            vec.x = Graphics.halfWidth - mArTextCenter[1].getHalfWidth();
+            vec.y = Graphics.halfHeight - mArTextCenter[1].getHalfHeight();
             mArTextCenter[1].emit(vec, color);
 
             glPushMatrix();
-            glTranslatef(graphics.deviceScale, graphics.deviceScale, 0.0f);
-            graphics.updateBuffers();
-            graphics.renderTriangles();
+            glTranslatef(Graphics.deviceScale, Graphics.deviceScale, 0.0f);
+            Graphics.updateBuffers();
+            Graphics.renderTriangles();
             glPopMatrix();
     
 		    color.init(255, 255, 0, a);
 
-            vec.x = graphics.halfWidth - mArTextCenter[0].getHalfWidth();
-            vec.y = graphics.halfHeight + mArTextCenter[0].getHalfHeight();
+            vec.x = Graphics.halfWidth - mArTextCenter[0].getHalfWidth();
+            vec.y = Graphics.halfHeight + mArTextCenter[0].getHalfHeight();
             mArTextCenter[0].emit(vec, color);
 
-            vec.x = graphics.halfWidth - mArTextCenter[1].getHalfWidth();
-            vec.y = graphics.halfHeight - mArTextCenter[1].getHalfHeight();
+            vec.x = Graphics.halfWidth - mArTextCenter[1].getHalfWidth();
+            vec.y = Graphics.halfHeight - mArTextCenter[1].getHalfHeight();
             mArTextCenter[1].emit(vec, color);
 
-            graphics.updateBuffers();
-            graphics.renderTriangles();
+            Graphics.updateBuffers();
+            Graphics.renderTriangles();
         }
 
-        graphics.textureSymbols.bind();
+        Graphics.textureSymbols.bind();
 
-        final float ics = 25.0f * graphics.deviceScale;
+        final float ics = 25.0f * Graphics.deviceScale;
     
-        graphics.resetBufferIndices();
+        Graphics.resetBufferIndices();
 
 
         tcoords.tx0 = mSymbolPause.tx_lo_left;
         tcoords.tx1 = mSymbolPause.tx_lo_right;
         tcoords.tx2 = mSymbolPause.tx_up_right;
         tcoords.tx3 = mSymbolPause.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, colorShadow);
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale,                    pause_quad_y,                   tcoords, mHilitePause ? colorHilite : colorIcon);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale + shadow_offset_x,  pause_quad_y - shadow_offset_y, tcoords, colorShadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale,                    pause_quad_y,                   tcoords, mHilitePause ? colorHilite : colorIcon);
     
         tcoords.tx0 = mSymbolUndo.tx_lo_left;
         tcoords.tx1 = mSymbolUndo.tx_lo_right;
         tcoords.tx2 = mSymbolUndo.tx_up_right;
         tcoords.tx3 = mSymbolUndo.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, colorShadow);
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale,                    undo_quad_y,                    tcoords, mHiliteUndo ? colorHilite : colorIcon);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale + shadow_offset_x,  undo_quad_y - shadow_offset_y,  tcoords, colorShadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale,                    undo_quad_y,                    tcoords, mHiliteUndo ? colorHilite : colorIcon);
 	
         tcoords.tx0 = mSymbolHint.tx_lo_left;
         tcoords.tx1 = mSymbolHint.tx_lo_right;
         tcoords.tx2 = mSymbolHint.tx_up_right;
         tcoords.tx3 = mSymbolHint.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, colorShadow);
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale,                   hint_quad_y,                    tcoords, mHiliteHint ? colorHilite : colorIcon);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale + shadow_offset_x,  hint_quad_y + shadow_offset_y,  tcoords, colorShadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale,                   hint_quad_y,                    tcoords, mHiliteHint ? colorHilite : colorIcon);
     
         tcoords.tx0 = mSymbolSolver.tx_lo_left;
         tcoords.tx1 = mSymbolSolver.tx_lo_right;
         tcoords.tx2 = mSymbolSolver.tx_up_right;
         tcoords.tx3 = mSymbolSolver.tx_up_left;
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, colorShadow);
-        graphics.addQuad(ics, 5.0f * graphics.deviceScale, solver_quad_y, tcoords, mHiliteSolver ? colorHilite : colorIcon);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale + shadow_offset_x,  solver_quad_y + shadow_offset_y, tcoords, colorShadow);
+        Graphics.addQuad(ics, 5.0f * Graphics.deviceScale, solver_quad_y, tcoords, mHiliteSolver ? colorHilite : colorIcon);
 
         tcoords.tx0 = mSymbolStar.tx_lo_left;
         tcoords.tx1 = mSymbolStar.tx_lo_right;
         tcoords.tx2 = mSymbolStar.tx_up_right;
         tcoords.tx3 = mSymbolStar.tx_up_left;
-        graphics.addQuad(ics, graphics.width - 25.0f * graphics.deviceScale - shadow_offset_x, undo_quad_y - shadow_offset_y, tcoords, colorShadow);
-        graphics.addQuad(ics, graphics.width - 25.0f * graphics.deviceScale, undo_quad_y, tcoords, colorIcon);
+        Graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.deviceScale - shadow_offset_x, undo_quad_y - shadow_offset_y, tcoords, colorShadow);
+        Graphics.addQuad(ics, Graphics.width - 25.0f * Graphics.deviceScale, undo_quad_y, tcoords, colorIcon);
 
-	    graphics.bindStreamSources2d();
-        graphics.updateBuffers();
-	    graphics.renderTriangles();
+	    Graphics.bindStreamSources2d();
+        Graphics.updateBuffers();
+	    Graphics.renderTriangles();
 
         if (mTutorActive) {
             mTutorTexture.bind();
@@ -842,18 +843,18 @@ final class HUD {
             tcoords.tx3 = new Vector2(0,0);
 
             color.init(255, 255, 255, mTutorAlpha);
-            float sz = 160.0f * graphics.deviceScale;
-            float x = graphics.halfWidth - sz / 2.0f;
-            float y = graphics.halfHeight - sz / 2.0f;
+            float sz = 160.0f * Graphics.deviceScale;
+            float x = Graphics.halfWidth - sz / 2.0f;
+            float y = Graphics.halfHeight - sz / 2.0f;
 
-            graphics.resetBufferIndices();
-            graphics.addQuad(sz, x, y, tcoords, color);
-            graphics.updateBuffers();
-            graphics.renderTriangles();
+            Graphics.resetBufferIndices();
+            Graphics.addQuad(sz, x, y, tcoords, color);
+            Graphics.updateBuffers();
+            Graphics.renderTriangles();
         }
     
         if (Level.State.DeadAnim == Game.level.mState) {
-            graphics.resetBufferIndices();
+            Graphics.resetBufferIndices();
         
 		    color.init(200, 0, 0, mDeadAnim.alpha);
 		
@@ -862,12 +863,12 @@ final class HUD {
             tcoords.tx2 = mSymbolDeath.tx_up_right;
             tcoords.tx3 = mSymbolDeath.tx_up_left;
         
-            float size = mDeadAnim.size * graphics.deviceScale;
-            graphics.addQuad(size, graphics.halfWidth - (size / 2.0f), graphics.halfHeight - (size / 2.0f), tcoords, color);
+            float size = mDeadAnim.size * Graphics.deviceScale;
+            Graphics.addQuad(size, Graphics.halfWidth - (size / 2.0f), Graphics.halfHeight - (size / 2.0f), tcoords, color);
         
-            graphics.bindStreamSources2d();
-            graphics.updateBuffers();
-            graphics.renderTriangles();
+            Graphics.bindStreamSources2d();
+            Graphics.updateBuffers();
+            Graphics.renderTriangles();
         }
 
         glDisable(GL_TEXTURE_2D);
@@ -890,21 +891,21 @@ final class HUD {
             final float norms[] = {};
             final float coords[] = {};
 
-            graphics.zeroBufferPositions();
-            graphics.bindStreamSources2dNoTextures();
-            graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
+            Graphics.zeroBufferPositions();
+            Graphics.bindStreamSources2dNoTextures();
+            Graphics.addVerticesCoordsNormalsColors(verts, coords, norms, colors);
 
-		    glLineWidth(2.0f * graphics.deviceScale);
+		    glLineWidth(2.0f * Graphics.deviceScale);
             glEnable(GL_LINE_SMOOTH);
 		    glDrawArrays(GL_LINES, 0, 2);
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(1.0f);
 
             color.init(255, 255, 0, 255);
-            graphics.drawCircleAt(mPosCenter.x + vec.x, mPosCenter.y + vec.y, mRadius * 0.5f, color);
+            Graphics.drawCircleAt(mPosCenter.x + vec.x, mPosCenter.y + vec.y, mRadius * 0.5f, color);
 
             color.init(255, 0, 0, 255);
-            graphics.drawCircleAt(mPosCenter.x + vec.x, mPosCenter.y + vec.y, mRadius * 0.25f, color);
+            Graphics.drawCircleAt(mPosCenter.x + vec.x, mPosCenter.y + vec.y, mRadius * 0.25f, color);
         }
         
         glDisable(GL_BLEND);

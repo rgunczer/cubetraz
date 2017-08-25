@@ -1,6 +1,7 @@
 package com.almagems.cubetraz.cubes;
 
 import com.almagems.cubetraz.Game;
+import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.math.Vector;
 import com.almagems.cubetraz.math.Vector2;
 import com.almagems.cubetraz.graphics.Color;
@@ -63,7 +64,7 @@ public final class DeadCube {
     }
 
     public void renderCube() {
-        Game.graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, mColorCurrent);
+        Graphics.addCubeSize(pos.x, pos.y, pos.z, HALF_CUBE_SIZE, mColorCurrent);
     }
 
     public void renderSymbols() {
@@ -72,14 +73,14 @@ public final class DeadCube {
         coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
         coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
         coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-        Game.graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, mColorSymbol);
+        Graphics.addCubeFace_X_Plus(pos.x, pos.y, pos.z, coords, mColorSymbol);
 
         pTQ = mCubeFaceTextures[Z_Plus];
         coords.tx0 = new Vector2(pTQ.tx_lo_left.x,  pTQ.tx_up_left.y);
         coords.tx1 = new Vector2(pTQ.tx_lo_right.x, pTQ.tx_up_right.y);
         coords.tx2 = new Vector2(pTQ.tx_up_right.x, pTQ.tx_lo_right.y);
         coords.tx3 = new Vector2(pTQ.tx_up_left.x,  pTQ.tx_lo_left.y);
-        Game.graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, mColorSymbol);
+        Graphics.addCubeFace_Z_Plus(pos.x, pos.y, pos.z, coords, mColorSymbol);
     }
 
 }
