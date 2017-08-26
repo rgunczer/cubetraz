@@ -68,7 +68,7 @@ public final class Graphics {
 
     private Graphics() {}
 
-    public static void initialSetup() {
+    public static void createBuffers() {
         ByteBuffer vbb;
 
         vbb = ByteBuffer.allocateDirect(_vertices.length * 4);

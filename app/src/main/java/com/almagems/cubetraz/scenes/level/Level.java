@@ -32,7 +32,6 @@ import com.almagems.cubetraz.scenes.Scene;
 import java.util.ArrayList;
 import static android.opengl.GLES10.*;
 import static com.almagems.cubetraz.Audio.*;
-
 import static com.almagems.cubetraz.Game.*;
 
 public final class Level extends Scene {
@@ -61,14 +60,11 @@ public final class Level extends Scene {
         SetupAnimFromCompleted,
         SetupAnimFromPaused,
         DeadAnim,
+
+        ShowingMessage,
     }
 
-    private enum LevelNextActionEnum {
-        NoNextAction,
-        ShowSceneSolvers,
-    }
-
-    private enum SubAppearStateEnum {
+    private enum AppearState {
         SubAppearWait,
         SubAppearKeyAndPlayer,
         SubAppearLevel,
@@ -76,14 +72,15 @@ public final class Level extends Scene {
     }
 
     private CompletedFaceNextActionEnum m_completed_face_next_action;
-    private LevelNextActionEnum mNextAction;
     private float mTimeoutUndo;
     private final ArrayList<UndoData> mUndoList = new ArrayList<>();
 
     State mState;
     private State mStateToRestore;
 
-    private SubAppearStateEnum mAppearState;
+    private AppearState mAppearState;
+
+    private boolean mShowSceneSolvers = false;
 
     private DeadAnim mDeadAnim = new DeadAnim();
     private HUD mHud = new HUD(mDeadAnim);
@@ -96,7 +93,6 @@ public final class Level extends Scene {
     private CubeFont mFontHilite = new CubeFont();
 
     private float mHiliteAlpha;
-    private float mHiliteTimeout;
 
     public ArrayList<Cube> cubesLevel = new ArrayList<>();
     public ArrayList<Cube> cubesWallYminus = new ArrayList<>();
@@ -130,7 +126,6 @@ public final class Level extends Scene {
     Solution solution = new Solution();
 
     private int mMovesCounter;
-    private float mTimeout;
 
     private CubeLocation mLocationKeyCube = new CubeLocation();
 
@@ -152,8 +147,6 @@ public final class Level extends Scene {
     public LevelMenu mLevelMenu = new LevelMenu();
 
     private boolean mDrawMenuCubes;
-
-    private float mElapsed;
 
     public PlayerCube mPlayerCube;
 
@@ -204,25 +197,20 @@ public final class Level extends Scene {
     @Override
     public void init() {
         Game.dirtyAlpha = 60f;
-
+        mElapsed = 0f;
+        mShowSceneSolvers = false;
         mMovingCube = null;
         mMoverCube = null;
         mDeadCube = null;
-
-        LevelInitData levelInitData = Game.levelInitData;
 
         // uncomment to load alternative level
         //Game.levelInitData.difficulty = DifficultyEnum.Easy;
         //Game.levelInitData.levelNumber = 49;
 
-        mNextAction = LevelNextActionEnum.NoNextAction;
-        
         switch (levelInitData.initAction) {
             case FullInit: {
                 mMenuCubeHilite = null;
                 mShowHint2nd = false;
-
-                mHiliteTimeout = 0.0f;
 
                 mDifficulty = levelInitData.difficulty;
                 mLevelNumber = levelInitData.levelNumber;
@@ -270,9 +258,13 @@ public final class Level extends Scene {
             }
             break;
 
-            case JustContinue: // take no action ?
-                if (State.SetupAnimToCompleted == mState) {
-                
+            case JustContinue:
+                if (mState == State.SetupAnimToCompleted) {
+                    if (Game.levelInitData.message.length() > 0) {
+                        mStateToRestore = mState;
+                        mState = State.ShowingMessage;
+                        mHud.showMessage(true, Game.levelInitData.message);
+                    }
                 } else {
                     mHud.setupAppear();
                 }
@@ -281,15 +273,8 @@ public final class Level extends Scene {
             case ShowSolution:
                 reset();
                 mState = State.PrepareSolving;
-                mTimeout = 3.5f;
                 break;
         }
-
-
-        Graphics.setProjection3D();
-        Graphics.setModelViewMatrix3D(mCameraCurrent);
-
-        Graphics.setLightPosition(mPosLightCurrent);
     }
 
     private void getRatings() {
@@ -330,14 +315,14 @@ public final class Level extends Scene {
         statInitData.moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + minSolutionSteps;
     }
     
-    public boolean isMovingCube(CubeLocation cube_pos, boolean set) {
+    public boolean isMovingCube(CubeLocation location, boolean set) {
         MovingCube movingCube;
         int size = movingCubes.size();
         for (int i = 0; i < size; ++i) {
             movingCube = movingCubes.get(i);
-            CubeLocation cp = movingCube.getCubePos();
+            CubeLocation cp = movingCube.getLocation();
 
-            if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
+            if (cp.x == location.x && cp.y == location.y && cp.z == location.z) {
                 if (set) {
                     mPlayerCube.setMovingCube(movingCube);
                 }
@@ -424,7 +409,7 @@ public final class Level extends Scene {
             for(int i = 0; i < size; ++i) {
                 movingCube = movingCubes.get(i);
                 if (movingCube != ignore_moving_cube) {
-                    cp = movingCube.getCubePos();
+                    cp = movingCube.getLocation();
                     if (cp.x == cube_pos.x && cp.y == cube_pos.y && cp.z == cube_pos.z) {
                         return true;
                     }
@@ -494,11 +479,11 @@ public final class Level extends Scene {
 
     private void setupAppear() {
         mState = State.Appear;
-        mAppearState = SubAppearStateEnum.SubAppearWait;
+        mAppearState = AppearState.SubAppearWait;
         mDrawMenuCubes = false;
         mDrawTexts = false;
-        mTimeout = 0.0f;
         mAlterView = false;
+        mElapsed = 0f;
 
         if (Utils.rand.nextBoolean()) {
             appearDisappear.level.setLevelAndDirection(0, 1);
@@ -594,7 +579,7 @@ public final class Level extends Scene {
 
     private void setupDeadCube(DeadCube deadCube) {
         mState = State.DeadAnim;
-        mTimeout = 1.5f;
+        mElapsed = 0f;
 
         mDeadAnim.init();
 
@@ -605,7 +590,7 @@ public final class Level extends Scene {
     private void setupMoveCube(MovingCube movingCube) {
         mStateToRestore = mState;
         mState = State.MovingCube;
-        mTimeout = 0.1f;
+        mElapsed = 0f;
 
         mMovingCube = movingCube;
         mMovingCube.move();
@@ -615,7 +600,7 @@ public final class Level extends Scene {
         int movement = moverCube.getMoveDir();
         mStateToRestore = mState;
         mState = State.MovingPlayer;
-        mTimeout = 0.15f;
+        mElapsed = 0f;
 
         mMoverCube = moverCube;
         mMoverCube.hiLite();
@@ -624,11 +609,11 @@ public final class Level extends Scene {
 
         if (mUndoList.size() > 0) {
             UndoData ud = mUndoList.get(mUndoList.size() - 1);
-            ud.movingCube = mPlayerCube.movingCube; //movingCubes.front();
+            ud.movingCube = mPlayerCube.movingCube;
 
             if (ud.movingCube != null) {
                 ud.movingCubeMoveDir = ud.movingCube.getMovement();
-                ud.movingCubeLocation = ud.movingCube.getCubePos();
+                ud.movingCubeLocation = ud.movingCube.getLocation();
             }
         }
     }
@@ -748,7 +733,6 @@ public final class Level extends Scene {
             cubesFace.add(cube);
         }
 
-        mElapsed += 0.04f;
         if (mElapsed > 1f) {
             mElapsed = 1f;
         }
@@ -843,8 +827,15 @@ public final class Level extends Scene {
         appearDisappear.face.setLevelAndDirection(MAX_CUBE_COUNT - 1, -1);
     }
 
+    private void updateInShowingMessage() {
+        if (mElapsed > 2.0f) {
+            mState = mStateToRestore;
+            mHud.setupDisappear();
+            mHud.hideMessage();
+        }
+    }
+
     private void updateAnimFromCompleted() {
-        mElapsed += 0.04f;
         if (mElapsed > 1f) {
             mElapsed = 1f;
         }
@@ -979,7 +970,6 @@ public final class Level extends Scene {
             cubesFace.add(cube);
         }
 
-        mElapsed += 0.04f;
         if (mElapsed > 1f) {
             mElapsed = 1f;
         }
@@ -1042,7 +1032,6 @@ public final class Level extends Scene {
     }
 
     private void updateAnimFromPaused() {
-        mElapsed += 0.04f;
         if (mElapsed > 1f) {
             mElapsed = 1f;
         }
@@ -1077,6 +1066,7 @@ public final class Level extends Scene {
 
     @Override
     public void update() {
+        mElapsed += 0.05f;
         switch (mState) {
             case Playing:                   updatePlaying();            break;
             case Undo:                      updateUndo();               break;
@@ -1097,6 +1087,7 @@ public final class Level extends Scene {
             case SetupAnimFromPaused:       setAnimFromPaused();        break;
             case DeadAnim:                  updateDeadAnim();           break;
             case Tutorial:                  updateTutorial();           break;
+            case ShowingMessage:            updateInShowingMessage();   break;
             default:                
                 break;
         }
@@ -1104,8 +1095,6 @@ public final class Level extends Scene {
         warmCubes();
 
         if (mRepositionView) {
-            mElapsed += 0.1f;
-
             if (mElapsed >= 1.0f) {
                 mElapsed = 1.0f;
                 mRepositionView = false;
@@ -1118,19 +1107,13 @@ public final class Level extends Scene {
 
         mHud.update();
 
-        if (LevelNextActionEnum.NoNextAction != mNextAction) {
-            if (HUDStateEnum.Done == mHud.getState() ) {
-                if (mNextAction == LevelNextActionEnum.ShowSceneSolvers) {
-                    Game.renderToFBO(this);
-                    Game.showScene(Scene_Solvers);
-                    mNextAction = LevelNextActionEnum.NoNextAction;
-                }
-            }
+        if (mShowSceneSolvers && mHud.getState() == HUDStateEnum.Done) {
+            Game.renderToFBO(this);
+            Game.showScene(Scene_Solvers);
         }
 
         if (mMenuCubeHilite != null) {
             mHiliteAlpha += 0.05f;
-
             if (mHiliteAlpha > 0.2f) {
                 mHiliteAlpha = 0.2f;
             }
@@ -1138,7 +1121,6 @@ public final class Level extends Scene {
 
         if (mShowHint2nd) {
             mHintTimeout -= 0.05f;
-
             if (mHintTimeout < 0.0f) {
                 mHintTimeout = 0.2f;
                 Cube cube = mHintCubes[mHintIndex];
@@ -1154,7 +1136,7 @@ public final class Level extends Scene {
                     for(int i = 0; i < size; ++i) {
                         movingCube = movingCubes.get(i);
                         CubeLocation cube_pos = new CubeLocation(cube.x, cube.y, cube.z);
-                        CubeLocation moving_cube_pos = movingCube.getCubePos();
+                        CubeLocation moving_cube_pos = movingCube.getLocation();
 
                         if (moving_cube_pos.x == cube_pos.x && moving_cube_pos.y == cube_pos.y && moving_cube_pos.z == cube_pos.z) {
                             movingCube.setCurrentColor(col);
@@ -1218,9 +1200,7 @@ public final class Level extends Scene {
     }
 
     private void updateDeadAnim() {
-        mTimeout -= 0.01f;
         mDeadAnim.update();
-
         if (mDeadAnim.isDone()) {
             reset();
             mState = State.Playing;
@@ -1229,9 +1209,7 @@ public final class Level extends Scene {
     }
 
     private void updateMovingCube() {
-        mTimeout -= 0.01f;
-
-        if (mTimeout < 0.0f) {
+        if (mElapsed > 1.0f) {
             mMovingCube.update();
 
             if (mMovingCube.isDone()) {
@@ -1239,16 +1217,14 @@ public final class Level extends Scene {
                 mMovingCube = null;
 
                 if (State.Solving == mStateToRestore) {
-                    mTimeout = 1.0f;
+                    mElapsed = 1.0f;
                 }
             }
         }
     }
 
     private void updateMovingPlayer() {
-        mTimeout -= 0.01f;
-
-        if (mTimeout < 0.0f) {
+        if (mElapsed > 1.0f) {
             mPlayerCube.update();
 
             if (mPlayerCube.isDone()) {
@@ -1272,7 +1248,7 @@ public final class Level extends Scene {
                 mState = mStateToRestore;
 
                 if (State.Solving == mStateToRestore) {
-                    mTimeout = 1.0f;
+                    mElapsed = 0.0f;
                 }
 
                 CubeLocation player = mPlayerCube.getLocation();
@@ -1294,10 +1270,8 @@ public final class Level extends Scene {
     }
 
     private void updateSolving() {
-        mTimeout -= 0.02f;
-
-        if (mTimeout <= 0.0f) {
-            mTimeout = 1.0f;
+        if (mElapsed > 1.0f) {
+            mElapsed = 0.0f;
 
             if (mPlayerCube.isDone()) {
                 int dir = solution.getStep();
@@ -1306,8 +1280,6 @@ public final class Level extends Scene {
                 if (success) {
                     mStateToRestore = mState;
                     mState = State.MovingPlayer;
-                    mTimeout = 0.0f;
-
                     ++mMovesCounter;
                     mHud.setTextMoves(mMovesCounter);
                 }
@@ -1320,19 +1292,17 @@ public final class Level extends Scene {
     private void updatePrepareSolving() {
         mHud.update();
 
-        mTimeout -= 0.03f;
-
-        if (mTimeout < 1.6f) {
+        if (mElapsed > 1.6f) {
             mHud.showPrepareSolving(true, solution.getStepsCount());
         }
 
-        if (mTimeout <= 0.0f) {
+        if (mElapsed > 2.4f) {
             mHud.showPrepareSolving(false, solution.getStepsCount());
 
             mState = State.Solving;
             solution.index = 0;
             mFadeValue = 1.0f;
-            mTimeout = 1.0f;
+            mElapsed = 0.0f;
             mHud.setupAppear();
         }
     }
@@ -1367,11 +1337,9 @@ public final class Level extends Scene {
     }
 
     private void updateAppear() {
-        mTimeout += 0.01f;
-
         switch (mAppearState) {
             case SubAppearWait: 
-                if (mTimeout > 0.2f) {
+                if (mElapsed > 1.0f) {
                     Cube cube;
 
                     cube = appearDisappear.level.getCubeFromDisappearList();
@@ -1408,8 +1376,8 @@ public final class Level extends Scene {
                             movingCubes.isEmpty() &&
                             moverCubes.isEmpty() &&
                             deadCubes.isEmpty()) {
-                        mTimeout = 0.0f;
-                        mAppearState = SubAppearStateEnum.SubAppearKeyAndPlayer;
+                        mElapsed = 0.0f;
+                        mAppearState = AppearState.SubAppearKeyAndPlayer;
                         mElapsed = 0.0f;
                         mFadeValue = 0.0f;
 
@@ -1420,22 +1388,18 @@ public final class Level extends Scene {
                 break;
 
             case SubAppearKeyAndPlayer:
-                if (mTimeout > 0.1f) {
-                    mElapsed += 0.1;
-
-                    if (mElapsed > 1.0f) {
-                        mTimeout = 0.0f;
-                        mElapsed = 1.0f;
-                        mAppearState = SubAppearStateEnum.SubAppearWaitAgain;
-                    }
-
+                if (mElapsed > 1.0f) {
+                    mElapsed = 0.0f;
+                    mAppearState = AppearState.SubAppearWaitAgain;
+                    mFadeValue = 1f;
+                } else {
                     mFadeValue = Utils.lerp(0.0f, 1.0f, mElapsed);
                 }
                 break;
 
             case SubAppearWaitAgain:
-                if (mTimeout > 0.2) {
-                    mAppearState = SubAppearStateEnum.SubAppearLevel;
+                if (mElapsed > 0.2) {
+                    mAppearState = AppearState.SubAppearLevel;
                 }
                 break;
 
@@ -1447,7 +1411,7 @@ public final class Level extends Scene {
                     mState = State.Playing;
                     showTutor();
             } else {
-                if (mTimeout > 0.02f) {
+                if (mElapsed > 0.02f) {
                     Cube cube = appearDisappear.level.getCubeFromAppearList();
 
                     if (cube != null) {
@@ -1472,14 +1436,14 @@ public final class Level extends Scene {
                         deadCubes.add(deadCube);
                     }
 
-                    mTimeout = 0.0f;
+                    mElapsed = 0.0f;
                 }
             }
             break;
 
             default:
                 break;
-        } // switch
+        }
     }
 
     private void updateTutorial() {
@@ -1522,7 +1486,6 @@ public final class Level extends Scene {
     }
 
     private void drawTheCube() {
-
         Vector cubeOffset = Game.cubeOffset;
         glClear(GL_STENCIL_BUFFER_BIT);
 
@@ -1575,7 +1538,7 @@ public final class Level extends Scene {
                         Graphics.addCubeFace_Z_Plus(cube.tx, cube.ty, cube.tz, cube.colorCurrent);
                     }
                     break;
-            } // switch
+            }
 
             glClear(GL_STENCIL_BUFFER_BIT);
             glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -1643,7 +1606,7 @@ public final class Level extends Scene {
             {
                 Graphics.addCubeSize(Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].tx + cubeOffset.x,
                                      Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].ty + cubeOffset.y,
-                                     Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].tz + cubeOffset.z, HALF_CUBE_SIZE * 0.95f, shadowColor);
+                                     Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z].tz + cubeOffset.z, HALF_CUBE_SIZE * 0.96f, shadowColor);
             }
 
             glEnable(GL_BLEND);
@@ -1659,8 +1622,7 @@ public final class Level extends Scene {
             Graphics.updateBuffers();
             Graphics.renderTriangles();
             glPopMatrix();
-            //----------------------------------------
-        } // for
+        }
 
         glPushMatrix();
 
@@ -1737,7 +1699,7 @@ public final class Level extends Scene {
             deadCube.renderCube();
         }
 
-        if (State.Playing != mState) {
+        if (mState != State.Playing) {
             size = cubesFace.size();
             for(int i = 0; i < size; ++i) {
                 cube = cubesFace.get(i);
@@ -1758,8 +1720,6 @@ public final class Level extends Scene {
     }
 
     private void drawTextsCompleted() {
-
-
         CubeFont cubeFont;
         TexCoordsQuad coords = new TexCoordsQuad();
         TexturedQuad pFont;
@@ -1883,7 +1843,6 @@ public final class Level extends Scene {
     }
 
     private void draw() {
-
         Color color = new Color(255, 255, 255, (int)(mFadeValue * 255));
         Graphics.bindStreamSources3d();
 
@@ -1916,7 +1875,7 @@ public final class Level extends Scene {
             Cube pCube = Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z];
 
             Graphics.resetBufferIndices();
-            Graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.95f, color);
+            Graphics.addCubeSize(pCube.tx, pCube.ty, pCube.tz, HALF_CUBE_SIZE * 0.96f, color);
             Graphics.updateBuffers();
             Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
         }
@@ -2038,12 +1997,12 @@ public final class Level extends Scene {
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
-        glDepthMask(false); //GL_FALSE);
+        glDepthMask(false);
 
         Color color = new Color(255, 255, 255, (int)Game.dirtyAlpha);
         Graphics.drawFullScreenTexture(Graphics.textureDirty, color);
 
-        glDepthMask(true); //GL_TRUE);
+        glDepthMask(true);
 
         Graphics.setProjection3D();
         Graphics.setModelViewMatrix3D(mCameraCurrent);
@@ -2083,8 +2042,7 @@ public final class Level extends Scene {
     }
 
     private void renderForPicking(PickRenderTypeEnum type) {
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Graphics.prepareFrame();
 
         glDisable(GL_LIGHTING);
         glDisable(GL_BLEND);
@@ -2119,14 +2077,13 @@ public final class Level extends Scene {
 
             default:
                 break;
-        } // switch
+        }
 
         glPopMatrix();
     }
 
     @Override
     public void renderToFBO() {
-
         Graphics.setProjection2D();
         Graphics.setModelViewMatrix2D();
 
@@ -2138,8 +2095,8 @@ public final class Level extends Scene {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
 
-        Color color_dirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
-        Graphics.drawFullScreenTexture(Graphics.textureDirty, color_dirty);
+        Color colorDirty = new Color(255, 255, 255, (int)Game.dirtyAlpha);
+        Graphics.drawFullScreenTexture(Graphics.textureDirty, colorDirty);
 
         glDepthMask(true);
 
@@ -2165,7 +2122,7 @@ public final class Level extends Scene {
             Cube cube = Game.cubes[mLocationKeyCube.x][mLocationKeyCube.y][mLocationKeyCube.z];
 
             Graphics.resetBufferIndices();
-            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.95f, Color.WHITE);
+            Graphics.addCubeSize(cube.tx, cube.ty, cube.tz, HALF_CUBE_SIZE * 0.96f, Color.WHITE);
             Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
             glDisable(GL_LIGHTING);
@@ -2182,7 +2139,7 @@ public final class Level extends Scene {
         CubeLocation pos = mLocationKeyCube;
         Cube keyCube = Game.cubes[pos.x][pos.y][pos.z];
 
-        Graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE * 0.95f, Color.WHITE);
+        Graphics.addCubeSize(keyCube.tx, keyCube.ty, keyCube.tz, HALF_CUBE_SIZE * 0.96f, Color.WHITE);
         Graphics.updateBuffers();
         Graphics.renderTriangles(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
 
@@ -2294,7 +2251,7 @@ public final class Level extends Scene {
     }
 
     private void eventSolver() {
-        if (LevelNextActionEnum.ShowSceneSolvers == mNextAction || State.PrepareSolving == mState) {
+        if (mShowSceneSolvers || State.PrepareSolving == mState) {
             return;
         }
 
@@ -2308,20 +2265,23 @@ public final class Level extends Scene {
         if (solved) {
             reset();
             mState = State.PrepareSolving;
-            mTimeout = 2.0f;
+            mElapsed = 0f;
         } else {
-            mNextAction = LevelNextActionEnum.ShowSceneSolvers;
+            mShowSceneSolvers = true;
         }
 
         mHud.setupDisappear();
     }
 
     private void eventQuit() {
+        Audio.stopMusic();
+
         // setup menu obj to point to a cube face where current level is located
-        CubeFaceNames faceName = Menu.getCubeFaceName(mDifficulty, mLevelNumber);
-        Game.menuInitData.cubeFaceName = faceName;
+        Game.menuInitData.cubeFaceName = Menu.getCubeFaceName(mDifficulty, mLevelNumber);
         Game.menuInitData.reappear = true;
+        Game.menuInitData.playMusic = false;
         Game.menu.init();
+        Game.menuInitData.playMusic = true;
 
         Game.setAnimFaces(mDifficulty, mLevelNumber);
 
@@ -2369,6 +2329,8 @@ public final class Level extends Scene {
                 if (mLevelNumber < 60) {
                     if (LEVEL_LOCKED == GameProgress.getStarsEasy(mLevelNumber + 1))
                     GameProgress.setStarsEasy(mLevelNumber + 1, LEVEL_UNLOCKED);
+                } else if (mLevelNumber == 60) {
+                    Game.levelInitData.message = "All easy levels\nsolved";
                 }
                 break;
 
@@ -2380,6 +2342,8 @@ public final class Level extends Scene {
                     if (LEVEL_LOCKED == GameProgress.getStarsNormal(mLevelNumber + 1)) {
                         GameProgress.setStarsNormal(mLevelNumber + 1, LEVEL_UNLOCKED);
                     }
+                } else if (mLevelNumber == 60) {
+                    Game.levelInitData.message = "All normal levels\nsolved";
                 }
                 break;
 
@@ -2513,7 +2477,7 @@ public final class Level extends Scene {
 
                 default:
                     break;
-            } // switch
+            }
         }
     }
 
@@ -2687,7 +2651,7 @@ public final class Level extends Scene {
         } else { // swipe        
             mIsSwipe = false;
 
-            if (mHud.isAnythingHilited()) {
+            if (mHud.isAnythingHiLited()) {
                 return;
             }
 
@@ -2763,7 +2727,7 @@ public final class Level extends Scene {
             undoData.movingCube = mPlayerCube.movingCube;
             undoData.movingCube.init(mPlayerCube.movingCube);
 
-            undoData.movingCubeLocation.init(mPlayerCube.movingCube.getCubePos());
+            undoData.movingCubeLocation.init(mPlayerCube.movingCube.getLocation());
             undoData.movingCubeMoveDir = mPlayerCube.movingCube.getMovement();
         }
 
@@ -2785,7 +2749,7 @@ public final class Level extends Scene {
 
         mStateToRestore = mState;
         mState = State.MovingPlayer;
-        mTimeout = 0.0f; // move immediately
+        mElapsed = 1.0f; // move immediately
     }
 
 }

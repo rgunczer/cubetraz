@@ -7,16 +7,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import static com.google.android.gms.ads.AdRequest.*;
 
 
 public final class MainActivity extends Activity implements RewardedVideoAdListener {
     private RewardedVideoAd mAd;
+    private String adError = "Ad is not loaded";
 
     private GLSurfaceView glSurfaceView;
     private MainRenderer renderer;
@@ -58,7 +59,7 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
 
                             @Override
                             public void run() {
-                                renderer.handleTouchPress(x, y, fingerCount);
+                                Game.handleTouchPress(x, y, fingerCount);
                             }
                         });
                     } else if (action == MotionEvent.ACTION_MOVE) {
@@ -66,7 +67,7 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
 
                             @Override
                             public void run() {
-                                renderer.handleTouchDrag(x, y, fingerCount);
+                                Game.handleTouchDrag(x, y, fingerCount);
                             }
                         });
                     } else if (action == MotionEvent.ACTION_UP) {
@@ -74,7 +75,7 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
 
                             @Override
                             public void run() {
-                                renderer.handleTouchRelease(x, y);
+                                Game.handleTouchRelease(x, y);
                             }
                         });
                     }
@@ -83,8 +84,7 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
                 return false;
             }
         });
-
-        //loadRewardedVideoAd();
+        loadRewardedVideoAd();
     }
 
     @Override
@@ -94,7 +94,8 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
 
         if (renderer != null) {
             glSurfaceView.onPause();
-            renderer.pause();
+            Audio.release();
+            Game.fboLost = true;
         }
     }
 
@@ -105,7 +106,7 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
 
         if (renderer != null) {
             glSurfaceView.onResume();
-            renderer.resume();
+            Audio.reInit();
         }
     }
 
@@ -115,70 +116,96 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
                 if (mAd.isLoaded()) {
                     mAd.show();
                 } else {
-                    System.out.println("ad is NOT loaded yet");
+                    showText("Ad is not loaded");
                 }
             }
         });
     }
 
-    private void loadRewardedVideoAd() {
-        final String adUnitRewardSolver = "ca-app-pub-1002179312870743/4951551116";
+    public void showAdNotReady() {
+        runOnUiThread(new Runnable() {
+           public void run() {
+               showText(adError);
+           }
+        });
+    }
 
+    public void showText(final String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadRewardedVideoAd() {
+        Game.adReady = false;
         AdRequest request = new AdRequest.Builder()
                 //.addTestDevice("fasfssd") // to generate test device id in logcat
                 .addTestDevice("398392EE9C6EEC32D61EFDB68EDE8C7C") // genymotion emulator
-                .addTestDevice("35515BE4990D8E2E2BF9922A5877B7C8") // Xiomi redmi note 3
+                .addTestDevice("35515BE4990D8E2E2BF9922A5877B7C8") // Xiaomi redmi note 3
                 .build();
 
         if (request.isTestDevice(this)) {
-        //if (true) {
-            Toast.makeText(this, "TEST DEVICE", Toast.LENGTH_SHORT).show();
-            mAd.loadAd(adUnitRewardSolver, request);
-            ///mAd.loadAd("ca-app-pub-3940256099942544/5224354917", request);
-            Toast.makeText(this, "loadRewarededVideoAd", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "NOT A TEST DEVICE", Toast.LENGTH_LONG).show();
+            mAd.loadAd("ca-app-pub-1002179312870743/4951551116", request); // solvers ad
+            ///mAd.loadAd("ca-app-pub-3940256099942544/5224354917", request); // test ads from google
+            //showText("loadRewarededVideoAd");
         }
     }
 
     @Override
     public void onRewardedVideoAdLoaded() {
-        Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
+        //showText("onRewardedVideoAdLoaded");
+        Game.adReady = true;
     }
 
     @Override
     public void onRewardedVideoAdOpened() {
-        Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show();
+        //showText("onRewardedVideoAdOpened");
     }
 
     @Override
     public void onRewardedVideoStarted() {
-        Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show();
+        //showText("onRewardedVideoStarted");
     }
 
     @Override
     public void onRewardedVideoAdClosed() {
-        Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
+        //showText("onRewardedVideoAdClosed");
         loadRewardedVideoAd();
     }
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
-        Toast.makeText(this, "onRewarded! currency: " + rewardItem.getType() + "  amount: " +
-                rewardItem.getAmount(), Toast.LENGTH_SHORT).show();
-
-        renderer.incrementSolverCount();
+        //showText("onRewarded! currency: " + rewardItem.getType() + ",  amount: " + rewardItem.getAmount());
+        Game.incrementSolverCount();
+        loadRewardedVideoAd();
     }
 
     @Override
     public void onRewardedVideoAdLeftApplication() {
-        Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show();
+        //showText("onRewardedVideoAdLeftApplication");
         // what to do here???
+        // do nothing!?
     }
 
     @Override
-    public void onRewardedVideoAdFailedToLoad(int i) {
-        Toast.makeText(this, "onRewardedVideoAdFailedToLoad", Toast.LENGTH_SHORT).show();
+    public void onRewardedVideoAdFailedToLoad(int errorCode) {
+        //showText("onRewardedVideoAdFailedToLoad");
+        switch (errorCode) {
+            case ERROR_CODE_INTERNAL_ERROR:
+                adError = "Unable to display Ad\nPlease try again later";
+                break;
+
+            case ERROR_CODE_INVALID_REQUEST:
+                adError = "Invalid request";
+                break;
+
+            case ERROR_CODE_NETWORK_ERROR:
+                adError = "Network error, please check your connection";
+                break;
+
+            case ERROR_CODE_NO_FILL:
+                adError = "No fill, please try again later.";
+                break;
+        }
         loadRewardedVideoAd();
     }
+
 }

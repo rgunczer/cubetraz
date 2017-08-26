@@ -37,6 +37,8 @@ import static android.opengl.GLES10.*;
 
 public final class Game {
 
+    public static boolean adReady = false;
+
     public static final Vector vectorXaxis = new Vector(1f, 0f, 0f);
     public static final Vector vectorYaxis = new Vector(0f, 1f, 0f);
     public static final Vector vectorZaxis = new Vector(0f, 0f, 1f);
@@ -378,15 +380,13 @@ public final class Game {
 
         initialized = true;
 
-
-
         Audio.init(GameOptions.getMusicVolume(), GameOptions.getSoundVolume());
 
         intro = null;
-        menu = null;
-        animator = null;
-        level = null;
-        statistics = null;
+        menu = new Menu();
+        animator = new Animator();
+        level = new Level();
+        statistics = new Statistics();
         outro = null;
 
         currentScene = null;
@@ -402,11 +402,6 @@ public final class Game {
         cubeOffset.x = cubeOffset.y = cubeOffset.z = size / -2.0f;
 
         Creator.createCubes();
-
-        level = new Level();
-        menu = new Menu();
-        animator = new Animator();
-        statistics = new Statistics();
 
         LevelBuilder.level = level;
     }
@@ -688,6 +683,11 @@ public final class Game {
     public static void showAd() {
         MainActivity act = (MainActivity)getContext();
         act.showAd();
+    }
+
+    public static void showAdNotReady() {
+        MainActivity act = (MainActivity)getContext();
+        act.showAdNotReady();
     }
 
     public static SwipeInfo getSwipeDirAndLength(Vector2 pos_down, Vector2 pos_up) {
@@ -1711,5 +1711,11 @@ public final class Game {
                 }
             }
         }
+    }
+
+    static void incrementSolverCount() {
+        int currentSolverCount = GameOptions.getSolverCount();
+        GameOptions.setSolverCount(currentSolverCount + 1);
+        updateDisplayedSolvers();
     }
 }

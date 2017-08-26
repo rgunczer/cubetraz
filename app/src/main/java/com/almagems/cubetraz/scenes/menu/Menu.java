@@ -52,11 +52,11 @@ public final class Menu extends Scene {
 
     private float m_credits_offset;
 
-    private Color m_color_down;
-    private Color m_color_up;
+    private Color mColorDown;
+    private Color mColorUp;
 
     private boolean mShowingHelp;
-    private float m_show_help_timeout;
+    private float mShowHelpTimeout;
 
     public Camera mCameraMenu = new Camera();
     private Camera mCameraCredits = new Camera();
@@ -189,75 +189,99 @@ public final class Menu extends Scene {
     private void setPlayCubeLocationAndMenuRotation() {
         switch (mCurrentCubeFaceName) {
             case Face_Easy01:
-                mMenuCubePlay.setCubeLocation(8, 5, 7);
+                if (mMenuCubePlay.location.x != 8) {
+                    mMenuCubePlay.setCubeLocation(8, 5, 7);
+                }
                 mNavigator.primaryRotation.init(-90.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(0.0f, Game.vectorZaxis);
                 break;
 
             case Face_Easy02:
-                mMenuCubePlay.setCubeLocation(2, 0, 6);
+                if (mMenuCubePlay.location.y != 0) {
+                    mMenuCubePlay.setCubeLocation(2, 0, 6);
+                }
                 mNavigator.primaryRotation.init(-90.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(90.0f, Game.vectorZaxis);
                 break;
 
             case Face_Easy03:
-                mMenuCubePlay.setCubeLocation(0, 2, 1);
+                if (mMenuCubePlay.location.x != 0) {
+                    mMenuCubePlay.setCubeLocation(0, 2, 1);
+                }
                 mNavigator.primaryRotation.init(-90.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(180.0f, Game.vectorZaxis);
                 break;
 
             case Face_Easy04:
-                mMenuCubePlay.setCubeLocation(2, 8, 6);
+                if (mMenuCubePlay.location.y != 8) {
+                    mMenuCubePlay.setCubeLocation(2, 8, 6);
+                }
                 mNavigator.primaryRotation.init(-90.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(270.0f, Game.vectorZaxis);
                 break;
 
 
             case Face_Normal01:
-                mMenuCubePlay.setCubeLocation(4, 6, 0);
+                if (mMenuCubePlay.location.z != 0) {
+                    mMenuCubePlay.setCubeLocation(4, 6, 0);
+                }
                 mNavigator.primaryRotation.init(-180.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(0.0f, Game.vectorZaxis);
                 break;
 
             case Face_Normal02:
-                mMenuCubePlay.setCubeLocation(6, 0, 4);
+                if (mMenuCubePlay.location.y != 0) {
+                    mMenuCubePlay.setCubeLocation(6, 0, 4);
+                }
                 mNavigator.primaryRotation.init(-180.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(90.0f, Game.vectorXaxis);
                 break;
 
             case Face_Normal03:
-                mMenuCubePlay.setCubeLocation(7, 2, 8);
+                if (mMenuCubePlay.location.z != 8) {
+                    mMenuCubePlay.setCubeLocation(7, 2, 8);
+                }
                 mNavigator.primaryRotation.init(-180.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(180.0f, Game.vectorXaxis);
                 break;
 
             case Face_Normal04:
-                mMenuCubePlay.setCubeLocation(6, 8, 4);
+                if (mMenuCubePlay.location.y != 8) {
+                    mMenuCubePlay.setCubeLocation(6, 8, 4);
+                }
                 mNavigator.primaryRotation.init(-180.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(270.0f, Game.vectorXaxis);
                 break;
 
 
             case Face_Hard01:
-                mMenuCubePlay.setCubeLocation(0, 2, 2);
+                if (mMenuCubePlay.location.x != 0) {
+                    mMenuCubePlay.setCubeLocation(0, 2, 2);
+                }
                 mNavigator.primaryRotation.init(-270.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(0.0f, Game.vectorXaxis);
                 break;
 
             case Face_Hard02:
-                mMenuCubePlay.setCubeLocation(2, 0, 6);
+                if (mMenuCubePlay.location.y != 0) {
+                    mMenuCubePlay.setCubeLocation(2, 0, 6);
+                }
                 mNavigator.primaryRotation.init(-270.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(-90.0f, Game.vectorZaxis);
                 break;
 
             case Face_Hard03:
-                mMenuCubePlay.setCubeLocation(8, 2, 7);
+                if (mMenuCubePlay.location.x != 8) {
+                    mMenuCubePlay.setCubeLocation(8, 2, 7);
+                }
                 mNavigator.primaryRotation.init(-270.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(-180.0f, Game.vectorZaxis);
                 break;
 
             case Face_Hard04:
-                mMenuCubePlay.setCubeLocation(6, 8, 6);
+                if (mMenuCubePlay.location.y != 8) {
+                    mMenuCubePlay.setCubeLocation(6, 8, 6);
+                }
                 mNavigator.primaryRotation.init(-270.0f, Game.vectorYaxis);
                 mNavigator.secondaryRotation.init(-270.0f, Game.vectorZaxis);
                 break;
@@ -299,7 +323,9 @@ public final class Menu extends Scene {
     public void init() {
         setupCameras();
         Game.dirtyAlpha = DIRTY_ALPHA;
-        Audio.playMusic(MUSIC_CPU);
+        if (Game.menuInitData.playMusic) {
+            Audio.playMusic(MUSIC_CPU);
+        }
 
         mMenuCubeHilite = null;
         mShowingHelp = false;
@@ -2199,9 +2225,9 @@ public final class Menu extends Scene {
 
     public void update() {
         if (mShowingHelp) {
-            m_show_help_timeout -= 0.01f;
+            mShowHelpTimeout -= 0.01f;
 
-            if (m_show_help_timeout < 0.0f) {
+            if (mShowHelpTimeout < 0.0f) {
                 mShowingHelp = false;
 
                 releaseCubeTextsOnFace(Z_Plus);
@@ -2570,8 +2596,8 @@ public final class Menu extends Scene {
 
             renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
 
-            m_color_down = Graphics.getColorFromScreen(mPosDown);
-            MenuCube menuCube = getMenuCubeFromColor(m_color_down.r);
+            mColorDown = Graphics.getColorFromScreen(mPosDown);
+            MenuCube menuCube = getMenuCubeFromColor(mColorDown.r);
 
             if (menuCube != null) {
 
@@ -2669,14 +2695,11 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFaceOptions() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyOptions);
-        m_color_down = Graphics.getColorFromScreen(mPosDown);
-        m_color_up = Graphics.getColorFromScreen(mPosUp);
+        mColorDown = Graphics.getColorFromScreen(mPosDown);
+        mColorUp = Graphics.getColorFromScreen(mPosUp);
 
-        int downR = m_color_down.r;
-        int upR = m_color_up.r;
-
-        if (downR == upR) {
-            switch (downR) {
+        if (mColorDown.r == mColorUp.r) {
+            switch (mColorDown.r) {
                 case 255:
                     Game.musicVolumeUp();
                     Audio.playSound(SOUND_VOLUME_UP);
@@ -2689,12 +2712,12 @@ public final class Menu extends Scene {
 
                 case 253:
                     Game.soundVolumeUp();
-                    Audio.playSound(SOUND_VOLUME_UP);
+                    //Audio.playSound(SOUND_VOLUME_UP);
                     break;
 
                 case 252:
                     Game.soundVolumeDown();
-                    Audio.playSound(SOUND_VOLUME_DOWN);
+                    //Audio.playSound(SOUND_VOLUME_DOWN);
                     break;
 
                 default:
@@ -2705,11 +2728,11 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFacesEasy() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyLevelCubes);
-        m_color_down = Graphics.getColorFromScreen(mPosDown);
-        m_color_up = Graphics.getColorFromScreen(mPosUp);
+        mColorDown = Graphics.getColorFromScreen(mPosDown);
+        mColorUp = Graphics.getColorFromScreen(mPosUp);
 
-        if (m_color_down.r == m_color_up.r) {
-            int level_number = 255 - m_color_up.r;
+        if (mColorDown.r == mColorUp.r) {
+            int level_number = 255 - mColorUp.r;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Easy, level_number);
@@ -2719,11 +2742,11 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFacesNormal() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyLevelCubes);
-        m_color_down = Graphics.getColorFromScreen(mPosDown);
-        m_color_up = Graphics.getColorFromScreen(mPosUp);
+        mColorDown = Graphics.getColorFromScreen(mPosDown);
+        mColorUp = Graphics.getColorFromScreen(mPosUp);
 
-        if (m_color_down.r == m_color_up.r) {
-            int level_number = 255 - m_color_up.r;
+        if (mColorDown.r == mColorUp.r) {
+            int level_number = 255 - mColorUp.r;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Normal, level_number);
@@ -2733,11 +2756,11 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFacesHard() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyLevelCubes);
-        m_color_down = Graphics.getColorFromScreen(mPosDown);
-        m_color_up = Graphics.getColorFromScreen(mPosUp);
+        mColorDown = Graphics.getColorFromScreen(mPosDown);
+        mColorUp = Graphics.getColorFromScreen(mPosUp);
 
-        if (m_color_down.r == m_color_up.r) {
-            int level_number = 255 - m_color_up.r;
+        if (mColorDown.r == mColorUp.r) {
+            int level_number = 255 - mColorUp.r;
 
             if (level_number >= 1 && level_number <= 60) {
                 eventPlayLevel(DifficultyEnum.Hard, level_number);
@@ -2747,20 +2770,20 @@ public final class Menu extends Scene {
 
     private void fingerUpOnFaceMenu() {
         renderForPicking(PickRenderTypeEnum.RenderOnlyMovingCubes);
-        m_color_down = Graphics.getColorFromScreen(mPosDown);
-        m_color_up = Graphics.getColorFromScreen(mPosUp);
+        mColorDown = Graphics.getColorFromScreen(mPosDown);
+        mColorUp = Graphics.getColorFromScreen(mPosUp);
 
-        if (m_color_down.r == m_color_up.r) {
-            MenuCube menuCube = getMenuCubeFromColor(m_color_up.r);
+        if (mColorDown.r == mColorUp.r) {
+            MenuCube menuCube = getMenuCubeFromColor(mColorUp.r);
             if (menuCube == cubeCredits) {
                 eventShowCredits();
                 return;
             }
 
             if (!mShowingHelp) {
-                if (255 == m_color_down.r || 200 == m_color_down.r || 100 == m_color_down.r) {
+                if (255 == mColorDown.r || 200 == mColorDown.r || 100 == mColorDown.r) {
                     mShowingHelp = true;
-                    m_show_help_timeout = 3.0f;
+                    mShowHelpTimeout = 3.0f;
                     releaseCubeTextsOnFace(Z_Plus);
                     MenuFaceBuilder.resetTransforms();
                     MenuFaceBuilder.buildTexts(CubeFaceNames.Face_Menu, Z_Plus, true);

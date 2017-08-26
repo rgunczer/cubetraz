@@ -78,7 +78,7 @@ final class HUD {
     private Vector2 mStart;
     private Vector2 mEnd;
     
-    private Stack<Integer> mTutors = new Stack<>();
+    private Stack<Integer> mTutorsStack = new Stack<>();
     private TutorStateEnum mTutorState;
     private boolean mTutorActive;
     private int mTutorAlpha;
@@ -138,8 +138,8 @@ final class HUD {
     }
 
     void clearTutors() {
-        while ( !mTutors.isEmpty() ) {
-            mTutors.pop();
+        while ( !mTutorsStack.isEmpty() ) {
+            mTutorsStack.pop();
         }
     }
 
@@ -159,7 +159,7 @@ final class HUD {
 
             default:
                 if (!mArrTutorDisplayed[tutorId]) {
-                    mTutors.push(tutorId);
+                    mTutorsStack.push(tutorId);
                     mTutorActive = true;
                     mTutorAlpha = 0;
                     mTutorState = TutorStateEnum.Appear;
@@ -171,8 +171,8 @@ final class HUD {
 
     private void showTutorSwipeAndGoal() {
         if (!mArrTutorDisplayed[Tutor_Swipe]) {
-            mTutors.push(Tutor_Goal);
-            mTutors.push(Tutor_Swipe);
+            mTutorsStack.push(Tutor_Goal);
+            mTutorsStack.push(Tutor_Swipe);
             mTutorActive = true;
             mTutorAlpha = 0;
             mTutorState = TutorStateEnum.Appear;
@@ -193,8 +193,8 @@ final class HUD {
 
     private void showTutorMenuPause() {
         if (!mArrTutorDisplayed[Tutor_MenuPause]) {
-            mTutors.push(Tutor_MenuUndo);
-            mTutors.push(Tutor_MenuPause);
+            mTutorsStack.push(Tutor_MenuUndo);
+            mTutorsStack.push(Tutor_MenuPause);
             mTutorActive = true;
             mTutorAlpha = 0;
             mTutorState = TutorStateEnum.Appear;
@@ -215,8 +215,8 @@ final class HUD {
 
     private void showTutorMenuHint() {
         if (!mArrTutorDisplayed[Tutor_MenuHint]) {
-            mTutors.push(Tutor_MenuSolvers);
-            mTutors.push(Tutor_MenuHint);
+            mTutorsStack.push(Tutor_MenuSolvers);
+            mTutorsStack.push(Tutor_MenuHint);
             mTutorActive = true;
             mTutorAlpha = 0;
             mTutorState = TutorStateEnum.Appear;
@@ -262,6 +262,24 @@ final class HUD {
     }
     void setTextSolver(final int count) {
         mTextSolver.init("SOLVERS\n" + count);
+    }
+
+    void hideMessage() {
+        mShowPrepareSolving = false;
+    }
+
+    void showMessage(boolean show, String message) {
+        if (mShowPrepareSolving != show) {
+            mShowPrepareSolving = show;
+
+            String[] lines = message.toUpperCase().split("\n");
+
+            mArTextCenter[0].init(lines[0]);
+            mArTextCenter[1].init(lines[1]);
+
+            mCenterAlpha = (show ? 0.0f : 1.0f);
+            mShowAppear = show;
+        }
     }
 
     void showPrepareSolving(boolean show, int moves) {
@@ -440,12 +458,12 @@ final class HUD {
                     mTutorAlpha -= 30;
             
                     if (mTutorAlpha < 0) {
-                        if (!mTutors.empty()) {
-                            mTutors.pop();
+                        if (!mTutorsStack.empty()) {
+                            mTutorsStack.pop();
                         }
 
-                        if (!mTutors.isEmpty()) {
-                            int nextTutorId = mTutors.pop();
+                        if (!mTutorsStack.isEmpty()) {
+                            int nextTutorId = mTutorsStack.pop();
                         
                             switch(nextTutorId) {
                                 case Tutor_Goal: showTutorGoal(); break;
@@ -794,7 +812,6 @@ final class HUD {
     
         Graphics.resetBufferIndices();
 
-
         tcoords.tx0 = mSymbolPause.tx_lo_left;
         tcoords.tx1 = mSymbolPause.tx_lo_right;
         tcoords.tx2 = mSymbolPause.tx_up_right;
@@ -853,7 +870,7 @@ final class HUD {
             Graphics.renderTriangles();
         }
     
-        if (Level.State.DeadAnim == Game.level.mState) {
+        if (Game.level.mState == Level.State.DeadAnim) {
             Graphics.resetBufferIndices();
         
 		    color.init(200, 0, 0, mDeadAnim.alpha);
@@ -925,7 +942,7 @@ final class HUD {
     void setHiliteSolver(boolean hilite) {
         mHiliteSolver = hilite;
     }
-    boolean isAnythingHilited() {
+    boolean isAnythingHiLited() {
         return (mHilitePause || mHiliteUndo || mHiliteHint || mHiliteSolver);
     }
     boolean isTutorDisplaying() {

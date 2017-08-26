@@ -31,7 +31,7 @@ public final class MovingCube {
     private Vector position;
         
     private CubeLocation m_cube_pos_starting = new CubeLocation();
-    private CubeLocation m_cube_pos = new CubeLocation();
+    private CubeLocation mLocation = new CubeLocation();
 	private CubeLocation m_cube_pos_destination = new CubeLocation();
 	
     private int m_move_dir;
@@ -43,7 +43,7 @@ public final class MovingCube {
     
     // ctor  
     public MovingCube() {
-	    m_cube_pos.reset();
+	    mLocation.reset();
     }
 
     public void reposition() {
@@ -54,8 +54,8 @@ public final class MovingCube {
 
     public void setCubePos(CubeLocation coordinate) {
 	    m_done = true;
-        m_cube_pos.init(coordinate);
-        pos = Game.getCubePosition(m_cube_pos);
+        mLocation.init(coordinate);
+        pos = Game.getCubePosition(mLocation);
     }
 
 	public void init(MovingCube other) {
@@ -64,7 +64,7 @@ public final class MovingCube {
 
     public void init(CubeLocation cubePos, int moveDir) {
         setCubePos(cubePos);
-        m_cube_pos_starting.init(m_cube_pos);
+        m_cube_pos_starting.init(mLocation);
         m_move_dir_starting = moveDir;
 	    m_move_dir = moveDir;
 	
@@ -286,10 +286,10 @@ public final class MovingCube {
     public void move() {
 	    if (m_done) {
 		    CubeLocation cube_pos = new CubeLocation();
-			cube_pos.init(m_cube_pos);
+			cube_pos.init(mLocation);
 		    calcMovement(cube_pos);
 
-		    if (m_cube_pos.x != cube_pos.x || m_cube_pos.y != cube_pos.y || m_cube_pos.z != cube_pos.z) {
+		    if (mLocation.x != cube_pos.x || mLocation.y != cube_pos.y || mLocation.z != cube_pos.z) {
 			    m_cube_pos_destination = cube_pos;
             
 			    Vector pos_destination = Game.getCubePosition(cube_pos);
@@ -369,8 +369,8 @@ public final class MovingCube {
         }
     }
         
-    public CubeLocation getCubePos() {
-        return m_cube_pos; 
+    public CubeLocation getLocation() {
+        return mLocation;
     }
 	
 	public boolean isDone() { 

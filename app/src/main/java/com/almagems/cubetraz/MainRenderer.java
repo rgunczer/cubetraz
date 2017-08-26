@@ -2,20 +2,18 @@ package com.almagems.cubetraz;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
 import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 import android.widget.Toast;
-
 import com.almagems.cubetraz.graphics.Graphics;
 
 
-public final class MainRenderer implements Renderer {
+final class MainRenderer implements Renderer {
 
 	private long frameStartTimeMS;
-    public final Context context;
+    final Context context;
 
 	MainRenderer(Context context) {
         System.out.println("MainRenderer.ctor");
@@ -28,7 +26,8 @@ public final class MainRenderer implements Renderer {
         System.out.println("MainRenderer.onSurfaceCreated");
         frameStartTimeMS = SystemClock.elapsedRealtime();
 
-        createAndInitGraphicsObject(gl);
+        Graphics.gl = gl;
+        Graphics.createBuffers();
 
         try {
             Graphics.loadStartupAssets();
@@ -69,37 +68,5 @@ public final class MainRenderer implements Renderer {
             SystemClock.sleep(timeToSleepMS);
         }
         frameStartTimeMS = SystemClock.elapsedRealtime();
-    }
-
-    void handleTouchPress(float normalizedX, float normalizedY, int fingerCount) {
-        Game.handleTouchPress(normalizedX, normalizedY, fingerCount);
-    }
-	
-	void handleTouchDrag(float normalizedX, float normalizedY, int fingerCount) {
-        Game.handleTouchDrag(normalizedX, normalizedY, fingerCount);
-    }
-	
-	void handleTouchRelease(float normalizedX, float normalizedY) {
-        Game.handleTouchRelease(normalizedX, normalizedY);
-    }
-
-	void pause() {
-        Audio.release();
-        Game.fboLost = true;
-    }
-
-    void resume() {
-        Audio.reInit();
-    }
-
-    void incrementSolverCount() {
-        int currentSolverCount = GameOptions.getSolverCount();
-        GameOptions.setSolverCount(currentSolverCount + 1);
-        Game.updateDisplayedSolvers();
-    }
-
-    private void createAndInitGraphicsObject(GL10 gl) {
-        Graphics.gl = gl;
-        Graphics.initialSetup();
     }
 }

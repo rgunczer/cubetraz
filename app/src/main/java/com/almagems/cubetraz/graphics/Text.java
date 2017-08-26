@@ -25,6 +25,7 @@ public final class Text {
     private float m_height;
     private float m_half_height;
 
+    private Vector2 tmp = new Vector2();
 
     public Text() {
         m_vspace = 1.0f;
@@ -127,7 +128,6 @@ public final class Text {
         int size;
         TexturedQuad pFont;
         float x_start;
-        Vector2 tmp = new Vector2();
         tmp.y = pos.y;
 
         for (int i = 0; i <= m_lines_count; ++i) {

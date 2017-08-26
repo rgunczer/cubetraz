@@ -89,7 +89,7 @@ public final class Animator extends Scene {
 	    updateCubes();
     }
     
-    public void createListOfLevelCubes(ArrayList<Cube> lst) {
+    private void createListOfLevelCubes(ArrayList<Cube> lst) {
 	    lst.clear();
 
 	    // floor
@@ -839,7 +839,6 @@ public final class Animator extends Scene {
 
     @Override
     public void render() {
-        
         Graphics.setProjection2D();
         Graphics.setModelViewMatrix2D();
         Graphics.bindStreamSources2d();
@@ -847,7 +846,7 @@ public final class Animator extends Scene {
 
         glEnable(GL_BLEND);
         glDisable(GL_LIGHTING);
-        glDepthMask(false);// GL_FALSE);
+        glDepthMask(false);
         glEnable(GL_TEXTURE_2D);
     
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -871,13 +870,12 @@ public final class Animator extends Scene {
 	
         drawTheCube();
     
-        if (false) { // DRAW_AXES_CUBE
-            glDisable(GL_TEXTURE_2D);
-            glDisable(GL_LIGHTING);
-            Graphics.drawAxes();
-            glEnable(GL_LIGHTING);
-            glEnable(GL_TEXTURE_2D);
-        }
+        // DRAW_AXES_CUBE
+//		glDisable(GL_TEXTURE_2D);
+//		glDisable(GL_LIGHTING);
+//		Graphics.drawAxes();
+//		glEnable(GL_LIGHTING);
+//		glEnable(GL_TEXTURE_2D);
 
 	    glPushMatrix();
 	    glTranslatef(Game.cubeOffset.x, Game.cubeOffset.y, Game.cubeOffset.z);
@@ -907,9 +905,7 @@ public final class Animator extends Scene {
         drawLevelCubeDecals(LevelCubeDecalTypeEnum.LevelCubeDecalSolver);
     
         drawTexts(mSymbols.get(X_Plus), mSymbols.get(Y_Plus), mSymbols.get(Z_Plus), color);
-    
-	    glDisable(GL_BLEND);
-	
+
 	    glPopMatrix();
     }    
 

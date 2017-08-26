@@ -35,7 +35,7 @@ public final class Audio {
 
     private static int soundStreamId;
     private static int musicTrackPos = 0;
-    private static String currentMusicKey;
+    private static String currentMusicKey = "";
 
     static {
         resources.clear();
@@ -130,7 +130,7 @@ public final class Audio {
 
      static void reInit() {
         init(musicVolume, soundVolume);
-        if (currentMusicKey != null) {
+        if (!currentMusicKey.equals("")) {
             createMediaPlayer(currentMusicKey);
             mediaPlayer.setVolume(musicVolume, musicVolume);
             mediaPlayer.setLooping(true);
@@ -141,8 +141,12 @@ public final class Audio {
 
     public static void playMusic(String key) {
         if (key != null) {
-            currentMusicKey = key;
-            createMediaPlayer(key);
+            if (currentMusicKey.equals(key)) {
+                return;
+            } else {
+                currentMusicKey = key;
+                createMediaPlayer(key);
+            }
         }
 
         if (mediaPlayer != null) {

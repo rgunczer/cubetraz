@@ -67,7 +67,7 @@ public final class LevelBuilder {
         int len = movingCubes.size();
         for (int i = 0; i < len; ++i)  {
             cube = movingCubes.get(i);
-            Game.setCubeTypeInvisible(cube.getCubePos());
+            Game.setCubeTypeInvisible(cube.getLocation());
             poolMovingCubes.add(cube);
         }
         movingCubes.clear();

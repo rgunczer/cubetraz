@@ -17,13 +17,13 @@ import static com.almagems.cubetraz.Game.*;
 public final class Statistics extends Scene {
 
     private enum State {
-        StatNone,
-        StatAppear,
-        StatAppearTitle,
-        StatAppearMovesPlayer,
-        StatAppearMovesBest,
-        StatShow,
-        StatWait,
+        None,
+        Appear,
+        AppearTitle,
+        AppearMovesPlayer,
+        AppearMovesBest,
+        Show,
+        Wait,
     }
 
     private State mState;
@@ -51,7 +51,7 @@ public final class Statistics extends Scene {
     private float mBackgroundRotDegree;
     private float mBackgroundAlphaPulse;
 
-    private float[] m_text_scales = new float[3]; // title, time, moves
+    private float[] mTextScales = new float[3];
 
     private Text mTextTitle = new Text();
     private Text mTextMiddle = new Text();
@@ -61,9 +61,6 @@ public final class Statistics extends Scene {
     private ArrayList<FallingCube> mFallingCubes = new ArrayList<>();
 
     private float m_pulse;
-    private boolean m_can_dismiss;
-
-    private boolean canDismiss() { return m_can_dismiss; }
 
     private Vector2 rot = new Vector2(3f, 0f);
 
@@ -77,7 +74,7 @@ public final class Statistics extends Scene {
         }
     }
 
-    public void initFallingCubes() {
+    private void initFallingCubes() {
         final float x = -7.0f;
         FallingCube fc;
         int size = mFallingCubes.size();
@@ -94,15 +91,13 @@ public final class Statistics extends Scene {
 
     @Override
     public void init() {
-        m_can_dismiss = false;
-
         mStarAlpha = 0.0f;
         zoom = 0.0f;
         trans = 0.0f;
         m_pulse = 0.0f;
 
-        mState = State.StatAppear;
-        mStateNext = State.StatNone;
+        mState = State.Appear;
+        mStateNext = State.None;
         mBackgroundAlpha = 0.0f;
         mBackgroundRotDegree = 0.0f;
         mBackgroundAlphaPulse = 0.0f;
@@ -113,9 +108,9 @@ public final class Statistics extends Scene {
         m_DrawStars = false;
         m_DrawTap = false;
 
-        m_text_scales[0] = 0f;
-        m_text_scales[1] = 0f;
-        m_text_scales[2] = 0f;
+        mTextScales[0] = 0f;
+        mTextScales[1] = 0f;
+        mTextScales[2] = 0f;
 
         initFallingCubes();
 
@@ -164,23 +159,23 @@ public final class Statistics extends Scene {
     public void update() {
         updateFallingCubes();
         switch (mState) {
-            case StatWait:
-                if (State.StatNone != mStateNext) {
+            case Wait:
+                if (State.None != mStateNext) {
                     m_pulse += 0.3f;
                     float mTextScale = (float)( Math.sin(m_pulse) / 5.0f) * Graphics.deviceScale;
 
                     switch (mStateNext) {
-                        case StatAppearTitle:
-                            m_text_scales[0] = mTextScale;
+                        case AppearTitle:
+                            mTextScales[0] = mTextScale;
                             m_DrawStars = true;
                             break;
 
-                        case StatAppearMovesPlayer:
-                            m_text_scales[1] = mTextScale;
+                        case AppearMovesPlayer:
+                            mTextScales[1] = mTextScale;
                             break;
 
-                        case StatAppearMovesBest:
-                            m_text_scales[2] = mTextScale;
+                        case AppearMovesBest:
+                            mTextScales[2] = mTextScale;
                             break;
 
                         default:
@@ -193,21 +188,19 @@ public final class Statistics extends Scene {
                         mTextScale = 0.0f;
 
                         switch (mStateNext) {
-                            case StatAppearTitle:
-                                m_text_scales[0] = mTextScale;
+                            case AppearTitle:
+                                mTextScales[0] = mTextScale;
                                 break;
 
-                            case StatAppearMovesPlayer:
-                                m_text_scales[1] = mTextScale;
+                            case AppearMovesPlayer:
+                                mTextScales[1] = mTextScale;
                                 break;
 
-                            case StatAppearMovesBest:
-                                m_text_scales[2] = mTextScale;
-                                //Game.showFullScreenAd();
+                            case AppearMovesBest:
+                                mTextScales[2] = mTextScale;
                                 break;
 
-                            case StatShow:
-                                m_can_dismiss = true;
+                            case Show:
                                 m_DrawTap = true;
                                 break;
 
@@ -218,39 +211,39 @@ public final class Statistics extends Scene {
                 }
                 break;
 
-            case StatAppear:
+            case Appear:
                 mBackgroundAlpha += 0.025f;
                 if (mBackgroundAlpha > 0.5f) {
                     mBackgroundAlpha = 0.5f;
-                    mStateNext = State.StatAppearTitle;
-                    mState = State.StatWait;
+                    mStateNext = State.AppearTitle;
+                    mState = State.Wait;
                     m_DrawTitle = true;
                     m_UpdateBackground = true;
                 }
                 break;
 
-            case StatAppearTitle:
-                mStateNext = State.StatAppearMovesPlayer;
-                mState = State.StatWait;
+            case AppearTitle:
+                mStateNext = State.AppearMovesPlayer;
+                mState = State.Wait;
                 m_pulse = 0.0f;
                 break;
 
-            case StatAppearMovesPlayer:
-                mStateNext = State.StatAppearMovesBest;
-                mState = State.StatWait;
+            case AppearMovesPlayer:
+                mStateNext = State.AppearMovesBest;
+                mState = State.Wait;
                 m_pulse = 0.0f;
                 m_DrawMoves = true;
                 break;
 
-            case StatAppearMovesBest:
-                mStateNext = State.StatShow;
-                mState = State.StatWait;
+            case AppearMovesBest:
+                mStateNext = State.Show;
+                mState = State.Wait;
                 m_pulse = 0.0f;
                 trans = 0.0f;
                 zoom = 0.0f;
                 break;
 
-            case StatShow:
+            case Show:
                 trans += 0.15f;
                 zoom = (float)(Math.sin(trans) * 22.0f);
                 rot.rotateRad(0.025f);
@@ -347,7 +340,7 @@ public final class Statistics extends Scene {
         float scale;
 
         if (m_DrawTitle) {
-            scale = Graphics.deviceScale + m_text_scales[0];
+            scale = Graphics.deviceScale + mTextScales[0];
             mTextTitle.setScale(scale + (0.3f * Graphics.deviceScale), scale + (0.6f * Graphics.deviceScale));
 
             pos.x = Graphics.halfWidth - mTextTitle.getHalfWidth();
@@ -367,7 +360,7 @@ public final class Statistics extends Scene {
             mTextMiddle.emit(pos, color);
 
             // moves
-            scale = Graphics.deviceScale + m_text_scales[2] - (0.25f * Graphics.deviceScale);
+            scale = Graphics.deviceScale + mTextScales[2] - (0.25f * Graphics.deviceScale);
             mTextMoves.setScale(scale + (0.1f * Graphics.deviceScale), scale + (0.1f * Graphics.deviceScale));
 
             pos.x = Graphics.halfWidth - mTextMoves.getHalfWidth();
@@ -552,7 +545,7 @@ public final class Statistics extends Scene {
 
     @Override
     public void onFingerUp(float x, float y, int fingerCount) {
-        if (State.StatShow == mState) {
+        if (mState == State.Show) {
             Game.levelInitData.initAction = LevelInitActionEnum.JustContinue;
             Game.showScene(Scene_Level);
         }

@@ -9,6 +9,7 @@ import static com.almagems.cubetraz.Game.*;
 public abstract class Scene {
 
     int mTick = 0;
+    protected float mElapsed;
 
     protected Camera mCameraCurrent = new Camera();
 
@@ -21,6 +22,7 @@ public abstract class Scene {
 
     protected boolean mIsFingerDown;
     protected boolean mIsSwipe;
+
 
     public abstract void init();
     public abstract void update();

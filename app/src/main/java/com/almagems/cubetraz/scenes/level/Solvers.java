@@ -24,15 +24,15 @@ public final class Solvers extends Scene {
         MenuItemDismiss
     }
 
-    private enum SolverStateEnum {
-        SolverAppear,
-        SolverReady,
-        SolverDone,
-        SolverDisappear
+    private enum SolverState {
+        Appear,
+        Ready,
+        Done,
+        Disappear
     }
 
     private SolverMenuItemsEnum m_action;
-    private SolverStateEnum mState;
+    private SolverState mState;
 
     private Text m_text_title = new Text();
     private Text m_text_avail = new Text();
@@ -92,7 +92,7 @@ public final class Solvers extends Scene {
 
         m_action = SolverMenuItemsEnum.MenuItemNone;
         mShowBuySome = false;
-        mState = SolverStateEnum.SolverAppear;
+        mState = SolverState.Appear;
         m_alpha = 0.0f;
 
         m_text_title.init("SOLVERS");
@@ -122,23 +122,23 @@ public final class Solvers extends Scene {
     @Override
     public void update() {
         switch (mState) {
-            case SolverAppear:
+            case Appear:
                 m_alpha += 0.075f;
                 if (m_alpha >= 1.0f) {
                     m_alpha = 1.0f;
-                    mState = SolverStateEnum.SolverReady;
+                    mState = SolverState.Ready;
                 }
                 break;
 
-            case SolverDisappear:
+            case Disappear:
                 m_alpha -= 0.2f;
                 if (m_alpha <= 0.0f) {
                     m_alpha = 0.0f;
-                    mState = SolverStateEnum.SolverDone;
+                    mState = SolverState.Done;
                 }
                 break;
 
-            case SolverDone:
+            case Done:
                 if (SolverMenuItemsEnum.MenuItemSolve == m_action) {
                     Game.levelInitData.initAction = LevelInitActionEnum.ShowSolution;
                     Game.showScene(Scene_Level);
@@ -148,7 +148,7 @@ public final class Solvers extends Scene {
                 }
                 break;
 
-            case SolverReady:
+            case Ready:
                 if (mShowBuySome) {
                     m_timeout -= 0.3f;
                     if (m_timeout <= 0.0f) {
@@ -307,14 +307,18 @@ public final class Solvers extends Scene {
         if (index_down == index_up) {
             switch (index_down) {
                 case MenuItemEarn:
-                    Game.showAd();
+                    if (Game.adReady) {
+                        Game.showAd();
+                    } else {
+                        Game.showAdNotReady();
+                    }
                     break;
 
                 case MenuItemSolve:
                     int solverCount = GameOptions.getSolverCount();
                     if (solverCount > 0) {
                         m_action = SolverMenuItemsEnum.MenuItemSolve;
-                        mState = SolverStateEnum.SolverDisappear;
+                        mState = SolverState.Disappear;
                         int levelNumber = Game.level.getLevelNumber();
                         GameOptions.setSolverCount(solverCount - 1);
                         Game.updateDisplayedSolvers();
@@ -345,7 +349,7 @@ public final class Solvers extends Scene {
 
                 case MenuItemDismiss:
                     m_action = SolverMenuItemsEnum.MenuItemDismiss;
-                    mState = SolverStateEnum.SolverDisappear;
+                    mState = SolverState.Disappear;
                     break;
             }
         }

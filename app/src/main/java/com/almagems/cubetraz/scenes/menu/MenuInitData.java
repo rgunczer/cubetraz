@@ -7,10 +7,12 @@ public final class MenuInitData {
 
     public boolean reappear;
     public CubeFaceNames cubeFaceName;
+    public boolean playMusic;
 
     public MenuInitData() {
         cubeFaceName = CubeFaceNames.Face_Menu;
         reappear = false;
+        playMusic = true;
     }
     
 }
