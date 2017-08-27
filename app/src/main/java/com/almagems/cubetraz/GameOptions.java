@@ -12,7 +12,7 @@ public class GameOptions {
     private static float mMusicVolume = 0.5f;
     private static float mSoundVolume = 0.5f;
     private static boolean mCanSkipIntro = false;
-    private static int mSolverCount = 9;
+    private static int mSolverCount = 6;
 
     public static float getMusicVolume() {
         return mMusicVolume;
@@ -95,7 +95,7 @@ public class GameOptions {
         int value = getPref(preferences, keyCanSkipIntro, 0);
         mCanSkipIntro = value != 0;
 
-        value = getPref(preferences, keySolverCount, 9);
+        value = getPref(preferences, keySolverCount, 6);
         mSolverCount = value;
     }
 

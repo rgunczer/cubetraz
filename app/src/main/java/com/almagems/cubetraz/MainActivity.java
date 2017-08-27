@@ -138,8 +138,8 @@ public final class MainActivity extends Activity implements RewardedVideoAdListe
         Game.adReady = false;
         AdRequest request = new AdRequest.Builder()
                 //.addTestDevice("fasfssd") // to generate test device id in logcat
-                .addTestDevice("398392EE9C6EEC32D61EFDB68EDE8C7C") // genymotion emulator
-                .addTestDevice("35515BE4990D8E2E2BF9922A5877B7C8") // Xiaomi redmi note 3
+                //.addTestDevice("398392EE9C6EEC32D61EFDB68EDE8C7C") // genymotion emulator
+                //.addTestDevice("35515BE4990D8E2E2BF9922A5877B7C8") // Xiaomi redmi note 3
                 .build();
 
         if (request.isTestDevice(this)) {

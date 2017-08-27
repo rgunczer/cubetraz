@@ -204,8 +204,8 @@ public final class Level extends Scene {
         mDeadCube = null;
 
         // uncomment to load alternative level
-        Game.levelInitData.difficulty = DifficultyEnum.Easy;
-        Game.levelInitData.levelNumber = 34;
+        //Game.levelInitData.difficulty = DifficultyEnum.Easy;
+        //Game.levelInitData.levelNumber = 34;
 
         switch (levelInitData.initAction) {
             case FullInit: {

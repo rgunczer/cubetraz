@@ -410,10 +410,10 @@ public final class Game {
         minSwipeLength = Graphics.height / 10;
 
         if (currentScene == null) {
-            //showScene(Scene_Intro);
+            showScene(Scene_Intro);
             //showScene(Scene_Menu);
             //showScene(Scene_Anim);
-            showScene(Scene_Level);
+            //showScene(Scene_Level);
             //showScene(Scene_Stat);
             //showScene(Scene_Outro);
         }
