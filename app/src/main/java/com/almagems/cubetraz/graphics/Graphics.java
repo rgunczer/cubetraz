@@ -3431,4 +3431,24 @@ public final class Graphics {
         glDrawArrays(GL_TRIANGLE_FAN, 0, v_index / 2 + 1);
     }
 
+    public static void translate(final Vector vec) {
+        glTranslatef(vec.x, vec.y, vec.z);
+    }
+
+    public static void rotateX(final float degree) {
+        glRotatef(degree, 1.0f, 0.0f, 0.0f);
+    }
+
+    public static void rotateY(final float degree) {
+        glRotatef(degree, 0.0f, 1.0f, 0.0f);
+    }
+
+    public static void rotateZ(final float degree) {
+        glRotatef(degree, 0.0f, 0.0f, 1.0f);
+    }
+
+    public static void scale(final float x, final float y, final float z) {
+        glScalef(x, y, z);
+    }
+
 }

@@ -19,7 +19,7 @@ import com.almagems.cubetraz.cubes.MenuCube;
 import com.almagems.cubetraz.cubes.MoverCube;
 import com.almagems.cubetraz.cubes.MovingCube;
 import com.almagems.cubetraz.cubes.PlayerCube;
-import com.almagems.cubetraz.scenes.stat.StatInitData;
+import com.almagems.cubetraz.scenes.stat.StatInit;
 import com.almagems.cubetraz.utils.SwipeInfo;
 import com.almagems.cubetraz.graphics.TexCoordsQuad;
 import com.almagems.cubetraz.graphics.TexturedQuad;
@@ -280,39 +280,38 @@ public final class Level extends Scene {
     private void getRatings() {
         String sign = "-";
         int minSolutionSteps = solution.getStepsCount();
-        StatInitData statInitData = Game.statInitData;
 
         if (mMovesCounter < minSolutionSteps) {
             sign = "<";
-            statInitData.title = "EXPERT";
-            statInitData.stars = 3;
+            statInit.title = "EXPERT";
+            statInit.stars = 3;
         }
 
         if (mMovesCounter == minSolutionSteps) {
             sign = "=";
-            statInitData.title = "PERFECT";
-            statInitData.stars = 3;
+            statInit.title = "PERFECT";
+            statInit.stars = 3;
         }
 
         if (mMovesCounter > minSolutionSteps && mMovesCounter <= minSolutionSteps + 1) {
             sign = ">";
-            statInitData.title = "EXCELLENT";
-            statInitData.stars = 3;
+            statInit.title = "EXCELLENT";
+            statInit.stars = 3;
         }
 
         if (mMovesCounter > minSolutionSteps + 1 && mMovesCounter <= minSolutionSteps + 4) {
             sign = ">";
-            statInitData.title = "GREAT";
-            statInitData.stars = 2;
+            statInit.title = "GREAT";
+            statInit.stars = 2;
         }
 
         if (mMovesCounter > minSolutionSteps + 4) {
             sign = ">";
-            statInitData.title = "GOOD";
-            statInitData.stars = 1;
+            statInit.title = "GOOD";
+            statInit.stars = 1;
         }
 
-        statInitData.moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + minSolutionSteps;
+        statInit.moves = "PLAYER:" + mMovesCounter + " " + sign + " BEST:" + minSolutionSteps;
     }
     
     public boolean isMovingCube(CubeLocation location, boolean set) {
@@ -2313,12 +2312,11 @@ public final class Level extends Scene {
         Game.renderToFBO(this);
         mHud.setupDisappear();
 
-        StatInitData sid = Game.statInitData;
         getRatings();
 
         switch (mDifficulty) {
             case Easy:
-                GameProgress.setStarsEasy(mLevelNumber, sid.stars);
+                GameProgress.setStarsEasy(mLevelNumber, statInit.stars);
                 GameProgress.setMovesEasy(mLevelNumber, mMovesCounter);
 
                 if (mLevelNumber < 60) {
@@ -2330,7 +2328,7 @@ public final class Level extends Scene {
                 break;
 
             case Normal:
-                GameProgress.setStarsNormal(mLevelNumber, sid.stars);
+                GameProgress.setStarsNormal(mLevelNumber, statInit.stars);
                 GameProgress.setMovesNormal(mLevelNumber, mMovesCounter);
 
                 if (mLevelNumber < 60) {
@@ -2343,7 +2341,7 @@ public final class Level extends Scene {
                 break;
 
             case Hard:
-                GameProgress.setStarsHard(mLevelNumber, sid.stars);
+                GameProgress.setStarsHard(mLevelNumber, statInit.stars);
                 GameProgress.setMovesHard(mLevelNumber, mMovesCounter);
 
                 if (mLevelNumber < 60) {

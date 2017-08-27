@@ -24,7 +24,7 @@ import com.almagems.cubetraz.scenes.level.Solvers;
 import com.almagems.cubetraz.scenes.menu.Menu;
 import com.almagems.cubetraz.scenes.Outro;
 import com.almagems.cubetraz.scenes.Scene;
-import com.almagems.cubetraz.scenes.stat.StatInitData;
+import com.almagems.cubetraz.scenes.stat.StatInit;
 import com.almagems.cubetraz.scenes.stat.Statistics;
 import com.almagems.cubetraz.scenes.level.LevelInitData;
 import com.almagems.cubetraz.scenes.menu.MenuInitData;
@@ -336,7 +336,7 @@ public final class Game {
     public static float dirtyAlpha;
     public static float minSwipeLength;
 
-    public static final StatInitData statInitData = new StatInitData();
+    public static final StatInit statInit = new StatInit();
     public static final MenuInitData menuInitData = new MenuInitData();
     public static final AnimInitData animInitData = new AnimInitData();
     public static final LevelInitData levelInitData = new LevelInitData();
@@ -404,6 +404,16 @@ public final class Game {
         Creator.createCubes();
 
         LevelBuilder.level = level;
+    }
+
+    public static float clamp(float value) {
+        if (value > 1.0f) {
+            return 1.0f;
+        }
+        if (value < 0.0f) {
+            return 0f;
+        }
+        return value;
     }
 
     static void onSurfaceChanged() {

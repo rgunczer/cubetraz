@@ -35,17 +35,17 @@ public final class Statistics extends Scene {
     private float zoom;
     private float trans;
 
-    private boolean m_UpdateBackground;
-    private boolean m_DrawTitle;
-    private boolean m_DrawMoves;
-    private boolean m_DrawStars;
-    private boolean m_DrawTap;
+    private boolean mUpdateBackground;
+    private boolean mDrawTitle;
+    private boolean mDrawMoves;
+    private boolean mDrawStars;
+    private boolean mDrawTap;
 
-    private float m_rating_y;
-    private float m_title_y;
-    private float m_moves_y;
-    private float m_stars_y;
-    private float m_tap_y;
+    private float mRatingY;
+    private float mTitleY;
+    private float mMovesY;
+    private float mStarsY;
+    private float mTapY;
 
     private float mBackgroundAlpha;
     private float mBackgroundRotDegree;
@@ -58,34 +58,37 @@ public final class Statistics extends Scene {
     private Text mTextMoves = new Text();
     private Text mTextTap = new Text();
 
+    private Color mColorTapToContinue = new Color(240, 240, 240, 250);
+    private Color mShadowColor = new Color(0, 0, 0, 200);
+    private Color mTextColor = new Color(240, 0, 0, 255);
+
     private ArrayList<FallingCube> mFallingCubes = new ArrayList<>();
 
-    private float m_pulse;
+    private float mPulse;
 
     private Vector2 rot = new Vector2(3f, 0f);
 
     public Statistics() {
-        mCameraCurrent.eye = new Vector(0.0f, 10.0f, 30.0f);
-        mCameraCurrent.target = new Vector(0.0f, 0.0f, 0.0f);
+        mCameraCurrent.setEye(0.0f, 10.0f, 30.0f);
+        mCameraCurrent.setTarget(0.0f, 0.0f, 0.0f);
 
         for (int i = 0; i < 12; ++i) {
-            FallingCube fc = new FallingCube();
-            mFallingCubes.add(fc);
+            mFallingCubes.add(new FallingCube());
         }
     }
 
     private void initFallingCubes() {
         final float x = -7.0f;
-        FallingCube fc;
-        int size = mFallingCubes.size();
+        FallingCube cube;
+        final int size = mFallingCubes.size();
         for (int i = 0; i < size; ++i) {
-            fc = mFallingCubes.get(i);
+            cube = mFallingCubes.get(i);
 
-            fc.degree = Utils.randInt(0, 180);
-            fc.pos.x = x + i * 1.25f;
-            fc.pos.y = Utils.randInt(6, 12);
-            fc.pos.z = 0f;
-            fc.speed = 0.05f + (float)Utils.randInt(3, 5) / 100f;
+            cube.degree = Utils.randInt(0, 180);
+            cube.pos.x = x + i * 1.25f;
+            cube.pos.y = Utils.randInt(6, 12);
+            cube.pos.z = 0f;
+            cube.speed = 0.05f + (float)Utils.randInt(3, 5) / 100f;
         }
     }
 
@@ -94,7 +97,9 @@ public final class Statistics extends Scene {
         mStarAlpha = 0.0f;
         zoom = 0.0f;
         trans = 0.0f;
-        m_pulse = 0.0f;
+        mPulse = 0.0f;
+
+        mPosLightCurrent.init(new Vector(-100.0f, 300.0f, 900.0f));
 
         mState = State.Appear;
         mStateNext = State.None;
@@ -102,11 +107,11 @@ public final class Statistics extends Scene {
         mBackgroundRotDegree = 0.0f;
         mBackgroundAlphaPulse = 0.0f;
 
-        m_UpdateBackground = false;
-        m_DrawTitle = false;
-        m_DrawMoves = false;
-        m_DrawStars = false;
-        m_DrawTap = false;
+        mUpdateBackground = false;
+        mDrawTitle = false;
+        mDrawMoves = false;
+        mDrawStars = false;
+        mDrawTap = false;
 
         mTextScales[0] = 0f;
         mTextScales[1] = 0f;
@@ -119,29 +124,29 @@ public final class Statistics extends Scene {
         mTextMoves.setVSPace(0.8f);
         mTextTap.setVSPace(0.7f);
 
-        setup(Game.statInitData);
+        setup();
     }
 
-    public void setup(StatInitData sid) {
-        mStarCount = sid.stars;
+    public void setup() {
+        mStarCount = Game.statInit.stars;
 
         mTextTitle.setVSPace(1.0f);
 
-        mTextTitle.init(sid.title);
+        mTextTitle.init(Game.statInit.title);
         mTextMiddle.init("MOVES");
-        mTextMoves.init(sid.moves);
+        mTextMoves.init(Game.statInit.moves);
         mTextTap.init("TAP TO CONTINUE");
 
         // pre calc y positions
-        m_stars_y = Graphics.height * 0.75f;
-        m_rating_y = Graphics.height * 0.5f;
+        mStarsY = Graphics.height * 0.75f;
+        mRatingY = Graphics.height * 0.5f;
 
-        m_title_y = Graphics.height * 0.33f;
-        m_moves_y = Graphics.height * 0.2f;
-        m_tap_y = Graphics.height * 0.017f;
+        mTitleY = Graphics.height * 0.33f;
+        mMovesY = Graphics.height * 0.2f;
+        mTapY = Graphics.height * 0.017f;
     }
 
-    public void updateFallingCubes() {
+    private void updateFallingCubes() {
         FallingCube fc;
         int size = mFallingCubes.size();
         for (int i = 0; i < size; ++i) {
@@ -160,14 +165,14 @@ public final class Statistics extends Scene {
         updateFallingCubes();
         switch (mState) {
             case Wait:
-                if (State.None != mStateNext) {
-                    m_pulse += 0.3f;
-                    float mTextScale = (float)( Math.sin(m_pulse) / 5.0f) * Graphics.deviceScale;
+                if (mStateNext != State.None) {
+                    mPulse += 0.3f;
+                    float mTextScale = (float)( Math.sin(mPulse) / 5.0f) * Graphics.deviceScale;
 
                     switch (mStateNext) {
                         case AppearTitle:
                             mTextScales[0] = mTextScale;
-                            m_DrawStars = true;
+                            mDrawStars = true;
                             break;
 
                         case AppearMovesPlayer:
@@ -184,7 +189,7 @@ public final class Statistics extends Scene {
 
                     if (mTextScale < EPSILON) {
                         mState = mStateNext;
-                        m_pulse = 0.0f;
+                        mPulse = 0.0f;
                         mTextScale = 0.0f;
 
                         switch (mStateNext) {
@@ -201,7 +206,7 @@ public final class Statistics extends Scene {
                                 break;
 
                             case Show:
-                                m_DrawTap = true;
+                                mDrawTap = true;
                                 break;
 
                             default:
@@ -217,28 +222,28 @@ public final class Statistics extends Scene {
                     mBackgroundAlpha = 0.5f;
                     mStateNext = State.AppearTitle;
                     mState = State.Wait;
-                    m_DrawTitle = true;
-                    m_UpdateBackground = true;
+                    mDrawTitle = true;
+                    mUpdateBackground = true;
                 }
                 break;
 
             case AppearTitle:
                 mStateNext = State.AppearMovesPlayer;
                 mState = State.Wait;
-                m_pulse = 0.0f;
+                mPulse = 0.0f;
                 break;
 
             case AppearMovesPlayer:
                 mStateNext = State.AppearMovesBest;
                 mState = State.Wait;
-                m_pulse = 0.0f;
-                m_DrawMoves = true;
+                mPulse = 0.0f;
+                mDrawMoves = true;
                 break;
 
             case AppearMovesBest:
                 mStateNext = State.Show;
                 mState = State.Wait;
-                m_pulse = 0.0f;
+                mPulse = 0.0f;
                 trans = 0.0f;
                 zoom = 0.0f;
                 break;
@@ -251,24 +256,21 @@ public final class Statistics extends Scene {
 
             default:
                 break;
-        } // switch
-
-        if (m_DrawStars) {
-            mStarAlpha += 0.009f;
-
-            if (mStarAlpha > 1.0f)
-                mStarAlpha = 1.0f;
         }
 
-        if (m_UpdateBackground) {
+        if (mDrawStars) {
+            mStarAlpha += 0.009f;
+            mStarAlpha = Game.clamp(mStarAlpha);
+        }
+
+        if (mUpdateBackground) {
             mBackgroundRotDegree += 0.125f;
             mBackgroundAlpha = 0.5f + (float)(Math.sin(mBackgroundAlphaPulse) / 10.0f);
             mBackgroundAlphaPulse += 0.05f;
         }
     }
 
-    public void drawFallingCubes() {
-        
+    private void drawFallingCubes() {
         Game.bindCubeGLData();
         Graphics.resetBufferIndices();
         Graphics.zeroBufferPositions();
@@ -276,26 +278,24 @@ public final class Statistics extends Scene {
         glPushMatrix();
             glTranslatef(0f, 0f, 5f);
 
-            FallingCube fc;
-            int size = mFallingCubes.size();
+            FallingCube cube;
+            final int size = mFallingCubes.size();
             for (int i = 0; i < size; ++i) {
-                fc = mFallingCubes.get(i);
+                cube = mFallingCubes.get(i);
 
                 glPushMatrix();
-                    glTranslatef(fc.pos.x, fc.pos.y, fc.pos.z);
-
-                    glRotatef(fc.degree, 1.0f, 0.0f, 0.0f);
-                    glRotatef(fc.degree, 0.0f, 1.0f, 0.0f);
-                    glRotatef(fc.degree, 0.0f, 0.0f, 1.0f);
-
-                    glScalef(0.6f, 0.6f, 0.6f);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                    Graphics.translate(cube.pos);
+                    Graphics.rotateX(cube.degree);
+                    Graphics.rotateY(cube.degree);
+                    Graphics.rotateZ(cube.degree);
+                    Graphics.scale(0.6f, 0.6f, 0.6f);
+                    Graphics.drawCube();
                 glPopMatrix();
             }
         glPopMatrix();
     }
 
-    public void drawBackground() {
+    private void drawBackground() {
         
         float dim = Math.max(Graphics.width, Graphics.height) * 1.25f;
         float q = dim / 2.0f;
@@ -333,29 +333,28 @@ public final class Statistics extends Scene {
         glPopMatrix();
     }
 
-    public boolean drawText(Color color, Color tapToContinueColor) {
-        
+    private boolean drawText(Color color, Color tapToContinueColor) {
         boolean shouldDraw = false;
         Vector2 pos = new Vector2();
         float scale;
 
-        if (m_DrawTitle) {
+        if (mDrawTitle) {
             scale = Graphics.deviceScale + mTextScales[0];
             mTextTitle.setScale(scale + (0.3f * Graphics.deviceScale), scale + (0.6f * Graphics.deviceScale));
 
             pos.x = Graphics.halfWidth - mTextTitle.getHalfWidth();
-            pos.y = m_rating_y - mTextTitle.getHalfHeight();
+            pos.y = mRatingY - mTextTitle.getHalfHeight();
             mTextTitle.emit(pos, color);
             shouldDraw = true;
         }
 
-        if (m_DrawMoves) {
+        if (mDrawMoves) {
             // middle
             scale = Graphics.deviceScale * 0.9f;
             mTextMiddle.setScale(scale, scale + (0.2f * Graphics.deviceScale));
 
             pos.x = Graphics.halfWidth - mTextMiddle.getHalfWidth();
-            pos.y = m_title_y - mTextMiddle.getHalfHeight();
+            pos.y = mTitleY - mTextMiddle.getHalfHeight();
 
             mTextMiddle.emit(pos, color);
 
@@ -364,18 +363,18 @@ public final class Statistics extends Scene {
             mTextMoves.setScale(scale + (0.1f * Graphics.deviceScale), scale + (0.1f * Graphics.deviceScale));
 
             pos.x = Graphics.halfWidth - mTextMoves.getHalfWidth();
-            pos.y = m_moves_y - mTextMoves.getHalfHeight();
+            pos.y = mMovesY - mTextMoves.getHalfHeight();
 
             mTextMoves.emit(pos, color);
             shouldDraw = true;
         }
 
-        if (m_DrawTap) {
+        if (mDrawTap) {
             scale = Graphics.deviceScale * 0.25f;
             mTextTap.setScale(scale + (0.3f * Graphics.deviceScale), scale + (0.3f * Graphics.deviceScale));
 
             pos.x = Graphics.halfWidth - mTextTap.getHalfWidth();
-            pos.y = m_tap_y;
+            pos.y = mTapY;
 
             mTextTap.emit(pos, tapToContinueColor);
             shouldDraw = true;
@@ -383,16 +382,15 @@ public final class Statistics extends Scene {
         return shouldDraw;
     }
 
-    public void drawStars() {
-        
-        final float verts[] = {
+    private void drawStars() {
+        final float vertices[] = {
             -0.5f, -0.5f,
              0.5f, -0.5f,
              0.5f,  0.5f,
             -0.5f,  0.5f
         };
 
-        final float coords[] = {
+        final float coordinates[] = {
             0f, 1f,
             1f, 1f,
             1f, 0f,
@@ -418,13 +416,13 @@ public final class Statistics extends Scene {
             maxColor, maxColor, 0, a
         };
 
-        Graphics.addVerticesCoordsColors(verts, coords, colors_red);
+        Graphics.addVerticesCoordsColors(vertices, coordinates, colors_red);
 
         float s = Graphics.width * 0.14f;
         float w = Graphics.width * 0.2f;
         float half_w = w / 2.0f;
         float x = Graphics.halfWidth - ((w * mStarCount) / 2.0f);
-        float y = m_stars_y;
+        float y = mStarsY;
         float raise = 3.0f * Graphics.deviceScale;
 
         for (int i = 0; i < mStarCount; ++i) {
@@ -438,9 +436,9 @@ public final class Statistics extends Scene {
             y += raise;
         }
 
-        y = m_stars_y;
+        y = mStarsY;
 
-        Graphics.addVerticesCoordsColors(verts, coords, colors_yellow);
+        Graphics.addVerticesCoordsColors(vertices, coordinates, colors_yellow);
 
         for (int i = 0; i < mStarCount; ++i) {
             glPushMatrix();
@@ -455,9 +453,6 @@ public final class Statistics extends Scene {
 
     @Override
     public void render() {
-        
-        Color color;
-
         glEnable(GL_TEXTURE_2D);
 
         glDisable(GL_DEPTH_TEST);
@@ -479,14 +474,13 @@ public final class Statistics extends Scene {
         Graphics.resetBufferIndices();
         Graphics.zeroBufferPositions();
 
-        glDepthMask(true);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
         Graphics.textureGrayConcrete.bind();
 
-        Graphics.setLightPosition(new Vector(-100.0f, 300.0f, 900.0f));
+        Graphics.setLightPosition(mPosLightCurrent);
 
         drawFallingCubes();
         glDisable(GL_LIGHTING);
@@ -505,7 +499,7 @@ public final class Statistics extends Scene {
         Graphics.textureStatBackground.bind();
         drawBackground();
 
-        if (m_DrawStars) {
+        if (mDrawStars) {
             Graphics.textureStar.bind();
             drawStars();
         }
@@ -515,9 +509,8 @@ public final class Statistics extends Scene {
 
         Graphics.textureFontsBig.bind();
 
-        color = new Color(0, 0, 0, 200);
         boolean shouldDraw;
-        shouldDraw = drawText(color, color);
+        shouldDraw = drawText(mShadowColor, mShadowColor);
         if (shouldDraw) {
             glPushMatrix();
                 glTranslatef(rot.x * Graphics.deviceScale, rot.y * Graphics.deviceScale, 0.0f);
@@ -526,15 +519,11 @@ public final class Statistics extends Scene {
             glPopMatrix();
         }
 
-        Color colorTapToContinue = new Color(240, 240, 240, 250);
-        color = new Color(240, 0, 0, 255);
-        shouldDraw = drawText(color, colorTapToContinue);
+        shouldDraw = drawText(mTextColor, mColorTapToContinue);
         if (shouldDraw) {
             Graphics.updateBuffers();
             Graphics.renderTriangles();
         }
-
-        glDepthMask(true);
     }
 
     @Override
