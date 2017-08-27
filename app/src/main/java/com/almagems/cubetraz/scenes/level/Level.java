@@ -204,8 +204,8 @@ public final class Level extends Scene {
         mDeadCube = null;
 
         // uncomment to load alternative level
-        //Game.levelInitData.difficulty = DifficultyEnum.Easy;
-        //Game.levelInitData.levelNumber = 49;
+        Game.levelInitData.difficulty = DifficultyEnum.Easy;
+        Game.levelInitData.levelNumber = 34;
 
         switch (levelInitData.initAction) {
             case FullInit: {
@@ -1246,10 +1246,7 @@ public final class Level extends Scene {
                 Audio.playSound(SOUND_CUBE_HIT);
 
                 mState = mStateToRestore;
-
-                if (State.Solving == mStateToRestore) {
-                    mElapsed = 0.0f;
-                }
+                mElapsed = 0.0f;
 
                 CubeLocation player = mPlayerCube.getLocation();
                 CubeLocation key = mLocationKeyCube;
@@ -1270,33 +1267,31 @@ public final class Level extends Scene {
     }
 
     private void updateSolving() {
-        if (mElapsed > 1.0f) {
-            mElapsed = 0.0f;
-
+        if (mElapsed > 1.5f) {
             if (mPlayerCube.isDone()) {
                 int dir = solution.getStep();
                 boolean success = mPlayerCube.moveOnAxis(dir);
-
                 if (success) {
                     mStateToRestore = mState;
                     mState = State.MovingPlayer;
                     ++mMovesCounter;
                     mHud.setTextMoves(mMovesCounter);
                 }
+                mElapsed = 0.0f;
             }
+        } else {
+            mPlayerCube.update();
         }
-
-        mPlayerCube.update();
     }
 
     private void updatePrepareSolving() {
         mHud.update();
 
-        if (mElapsed > 1.6f) {
+        if (mElapsed > 1.0f) {
             mHud.showPrepareSolving(true, solution.getStepsCount());
         }
 
-        if (mElapsed > 2.4f) {
+        if (mElapsed > 6.0f) {
             mHud.showPrepareSolving(false, solution.getStepsCount());
 
             mState = State.Solving;
@@ -2483,7 +2478,7 @@ public final class Level extends Scene {
 
     @Override
     public void onFingerUp(float x, float y, int fingerCount) {
-
+/*
         // TODO: comment this out in final release
         if (x > Graphics.width - 100 && y > Graphics.height - 100) {
             int ln = mLevelNumber + 1;
@@ -2510,7 +2505,7 @@ public final class Level extends Scene {
 
             return;
         }
-
+*/
         mPosUp.x = x;
         mPosUp.y = y;
 

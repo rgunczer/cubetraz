@@ -344,7 +344,7 @@ public final class Game {
     public static final Vector cubeOffset = new Vector();
     public static CubeFaceData[] cubeFacesData = new CubeFaceData[7];
 
-    public static boolean canPlayLockedLevels = true; // TODO: modify this in final version
+    public static boolean canPlayLockedLevels = false; // TODO: modify this in final version
 
     public static Color faceColor = new Color(191, 204, 191, 255);
     public static Color baseColor = new Color(230, 230, 230, 255);
@@ -410,10 +410,10 @@ public final class Game {
         minSwipeLength = Graphics.height / 10;
 
         if (currentScene == null) {
-            showScene(Scene_Intro);
+            //showScene(Scene_Intro);
             //showScene(Scene_Menu);
             //showScene(Scene_Anim);
-            //showScene(Scene_Level);
+            showScene(Scene_Level);
             //showScene(Scene_Stat);
             //showScene(Scene_Outro);
         }
