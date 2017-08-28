@@ -10,3 +10,4 @@ app/src/androidTest/
 app/src/test/
 .idea/dictionaries/
 .idea/
+*.zip

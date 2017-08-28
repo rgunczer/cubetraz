@@ -1,6 +1,5 @@
 package com.almagems.cubetraz.utils;
 
-import com.almagems.cubetraz.Game;
 import com.almagems.cubetraz.graphics.Color;
 import com.almagems.cubetraz.graphics.Graphics;
 import com.almagems.cubetraz.math.Utils;

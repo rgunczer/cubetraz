@@ -1065,7 +1065,7 @@ public final class Level extends Scene {
 
     @Override
     public void update() {
-        mElapsed += 0.05f;
+        mElapsed += 0.04f;
         switch (mState) {
             case Playing:                   updatePlaying();            break;
             case Undo:                      updateUndo();               break;

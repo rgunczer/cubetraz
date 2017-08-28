@@ -45,7 +45,7 @@ public final class Cube {
     public void warmFonts() {
         for(int i = 0; i < fonts.length; ++i) {
             if (fonts[i] != null) {
-                fonts[i].warmByFactor( Utils.randInt(0, 12) );
+                fonts[i].warmByFactor( Utils.randInt(0, 9) );
             }
         }
     }
@@ -53,7 +53,7 @@ public final class Cube {
     public void warmSymbols() {
         for(int i = 0; i < symbols.length; ++i) {
             if (symbols[i] != null) {
-                symbols[i].warmByFactor( Utils.randInt(0, 12) );
+                symbols[i].warmByFactor( Utils.randInt(0, 9) );
             }
         }
     }
