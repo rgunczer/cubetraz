@@ -420,8 +420,6 @@ public final class Menu extends Scene {
     }
 
     private void drawMenuCubes() {
-        
-
         Graphics.resetBufferIndices();
         Graphics.bindStreamSources3d();
 
@@ -1399,11 +1397,10 @@ public final class Menu extends Scene {
     }
 
     private void drawCubeFaceOptions() {
-        
         Cube p = Game.cubes[2][7][3];
 
         float x = p.tx - HALF_CUBE_SIZE;
-        float y = p.ty + HALF_CUBE_SIZE + 0.02f;
+        float y = p.ty + HALF_CUBE_SIZE + FONT_OVERLAY_OFFSET;
         float z = p.tz - HALF_CUBE_SIZE;
         float w = CUBE_SIZE * 5.0f * GameOptions.getMusicVolume();
         float ws = CUBE_SIZE * 5.0f * GameOptions.getSoundVolume();

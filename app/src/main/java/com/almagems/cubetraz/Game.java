@@ -71,7 +71,7 @@ public final class Game {
 
     public static final int MAX_FACE_TRANSFORM_COUNT = 8;
 
-    public static final float FONT_OVERLAY_OFFSET = 0.02f;
+    public static final float FONT_OVERLAY_OFFSET = 0.04f;
     public static final int LEVEL_LOCKED = -1;
     public static final int LEVEL_UNLOCKED = 0;
 
