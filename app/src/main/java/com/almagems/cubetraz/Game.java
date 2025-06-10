@@ -351,7 +351,7 @@ public final class Game {
     public static Color titleColor = new Color(100, 0, 0, 200);
     public static Color textColor = new Color(80, 0, 0, 130);
     public static Color fontColorOnMenuCube = new Color(80, 0, 0, 230);
-    public static Color symbolColor = new Color(23, 23, 23, 150);
+    public static Color symbolColor = new Color(23, 0, 0, 150);
     public static Color textColorOnCubeFace = new Color(76, 0, 0, 153);
     public static Color levelNumberColor = new Color(0, 0, 0, 150);
     public static Color cubeHiLiteColor = new Color(160, 160, 160, 255);
