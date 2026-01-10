@@ -10,3 +10,7 @@ app/src/test/
 .idea/dictionaries/
 .idea/
 *.zip
+*.iml
+app/release/
+*.apk
+*.aab
