@@ -5,7 +5,6 @@
 .DS_Store
 /build
 /captures
-/gradle
 app/src/androidTest/
 app/src/test/
 .idea/dictionaries/

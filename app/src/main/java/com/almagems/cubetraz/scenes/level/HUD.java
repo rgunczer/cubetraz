@@ -84,8 +84,8 @@ final class HUD {
     private int mTutorAlpha;
     private Texture mTutorTexture;
 
-    private Color colorIcon = new Color(140, 0, 0, mIconsAlpha);
-    private Color colorText = new Color(225, 10, 50, mIconsAlpha);
+    private Color colorIcon = new Color(200, 100, 100, mIconsAlpha);
+    private Color colorText = new Color(140, 100, 100, mIconsAlpha);
     private Color colorHilite = new Color(240, 240, 240, mIconsAlpha);
     private Color colorShadow = new Color(0, 0, 0, mIconsAlpha);
 
