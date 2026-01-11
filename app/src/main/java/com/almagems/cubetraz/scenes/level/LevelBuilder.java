@@ -97,9 +97,9 @@ public final class LevelBuilder {
 
     public static void prepare() {
         recycleMovingCubes();
-	    recycleMoverCubes();
-	    recycleDeadCubes();
-	    level.cubesHint.clear();
+        recycleMoverCubes();
+        recycleDeadCubes();
+        level.cubesHint.clear();
     }
 
     public static void setup(int arr[]) {
@@ -114,7 +114,7 @@ public final class LevelBuilder {
         level.appearDisappear.level.clear();
 
         Cube cube;
-	    int x, y, z;
+        int x, y, z;
         int size = arr.length;
         for (int i = 6; i < size; i += 3) {
             x = arr[i];
@@ -124,7 +124,7 @@ public final class LevelBuilder {
             cube = Game.cubes[x][y][z];
         
             cube.type = CubeTypeEnum.CubeIsVisibleAndObstacleAndLevel;
-		    cube.setColor(Game.baseColor);
+            cube.setColor(Game.baseColor);
         
             level.appearDisappear.level.addAppear(cube);
         }
@@ -149,29 +149,29 @@ public final class LevelBuilder {
     }
 
     public static void setupMoverCubes(int arr[]) {
-	    MoverCube cube;
-	    for (int i = 0; i < arr.length; i+=4) {
-		    cube = getNewMoverCube();
-		    cube.init(new CubeLocation(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
+        MoverCube cube;
+        for (int i = 0; i < arr.length; i+=4) {
+            cube = getNewMoverCube();
+            cube.init(new CubeLocation(arr[i], arr[i+1], arr[i+2]), arr[i+3]);
             moverCubes.add(cube);
-	    }
+        }
     }
 
     public static void setupDeathCubes(int arr[]) {
-	    DeadCube cube;
-	    for (int i = 0; i < arr.length; i+=3) {
-		    cube = getNewDeadCube();
-		    cube.init(new CubeLocation(arr[i], arr[i+1], arr[i+2]));
+        DeadCube cube;
+        for (int i = 0; i < arr.length; i+=3) {
+            cube = getNewDeadCube();
+            cube.init(new CubeLocation(arr[i], arr[i+1], arr[i+2]));
             deadCubes.add(cube);
-	    }
+        }
     }
 
     public static void setupHintCubes(int arr[]) {
-	    Cube cube;
-	    for (int i = 0; i < arr.length; i+=3) {
-		    cube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
-		    level.cubesHint.add(cube);
-	    }
+        Cube cube;
+        for (int i = 0; i < arr.length; i+=3) {
+            cube = Game.cubes[arr[i]][arr[i+1]][arr[i+2]];
+            level.cubesHint.add(cube);
+        }
     }
 
 }
